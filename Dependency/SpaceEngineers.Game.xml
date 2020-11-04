@@ -1,0 +1,792 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SpaceEngineers.Game</name>
+    </assembly>
+    <members>
+        <member name="T:SpaceEngineers.Game.Achievements.MyAchievement_DeclareWar">
+            <summary>
+            Implements achievement Declare War - declare war with some faction
+            </summary>
+        </member>
+        <member name="T:SpaceEngineers.Game.Achievements.MyAchievement_WinWin">
+            <summary>
+            Implements Win-Win achievement - make peace with a faction
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.MyAirVent.IsPressurized">
+            <summary>
+            Compatibility method
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.Entities.Blocks.MyMedicalRoom.HealingAllowed">
+            <summary>
+            Disabling prevents healing characters.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.Entities.Blocks.MyMedicalRoom.RefuelAllowed">
+            <summary>
+            Disabling prevents refueling suits.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.Entities.Blocks.MyMedicalRoom.RespawnAllowed">
+            <summary>
+            Disable to remove respawn component from medical room.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.Entities.Blocks.MyMedicalRoom.SpawnName">
+            <summary>
+            The text displayed in the spawn menu
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.Entities.Blocks.MyMedicalRoom.SuitChangeAllowed">
+            <summary>
+            Disable to prevent players from changing their suits.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.Entities.Blocks.MyMedicalRoom.CustomWardrobesEnabled">
+            <summary>
+            If set to true CustomWardrobeNames are used instead of all definitions when instantiating WardrobeScreen.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.Entities.Blocks.MyMedicalRoom.CustomWardrobeNames">
+            <summary>
+            Used when CustomWardrobes are enabled.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.Entities.Blocks.MyMedicalRoom.ForceSuitChangeOnRespawn">
+            <summary>
+            Use when you want to force suit change on respawn. Wont turn to true if RespawnSuitName is null.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.Entities.Blocks.MyMedicalRoom.RespawnSuitName">
+            <summary>
+            Name of suit into which would player be forced upon respawn.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.Entities.Blocks.MyMedicalRoom.SpawnWithoutOxygenEnabled">
+            <summary>
+            Players wont be able to spawn in rooms that are not pressurised.
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.MyParachute.UpdateParachute">
+            <summary>
+            Called from game update. only called when door is opened fully closing or opening.
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.MyParachute.UpdateCutChute">
+            <summary>
+            Called each tick when door is closed or called from UpdateParachutePosition if the door is opening/closing/fullyopen after being closed. 
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.MyShipWelder.IsWithinWorldLimits(Sandbox.Game.Entities.Blocks.MyProjectorBase,System.String,System.Int32)">
+            <summary>
+            Determines whether the projected grid still fits within block limits set by server after a new block is added
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.MySoundBlock.UpdateLoopableSoundEmitter">
+            !Never runs on DS!
+        </member>
+        <member name="P:SpaceEngineers.Game.Entities.Blocks.MySurvivalKit.SpawnName">
+            <summary>
+            The text displayed in the spawn menu
+            </summary>
+        </member>
+        <member name="F:SpaceEngineers.Game.Entities.Blocks.MyUpgradeModule.m_dummies">
+            <summary>
+            These are sorted so that dummy index and emissivity index match
+            </summary>
+        </member>
+        <member name="F:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneBlock.m_safeZoneManager">
+            <summary>
+            Manager (entity component) that handles all operations on safezone
+            </summary>
+        </member>
+        <member name="F:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneBlock.m_conveyorEndpoint">
+            <summary>
+            Conveyor end point used for injecting zone chips to the inventory.
+            </summary>
+        </member>
+        <member name="T:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneComponent">
+            <summary>
+            Handles operations on safezone created by beacons.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneComponent.SafeZoneEntityId">
+            <summary>
+            Returns current safe zone associated to beacon.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneComponent.WaitingResponse">
+            <summary>
+            True, if waiting for response of creation of safe zone from server.
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneComponent.OnSafezoneCreateRemove(System.Boolean)">
+            <summary>
+            Server side method to enable/disable safe zone. Server will validate the request.
+            </summary>
+            <param name="turnOnSafeZone">Set True if safe zone should be enabled. Otherwise false</param>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneComponent.OnSafezoneCreated(System.Int64)">
+            <summary>
+            Event triggered after server reponse on creation of safe zone.
+            </summary>
+            <param name="safeZoneEntId"></param>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneComponent.GetRadius">
+            <summary>
+            Gets current radius or default if safe zone not enabled.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneComponent.SetRadius(System.Single)">
+            <summary>
+            Client side set radius of safe zone. Sends message to server which is validated
+            </summary>
+            <param name="radius">New radius</param>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneComponent.SetActivate_Server(System.Boolean)">
+            <summary>
+            Sets safe zone to be active. (Only on server)
+            </summary>
+            <param name="activate">True if to activate, otherwise false.</param>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneComponent.OnSafeZoneFilterBtnPressed">
+            <summary>
+            Event triggered after safezone filter button pressed
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneComponent.OnSafeZoneSettingChanged(VRage.Game.ObjectBuilders.Components.MySafeZoneAction,System.Boolean)">
+            <summary>
+            Event triggered when one of checkboxes for safezone settings is pressed
+            </summary>
+            <param name="safeZoneAction">Safezone Setting to be changed</param>
+            <param name="isChecked">Indication if it should be turned on of off</param>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneComponent.GetSafeZoneSetting(VRage.Game.ObjectBuilders.Components.MySafeZoneAction)">
+            <summary>
+            Gets safezone setting state
+            </summary>
+            <param name="safeZoneAction">Setting to check for</param>
+            <returns>True if safe zone setting/action is enabled/allower</returns>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneComponent.OnSafeZoneShapeChanged(Sandbox.Common.ObjectBuilders.MySafeZoneShape)">
+            <summary>
+            Event triggered when shape of the safe zone is changed.
+            </summary>
+            <param name="newShape">New shape to set.</param>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneComponent.GetSafeZoneShape">
+            <summary>
+            Gets safezone current shape.
+            </summary>
+            <returns>Safe zone shape.</returns>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneComponent.GetTexture">
+            <summary>
+            Gets current safezone texture.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneComponent.SetTexture(VRage.Utils.MyStringHash)">
+            <summary>
+            Sets safe zone texture;
+            </summary>
+            <param name="texture"></param>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneComponent.Update">
+            <summary>
+            Updates safezone.
+            </summary>
+            <returns>True if safezone is activating.</returns>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneComponent.TryConsumeUpkeep">
+            <summary>
+            Tries to consume zone chip for next time frame of the safe zone.
+            </summary>
+            <returns>If true, zone chip is consumed and function returns true. Otherwise false.</returns>
+        </member>
+        <member name="M:SpaceEngineers.Game.Entities.Blocks.SafeZone.MySafeZoneComponent.SetTextInfo(System.Text.StringBuilder)">
+            <summary>
+            Sets text used in Detailed info right panel of Terminal Display.
+            </summary>
+            <param name="sBuilderToSet">String Builder to set info on.</param>
+        </member>
+        <member name="M:SpaceEngineers.Game.EntityComponents.GameLogic.Discovery.MyCharacterDiscoveryComponent.OnBroadcasterDiscovered(Sandbox.Game.Entities.MyDataBroadcaster)">
+            <summary>
+            This is called when new broadcaster is found. It is only happening on server.
+            </summary>
+            <param name="broadcaster">Found broadcaster.</param>
+        </member>
+        <member name="M:SpaceEngineers.Game.EntityComponents.GameLogic.Discovery.MyCharacterDiscoveryComponent.OnFactionDiscovered(Sandbox.Game.World.MyFaction,Sandbox.Game.World.MyPlayer.PlayerId)">
+            <summary>
+            This is called on clients on response from server when faction is discovered.
+            </summary>
+            <param name="discoveredFaction"></param>
+        </member>
+        <member name="F:SpaceEngineers.Game.GUI.MyBadgeHelper.m_badges">
+            <summary>
+            Collection of the round badges under the main logo.
+            </summary>
+        </member>
+        <member name="T:SpaceEngineers.Game.GUI.MyGuiScreenAtmBlock">
+            <summary>
+            Implements screen for ATM Block UI
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.GUI.MyGuiScreenMainMenu.CreateRightSection">
+            <summary>
+            Creates news and banners
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.GUI.MyGuiScreenOptionsGraphics.ReadSettingsFromControls(Sandbox.Engine.Platform.VideoMode.MyGraphicsSettings@)">
+            <returns>Bool indicating a game restart is required</returns>
+        </member>
+        <member name="T:SpaceEngineers.Game.GUI.MyGuiScreenPerformanceWarnings.WarningLine">
+            <summary>
+            Each of the performance problems on the screen
+            </summary>
+        </member>
+        <member name="T:SpaceEngineers.Game.GUI.MyGuiScreenPerformanceWarnings.WarningArea">
+            <summary>
+            Used to contain each of the areas (graphics, blocks, other). Also holds the headings.
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.GUI.MyGuiScreenPerformanceWarnings.WarningArea.Add(Sandbox.Graphics.GUI.MyGuiControlList,System.Boolean)">
+            <summary>
+            Add this area into a list
+            </summary>
+        </member>
+        <member name="T:SpaceEngineers.Game.GUI.MyGuiScreenStoreBlock">
+            <summary>
+            Implements screen for Store Block UI
+            </summary>
+        </member>
+        <member name="T:SpaceEngineers.Game.GUI.MyGuiScreenTradePlayer">
+            <summary>
+            Implements player trading screen
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.IMyAirVent.GasOutputPerSecond">
+            <summary>
+            How much gas can be pushed out per second
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.IMyAirVent.GasInputPerSecond">
+            <summary>
+            How much gas can be pulled in per second
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.IMyAirVent.OxygenSinkInfo">
+            <summary>
+            Resource sink component for gas
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.IMyAirVent.SourceComp">
+            <summary>
+            Resource source component
+            </summary>
+        </member>
+        <member name="T:SpaceEngineers.Game.ModAPI.IMyArtificialMassBlock">
+            <summary>
+            ModAPI Artificial Mass Block Interface
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.IMyGravityGenerator.FieldSize">
+            <summary>
+            Gets or sets the gravity field as a Vector3(W,H,D).
+            </summary>
+            <remarks>
+            X is Width
+            Y is Height
+            Z is Depth
+            This is not clamped like the Ingame one is.
+            </remarks>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.IMyGravityGeneratorBase.GravityAcceleration">
+            <summary>
+            Gets or sets the gravity acceleration in m/s^2.
+            </summary>
+            <remarks>This is not clamped like the Ingame one is.</remarks>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.IMyGravityGeneratorSphere.Radius">
+            <summary>
+            Radius of the gravity field, in meters
+            </summary>
+            <remarks>This is not clamped like the Ingame one is.</remarks>
+        </member>
+        <member name="E:SpaceEngineers.Game.ModAPI.IMyLandingGear.LockModeChanged">
+            <summary>
+            Event triggered when the lock mode changes.
+            </summary>
+        </member>
+        <member name="E:SpaceEngineers.Game.ModAPI.IMyLandingGear.StateChanged">
+            <summary>
+            The lock state changes (locked or unlocked).
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.IMyLandingGear.GetAttachedEntity">
+            <summary>
+            Returns the entity the landing gear is attached to.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="E:SpaceEngineers.Game.ModAPI.IMyParachute.ParachuteStateChanged">
+            <summary>
+            Event that will trigger true if Chute is now deployed or false if Chute is now cut 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.IMySafeZoneBlock.EnableSafeZone(System.Boolean)">
+            <summary>
+            Enables(activates)/disables(deactivates) safe zone. Grid has to be static. If grid is not static this method will do nothing.
+            </summary>
+            <param name="turnOn">True to enable the safe zone. Otherwise false.</param>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.IMySafeZoneBlock.IsSafeZoneEnabled">
+            <summary>
+            Gets state of the safe zone. Enabled(active).
+            </summary>
+            <returns>True - All safe zone filters are active. Otherwise false.</returns>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.IMyShipMergeBlock.Other">
+            <summary>
+            The other merge block this is connected to.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.IMyShipMergeBlock.GridCount">
+            <summary>
+            Gets the number of grids connected.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.IMySolarPanel.SourceComp">
+            <summary>
+            Resource (power) Source
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.IMySoundBlock.Volume">
+            <summary>
+            Gets or sets the volume level of sound
+            </summary>
+            <remarks>This is not clamped like the Ingame one.</remarks>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.IMySoundBlock.Range">
+            <summary>
+            Gets or sets the range the sound is audible.
+            </summary>
+            <remarks>This is not clamped like the Ingame one.</remarks>
+        </member>
+        <member name="T:SpaceEngineers.Game.ModAPI.IMySpaceBall">
+            <summary>
+            ModAPI Spaceball interface
+            </summary>
+        </member>
+        <member name="T:SpaceEngineers.Game.ModAPI.IMyVirtualMass">
+            <summary>
+            ModAPI VirtualMass Interface
+            </summary>
+        </member>
+        <member name="F:SpaceEngineers.Game.ModAPI.Ingame.VentStatus.Depressurized">
+            <summary>
+            Air vent is depressurized
+            </summary>
+        </member>
+        <member name="F:SpaceEngineers.Game.ModAPI.Ingame.VentStatus.Depressurizing">
+            <summary>
+            Air vent is in process of depressurizing
+            </summary>
+        </member>
+        <member name="F:SpaceEngineers.Game.ModAPI.Ingame.VentStatus.Pressurized">
+            <summary>
+            Air vent is pressurized
+            </summary>
+        </member>
+        <member name="F:SpaceEngineers.Game.ModAPI.Ingame.VentStatus.Pressurizing">
+            <summary>
+            Air vent is in process of pressurizing
+            </summary>
+        </member>
+        <member name="T:SpaceEngineers.Game.ModAPI.Ingame.IMyAirVent">
+            <summary>
+            AirVent block for pressurizing and depresurizing rooms
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyAirVent.IsPressurized">
+            <summary>
+            Room can be pressurized
+            </summary>
+            <returns>true if containing room is airtight</returns>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyAirVent.CanPressurize">
+            <summary>
+            Can fill room with air 
+            true - room is airtight
+            false - room is not airtight
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyAirVent.GetOxygenLevel">
+            <summary>
+            Oxygen level in room
+            </summary>
+            <returns>Oxygen fill level as decimal (0.5 = 50%)</returns>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyAirVent.IsDepressurizing">
+            <summary>
+            Vent mode
+            false - pressurize (filling room)
+            true - depressurize (sucking air out)
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyAirVent.Depressurize">
+            <summary>
+            Vent mode
+            false - pressurize (filling room)
+            true - depressurize (sucking air out)
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyAirVent.Status">
+            <summary>
+            Gets current air vent status
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyAirVent.PressurizationEnabled">
+            <summary>
+            Returns true if pressurization is enabled.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyButtonPanel.AnyoneCanUse">
+            <summary>
+            Gets or sets if anyone is allowed to activate the buttons.
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyButtonPanel.GetButtonName(System.Int32)">
+            <summary>
+            Gets the button name.
+            </summary>
+            <param name="index">Zero-based button position</param>
+            <returns></returns>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyButtonPanel.SetCustomButtonName(System.Int32,System.String)">
+            <summary>
+            Sets the custom button name.
+            </summary>
+            <param name="index">Zero-base button position</param>
+            <param name="name">Name of button</param>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyButtonPanel.HasCustomButtonName(System.Int32)">
+            <summary>
+            Gets if the specified button has a custom name set.
+            </summary>
+            <param name="index">Zero-base button position</param>
+            <returns></returns>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyButtonPanel.ClearCustomButtonName(System.Int32)">
+            <summary>
+            Clears the custom name of the specified button.
+            </summary>
+            <param name="index">Zero-base button position</param>
+            <remarks>This is safe to call even if there is no custom name assigned.</remarks>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyButtonPanel.IsButtonAssigned(System.Int32)">
+            <summary>
+            Gets if the specified button is assigned an action.
+            </summary>
+            <param name="index">Zero-base button position</param>
+            <returns></returns>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyGravityGenerator.FieldSize">
+            <summary>
+            Gets or sets the gravity field as a Vector3(W,H,D).
+            </summary>
+            <remarks>
+            X is Width
+            Y is Height
+            Z is Depth
+            </remarks>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyGravityGeneratorBase.Gravity">
+            <summary>
+            Gets the gravity acceleration
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyGravityGeneratorBase.GravityAcceleration">
+            <summary>
+            Gets or sets the gravity acceleration in m/s^2.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyGravityGeneratorSphere.Radius">
+            <summary>
+            Radius of the gravity field, in meters
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyLandingGear.IsBreakable">
+            <summary>
+            Gets if the landing gear lock can be broken with force.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyLandingGear.IsLocked">
+            <summary>
+            Gets whether the landing gear is currently locked.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyLandingGear.AutoLock">
+            <summary>
+            Toggles the autolock of the landing gear.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyLandingGear.LockMode">
+            <summary>
+            Gets the current lock state of the landing gear.
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyLandingGear.Lock">
+            <summary>
+            Locks the landing gear.
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyLandingGear.ToggleLock">
+            <summary>
+            Toggles the landing gear lock.
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyLandingGear.Unlock">
+            <summary>
+            Unlocks the landing gear.
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyLandingGear.ResetAutoLock">
+            <summary>
+            Resets autolock timer
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyOxygenFarm.CanProduce">
+            <summary>
+            Gets if the block can produce gas.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyParachute.Atmosphere">
+            <summary>
+            Atmospheric Density at the block. Returns 0.0f if not near a planet. 
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyParachute.TryGetClosestPoint(System.Nullable{VRageMath.Vector3D}@)">
+            <summary>
+            Gets Elevation, elevation will equal positive infinity if method returns false
+            </summary>
+            <param name="detail">Describes what detail level to retrieve the planet elevation</param>
+            <param name="elevation">Elevation in meters</param>
+            <returns></returns>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyParachute.GetVelocity">
+            <summary>
+            Determines the linear velocities in meters per second at the block position
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyParachute.GetNaturalGravity">
+            <summary>
+            Gets the detected natural gravity vector and power at the current location.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyParachute.GetArtificialGravity">
+            <summary>
+            Gets the detected artificial gravity vector and power at the current location.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyParachute.GetTotalGravity">
+            <summary>
+            Gets the total accumulated gravity vector and power at the current location, 
+            taking both natural and artificial gravity into account.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyParachute.Status">
+            <summary>
+            Determines the current general status of the door.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyParachute.OpenRatio">
+            <summary>
+            The current, accurate ratio of the door's current state where 0 is fully closed and 1 is fully open.
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyParachute.OpenDoor">
+            <summary>
+            Opens the door. See <see cref="P:SpaceEngineers.Game.ModAPI.Ingame.IMyParachute.Status"/> to get the current status.
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyParachute.CloseDoor">
+            <summary>
+            Closes the door. See <see cref="P:SpaceEngineers.Game.ModAPI.Ingame.IMyParachute.Status"/> to get the current status.
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyParachute.ToggleDoor">
+            <summary>
+            Toggles the open state of this door. See <see cref="P:SpaceEngineers.Game.ModAPI.Ingame.IMyParachute.Status"/> to get the current status.
+            </summary>
+        </member>
+        <member name="T:SpaceEngineers.Game.ModAPI.Ingame.IMySafeZoneBlock">
+            <summary>
+            Safe zone block interface
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyShipMergeBlock.IsConnected">
+            <summary>
+            Gets if the merge block is connected to another one.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMySoundBlock.Volume">
+            <summary>
+            Gets or sets the volume level of sound
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMySoundBlock.Range">
+            <summary>
+            Gets or sets the range the sound is audible.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMySoundBlock.IsSoundSelected">
+            <summary>
+            Gets if a sound is currently selected.
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMySoundBlock.LoopPeriod">
+            <summary>
+            Gets or sets the loop period of a loopable sound, in seconds.
+            </summary>
+            <remarks>This value is ignored if the selected sound is not loopable.</remarks>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMySoundBlock.SelectedSound">
+            <summary>
+            Gets or sets the selected sound.
+            </summary>
+            <remarks>The sound can be selected either by using the unique hash name, or the user visible text.<p/>
+            Fetching the name will always return the unique hash name.
+            </remarks>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMySoundBlock.Play">
+            <summary>
+            Plays the currently selected sound.
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMySoundBlock.Stop">
+            <summary>
+            Stops the currently playing sound.
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMySoundBlock.GetSounds(System.Collections.Generic.List{System.String})">
+            <summary>
+            Gets a list of all sound IDs this block can use.
+            </summary>
+            <param name="sounds"></param>
+        </member>
+        <member name="T:SpaceEngineers.Game.ModAPI.Ingame.IMySpaceBall">
+            <summary>
+            Spaceball interface
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMySpaceBall.Friction">
+            <summary>
+            Ball friction
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMySpaceBall.Restitution">
+            <summary>
+            Ball restitution
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMySpaceBall.IsBroadcasting">
+            <summary>
+            Is broadcasting
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMySpaceBall.Broadcasting">
+            <summary>
+            Gets or sets broadcasting
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMySpaceBall.VirtualMass">
+            <summary>
+            Virtual mass of ball, in kg
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyTimerBlock.IsCountingDown">
+            <summary>
+            Gets if the timer block is active and counting down
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyTimerBlock.TriggerDelay">
+            <summary>
+            Gets or sets the countdown time, in seconds
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyTimerBlock.Silent">
+            <summary>
+            Gets or sets if the countdown is silent
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyTimerBlock.Trigger">
+            <summary>
+            Trigger immediately, skips countdown
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyTimerBlock.StartCountdown">
+            <summary>
+            Begin countdown
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.ModAPI.Ingame.IMyTimerBlock.StopCountdown">
+            <summary>
+            Stops current countdown
+            </summary>
+        </member>
+        <member name="P:SpaceEngineers.Game.ModAPI.Ingame.IMyVirtualMass.VirtualMass">
+            <summary>
+            Virtualmass weight
+            </summary>
+        </member>
+        <member name="F:SpaceEngineers.Game.World.MySpaceRespawnComponent.SpawnInfo.IdentityId">
+            <summary>
+            Identity id the algorithm should look friends for
+            </summary>
+        </member>
+        <member name="F:SpaceEngineers.Game.World.MySpaceRespawnComponent.SpawnInfo.Planet">
+            <summary>
+            Planet to spawn player on
+            </summary>
+        </member>
+        <member name="F:SpaceEngineers.Game.World.MySpaceRespawnComponent.SpawnInfo.CollisionRadius">
+            <summary>
+            Minimal clearance around the spawn area
+            </summary>
+        </member>
+        <member name="F:SpaceEngineers.Game.World.MySpaceRespawnComponent.SpawnInfo.PlanetDeployAltitude">
+            <summary>
+            Suggested altitude above the planet (specified above) surface
+            </summary>
+        </member>
+        <member name="F:SpaceEngineers.Game.World.MySpaceRespawnComponent.SpawnInfo.MinimalAirDensity">
+            <summary>
+            Minimal air density required at landing spot
+            </summary>
+        </member>
+        <member name="M:SpaceEngineers.Game.World.MySpaceRespawnComponent.GetSpawnPositionNearPlanet(SpaceEngineers.Game.World.MySpaceRespawnComponent.SpawnInfo@,VRageMath.Vector3D@,VRageMath.Vector3@,VRageMath.Vector3@)">
+            <summary>
+            Returns a position adjusted for planets that should be safe to spawn at given the radius and position.
+            </summary>
+            <param name="position">The position the object would like to spawn at.</param>
+            <param name="forward">(Out) The forward vector the object should spawn with.</param>
+            <param name="up">(Out) The up vector the object should spawn with.</param>
+        </member>
+        <member name="M:SpaceEngineers.Game.World.MySpaceRespawnComponent.GetSpawnPositionInSpace(SpaceEngineers.Game.World.MySpaceRespawnComponent.SpawnInfo,VRageMath.Vector3D@,VRageMath.Vector3@,VRageMath.Vector3@)">
+            <summary>
+            Returns a position that should be safe to spawn at given the radius and position.
+            </summary>
+            <param name="position">The position the object would like to spawn at.</param>
+            <param name="forward">(Out) The forward vector the object should spawn with.</param>
+            <param name="up">(Out) The up vector the object should spawn with.</param>
+        </member>
+    </members>
+</doc>

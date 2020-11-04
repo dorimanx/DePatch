@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProjectGuid>{FC3F1F94-7C4E-4323-B680-2D0DA82F3B52}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>DePatch</RootNamespace>
+    <AssemblyName>DePatch</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60DC8134-EBA5-43B8-BCC9-BB4BC16C2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\Dependency\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="HavokWrapper">
+      <HintPath>..\Dependency\HavokWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\Dependency\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="ProtoBuf.Net.Core">
+      <HintPath>..\Dependency\ProtoBuf.Net.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Sandbox.Common">
+      <HintPath>..\Dependency\Sandbox.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Sandbox.Game">
+      <HintPath>..\Dependency\Sandbox.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="SpaceEngineers.Game">
+      <HintPath>..\Dependency\SpaceEngineers.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Torch">
+      <HintPath>..\Dependency\Torch.dll</HintPath>
+    </Reference>
+    <Reference Include="Torch.API">
+      <HintPath>..\Dependency\Torch.API.dll</HintPath>
+    </Reference>
+    <Reference Include="Torch.Server">
+      <HintPath>..\Dependency\Torch.Server.exe</HintPath>
+    </Reference>
+    <Reference Include="VRage">
+      <HintPath>..\Dependency\VRage.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Game">
+      <HintPath>..\Dependency\VRage.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Library">
+      <HintPath>..\Dependency\VRage.Library.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Math">
+      <HintPath>..\Dependency\VRage.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DamageContract.cs" />
+    <Compile Include="DamageHandler.cs" />
+    <Compile Include="DamageNetwork.cs" />
+    <Compile Include="DeConfig.cs" />
+    <Compile Include="DefomationNetwork.cs" />
+    <Compile Include="DePatchPlugin.cs" />
+    <Compile Include="DeUpdater.cs" />
+    <Compile Include="DrillingMode.cs" />
+    <Compile Include="DrillSettings.cs" />
+    <Compile Include="Microsoft\CodeAnalysis\EmbeddedAttribute.cs" />
+    <Compile Include="MyBatteryFix.cs" />
+    <Compile Include="MyBeaconAlertPatch.cs" />
+    <Compile Include="MyCameraBlockPatch.cs" />
+    <Compile Include="MyCubeGridPatch.cs" />
+    <Compile Include="MyDrillDamageFix.cs" />
+    <Compile Include="MyGridDeformationPatch.cs" />
+    <Compile Include="MyMassBlockPatch.cs" />
+    <Compile Include="MyNewGridPatch.cs" />
+    <Compile Include="MyShipDrillParallelPatch.cs" />
+    <Compile Include="MyShipDrillStonePatch.cs" />
+    <Compile Include="MySpaceBallPatch.cs" />
+    <Compile Include="MyTimerBlockPatch.cs" />
+    <Compile Include="MyTurretPveDamageFix.cs" />
+    <Compile Include="MyVoxelDefenderPatch.cs" />
+    <Compile Include="MyVoxelsDestructionPatch.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PVE.cs" />
+    <Compile Include="PVEGrid.cs" />
+    <Compile Include="ReflectionUtils.cs" />
+    <Compile Include="SessionPatch.cs" />
+    <Compile Include="ShipGrinderPatch.cs" />
+    <Compile Include="ShipTool.cs" />
+    <Compile Include="ShipToolDeserializer.cs" />
+    <Compile Include="ShipToolSerializer.cs" />
+    <Compile Include="ShipWelderPatch.cs" />
+    <Compile Include="SyncGridDamageContract.cs" />
+    <Compile Include="System\Runtime\CompilerServices\NullableAttribute.cs" />
+    <Compile Include="System\Runtime\CompilerServices\NullableContextAttribute.cs" />
+    <Compile Include="ToolType.cs" />
+    <Compile Include="UserControl1.xaml.cs">
+      <DependentUpon>UserControl1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControl2.xaml.cs">
+      <DependentUpon>UserControl2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="VoxelDefenderV2.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="UserControl1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControl2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

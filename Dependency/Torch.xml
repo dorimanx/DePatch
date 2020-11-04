@@ -1,0 +1,2379 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Torch</name>
+    </assembly>
+    <members>
+        <member name="T:Torch.Collections.MtObservableCollection`2">
+            <summary>
+            Multithread safe, observable collection
+            </summary>
+            <typeparam name="TC">Collection type</typeparam>
+            <typeparam name="TV">Value type</typeparam>
+        </member>
+        <member name="M:Torch.Collections.MtObservableCollection`2.Add(`1)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableCollection`2.Clear">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableCollection`2.Contains(`1)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableCollection`2.CopyTo(`1[],System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableCollection`2.Remove(`1)">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Collections.MtObservableCollection`2.Count">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Collections.MtObservableCollection`2.IsReadOnly">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableCollection`2.CopyTo(System.Array,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Torch.Collections.MtObservableCollectionBase`1">
+            <summary>
+            Multithread safe, observable collection base type for event dispatch
+            </summary>
+            <typeparam name="TV">Value type</typeparam>
+        </member>
+        <member name="P:Torch.Collections.MtObservableCollectionBase`1.NotificationsEnabled">
+            <summary>
+            Should this observable collection actually dispatch events.
+            </summary>
+        </member>
+        <member name="M:Torch.Collections.MtObservableCollectionBase`1.Snapshot(System.Collections.Generic.List{`0})">
+            <summary>
+            Takes a snapshot of this collection.  Note: This call is only done when a read lock is acquired.
+            </summary>
+            <param name="old">Collection to clear and reuse, or null if none</param>
+            <returns>The snapshot</returns>
+        </member>
+        <member name="M:Torch.Collections.MtObservableCollectionBase`1.MarkSnapshotsDirty">
+            <summary>
+            Marks all snapshots taken of this collection as dirty.
+            </summary>
+        </member>
+        <member name="M:Torch.Collections.MtObservableCollectionBase`1.DeferredUpdate">
+            <summary>
+            Disposable that stops update signals and signals a full refresh when disposed.
+            </summary>
+        </member>
+        <member name="E:Torch.Collections.MtObservableCollectionBase`1.PropertyChanged">
+            <inheritdoc/>
+        </member>
+        <member name="E:Torch.Collections.MtObservableCollectionBase`1.CollectionChanged">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Collections.MtObservableCollectionBase`1.IsObserved">
+            <summary>
+            Is this collection observed by any listeners.
+            </summary>
+        </member>
+        <member name="T:Torch.Collections.MtObservableCollectionBase`1.ThreadView">
+            <summary>
+            Manages a snapshot to a collection and dispatches enumerators from that snapshot.
+            </summary>
+        </member>
+        <member name="F:Torch.Collections.MtObservableCollectionBase`1.ThreadView._snapshotVersion">
+            <summary>
+            The <see cref="!:MtObservableCollection&lt;TC,TV&gt;._version"/> of the <see cref="F:Torch.Collections.MtObservableCollectionBase`1.ThreadView._snapshot"/>
+            </summary>
+        </member>
+        <member name="F:Torch.Collections.MtObservableCollectionBase`1.ThreadView._snapshotRefCount">
+            <summary>
+            Number of strong references to the value pointed to be <see cref="F:Torch.Collections.MtObservableCollectionBase`1.ThreadView._snapshot"/>
+            </summary>
+        </member>
+        <member name="T:Torch.Collections.MtObservableCollectionBase`1.ThreadView.Enumerator">
+            <summary>
+            Borrows a snapshot from a <see cref="T:Torch.Collections.MtObservableCollectionBase`1.ThreadView"/> and provides an enumerator.
+            Once <see cref="M:Torch.Collections.MtObservableCollectionBase`1.ThreadView.Enumerator.Dispose"/> is called the read lock is released.
+            </summary>
+        </member>
+        <member name="M:Torch.Collections.MtObservableCollectionBase`1.GetEnumerator">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableCollectionBase`1.System#Collections#IEnumerable#GetEnumerator">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableCollectionBase`1.CopyTo(System.Array,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableCollectionBase`1.Add(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableCollectionBase`1.Clear">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableCollectionBase`1.Contains(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableCollectionBase`1.CopyTo(`0[],System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableCollectionBase`1.Remove(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Collections.MtObservableCollectionBase`1.Count">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Collections.MtObservableCollectionBase`1.IsReadOnly">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Collections.MtObservableCollectionBase`1.System#Collections#ICollection#SyncRoot">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Collections.MtObservableCollectionBase`1.System#Collections#ICollection#IsSynchronized">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Collections.MtObservableCollectionBase`1.System#Collections#ICollection#Count">
+            <inheritdoc/>
+        </member>
+        <member name="T:Torch.Collections.MtObservableSortedDictionary`2">
+            <summary>
+            Multithread safe observable dictionary
+            </summary>
+            <typeparam name="TK">Key type</typeparam>
+            <typeparam name="TV">Value type</typeparam>
+        </member>
+        <member name="M:Torch.Collections.MtObservableSortedDictionary`2.#ctor(System.Collections.Generic.IComparer{`0})">
+            <summary>
+            Creates an empty observable dictionary
+            </summary>
+        </member>
+        <member name="M:Torch.Collections.MtObservableSortedDictionary`2.Snapshot(System.Collections.Generic.List{System.Collections.Generic.KeyValuePair{`0,`1}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableSortedDictionary`2.CopyTo(System.Array,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Collections.MtObservableSortedDictionary`2.Count">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Collections.MtObservableSortedDictionary`2.IsReadOnly">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableSortedDictionary`2.Add(System.Collections.Generic.KeyValuePair{`0,`1})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableSortedDictionary`2.Clear">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableSortedDictionary`2.Contains(System.Collections.Generic.KeyValuePair{`0,`1})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableSortedDictionary`2.CopyTo(System.Collections.Generic.KeyValuePair{`0,`1}[],System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableSortedDictionary`2.Remove(System.Collections.Generic.KeyValuePair{`0,`1})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableSortedDictionary`2.ContainsKey(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableSortedDictionary`2.Add(`0,`1)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableSortedDictionary`2.Remove(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableSortedDictionary`2.TryGetValue(`0,`1@)">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Collections.MtObservableSortedDictionary`2.Item(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Collections.MtObservableSortedDictionary`2.Keys">
+            <inheritdoc cref="P:System.Collections.Generic.IDictionary`2.Keys"/>
+        </member>
+        <member name="P:Torch.Collections.MtObservableSortedDictionary`2.Values">
+            <inheritdoc cref="P:System.Collections.Generic.IDictionary`2.Values"/>
+        </member>
+        <member name="T:Torch.Collections.MtObservableEvent`2">
+            <summary>
+            Event that invokes handlers registered by dispatchers on dispatchers.
+            </summary>
+            <typeparam name="TEvtArgs">Event argument type</typeparam>
+            <typeparam name="TEvtHandle">Event handler delegate type</typeparam>
+        </member>
+        <member name="P:Torch.Collections.MtObservableEvent`2.IsObserved">
+            <summary>
+            Determines if this event has an observers.
+            </summary>
+        </member>
+        <member name="M:Torch.Collections.MtObservableEvent`2.Raise(System.Object,`0)">
+            <summary>
+            Raises this event for the given sender, with the given args
+            </summary>
+            <param name="sender">sender</param>
+            <param name="args">args</param>
+        </member>
+        <member name="M:Torch.Collections.MtObservableEvent`2.Add(`1)">
+            <summary>
+            Adds the given event handler.
+            </summary>
+            <param name="evt"></param>
+        </member>
+        <member name="M:Torch.Collections.MtObservableEvent`2.Remove(`1)">
+            <summary>
+            Removes the given event handler
+            </summary>
+            <param name="evt"></param>
+        </member>
+        <member name="T:Torch.Collections.MtObservableList`1">
+            <summary>
+            Multithread safe, observable list
+            </summary>
+            <typeparam name="T">Value type</typeparam>
+        </member>
+        <member name="M:Torch.Collections.MtObservableList`1.#ctor">
+            <summary>
+            Initializes a new instance of the MtObservableList class that is empty and has the default initial capacity.
+            </summary>
+        </member>
+        <member name="M:Torch.Collections.MtObservableList`1.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the MtObservableList class that is empty and has the specified initial capacity.
+            </summary>
+            <param name="capacity"></param>
+        </member>
+        <member name="M:Torch.Collections.MtObservableList`1.IndexOf(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableList`1.Insert(System.Int32,`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableList`1.RemoveAt(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Collections.MtObservableList`1.Item(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableList`1.RemoveWhere(System.Func{`0,System.Boolean})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableList`1.Sort``1(System.Func{`0,``0},System.Collections.Generic.IComparer{``0})">
+            <summary>
+            Sorts the list using the given selector and comparer./>
+            </summary>
+        </member>
+        <member name="M:Torch.Collections.MtObservableList`1.Sort(System.Collections.Generic.IComparer{`0})">
+            <summary>
+            Sorts the list using the given comparer./>
+            </summary>
+        </member>
+        <member name="M:Torch.Collections.MtObservableList`1.BinarySearch(`0,System.Collections.Generic.IComparer{`0})">
+            <summary>
+            Searches the entire list for an element using the specified comparer and returns the zero-based index of the element.
+            </summary>
+            <param name="item"></param>
+            <param name="comparer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Torch.Collections.MtObservableList`1.System#Collections#IList#Add(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableList`1.System#Collections#IList#Insert(System.Int32,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableList`1.System#Collections#IList#Remove(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Collections.MtObservableList`1.System#Collections#IList#Item(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Collections.MtObservableList`1.System#Collections#IList#IsFixedSize">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.MtObservableList`1.Move(System.Int32,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Torch.Collections.TransformComparer`2">
+            <summary>
+            Comparer that uses a delegate to select the key to compare on.
+            </summary>
+            <typeparam name="TIn">Input to this comparer</typeparam>
+            <typeparam name="TCompare">Type of comparison key</typeparam>
+        </member>
+        <member name="M:Torch.Collections.TransformComparer`2.#ctor(System.Func{`0,`1},System.Collections.Generic.IComparer{`1})">
+            <summary>
+            Creates a new transforming comparer that uses the given key selector, and the given key comparer.
+            </summary>
+            <param name="transform">Key selector</param>
+            <param name="comparer">Key comparer</param>
+        </member>
+        <member name="M:Torch.Collections.TransformComparer`2.Compare(`0,`0)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Torch.Collections.TransformEnumerator`2">
+            <summary>
+            Enumerator that transforms from one enumeration into another.
+            </summary>
+            <typeparam name="TIn">Input type</typeparam>
+            <typeparam name="TOut">Output type</typeparam>
+        </member>
+        <member name="M:Torch.Collections.TransformEnumerator`2.#ctor(System.Collections.Generic.IEnumerator{`0},System.Func{`0,`1})">
+            <summary>
+            Creates a new transform enumerator with the given transform function
+            </summary>
+            <param name="input">Input to proxy enumerator</param>
+            <param name="transform">Transform function</param>
+        </member>
+        <member name="M:Torch.Collections.TransformEnumerator`2.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.TransformEnumerator`2.MoveNext">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.TransformEnumerator`2.Reset">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Collections.TransformEnumerator`2.Current">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Collections.TransformEnumerator`2.System#Collections#IEnumerator#Current">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Collections.RollingAverage.Add(System.Double)">
+            <summary>
+            Adds a new value and removes the oldest if necessary.
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:Torch.Collections.RollingAverage.Clear">
+            <summary>
+            Resets the rolling average.
+            </summary>
+        </member>
+        <member name="M:Torch.Commands.ConsoleCommandContext.#ctor(Torch.API.ITorchBase,Torch.API.Plugins.ITorchPlugin,System.UInt64,System.String,System.Collections.Generic.List{System.String})">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.Commands.ConsoleCommandContext.Respond(System.String,System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.Commands.CategoryAttribute.#ctor(System.String)">
+            <summary>
+            Provides information about where to place commands in the command tree. Supports space-delimited hierarchy.
+            </summary>
+            <param name="category"></param>
+        </member>
+        <member name="M:Torch.Commands.CommandAttribute.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Provides information about the command. Supports space-delimited hierarchy.
+            </summary>
+        </member>
+        <member name="P:Torch.Commands.CommandContext.Plugin">
+            <summary>
+            The plugin that added this command.
+            </summary>
+        </member>
+        <member name="P:Torch.Commands.CommandContext.Torch">
+            <summary>
+            The current Torch instance.
+            </summary>
+        </member>
+        <member name="P:Torch.Commands.CommandContext.Player">
+            <summary>
+            The player who ran the command, or null if the server sent it.
+            </summary>
+        </member>
+        <member name="P:Torch.Commands.CommandContext.SentBySelf">
+            <summary>
+            Was this message sent by this program.
+            </summary>
+        </member>
+        <member name="P:Torch.Commands.CommandContext.Args">
+            <summary>
+            The command arguments split by spaces and quotes. Ex. "this is" a command -> {this is, a, command}
+            </summary>
+        </member>
+        <member name="P:Torch.Commands.CommandContext.RawArgs">
+            <summary>
+            The non-split argument string.
+            </summary>
+        </member>
+        <member name="M:Torch.Commands.CommandManager.HandleCommandFromServer(System.String,System.Action{Torch.API.Managers.TorchChatMessage})">
+            <summary>
+            Invokes the given command string as the server, subscribing to responses using the given callback.
+            </summary>
+            <returns>true if the command was run, false if not</returns>
+        </member>
+        <member name="M:Torch.Commands.CommandTree.GetNode(System.Collections.Generic.List{System.String},Torch.Commands.CommandTree.CommandNode@)">
+            <summary>
+            Get a command node from the tree.
+            </summary>
+            <param name="path">Path to the command node.</param>
+            <param name="commandNode"></param>
+            <returns>The index of the first argument in the path or -1 if the node doesn't exist.</returns>
+        </member>
+        <member name="M:Torch.Commands.TorchCommands.Save">
+            <summary>
+            Initializes a save of the game.
+            Caller id defaults to 0 in the case of triggering the chat command from server.
+            </summary>
+        </member>
+        <member name="T:Torch.Event.EventShimAttribute">
+            <summary>
+            Tagging class used to indicate that the class should be treated as an event shim.
+            Only works for core assemblies loaded by Torch (non-plugins).
+            </summary>
+            <remarks>
+            Event shims should be singleton, and have one (or more) fields that are of type <see cref="T:Torch.Event.EventList`1"/>.
+            </remarks>
+        </member>
+        <member name="T:Torch.Event.EventList`1">
+            <summary>
+            Represents an ordered list of callbacks.
+            </summary>
+            <typeparam name="T">Event type</typeparam>
+        </member>
+        <member name="T:Torch.Event.EventList`1.DelEventHandler">
+            <summary>
+            Delegate type for this event list
+            </summary>
+            <param name="evt">Event</param>
+        </member>
+        <member name="M:Torch.Event.EventList`1.AddHandler(System.Reflection.MethodInfo,Torch.API.Event.IEventHandler)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Event.EventList`1.RemoveHandlers(Torch.API.Event.IEventHandler)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Event.EventList`1.RaiseEvent(`0@)">
+            <summary>
+            Raises this event for all event handlers, passing the reference to all of them
+            </summary>
+            <param name="evt">event to raise</param>
+        </member>
+        <member name="M:Torch.Event.EventList`1.EventHandlerDataComparer.Compare(Torch.Event.EventList{`0}.EventHandlerData,Torch.Event.EventList{`0}.EventHandlerData)">
+            <inheritdoc cref="M:System.Collections.Generic.IComparer`1.Compare(`0,`0)"/>
+            <remarks>
+            This sorts event handlers with ascending priority order.
+            </remarks>
+        </member>
+        <member name="T:Torch.Event.EventManager">
+            <summary>
+            Manager class responsible for managing registration and dispatching of events.
+            </summary>
+        </member>
+        <member name="M:Torch.Event.EventManager.EventHandlers(System.Type)">
+            <summary>
+            Gets all event handler methods declared by the given type and its base types.
+            </summary>
+            <param name="exploreType">Type to explore</param>
+            <returns>All event handler methods</returns>
+        </member>
+        <member name="M:Torch.Event.EventManager.RegisterHandlerInternal(Torch.API.Event.IEventHandler)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Event.EventManager.UnregisterHandlerInternal(Torch.API.Event.IEventHandler)">
+            <summary>
+            Unregisters all handlers owned by the given instance
+            </summary>
+            <param name="instance">Instance</param>
+        </member>
+        <member name="M:Torch.Event.EventManager.#ctor(Torch.API.ITorchBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Event.EventManager.RegisterHandler(Torch.API.Event.IEventHandler)">
+            <summary>
+            Registers all event handler methods contained in the given instance 
+            </summary>
+            <param name="handler">Instance to register</param>
+            <returns><b>true</b> if added, <b>false</b> otherwise</returns>
+        </member>
+        <member name="M:Torch.Event.EventManager.UnregisterHandler(Torch.API.Event.IEventHandler)">
+            <summary>
+            Unregisters all event handler methods contained in the given instance 
+            </summary>
+            <param name="handler">Instance to unregister</param>
+            <returns><b>true</b> if removed, <b>false</b> otherwise</returns>
+        </member>
+        <member name="M:Torch.Event.EventManager.UnregisterAllHandlers(System.Reflection.Assembly,System.Action{Torch.API.Event.IEventHandler})">
+            <summary>
+            Unregisters all handlers owned by the given assembly.
+            </summary>
+            <param name="asm">Assembly to unregister</param>
+            <param name="callback">Optional callback invoked before a handler is unregistered.  Ignored if null</param>
+            <returns>the number of handlers that were unregistered</returns>
+        </member>
+        <member name="T:Torch.Event.IEventList">
+            <summary>
+            Represents the interface for adding and removing from an ordered list of callbacks.
+            </summary>
+        </member>
+        <member name="M:Torch.Event.IEventList.AddHandler(System.Reflection.MethodInfo,Torch.API.Event.IEventHandler)">
+            <summary>
+            Adds an event handler for the given method, on the given instance.
+            </summary>
+            <param name="method">Handler method</param>
+            <param name="instance">Instance to invoke the handler on</param>
+        </member>
+        <member name="M:Torch.Event.IEventList.RemoveHandlers(Torch.API.Event.IEventHandler)">
+            <summary>
+            Removes all event handlers invoked on the given instance.
+            </summary>
+            <param name="instance">Instance to remove event handlers for</param>
+            <returns>The number of event handlers removed</returns>
+        </member>
+        <member name="M:Torch.Managers.ChatManager.ChatManagerClient.#ctor(Torch.API.ITorchBase)">
+            <inheritdoc />
+        </member>
+        <member name="E:Torch.Managers.ChatManager.ChatManagerClient.MessageRecieved">
+            <inheritdoc />
+        </member>
+        <member name="E:Torch.Managers.ChatManager.ChatManagerClient.MessageSending">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.Managers.ChatManager.ChatManagerClient.SendMessageAsSelf(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.Managers.ChatManager.ChatManagerClient.DisplayMessageOnSelf(System.String,System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.Managers.ChatManager.ChatManagerClient.Attach">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Managers.ChatManager.ChatManagerClient.Detach">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Managers.ChatManager.ChatManagerClient.OfflineMessageProcessor(Torch.API.Managers.TorchChatMessage)">
+            <summary>
+            Callback used to process offline messages.
+            </summary>
+            <param name="msg"></param>
+            <returns>true if the message was consumed</returns>
+        </member>
+        <member name="P:Torch.Managers.ChatManager.ChatManagerServer.MutedUsers">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.Managers.ChatManager.ChatManagerServer.#ctor(Torch.API.ITorchBase)">
+            <inheritdoc />
+        </member>
+        <member name="E:Torch.Managers.ChatManager.ChatManagerServer.MessageProcessing">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.Managers.ChatManager.ChatManagerServer.MuteUser(System.UInt64)">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.Managers.ChatManager.ChatManagerServer.UnmuteUser(System.UInt64)">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.Managers.ChatManager.ChatManagerServer.SendMessageAsOther(System.UInt64,System.String,System.UInt64)">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.Managers.ChatManager.ChatManagerServer.SendMessageAsOther(System.String,System.String,System.String,System.UInt64)">
+            <summary>
+            Backwards compatibility
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.ChatManager.ChatManagerServer.OfflineMessageProcessor(Torch.API.Managers.TorchChatMessage)">
+            <inheritdoc />
+        </member>
+        <member name="T:Torch.Managers.DependencyManager.ManagerInstance">
+            <summary>
+            Represents a registered instance of a manager.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.DependencyManager.ManagerInstance.UnsolvedDependencies">
+            <summary>
+            Used by <see cref="T:Torch.Managers.DependencyManager"/> internally to topologically sort the dependency list.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.DependencyManager.AddManager(Torch.API.Managers.IManager)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Managers.DependencyManager.ClearManagers">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Managers.DependencyManager.RemoveManager(Torch.API.Managers.IManager)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Managers.DependencyManager.Attach">
+            <summary>
+            Initializes the dependency manager, and all its registered managers.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.DependencyManager.Detach">
+            <summary>
+            Disposes the dependency manager, and all its registered managers.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.DependencyManager.AttachOrder">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Managers.DependencyManager.DetachOrder">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Managers.DependencyManager.GetManager(System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.AssemblyMemory.GetMethodBodyStart(System.Reflection.MethodBase)">
+            <summary>
+            Gets the address, in RAM, where the body of a method starts.
+            </summary>
+            <param name="method">Method to find the start of</param>
+            <returns>Address of the method's start</returns>
+        </member>
+        <member name="F:Torch.Managers.PatchManager.AssemblyMemory.MODRM_MOD_DIRECT">
+            Direct register addressing mode.  (Jump directly to register)
+        </member>
+        <member name="F:Torch.Managers.PatchManager.AssemblyMemory.REX_W">
+            Long-mode prefix (64-bit operand)
+        </member>
+        <member name="F:Torch.Managers.PatchManager.AssemblyMemory.MOV_R0">
+            Moves a 16/32/64 operand into register i when opcode is (MOV_R0+i)
+        </member>
+        <member name="F:Torch.Managers.PatchManager.AssemblyMemory.OPCODE_EXTENSION_JMP">
+            Opcode extension used with <see cref="F:Torch.Managers.PatchManager.AssemblyMemory.EXT"/> for the JMP opcode.
+        </member>
+        <member name="M:Torch.Managers.PatchManager.AssemblyMemory.ReadMemory(System.Int64,System.Int32)">
+            <summary>
+            Reads a byte array from a memory location
+            </summary>
+            <param name="memory">Address to read from</param>
+            <param name="bytes">Number of bytes to read</param>
+            <returns>The bytes that were read</returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.AssemblyMemory.WriteMemory(System.Int64,System.Byte[])">
+            <summary>
+            Writes a byte array to a memory location.
+            </summary>
+            <param name="memory">Address to write to</param>
+            <param name="bytes">Data to write</param>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.AssemblyMemory.WriteJump(System.Int64,System.Int64)">
+            <summary>
+            Writes an x64 assembly jump instruction at the given address.
+            </summary>
+            <param name="memory">Address to write the instruction at</param>
+            <param name="jumpTarget">Target address of the jump</param>
+            <returns>The bytes that were overwritten</returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.EmitExtensions.SetToDefault(Torch.Managers.PatchManager.MSIL.MsilLocal)">
+            <summary>
+            Sets the given local to its default value in the given IL generator.
+            </summary>
+            <param name="local">Local to set to default</param>
+            <returns>Instructions</returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.EmitExtensions.EmitDereference(System.Type)">
+            <summary>
+            Emits a dereference for the given type.
+            </summary>
+            <param name="type">Type to dereference</param>
+            <returns>Derference instruction</returns>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilInstruction">
+            <summary>
+                Represents a single MSIL instruction, and its operand
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstruction.#ctor(System.Reflection.Emit.OpCode)">
+            <summary>
+                Creates a new instruction with the given opcode.
+            </summary>
+            <param name="opcode">Opcode</param>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MSIL.MsilInstruction.OpCode">
+            <summary>
+                Opcode of this instruction
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MSIL.MsilInstruction.Offset">
+            <summary>
+                Raw memory offset of this instruction; optional.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MSIL.MsilInstruction.Operand">
+            <summary>
+                The operand for this instruction, or null.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MSIL.MsilInstruction.Labels">
+            <summary>
+                Labels pointing to this instruction.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MSIL.MsilInstruction.TryCatchOperation">
+            <summary>
+            The try catch operation that is performed here.
+            </summary>
+        </member>
+        <member name="F:Torch.Managers.PatchManager.MSIL.MsilInstruction.TryCatchOperations">
+            <summary>
+            The try catch operations performed here, in order from first to last.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstruction.InlineValue``1(``0)">
+            <summary>
+                Sets the inline value for this instruction.
+            </summary>
+            <typeparam name="T">The type of the inline constraint</typeparam>
+            <param name="o">Value</param>
+            <returns>This instruction</returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstruction.CopyWith(System.Reflection.Emit.OpCode)">
+            <summary>
+            Makes a copy of the instruction with a new opcode.
+            </summary>
+            <param name="newOpcode">The new opcode</param>
+            <returns>The copy</returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstruction.LabelWith(Torch.Managers.PatchManager.MSIL.MsilLabel)">
+            <summary>
+            Adds the given label to this instruction
+            </summary>
+            <param name="label">Label to add</param>
+            <returns>this instruction</returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstruction.InlineTarget(Torch.Managers.PatchManager.MSIL.MsilLabel)">
+            <summary>
+                Sets the inline branch target for this instruction.
+            </summary>
+            <param name="label">Target to jump to</param>
+            <returns>This instruction</returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstruction.ToString">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstruction.StackChange">
+            <summary>
+            Estimates the stack delta for this instruction.
+            </summary>
+            <returns>Stack delta</returns>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MSIL.MsilInstruction.MaxBytes">
+            <summary>
+            Gets the maximum amount of space this instruction will use.
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions">
+            <summary>
+            Various methods to make composing MSIL easier
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.IsLocalLoad(Torch.Managers.PatchManager.MSIL.MsilInstruction)">
+            <summary>
+            Is this instruction a local load-by-value instruction.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.IsLocalLoadByRef(Torch.Managers.PatchManager.MSIL.MsilInstruction)">
+            <summary>
+            Is this instruction a local load-by-reference instruction.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.IsLocalStore(Torch.Managers.PatchManager.MSIL.MsilInstruction)">
+            <summary>
+            Is this instruction a local store instruction.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.IsLocalLoad(System.Reflection.Emit.OpCode)">
+            <summary>
+            Is this instruction a local load-by-value instruction.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.IsLocalLoadByRef(System.Reflection.Emit.OpCode)">
+            <summary>
+            Is this instruction a local load-by-reference instruction.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.IsLocalStore(System.Reflection.Emit.OpCode)">
+            <summary>
+            Is this instruction a local store instruction.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.GetReferencedLocal(Torch.Managers.PatchManager.MSIL.MsilInstruction)">
+            <summary>
+            For a local referencing opcode, get the local it is referencing.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.AsValueLoad(Torch.Managers.PatchManager.MSIL.MsilLocal)">
+            <summary>
+            Gets an instruction representing a load-by-value from the given local.
+            </summary>
+            <param name="local">Local to load</param>
+            <returns>Loading instruction</returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.AsValueStore(Torch.Managers.PatchManager.MSIL.MsilLocal)">
+            <summary>
+            Gets an instruction representing a store-by-value to the given local.
+            </summary>
+            <param name="local">Local to write to</param>
+            <returns>Loading instruction</returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.AsReferenceLoad(Torch.Managers.PatchManager.MSIL.MsilLocal)">
+            <summary>
+            Gets an instruction representing a load-by-reference from the given local.
+            </summary>
+            <param name="local">Local to load</param>
+            <returns>Loading instruction</returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.IsArgumentLoad(Torch.Managers.PatchManager.MSIL.MsilInstruction)">
+            <summary>
+            Is this instruction an argument load-by-value instruction.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.IsArgumentLoadByRef(Torch.Managers.PatchManager.MSIL.MsilInstruction)">
+            <summary>
+            Is this instruction an argument load-by-reference instruction.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.IsArgumentStore(Torch.Managers.PatchManager.MSIL.MsilInstruction)">
+            <summary>
+            Is this instruction an argument store instruction.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.GetReferencedArgument(Torch.Managers.PatchManager.MSIL.MsilInstruction)">
+            <summary>
+            For an argument referencing opcode, get the index of the local it is referencing.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.AsValueLoad(Torch.Managers.PatchManager.MSIL.MsilArgument)">
+            <summary>
+            Gets an instruction representing a load-by-value from the given argument.
+            </summary>
+            <param name="argument">argument to load</param>
+            <returns>Load instruction</returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.AsValueStore(Torch.Managers.PatchManager.MSIL.MsilArgument)">
+            <summary>
+            Gets an instruction representing a store-by-value to the given argument.
+            </summary>
+            <param name="argument">argument to write to</param>
+            <returns>Store instruction</returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.AsReferenceLoad(Torch.Managers.PatchManager.MSIL.MsilArgument)">
+            <summary>
+            Gets an instruction representing a load-by-reference from the given argument.
+            </summary>
+            <param name="argument">argument to load</param>
+            <returns>Reference load instruction</returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.IsConstIntLoad(Torch.Managers.PatchManager.MSIL.MsilInstruction)">
+            <summary>
+            Determines if this instruction is a constant int load instruction.
+            </summary>
+            <param name="m">Instruction</param>
+            <returns>True if this instruction pushes a constant int onto the stack</returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilInstructionExtensions.GetConstInt(Torch.Managers.PatchManager.MSIL.MsilInstruction)">
+            <summary>
+            Gets the constant int this instruction pushes onto the stack.
+            </summary>
+            <param name="m">Instruction</param>
+            <returns>The constant int</returns>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilLabel">
+            <summary>
+                Represents an abstract label, identified by its reference.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilLabel.#ctor">
+            <summary>
+                Creates an empty label the allocates a new <see cref="T:System.Reflection.Emit.Label" /> when requested.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilLabel.#ctor(System.Reflection.Emit.Label)">
+            <summary>
+                Creates a label the always supplies the given <see cref="T:System.Reflection.Emit.Label" />
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilLabel.#ctor(Torch.Managers.PatchManager.Transpile.LoggingIlGenerator,System.Reflection.Emit.Label)">
+            <summary>
+                Creates a label that supplies the given <see cref="T:System.Reflection.Emit.Label" /> when a label for the given generator is requested,
+                otherwise it creates a new label.
+            </summary>
+            <param name="generator">Generator to register the label on</param>
+            <param name="label">Label to register</param>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilLabel.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilArgument">
+            <summary>
+            Represents metadata about a method's parameter
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MSIL.MsilArgument.Position">
+            <summary>
+            The positon of this argument.  Note, if the method is static, index 0 is the instance.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MSIL.MsilArgument.Type">
+            <summary>
+            The type of this parameter, or null if unknown.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MSIL.MsilArgument.Name">
+            <summary>
+            The name of this parameter, or null if unknown.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilArgument.#ctor(System.Reflection.ParameterInfo)">
+            <summary>
+            Creates an argument from the given parameter info.
+            </summary>
+            <param name="local">parameter info to use</param>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilArgument.#ctor(System.Int32)">
+            <summary>
+            Creates an empty argument reference with the given position.
+            </summary>
+            <param name="position">The argument's position</param>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilArgument.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilLocal">
+            <summary>
+            Represents metadata about a method's local
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MSIL.MsilLocal.Index">
+            <summary>
+            The index of this local.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MSIL.MsilLocal.Type">
+            <summary>
+            The type of this local, or null if unknown.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MSIL.MsilLocal.Name">
+            <summary>
+            The name of this local, or null if unknown.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilLocal.#ctor(System.Int32)">
+            <summary>
+            Creates an empty local reference with the given index.
+            </summary>
+            <param name="index">The local's index</param>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilLocal.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilOperand">
+            <summary>
+                Represents an operand for a MSIL instruction
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MSIL.MsilOperand.Instruction">
+            <summary>
+                Instruction this operand is associated with
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MSIL.MsilOperand.MaxBytes">
+            <summary>
+            Gets the maximum amount of space this operand will use.
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilOperandBrTarget">
+            <summary>
+                Represents a branch target operand.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MSIL.MsilOperandBrTarget.Target">
+            <summary>
+                Branch target
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilOperandBrTarget.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilOperandInline`1">
+            <summary>
+                Represents an inline value
+            </summary>
+            <typeparam name="T">The type of the inline value</typeparam>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MSIL.MsilOperandInline`1.Value">
+            <summary>
+                Inline value
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MSIL.MsilOperandInline`1.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilOperandInline">
+            <summary>
+                Registry of different inline operand types
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilOperandInline.MsilOperandInt32">
+            <summary>
+                Inline integer
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilOperandInline.MsilOperandSingle">
+            <summary>
+                Inline single
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilOperandInline.MsilOperandDouble">
+            <summary>
+                Inline double
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilOperandInline.MsilOperandInt64">
+            <summary>
+                Inline long
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilOperandInline.MsilOperandString">
+            <summary>
+                Inline string
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilOperandInline.MsilOperandSignature">
+            <summary>
+                Inline CLR signature
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilOperandInline.MsilOperandArgument">
+            <summary>
+                Inline argument reference
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilOperandInline.MsilOperandLocal">
+            <summary>
+                Inline local variable reference
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilOperandInline.MsilOperandReflected`1">
+            <summary>
+                Inline <see cref="T:System.Type" /> or <see cref="T:System.Reflection.MemberInfo" />
+            </summary>
+            <typeparam name="TY">Actual member type</typeparam>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilOperandSwitch">
+            <summary>
+                Represents the operand for an inline switch statement
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MSIL.MsilOperandSwitch.Labels">
+            <summary>
+                The target labels for this switch
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilTryCatchOperationType">
+            <summary>
+            Represents a try/catch block operation type
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MSIL.MsilTryCatchOperation">
+            <summary>
+            Represents a try catch operation.
+            </summary>
+        </member>
+        <member name="F:Torch.Managers.PatchManager.MSIL.MsilTryCatchOperation.Type">
+            <summary>
+            Operation type
+            </summary>
+        </member>
+        <member name="F:Torch.Managers.PatchManager.MSIL.MsilTryCatchOperation.CatchType">
+            <summary>
+            Type caught by this operation, or null if none.
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MethodRewritePattern">
+            <summary>
+            Defines the different components used to rewrite a method.
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MethodRewritePattern.MethodPriorityCompare">
+            <summary>
+            Sorts methods so that their <see cref="T:Torch.Managers.PatchManager.PatchPriorityAttribute"/> priority is in descending order.  Assumes priority zero if no attribute exists.
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.MethodRewritePattern.MethodRewriteSet">
+            <summary>
+            Stores an set of methods according to a certain order.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MethodRewritePattern.MethodRewriteSet.#ctor(Torch.Managers.PatchManager.MethodRewritePattern.MethodRewriteSet)">
+            <summary>
+            </summary>
+            <param name="backingSet">The set to track changes on</param>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MethodRewritePattern.MethodRewriteSet.Add(System.Reflection.MethodInfo)">
+            <summary>
+            Adds the given method to this set if it doesn't already exist in the tracked set and this set.
+            </summary>
+            <param name="m">Method to add</param>
+            <returns>true if added</returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MethodRewritePattern.MethodRewriteSet.Remove(System.Reflection.MethodInfo)">
+            <summary>
+            Removes the given method from this set, and from the tracked set if it existed in this set.
+            </summary>
+            <param name="m">Method to remove</param>
+            <returns>true if removed</returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MethodRewritePattern.MethodRewriteSet.RemoveAll">
+            <summary>
+            Removes all methods from this set, and their matches in the tracked set.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MethodRewritePattern.MethodRewriteSet.Count">
+            <summary>
+            Gets the number of methods stored in this set.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MethodRewritePattern.MethodRewriteSet.GetEnumerator">
+            <summary>
+            Gets an ordered enumerator over this set
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MethodRewritePattern.MethodRewriteSet.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Gets an ordered enumerator over this set
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MethodRewritePattern.Prefixes">
+            <summary>
+            Methods run before the original method is run.  If they return false the original method is skipped.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MethodRewritePattern.Transpilers">
+            <summary>
+            Methods capable of accepting one <see cref="T:System.Collections.Generic.IEnumerable`1"/> and returing another, modified.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MethodRewritePattern.PostTranspilers">
+            <summary>
+            Methods capable of accepting one <see cref="T:System.Collections.Generic.IEnumerable`1"/> and returing another, modified.
+            Runs after prefixes, suffixes, and normal transpilers are applied.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MethodRewritePattern.Suffixes">
+            <summary>
+            Methods run after the original method has run.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MethodRewritePattern.PrintMsil">
+            <summary>
+            Should the resulting MSIL of the transpile operation be printed.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MethodRewritePattern.PrintMode">
+            <summary>
+            Types of IL to print to log
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MethodRewritePattern.DumpTarget">
+            <summary>
+            File to dump the emitted MSIL to.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.MethodRewritePattern.DumpMode">
+            <summary>
+            Types of IL to dump to file
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.MethodRewritePattern.#ctor(Torch.Managers.PatchManager.MethodRewritePattern)">
+            <summary>
+            
+            </summary>
+            <param name="parentPattern">The pattern to track changes on, or null</param>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.PatchShimAttribute">
+            <summary>
+            Tagging class used to indicate that the class should be treated as supplying patch rules.
+            Only works for core assemblies loaded by Torch (non-plugins).
+            </summary>
+            <remarks>
+            Patch shims should be singleton, and have one method of signature <i>void Patch(PatchContext)</i>
+            </remarks>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.PatchContext">
+            <summary>
+            Represents a set of common patches that can all be reversed in a single step.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.PatchContext.GetPattern(System.Reflection.MethodBase)">
+            <summary>
+            Gets the rewrite pattern used to tracking changes in this context, creating one if it doesn't exist.
+            </summary>
+            <param name="method">Method to get the pattern for</param>
+            <returns></returns>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.PatchContext.PatchedMethods">
+            <summary>
+            Gets all methods that this context has patched
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.PatchContext.RemoveAll">
+            <summary>
+            Removes all patches in this context
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.PatchManager">
+            <summary>
+            Applies and removes patches from the IL of methods.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.PatchManager.#ctor(Torch.API.ITorchBase)">
+            <summary>
+            Creates a new patch manager.
+            </summary>
+            <param name="torchInstance"></param>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.PatchManager.GetPatternInternal(System.Reflection.MethodBase)">
+            <inheritdoc cref="M:Torch.Managers.PatchManager.PatchManager.GetPattern(System.Reflection.MethodBase)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.PatchManager.GetPattern(System.Reflection.MethodBase)">
+            <summary>
+            Gets the rewrite pattern for the given method, creating one if it doesn't exist.
+            </summary>
+            <param name="method">Method to get the pattern for</param>
+            <returns></returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.PatchManager.AcquireContext">
+            <summary>
+            Creates a new <see cref="T:Torch.Managers.PatchManager.PatchContext"/> used for tracking changes.  A call to <see cref="M:Torch.Managers.PatchManager.PatchManager.Commit"/> will apply the patches.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.PatchManager.FreeContext(Torch.Managers.PatchManager.PatchContext)">
+            <summary>
+            Frees the given context, and unregister all patches from it.  A call to <see cref="M:Torch.Managers.PatchManager.PatchManager.Commit"/> will apply the unpatching operation.
+            </summary>
+            <param name="context">Context to remove</param>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.PatchManager.FreeAllContexts(System.Reflection.Assembly,System.Action{Torch.Managers.PatchManager.PatchContext})">
+            <summary>
+            Frees all contexts owned by the given assembly.  A call to <see cref="M:Torch.Managers.PatchManager.PatchManager.Commit"/> will apply the unpatching operation.
+            </summary>
+            <param name="assembly">Assembly to retrieve owned contexts for</param>
+            <param name="callback">Callback to run for before each context is freed, ignored if null.</param>
+            <returns>number of contexts freed</returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.PatchManager.CommitInternal">
+            <inheritdoc cref="M:Torch.Managers.PatchManager.PatchManager.Commit"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.PatchManager.Commit">
+            <summary>
+            Commits all method decorations into IL.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.PatchManager.Attach">
+            <inheritdoc cref="M:Torch.Managers.Manager.Attach"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.PatchManager.Detach">
+            <summary>
+            Unregisters and removes all patches, then applies the unpatching operation.
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.PatchPriorityAttribute">
+            <summary>
+            Attribute used to decorate methods used for replacement.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.PatchPriorityAttribute.#ctor(System.Int32)">
+            <summary>
+            <see cref="P:Torch.Managers.PatchManager.PatchPriorityAttribute.Priority"/>
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.PatchPriorityAttribute.Priority">
+            <summary>
+            The priority of this replacement.  A high priority prefix occurs first, and a high priority suffix or transpiler occurs last.
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.PatchUtilities">
+            <summary>
+            Functions that let you read and write MSIL to methods directly.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.PatchUtilities.ReadInstructions(System.Reflection.MethodBase)">
+            <summary>
+            Gets the content of a method as an instruction stream
+            </summary>
+            <param name="method">Method to examine</param>
+            <returns>instruction stream</returns>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.PatchUtilities.EmitInstructions(System.Collections.Generic.IEnumerable{Torch.Managers.PatchManager.MSIL.MsilInstruction},Torch.Managers.PatchManager.Transpile.LoggingIlGenerator)">
+            <summary>
+            Writes the given instruction stream to the given IL generator, fixing short branch instructions.
+            </summary>
+            <param name="insn">Instruction stream</param>
+            <param name="generator">Output</param>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.PatchUtilities.IntegrityAnalysis(Torch.Managers.PatchManager.PatchUtilities.DelPrintIntegrityInfo,System.Collections.Generic.IReadOnlyList{Torch.Managers.PatchManager.MSIL.MsilInstruction})">
+            <summary>
+            Analyzes the integrity of a set of instructions.
+            </summary>
+            <param name="handler">Logger</param>
+            <param name="instructions">instructions</param>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.PatchUtilities.Compile(System.Reflection.Emit.DynamicMethod)">
+            <summary>
+            Forces the given dynamic method to be compiled
+            </summary>
+            <param name="method"></param>
+        </member>
+        <member name="T:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator">
+            <summary>
+            An ILGenerator that can log emit calls when the TRACE level is enabled.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.Backing">
+            <summary>
+            Backing generator
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.#ctor(System.Reflection.Emit.ILGenerator,NLog.LogLevel)">
+            <summary>
+            Creates a new logging IL generator backed by the given generator.
+            </summary>
+            <param name="backing">Backing generator</param>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.DeclareLocal(System.Type,System.Boolean)">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.DeclareLocal(System.Type,System.Boolean)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.Emit(System.Reflection.Emit.OpCode)">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.Emit(System.Reflection.Emit.OpCode)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.Emit(System.Reflection.Emit.OpCode,System.Reflection.Emit.LocalBuilder)">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.Emit(System.Reflection.Emit.OpCode,System.Reflection.Emit.LocalBuilder)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.Emit(System.Reflection.Emit.OpCode,System.Byte)">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.Emit(System.Reflection.Emit.OpCode,System.Byte)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.Emit(System.Reflection.Emit.OpCode,System.Int16)">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.Emit(System.Reflection.Emit.OpCode,System.Int32)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.Emit(System.Reflection.Emit.OpCode,System.Int32)">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.Emit(System.Reflection.Emit.OpCode,System.Int32)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.Emit(System.Reflection.Emit.OpCode,System.Int64)">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.Emit(System.Reflection.Emit.OpCode,System.Int64)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.Emit(System.Reflection.Emit.OpCode,System.Single)">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.Emit(System.Reflection.Emit.OpCode,System.Single)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.Emit(System.Reflection.Emit.OpCode,System.Double)">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.Emit(System.Reflection.Emit.OpCode,System.Double)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.Emit(System.Reflection.Emit.OpCode,System.String)">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.Emit(System.Reflection.Emit.OpCode,System.String)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.Emit(System.Reflection.Emit.OpCode,System.Type)">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.Emit(System.Reflection.Emit.OpCode,System.Type)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.Emit(System.Reflection.Emit.OpCode,System.Reflection.FieldInfo)">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.Emit(System.Reflection.Emit.OpCode,System.Reflection.FieldInfo)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.Emit(System.Reflection.Emit.OpCode,System.Reflection.MethodInfo)">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.Emit(System.Reflection.Emit.OpCode,System.Reflection.MethodInfo)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.Emit(System.Reflection.Emit.OpCode,System.Reflection.Emit.Label)">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.Emit(System.Reflection.Emit.OpCode,System.Reflection.Emit.Label)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.Emit(System.Reflection.Emit.OpCode,System.Reflection.Emit.Label[])">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.Emit(System.Reflection.Emit.OpCode,System.Reflection.Emit.Label[])"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.Emit(System.Reflection.Emit.OpCode,System.Reflection.Emit.SignatureHelper)">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.Emit(System.Reflection.Emit.OpCode,System.Reflection.Emit.SignatureHelper)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.Emit(System.Reflection.Emit.OpCode,System.Reflection.ConstructorInfo)">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.Emit(System.Reflection.Emit.OpCode,System.Reflection.ConstructorInfo)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.BeginExceptionBlock">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.BeginExceptionBlock"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.BeginCatchBlock(System.Type)">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.BeginCatchBlock(System.Type)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.BeginExceptFilterBlock">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.BeginExceptFilterBlock"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.BeginFaultBlock">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.BeginFaultBlock"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.BeginFinallyBlock">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.BeginFinallyBlock"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.EndExceptionBlock">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.EndExceptionBlock"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.MarkLabel(System.Reflection.Emit.Label)">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.MarkLabel(System.Reflection.Emit.Label)"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.DefineLabel">
+            <inheritdoc cref="M:System.Reflection.Emit.ILGenerator.DefineLabel"/>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.LoggingIlGenerator.EmitComment(System.String)">
+            <summary>
+            Emits a comment to the log.
+            </summary>
+            <param name="comment">Comment</param>
+        </member>
+        <member name="M:Torch.Managers.PatchManager.Transpile.MethodTranspiler.IntegrityAnalysis(Torch.Managers.PatchManager.PatchUtilities.DelPrintIntegrityInfo,System.Collections.Generic.IReadOnlyList{Torch.Managers.PatchManager.MSIL.MsilInstruction},System.Boolean)">
+            <summary>
+            Analyzes the integrity of a set of instructions.
+            </summary>
+            <param name="level">default logging level</param>
+            <param name="instructions">instructions</param>
+        </member>
+        <member name="P:Torch.Managers.FilesystemManager.TempDirectory">
+            <summary>
+            Temporary directory for Torch that is cleared every time the program is started.
+            </summary>
+        </member>
+        <member name="P:Torch.Managers.FilesystemManager.TorchDirectory">
+            <summary>
+            Directory that contains the current Torch assemblies.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.FilesystemManager.SoftDelete(System.String,System.String)">
+            <summary>
+            Move the given file (if it exists) to a temporary directory that will be cleared the next time the application starts.
+            </summary>
+        </member>
+        <member name="T:Torch.Managers.Manager.DependencyAttribute">
+            <summary>
+            Indicates a field is a dependency of this parent manager.
+            </summary>
+            <example>
+            <code>
+            public class NetworkManager : Manager { }
+            public class ChatManager : Manager {
+                [Dependency(Optional = false)]
+                private NetworkManager _network;
+            }
+            </code>
+            </example>
+        </member>
+        <member name="P:Torch.Managers.Manager.DependencyAttribute.Optional">
+            <summary>
+            If this dependency isn't required.
+            </summary>
+            <remarks>
+            The tagged field can be null if, and only if, this is true.
+            </remarks>
+        </member>
+        <member name="P:Torch.Managers.Manager.DependencyAttribute.Ordered">
+            <summary>
+            Dependency must be loaded before and unloaded after the containing manager.
+            </summary>
+            <example>
+            <code>
+            public class NetworkManager : Manager { }
+            public class ChatManager : Manager {
+                [Dependency(Ordered = true)]
+                private NetworkManager _network;
+            }
+            </code>
+            Load order will be NetworkManager, then ChatManager.
+            Unload order will be ChatManager, then NetworkManager
+            </example>
+        </member>
+        <member name="T:Torch.Managers.MultiplayerManagerBase">
+            <inheritdoc />
+        </member>
+        <member name="E:Torch.Managers.MultiplayerManagerBase.PlayerJoined">
+            <inheritdoc />
+        </member>
+        <member name="E:Torch.Managers.MultiplayerManagerBase.PlayerLeft">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.Managers.MultiplayerManagerBase.Attach">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.Managers.MultiplayerManagerBase.Detach">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.Managers.MultiplayerManagerBase.GetPlayerByName(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.Managers.MultiplayerManagerBase.GetPlayerBySteamId(System.UInt64)">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.Managers.MultiplayerManagerBase.GetSteamUsername(System.UInt64)">
+            <inheritdoc />
+        </member>
+        <member name="T:Torch.Managers.UpdateManager">
+            <summary>
+            Handles updating of the DS and Torch plugins.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.UpdateManager.Attach">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.Managers.UpdateManager.Detach">
+            <inheritdoc />
+        </member>
+        <member name="T:Torch.Managers.PluginManager">
+            <inheritdoc />
+        </member>
+        <member name="P:Torch.Managers.PluginManager.Plugins">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.Managers.PluginManager.UpdatePlugins">
+            <summary>
+            Updates loaded plugins in parallel.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PluginManager.Attach">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Managers.PluginManager.Detach">
+            <summary>
+            Unloads all plugins.
+            </summary>
+        </member>
+        <member name="M:Torch.Managers.PluginManager.GetEnumerator">
+            <inheritdoc cref="M:System.Collections.IEnumerable.GetEnumerator"/>
+        </member>
+        <member name="M:Torch.ICollectionExtensions.AsReadOnly``1(System.Collections.Generic.ICollection{``0})">
+            <summary>
+            Returns a read-only wrapped <see cref="T:System.Collections.Generic.ICollection`1"/>
+            </summary>
+        </member>
+        <member name="M:Torch.ICollectionExtensions.AsReadOnly``1(System.Collections.Generic.IList{``0})">
+            <summary>
+            Returns a read-only wrapped <see cref="T:System.Collections.Generic.IList`1"/>
+            </summary>
+        </member>
+        <member name="M:Torch.ICollectionExtensions.AsReadOnlyObservable``1(System.Collections.Generic.IList{``0})">
+            <summary>
+            Returns a read-only wrapped <see cref="T:System.Collections.Generic.IList`1"/> and proxies its <see cref="T:System.ComponentModel.INotifyPropertyChanged"/> and <see cref="T:System.Collections.Specialized.INotifyCollectionChanged"/> events.
+            </summary>
+        </member>
+        <member name="M:Torch.ICollectionExtensions.AsReadOnly``2(System.Collections.Generic.IDictionary{``0,``1})">
+            <summary>
+            Returns a read-only wrapped <see cref="T:System.Collections.Generic.IDictionary`2"/>
+            </summary>
+        </member>
+        <member name="M:Torch.ICollectionExtensions.AsReadOnlyObservable``2(System.Collections.Generic.IDictionary{``0,``1})">
+            <summary>
+            Returns a read-only wrapped <see cref="T:System.Collections.Generic.IDictionary`2"/> and proxies its <see cref="T:System.ComponentModel.INotifyPropertyChanged"/> and <see cref="T:System.Collections.Specialized.INotifyCollectionChanged"/> events.
+            </summary>
+        </member>
+        <member name="M:Torch.ICollectionExtensions.ObservableReadOnlyList`1.GetEnumerator">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.ICollectionExtensions.ObservableReadOnlyList`1.System#Collections#IEnumerable#GetEnumerator">
+            <inheritdoc />
+        </member>
+        <member name="P:Torch.ICollectionExtensions.ObservableReadOnlyList`1.Count">
+            <inheritdoc />
+        </member>
+        <member name="P:Torch.ICollectionExtensions.ObservableReadOnlyList`1.Item(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.ICollectionExtensions.ObservableReadOnlyDictionary`2.GetEnumerator">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.ICollectionExtensions.ObservableReadOnlyDictionary`2.System#Collections#IEnumerable#GetEnumerator">
+            <inheritdoc />
+        </member>
+        <member name="P:Torch.ICollectionExtensions.ObservableReadOnlyDictionary`2.Count">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.ICollectionExtensions.ObservableReadOnlyDictionary`2.ContainsKey(`0)">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.ICollectionExtensions.ObservableReadOnlyDictionary`2.TryGetValue(`0,`1@)">
+            <inheritdoc />
+        </member>
+        <member name="P:Torch.ICollectionExtensions.ObservableReadOnlyDictionary`2.Item(`0)">
+            <inheritdoc />
+        </member>
+        <member name="P:Torch.ICollectionExtensions.ObservableReadOnlyDictionary`2.Keys">
+            <inheritdoc />
+        </member>
+        <member name="P:Torch.ICollectionExtensions.ObservableReadOnlyDictionary`2.Values">
+            <inheritdoc />
+        </member>
+        <member name="T:Torch.MySteamServiceWrapper">
+            <summary>
+            Provides static accessor for MySteamService because Keen made it internal
+            </summary>
+        </member>
+        <member name="T:Torch.Patches.ObjectFactoryInitPatch">
+            <summary>
+            There are places in static ctors where the registered assembly depends on the <see cref="M:System.Reflection.Assembly.GetCallingAssembly"/>
+            or <see cref="T:VRage.Plugins.MyPlugins"/>.  Here we force those registrations with the proper assemblies to ensure they work correctly.
+            </summary>
+        </member>
+        <member name="T:Torch.Patches.TorchAsyncSaving">
+            <summary>
+            A copy of <see cref="T:Sandbox.Game.Screens.Helpers.MyAsyncSaving"/> except with C# async support.
+            </summary>
+        </member>
+        <member name="M:Torch.Patches.TorchAsyncSaving.Save(Torch.API.ITorchBase,System.Int32,System.String)">
+            <summary>
+            Saves the game asynchronously
+            </summary>
+            <param name="torch">Torch instance</param>
+            <param name="timeoutMs">time in milliseconds before the save is treated as failed, or -1 to wait forever</param>
+            <param name="newSaveName">New save name, or null for current name</param>
+            <returns>Async result of save operation</returns>
+        </member>
+        <member name="P:Torch.PluginDependency.Plugin">
+            <summary>
+            A unique identifier for the plugin that identifies the dependency.
+            </summary>
+        </member>
+        <member name="P:Torch.PluginDependency.MinVersion">
+            <summary>
+            The plugin minimum version. This must include a string in the format of #[.#[.#]] for update checking purposes.
+            </summary>
+        </member>
+        <member name="T:Torch.CommandLine">
+            <summary>
+            Base class that adds tools for setting type properties through the command line.
+            </summary>
+        </member>
+        <member name="T:Torch.Persistent`1">
+            <summary>
+            Simple class that manages saving <see cref="P:Torch.Persistent`1.Data"/> to disk using XML serialization.
+            Can automatically save on changes by implementing <see cref="T:System.ComponentModel.INotifyPropertyChanged"/> in the data class.
+            </summary>
+            <typeparam name="T">Data class type</typeparam>
+        </member>
+        <member name="P:Torch.PluginManifest.Name">
+            <summary>
+            The display name of the plugin.
+            </summary>
+        </member>
+        <member name="P:Torch.PluginManifest.Guid">
+            <summary>
+            A unique identifier for the plugin.
+            </summary>
+        </member>
+        <member name="P:Torch.PluginManifest.Repository">
+            <summary>
+            A GitHub repository in the format of Author/Repository to retrieve plugin updates.
+            </summary>
+        </member>
+        <member name="P:Torch.PluginManifest.Version">
+            <summary>
+            The plugin version. This must include a string in the format of #[.#[.#]] for update checking purposes.
+            </summary>
+        </member>
+        <member name="P:Torch.PluginManifest.Dependencies">
+            <summary>
+            A list of dependent plugin repositories. This may be updated to include GUIDs in the future.
+            </summary>
+        </member>
+        <member name="T:Torch.Utils.ReflectedEventReplaceAttribute">
+            <summary>
+            Attribute used to indicate that the the given field, of type <![CDATA[Func<ReflectedEventReplacer>]]>, should be filled with
+            a function used to create a new event replacer.
+            </summary>
+        </member>
+        <member name="P:Torch.Utils.ReflectedEventReplaceAttribute.EventDeclaringType">
+            <summary>
+            Type that the event is declared in
+            </summary>
+        </member>
+        <member name="P:Torch.Utils.ReflectedEventReplaceAttribute.EventName">
+            <summary>
+            Name of the event
+            </summary>
+        </member>
+        <member name="P:Torch.Utils.ReflectedEventReplaceAttribute.TargetDeclaringType">
+            <summary>
+            Type that the method to replace is declared in
+            </summary>
+        </member>
+        <member name="P:Torch.Utils.ReflectedEventReplaceAttribute.TargetName">
+            <summary>
+            Name of the method to replace
+            </summary>
+        </member>
+        <member name="P:Torch.Utils.ReflectedEventReplaceAttribute.TargetParameters">
+            <summary>
+            Optional parameters of the method to replace.  Null to ignore.
+            </summary>
+        </member>
+        <member name="M:Torch.Utils.ReflectedEventReplaceAttribute.#ctor(System.Type,System.String,System.Type,System.String)">
+            <summary>
+            Creates a reflected event replacer attribute to, for the event defined as eventName in eventDeclaringType,
+            replace the method defined as targetName in targetDeclaringType with a custom callback.
+            </summary>
+            <param name="eventDeclaringType">Type the event is declared in</param>
+            <param name="eventName">Name of the event</param>
+            <param name="targetDeclaringType">Type the method to remove is declared in</param>
+            <param name="targetName">Name of the method to remove</param>
+        </member>
+        <member name="T:Torch.Utils.ReflectedEventReplacer">
+            <summary>
+            Instance of statefully replacing and restoring the callbacks of an event.
+            </summary>
+        </member>
+        <member name="M:Torch.Utils.ReflectedEventReplacer.Test(System.Object)">
+            <summary>
+            Test that this replacement can be performed.
+            </summary>
+            <param name="instance">The instance to operate on, or null if static</param>
+            <returns>true if possible, false if unsuccessful</returns>
+        </member>
+        <member name="M:Torch.Utils.ReflectedEventReplacer.Replace(System.Delegate,System.Object)">
+            <summary>
+            Removes the target callback defined in the attribute and replaces it with the provided callback.
+            </summary>
+            <param name="newCallback">The new event callback</param>
+            <param name="instance">The instance to operate on, or null if static</param>
+        </member>
+        <member name="P:Torch.Utils.ReflectedEventReplacer.Replaced">
+            <summary>
+            Checks if the callback is currently replaced
+            </summary>
+        </member>
+        <member name="M:Torch.Utils.ReflectedEventReplacer.Restore(System.Object)">
+            <summary>
+            Removes the callback added by <see cref="M:Torch.Utils.ReflectedEventReplacer.Replace(System.Delegate,System.Object)"/> and puts the original callback back.
+            </summary>
+            <param name="instance">The instance to operate on, or null if static</param>
+        </member>
+        <member name="T:Torch.Utils.ReflectedFieldInfoAttribute">
+            <summary>
+            Indicates that this field should contain the <see cref="T:System.Reflection.FieldInfo"/> instance for the given field.
+            </summary>
+        </member>
+        <member name="M:Torch.Utils.ReflectedFieldInfoAttribute.#ctor(System.Type,System.String)">
+            <summary>
+            Creates a reflected field info attribute using the given type and name.
+            </summary>
+            <param name="type">Type that contains the member</param>
+            <param name="name">Name of the member</param>
+        </member>
+        <member name="T:Torch.Utils.ReflectedGetterAttribute">
+            <summary>
+            Indicates that this field should contain a delegate capable of retrieving the value of a field.
+            </summary>
+            <example>
+            <code>
+            <![CDATA[
+            [ReflectedGetterAttribute(Name="_instanceField")]
+            private static Func<Example, int> _instanceGetter;
+            
+            [ReflectedGetterAttribute(Name="_staticField", Type=typeof(Example))]
+            private static Func<int> _staticGetter;
+            
+            private class Example {
+                private int _instanceField;
+                private static int _staticField;
+            }
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="T:Torch.Utils.Reflected.ReflectedLazyAttribute">
+            <summary>
+            Indicates that the type will perform its own call to <see cref="M:Torch.Utils.ReflectedManager.Process(System.Type)"/>
+            </summary>
+        </member>
+        <member name="P:Torch.Utils.ReflectedMemberAttribute.Name">
+            <summary>
+            Name of the member to access.  If null, the tagged field's name.
+            </summary>
+        </member>
+        <member name="P:Torch.Utils.ReflectedMemberAttribute.Type">
+            <summary>
+            Declaring type of the member to access.  If null, inferred from the instance argument type.
+            </summary>
+        </member>
+        <member name="P:Torch.Utils.ReflectedMemberAttribute.TypeName">
+            <summary>
+            Assembly qualified name of <see cref="P:Torch.Utils.ReflectedMemberAttribute.Type"/>
+            </summary>
+        </member>
+        <member name="T:Torch.Utils.ReflectedMethodAttribute">
+            <summary>
+            Indicates that this field should contain a delegate capable of invoking an instance method.
+            </summary>
+            <example>
+            <code>
+            <![CDATA[
+            [ReflectedMethodAttribute]
+            private static Func<Example, int, float, string> ExampleInstance;
+            
+            private class Example {
+                private int ExampleInstance(int a, float b) {
+                    return a + ", " + b;
+                }
+            }
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="P:Torch.Utils.ReflectedMethodAttribute.OverrideTypes">
+            <summary>
+            When set the parameters types for the method are assumed to be this.
+            </summary>
+        </member>
+        <member name="P:Torch.Utils.ReflectedMethodAttribute.OverrideTypeNames">
+            <summary>
+            Assembly qualified names of <see cref="P:Torch.Utils.ReflectedMethodAttribute.OverrideTypes"/>
+            </summary>
+        </member>
+        <member name="T:Torch.Utils.ReflectedMethodInfoAttribute">
+            <summary>
+            Indicates that this field should contain the <see cref="T:System.Reflection.MethodInfo"/> instance for the given method.
+            </summary>
+        </member>
+        <member name="M:Torch.Utils.ReflectedMethodInfoAttribute.#ctor(System.Type,System.String)">
+            <summary>
+            Creates a reflected method info attribute using the given type and name.
+            </summary>
+            <param name="type">Type that contains the member</param>
+            <param name="name">Name of the member</param>
+        </member>
+        <member name="P:Torch.Utils.ReflectedMethodInfoAttribute.Parameters">
+            <summary>
+            Expected parameters of this method, or null if any parameters are accepted.
+            </summary>
+        </member>
+        <member name="P:Torch.Utils.ReflectedMethodInfoAttribute.ParameterNames">
+            <summary>
+            Assembly qualified names of <see cref="P:Torch.Utils.ReflectedMethodInfoAttribute.Parameters"/>
+            </summary>
+        </member>
+        <member name="P:Torch.Utils.ReflectedMethodInfoAttribute.ReturnType">
+            <summary>
+            Expected return type of this method, or null if any return type is accepted.
+            </summary>
+        </member>
+        <member name="T:Torch.Utils.ReflectedPropertyInfoAttribute">
+            <summary>
+            Indicates that this field should contain the <see cref="T:System.Reflection.PropertyInfo"/> instance for the given property.
+            </summary>
+        </member>
+        <member name="M:Torch.Utils.ReflectedPropertyInfoAttribute.#ctor(System.Type,System.String)">
+            <summary>
+            Creates a reflected property info attribute using the given type and name.
+            </summary>
+            <param name="type">Type that contains the member</param>
+            <param name="name">Name of the member</param>
+        </member>
+        <member name="T:Torch.Utils.ReflectedSetterAttribute">
+            <summary>
+            Indicates that this field should contain a delegate capable of setting the value of a field.
+            </summary>
+            <example>
+            <code>
+            <![CDATA[
+            [ReflectedSetterAttribute(Name="_instanceField")]
+            private static Action<Example, int> _instanceSetter;
+            
+            [ReflectedSetterAttribute(Name="_staticField", Type=typeof(Example))]
+            private static Action<int> _staticSetter;
+            
+            private class Example {
+                private int _instanceField;
+                private static int _staticField;
+            }
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="T:Torch.Utils.ReflectedStaticMethodAttribute">
+            <summary>
+            Indicates that this field should contain a delegate capable of invoking a static method.
+            </summary>
+            <example>
+            <code>
+            <![CDATA[
+            [ReflectedMethodAttribute(Type = typeof(Example)]
+            private static Func<int, float, string> ExampleStatic;
+            
+            private class Example {
+                private static int ExampleStatic(int a, float b) {
+                    return a + ", " + b;
+                }
+            }
+            ]]>
+            </code>
+            </example>
+        </member>
+        <member name="M:Torch.Utils.Reflection.InvokeStaticMethod(System.Type,System.String,System.Object[])">
+            <summary>
+            Invokes the static method of the given type, with the given arguments.
+            </summary>
+            <param name="type">Type the method is contained in</param>
+            <param name="methodName">Method name</param>
+            <param name="args">Arguments to the method</param>
+            <returns>return value of the invoked method, or null if it failed</returns>
+        </member>
+        <member name="M:Torch.Utils.Reflection.InvokePrivateMethod(System.Object,System.String,System.Object[])">
+            <summary>
+            Invokes the private method with the given arguments on the instance.  Includes base types of instance.
+            </summary>
+            <param name="instance"></param>
+            <param name="methodName"></param>
+            <param name="args"></param>
+            <returns>the return value of the method, or null if it failed</returns>
+        </member>
+        <member name="M:Torch.Utils.Reflection.GetPrivateField``1(System.Object,System.String,System.Boolean)">
+            <summary>
+            Gets the value of a private field in an instance.
+            </summary>
+            <typeparam name="T">The type of the private field</typeparam>
+            <param name="obj">The instance</param>
+            <param name="fieldName">Field name</param>
+            <param name="recurse">Should the base types be examined</param>
+            <returns></returns>
+        </member>
+        <member name="M:Torch.Utils.Reflection.GetStaticEvent(System.Type,System.String)">
+            <summary>
+            Gets the list of all delegates registered in the named static event
+            </summary>
+            <param name="type">The type (or child type) that contains the event</param>
+            <param name="eventName">Name of the event</param>
+            <returns>All delegates registered with the event</returns>
+        </member>
+        <member name="M:Torch.Utils.Reflection.GetInstanceEvent(System.Object,System.String)">
+            <summary>
+            Gets the list of all delegates registered in the named event
+            </summary>
+            <param name="instance">Instance to retrieve the event list for</param>
+            <param name="eventName">Name of the event</param>
+            <returns>All delegates registered with the event</returns>
+        </member>
+        <member name="T:Torch.Utils.SynchronizationExtensions">
+            <summary>
+            Extension functions related to synchronization
+            </summary>
+        </member>
+        <member name="M:Torch.Utils.SynchronizationExtensions.ReadUsing(System.Threading.ReaderWriterLockSlim)">
+            <summary>
+            Acquires a RAII view of the lock in read mode.
+            </summary>
+            <param name="lck">Lock</param>
+            <returns>RAII token</returns>
+        </member>
+        <member name="M:Torch.Utils.SynchronizationExtensions.UpgradableReadUsing(System.Threading.ReaderWriterLockSlim)">
+            <summary>
+            Acquires a RAII view of the lock in upgradable read mode.
+            </summary>
+            <param name="lck">Lock</param>
+            <returns>RAII token</returns>
+        </member>
+        <member name="M:Torch.Utils.SynchronizationExtensions.WriteUsing(System.Threading.ReaderWriterLockSlim)">
+            <summary>
+            Acquires a RAII view of the lock in write mode.
+            </summary>
+            <param name="lck">Lock</param>
+            <returns>RAII token</returns>
+        </member>
+        <member name="T:Torch.Utils.TorchAssemblyResolver">
+            <summary>
+            Adds and removes an additional library path
+            </summary>
+        </member>
+        <member name="M:Torch.Utils.TorchAssemblyResolver.#ctor(System.String[])">
+            <summary>
+            Initializes an assembly resolver that looks at the given paths for assemblies
+            </summary>
+            <param name="paths"></param>
+        </member>
+        <member name="M:Torch.Utils.TorchAssemblyResolver.Dispose">
+            <summary>
+            Unregisters the assembly resolver
+            </summary>
+        </member>
+        <member name="T:Torch.Utils.ReflectedManager">
+            <summary>
+            Automatically calls <see cref="M:Torch.Utils.ReflectedManager.Process(System.Reflection.Assembly)"/> for every assembly already loaded, and every assembly that is loaded in the future.
+            </summary>
+        </member>
+        <member name="M:Torch.Utils.ReflectedManager.Process(System.Type)">
+            <summary>
+            Ensures all reflected fields and methods contained in the given type are initialized
+            </summary>
+            <param name="t">Type to process</param>
+        </member>
+        <member name="M:Torch.Utils.ReflectedManager.Process(System.Reflection.Assembly)">
+            <summary>
+            Ensures all types in the given assembly are initialized using <see cref="M:Torch.Utils.ReflectedManager.Process(System.Type)"/>
+            </summary>
+            <param name="asm">Assembly to process</param>
+        </member>
+        <member name="M:Torch.Utils.ReflectedManager.Process(System.Reflection.FieldInfo)">
+            <summary>
+            Processes the given field, determines if it's reflected, and initializes it if it is.
+            </summary>
+            <param name="field">Field to process</param>
+            <returns>true if it was reflected, false if it wasn't reflectable</returns>
+            <exception cref="T:System.ArgumentException">If the field failed to process</exception>
+        </member>
+        <member name="T:Torch.Session.TorchSessionManager">
+            <summary>
+            Manages the creation and destruction of <see cref="T:Torch.Session.TorchSession"/> instances for each <see cref="T:Sandbox.Game.World.MySession"/> created by Space Engineers.
+            </summary>
+        </member>
+        <member name="P:Torch.Session.TorchSessionManager.OverrideMods">
+            <summary>
+            List of mods that will be injected into client world downloads.
+            </summary>
+        </member>
+        <member name="E:Torch.Session.TorchSessionManager.SessionStateChanged">
+            <inheritdoc />
+        </member>
+        <member name="P:Torch.Session.TorchSessionManager.CurrentSession">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Session.TorchSessionManager.AddFactory(Torch.API.Session.SessionManagerFactoryDel)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Session.TorchSessionManager.RemoveFactory(Torch.API.Session.SessionManagerFactoryDel)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Session.TorchSessionManager.AddOverrideMod(System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Session.TorchSessionManager.RemoveOverrideMod(System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Session.TorchSessionManager.Attach">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.Session.TorchSessionManager.Detach">
+            <inheritdoc/>
+        </member>
+        <member name="P:Torch.Session.TorchSession.Torch">
+            <summary>
+            The Torch instance this session is bound to
+            </summary>
+        </member>
+        <member name="P:Torch.Session.TorchSession.KeenSession">
+            <summary>
+            The Space Engineers game session this session is bound to.
+            </summary>
+        </member>
+        <member name="P:Torch.Session.TorchSession.Managers">
+            <inheritdoc cref="T:Torch.API.Managers.IDependencyManager"/>
+        </member>
+        <member name="P:Torch.Session.TorchSession.State">
+            <inheritdoc/>
+        </member>
+        <member name="E:Torch.Session.TorchSession.StateChanged">
+            <inheritdoc/>
+        </member>
+        <member name="T:Torch.TorchBase">
+            <summary>
+            Base class for code shared between the Torch client and server.
+            </summary>
+        </member>
+        <member name="P:Torch.TorchBase.Instance">
+            <summary>
+            Hack because *keen*.
+            Use only if necessary, prefer dependency injection.
+            </summary>
+        </member>
+        <member name="P:Torch.TorchBase.Config">
+            <inheritdoc />
+        </member>
+        <member name="P:Torch.TorchBase.TorchVersion">
+            <inheritdoc />
+        </member>
+        <member name="P:Torch.TorchBase.GameVersion">
+            <inheritdoc />
+        </member>
+        <member name="P:Torch.TorchBase.RunArgs">
+            <inheritdoc />
+        </member>
+        <member name="P:Torch.TorchBase.Plugins">
+            <inheritdoc />
+        </member>
+        <member name="P:Torch.TorchBase.CurrentSession">
+            <inheritdoc />
+        </member>
+        <member name="E:Torch.TorchBase.SessionLoading">
+            <inheritdoc />
+        </member>
+        <member name="E:Torch.TorchBase.SessionLoaded">
+            <inheritdoc />
+        </member>
+        <member name="E:Torch.TorchBase.SessionUnloading">
+            <inheritdoc />
+        </member>
+        <member name="E:Torch.TorchBase.SessionUnloaded">
+            <inheritdoc />
+        </member>
+        <member name="P:Torch.TorchBase.Log">
+            <summary>
+            Common log for the Torch instance.
+            </summary>
+        </member>
+        <member name="P:Torch.TorchBase.Managers">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.TorchBase.#ctor">
+            <summary>
+            
+            </summary>
+            <exception cref="T:System.InvalidOperationException">Thrown if a TorchBase instance already exists.</exception>
+        </member>
+        <member name="M:Torch.TorchBase.Invoke(System.Action,System.String)">
+            <summary>
+            Invokes an action on the game thread.
+            </summary>
+            <param name="action"></param>
+        </member>
+        <member name="M:Torch.TorchBase.InvokeBlocking(System.Action,System.Int32,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.TorchBase.InvokeAsync``1(System.Func{``0},System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.TorchBase.InvokeAsync(System.Action,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.TorchBase.Init">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.TorchBase.Dispose">
+            <summary>
+            Dispose callback for VRage plugin.  Do not use.
+            </summary>
+        </member>
+        <member name="M:Torch.TorchBase.Destroy">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.TorchBase.TweakGameSettings">
+            <summary>
+            Called after the basic game information is filled, but before the game is created.
+            </summary>
+        </member>
+        <member name="M:Torch.TorchBase.Save(System.Int32,System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.TorchBase.Start">
+            <inheritdoc/> 
+        </member>
+        <member name="M:Torch.TorchBase.Stop">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.TorchBase.Restart(System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.TorchBase.Init(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.TorchBase.Update">
+            <inheritdoc />
+        </member>
+        <member name="P:Torch.TorchBase.GameState">
+            <inheritdoc/>
+        </member>
+        <member name="E:Torch.TorchBase.GameStateChanged">
+            <inheritdoc/>
+        </member>
+        <member name="M:Torch.TorchBase.RegisterCoreAssembly(System.Reflection.Assembly)">
+            <summary>
+            Registers a core (Torch) assembly with the system, including its
+            <see cref="T:Torch.Event.EventManager"/> shims, <see cref="T:Torch.Managers.PatchManager.PatchManager"/> shims, and <see cref="T:Torch.Utils.ReflectedManager"/> components.
+            </summary>
+            <param name="asm">Assembly to register</param>
+        </member>
+        <member name="M:Torch.TorchBase.RegisterAuxAssembly(System.Reflection.Assembly)">
+            <summary>
+            Registers an auxillary (plugin) assembly with the system, including its
+            <see cref="T:Torch.Utils.ReflectedManager"/> related components.
+            </summary>
+            <param name="asm">Assembly to register</param>
+        </member>
+        <member name="M:Torch.StringExtensions.TryExtractVersion(System.String,System.Version@)">
+            <summary>
+            Try to extract a 3 component version from the string. Format: #.#.#
+            </summary>
+        </member>
+        <member name="T:Torch.ViewModel">
+            <summary>
+            Provides a method to notify an observer of changes to an object's properties.
+            </summary>
+        </member>
+        <member name="E:Torch.ViewModel.PropertyChanged">
+            <inheritdoc />
+        </member>
+        <member name="E:Torch.ViewModel.CollectionChanged">
+            <inheritdoc />
+        </member>
+        <member name="M:Torch.ViewModel.SetValue``1(``0@,``0,System.String)">
+            <summary>
+            Assign a value to the given field and raise PropertyChanged for the caller.
+            </summary>
+        </member>
+        <member name="M:Torch.ViewModel.SetValue``1(System.Action{``0},``0,System.String)">
+            <summary>
+            Assign a value using the given setter and raise PropertyChanged for the caller.
+            </summary>
+        </member>
+        <member name="M:Torch.ViewModel.RefreshModel">
+            <summary>
+            Fires PropertyChanged for all properties.
+            </summary>
+        </member>
+        <member name="T:Torch.Views.CollectionEditor">
+            <summary>
+            Interaction logic for CollectionEditor.xaml
+            </summary>
+            <summary>
+            CollectionEditor
+            </summary>
+        </member>
+        <member name="M:Torch.Views.CollectionEditor.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Torch.Views.DictionaryEditorDialog">
+            <summary>
+            Interaction logic for DictionaryEditorDialog.xaml
+            </summary>
+            <summary>
+            DictionaryEditorDialog
+            </summary>
+        </member>
+        <member name="M:Torch.Views.DictionaryEditorDialog.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Torch.Views.EmbeddedCollectionEditor">
+            <summary>
+            Interaction logic for EmbeddedCollectionEditor.xaml
+            </summary>
+            <summary>
+            EmbeddedCollectionEditor
+            </summary>
+        </member>
+        <member name="M:Torch.Views.EmbeddedCollectionEditor.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Torch.Views.FlagsEditorDialog">
+            <summary>
+            Interaction logic for FlagsEditorDialog.xaml
+            </summary>
+            <summary>
+            FlagsEditorDialog
+            </summary>
+        </member>
+        <member name="M:Torch.Views.FlagsEditorDialog.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Torch.Views.ObjectCollectionEditor">
+            <summary>
+            Interaction logic for ObjectCollectionEditor.xaml
+            </summary>
+            <summary>
+            ObjectCollectionEditor
+            </summary>
+        </member>
+        <member name="M:Torch.Views.ObjectCollectionEditor.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Torch.Views.ObjectEditor">
+            <summary>
+            Interaction logic for ObjectEditor.xaml
+            </summary>
+            <summary>
+            ObjectEditor
+            </summary>
+        </member>
+        <member name="M:Torch.Views.ObjectEditor.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Torch.Views.PropertyGrid">
+            <summary>
+            Interaction logic for PropertyGrid.xaml
+            </summary>
+            <summary>
+            PropertyGrid
+            </summary>
+        </member>
+        <member name="M:Torch.Views.PropertyGrid.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="M:Torch.VRageGame.SignalStop">
+            <summary>
+            Signals the game to stop itself.
+            </summary>
+        </member>
+        <member name="M:Torch.VRageGame.SignalStart">
+            <summary>
+            Signals the game to start itself
+            </summary>
+        </member>
+        <member name="M:Torch.VRageGame.SignalDestroy">
+            <summary>
+            Signals the game to destroy itself
+            </summary>
+        </member>
+        <member name="M:Torch.VRageGame.WaitFor(Torch.VRageGame.GameState,System.Nullable{System.TimeSpan})">
+            <summary>
+            Waits for the game to transition to the given state
+            </summary>
+            <param name="state">State to transition to</param>
+            <param name="timeout">Timeout</param>
+            <returns></returns>
+        </member>
+        <member name="T:Torch.Mod.Messages.IncomingMessage">
+            <summary>
+            shim to store incoming message data
+            </summary>
+        </member>
+        <member name="T:Torch.Mod.Messages.DialogMessage">
+            Dialogs are structured as follows
+            
+            _____________________________________
+            |            Title                   |
+            --------------------------------------
+            |          Prefix Subtitle           |
+            --------------------------------------
+            |  ________________________________  |
+            |  |         Content               | |
+            |  --------------------------------- |
+            |            ____________            |
+            |           | ButtonText |           |
+            |           --------------           |
+            --------------------------------------
+            
+            Button has a callback on click option, 
+            but can't serialize that, so ¯\_(ツ)_/¯
+        </member>
+        <member name="F:Torch.Mod.Messages.MessageTarget.Single">
+            <summary>
+            Send to Target
+            </summary>
+        </member>
+        <member name="F:Torch.Mod.Messages.MessageTarget.Server">
+            <summary>
+            Send to Server
+            </summary>
+        </member>
+        <member name="F:Torch.Mod.Messages.MessageTarget.AllClients">
+            <summary>
+            Send to all Clients (only valid from server)
+            </summary>
+        </member>
+        <member name="F:Torch.Mod.Messages.MessageTarget.AllExcept">
+            <summary>
+            Send to all except those steam ID listed in Ignore
+            </summary>
+        </member>
+    </members>
+</doc>

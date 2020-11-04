@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SpaceEngineers.ObjectBuilders</name>
+    </assembly>
+    <members>
+        <member name="F:Sandbox.Common.ObjectBuilders.Definitions.MyObjectBuilder_AdvancedDoorDefinition.Opening.MaxOpen">
+            <summary>
+            For Sliding Parts = value in meter
+            For Rotating Parts = value in Degrees
+            </summary>
+        </member>
+        <member name="F:Sandbox.Common.ObjectBuilders.Definitions.MyObjectBuilder_AdvancedDoorDefinition.Opening.PivotPosition">
+            <summary>
+            override the Pivot/Hinge for this opening
+            will be read from Model if not defined
+            </summary>
+        </member>
+        <member name="F:Sandbox.Common.ObjectBuilders.Definitions.MyObjectBuilder_AdvancedDoorDefinition.SubpartDefinition.Name">
+            <summary>
+            Name of the Subpart Model without extension i.e.:
+            "DoorLeft" will be "path/to/model/DoorLeft.mwm"
+            </summary>
+        </member>
+        <member name="F:Sandbox.Common.ObjectBuilders.Definitions.MyObjectBuilder_AdvancedDoorDefinition.SubpartDefinition.PivotPosition">
+            <summary>
+            define the Pivot/Hinge position for this Subpart
+            will be read from Model if not defined
+            </summary>
+        </member>
+        <member name="F:Sandbox.Common.ObjectBuilders.Definitions.MyObjectBuilder_OxygenContainerObject.OxygenLevel">
+            <summary>
+            This is not synced automatically
+            Call SyncOxygenContainerLevel on inventory to sync it
+            </summary>
+        </member>
+        <member name="F:Sandbox.Common.ObjectBuilders.Definitions.MyObjectBuilder_ParachuteDefinition.Opening.MaxOpen">
+            <summary>
+            For Sliding Parts = value in meter
+            For Rotating Parts = value in Degrees
+            </summary>
+        </member>
+        <member name="F:Sandbox.Common.ObjectBuilders.Definitions.MyObjectBuilder_ParachuteDefinition.Opening.PivotPosition">
+            <summary>
+            override the Pivot/Hinge for this opening
+            will be read from Model if not defined
+            </summary>
+        </member>
+        <member name="F:Sandbox.Common.ObjectBuilders.Definitions.MyObjectBuilder_ParachuteDefinition.SubpartDefinition.Name">
+            <summary>
+            Name of the Subpart Model without extension i.e.:
+            "DoorLeft" will be "path/to/model/DoorLeft.mwm"
+            </summary>
+        </member>
+        <member name="F:Sandbox.Common.ObjectBuilders.Definitions.MyObjectBuilder_ParachuteDefinition.SubpartDefinition.PivotPosition">
+            <summary>
+            define the Pivot/Hinge position for this Subpart
+            will be read from Model if not defined
+            </summary>
+        </member>
+        <member name="P:Sandbox.Common.ObjectBuilders.MyObjectBuilder_ProductionBlock.Inventory">
+            <summary>
+            Don't use. Backward compatibility only. Use InputInventory and OutputInventory instead.
+            </summary>
+        </member>
+        <member name="F:Sandbox.Common.ObjectBuilders.MyObjectBuilder_RemoteControl.Coords">
+            <summary>
+            Obsolete. Use Waypoints instead.
+            </summary>
+        </member>
+        <member name="F:Sandbox.Common.ObjectBuilders.MyObjectBuilder_RemoteControl.Names">
+            <summary>
+            Obsolete. Use Waypoints instead.
+            </summary>
+        </member>
+        <member name="F:Sandbox.Common.ObjectBuilders.MyObjectBuilder_RemoteControl.AutoPilotToolbar">
+            <summary>
+            Obsolete. Use Waypoints instead.
+            </summary>
+        </member>
+        <member name="F:Sandbox.Common.ObjectBuilders.MyObjectBuilder_ShipConnector.Connected">
+            <summary>
+            When ConnectedEntityId is not null, this tells whether the connection is only approach (yellow) or locked connection (green)
+            </summary>
+        </member>
+        <member name="F:Sandbox.Common.ObjectBuilders.MyObjectBuilder_ShipConnector.MasterToSlaveTransform">
+            <summary>
+            Master is connector with higher EntityId
+            </summary>
+        </member>
+        <member name="F:ObjectBuilders.Definitions.SafeZone.MyObjectBuilder_SafeZoneBlockDefinition.MaxSafeZoneRadius">
+            <summary>
+            Max radius of safe zone.
+            </summary>
+        </member>
+        <member name="F:ObjectBuilders.Definitions.SafeZone.MyObjectBuilder_SafeZoneBlockDefinition.MinSafeZoneRadius">
+            <summary>
+            Min radius of safe zone.
+            </summary>
+        </member>
+        <member name="F:ObjectBuilders.Definitions.SafeZone.MyObjectBuilder_SafeZoneBlockDefinition.DefaultSafeZoneRadius">
+            <summary>
+            Default safe zone radius.
+            </summary>
+        </member>
+        <member name="F:ObjectBuilders.Definitions.SafeZone.MyObjectBuilder_SafeZoneBlockDefinition.MaxSafeZonePowerDrainkW">
+            <summary>
+            Power drain in kilowatt.
+            </summary>
+        </member>
+        <member name="F:ObjectBuilders.Definitions.SafeZone.MyObjectBuilder_SafeZoneBlockDefinition.SafeZoneActivationTimeS">
+            <summary>
+            Time of activation of a safezone
+            </summary>
+        </member>
+        <member name="F:ObjectBuilders.Definitions.SafeZone.MyObjectBuilder_SafeZoneBlockDefinition.SafeZoneUpkeep">
+            <summary>
+            Zone chips per upkeep
+            </summary>
+        </member>
+        <member name="F:ObjectBuilders.Definitions.SafeZone.MyObjectBuilder_SafeZoneBlockDefinition.SafeZoneUpkeepTimeM">
+            <summary>
+            Time of the upkeep (when upkeep occures)
+            </summary>
+        </member>
+    </members>
+</doc>
