@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -31,7 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
@@ -88,52 +88,53 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DamageContract.cs" />
-    <Compile Include="DamageHandler.cs" />
-    <Compile Include="DamageNetwork.cs" />
+    <Compile Include="OptiDamage\DamageContract.cs" />
+    <Compile Include="PVEZONE\DamageHandler.cs" />
+    <Compile Include="OptiDamage\DamageNetwork.cs" />
     <Compile Include="DeConfig.cs" />
-    <Compile Include="DefomationNetwork.cs" />
+    <Compile Include="OptiDamage\DefomationNetwork.cs" />
     <Compile Include="DePatchPlugin.cs" />
     <Compile Include="DeUpdater.cs" />
-    <Compile Include="DrillingMode.cs" />
-    <Compile Include="DrillSettings.cs" />
+    <Compile Include="ShipTools\DrillingMode.cs" />
+    <Compile Include="ShipTools\DrillSettings.cs" />
+    <Compile Include="VoxelProtection\ExplosionPatch.cs" />
     <Compile Include="Microsoft\CodeAnalysis\EmbeddedAttribute.cs" />
-    <Compile Include="MyBatteryFix.cs" />
-    <Compile Include="MyBeaconAlertPatch.cs" />
-    <Compile Include="MyCameraBlockPatch.cs" />
-    <Compile Include="MyCubeGridPatch.cs" />
-    <Compile Include="MyDrillDamageFix.cs" />
-    <Compile Include="MyGridDeformationPatch.cs" />
-    <Compile Include="MyMassBlockPatch.cs" />
-    <Compile Include="MyNewGridPatch.cs" />
-    <Compile Include="MyShipDrillParallelPatch.cs" />
-    <Compile Include="MyShipDrillStonePatch.cs" />
-    <Compile Include="MySpaceBallPatch.cs" />
-    <Compile Include="MyTimerBlockPatch.cs" />
-    <Compile Include="MyTurretPveDamageFix.cs" />
-    <Compile Include="MyVoxelDefenderPatch.cs" />
-    <Compile Include="MyVoxelsDestructionPatch.cs" />
+    <Compile Include="GamePatches\MyBatteryFix.cs" />
+    <Compile Include="GamePatches\MyBeaconAlertPatch.cs" />
+    <Compile Include="GamePatches\MyCameraBlockPatch.cs" />
+    <Compile Include="PVEZONE\MyCubeGridPatch.cs" />
+    <Compile Include="PVEZONE\MyDrillDamageFix.cs" />
+    <Compile Include="VoxelProtection\MyGridDeformationPatch.cs" />
+    <Compile Include="GamePatches\MyMassBlockPatch.cs" />
+    <Compile Include="PVEZONE\MyNewGridPatch.cs" />
+    <Compile Include="ShipTools\MyShipDrillParallelPatch.cs" />
+    <Compile Include="ShipTools\MyShipDrillStonePatch.cs" />
+    <Compile Include="GamePatches\MySpaceBallPatch.cs" />
+    <Compile Include="GamePatches\MyTimerBlockPatch.cs" />
+    <Compile Include="PVEZONE\MyTurretPveDamageFix.cs" />
+    <Compile Include="VoxelProtection\MyVoxelDefenderPatch.cs" />
+    <Compile Include="VoxelProtection\MyVoxelsDestructionPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PVE.cs" />
-    <Compile Include="PVEGrid.cs" />
+    <Compile Include="PVEZONE\PVE.cs" />
+    <Compile Include="PVEZONE\PVEGrid.cs" />
     <Compile Include="ReflectionUtils.cs" />
-    <Compile Include="SessionPatch.cs" />
-    <Compile Include="ShipGrinderPatch.cs" />
-    <Compile Include="ShipTool.cs" />
-    <Compile Include="ShipToolDeserializer.cs" />
-    <Compile Include="ShipToolSerializer.cs" />
-    <Compile Include="ShipWelderPatch.cs" />
-    <Compile Include="SyncGridDamageContract.cs" />
+    <Compile Include="OptiDamage\SessionPatch.cs" />
+    <Compile Include="ShipTools\ShipGrinderPatch.cs" />
+    <Compile Include="ShipTools\ShipTool.cs" />
+    <Compile Include="ShipTools\ShipToolDeserializer.cs" />
+    <Compile Include="ShipTools\ShipToolSerializer.cs" />
+    <Compile Include="ShipTools\ShipWelderPatch.cs" />
+    <Compile Include="OptiDamage\SyncGridDamageContract.cs" />
     <Compile Include="System\Runtime\CompilerServices\NullableAttribute.cs" />
     <Compile Include="System\Runtime\CompilerServices\NullableContextAttribute.cs" />
-    <Compile Include="ToolType.cs" />
+    <Compile Include="ShipTools\ToolType.cs" />
     <Compile Include="UserControl1.xaml.cs">
       <DependentUpon>UserControl1.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControl2.xaml.cs">
       <DependentUpon>UserControl2.xaml</DependentUpon>
     </Compile>
-    <Compile Include="VoxelDefenderV2.cs" />
+    <Compile Include="VoxelProtection\VoxelDefenderV2.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="UserControl1.xaml">

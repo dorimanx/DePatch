@@ -8,9 +8,41 @@ namespace DePatch
 {
 	public class DeConfig : ViewModel
 	{
-		// Token: 0x17000002 RID: 2
-		// (get) Token: 0x06000025 RID: 37 RVA: 0x00002E53 File Offset: 0x00001053
-		// (set) Token: 0x06000026 RID: 38 RVA: 0x00002E5B File Offset: 0x0000105B
+		private float _RaycastLimit = 15000f;
+		private float _TimerMinDelay = 3f;
+		private bool _DisableTrigNow;
+		private bool _Enabled;
+		private bool _CheckForUpdates = false;
+		private bool _ShipToolsEnabled;
+		private bool _BeaconAlert;
+		private bool _RemoveMass;
+		private List<ulong> _Mods = new List<ulong>();
+		private List<string> _ShipTools = new List<string>();
+		private List<string> _BeaconSubTypes = new List<string>();
+		private string _RedAlertText = "ВНИМАНИЕ!: эта сетка будет удалена при автоматической очистке! \n Чтобы избежать этого, исправьте следующее: \nWARNING: This grid will be deleted on automated cleanup! To avoid this, fix the following:";
+		private string _WithOutBeaconText = "  * На данном гриде не установлен блок маяка. Что бы его не удалило, установите МАЯК!.\nGrid does not have a beacon.  Build one to avoid deletion.\n";
+		private string _WithDefaultNameText = "  * Переименуйте Грид в панели инфо \"Наименование\"! В нем не должно быть содеражние имени \"Grid\" \nName your grid in the Control Panel Info Tab. It cannot have \"Grid\" in the name.\n";
+		private bool _PveZoneEnabled;
+		private float _PveX;
+		private float _PveY;
+		private float _PveZ;
+		private float _PveZoneRadius = 500000f;
+		private string _PveMessageEntered = "Your grid [{0}] entered to [PVE Zone]! All Weapons on grid are [disabled]";
+		private string _PveMessageLeft = "Youк grid [{0}] left from [PVE Zone]!";
+		private int _DrillUpdateRate = 90;
+		private DrillingMode _ParallelDrill;
+		private bool _DrillDisableRightClick;
+		private bool _DrillStoneDumpRightClick;
+		private bool _DrillIgnoreSubtypes = true;
+		private List<string> _DrillsSettings = new List<string>();
+		private bool _ProtectVoxels;
+		private bool _ProtectGrid;
+		private float _MinProtectSpeed = 40f;
+		private long _MaxProtectedSmallGridSize = 6000L;
+		private long _MaxProtectedLargeGridSize = 6000L;
+		private bool _damageThreading;
+		private Decimal _gridColisionAverage;
+
 		public bool DamageThreading
 		{
 			get
@@ -19,13 +51,10 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<bool>(ref this._damageThreading, value, "DamageThreading");
+        		this.SetValue<bool>(ref this._damageThreading, value, nameof (DamageThreading));
 			}
 		}
 
-		// Token: 0x17000003 RID: 3
-		// (get) Token: 0x06000027 RID: 39 RVA: 0x00002E6F File Offset: 0x0000106F
-		// (set) Token: 0x06000028 RID: 40 RVA: 0x00002E77 File Offset: 0x00001077
 		public long MaxProtectedLargeGridSize
 		{
 			get
@@ -34,13 +63,10 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<long>(ref this._MaxProtectedLargeGridSize, value, "MaxProtectedLargeGridSize");
+        		this.SetValue<long>(ref this._MaxProtectedLargeGridSize, value, nameof (MaxProtectedLargeGridSize));
 			}
 		}
 
-		// Token: 0x17000004 RID: 4
-		// (get) Token: 0x06000029 RID: 41 RVA: 0x00002E8B File Offset: 0x0000108B
-		// (set) Token: 0x0600002A RID: 42 RVA: 0x00002E93 File Offset: 0x00001093
 		public long MaxProtectedSmallGridSize
 		{
 			get
@@ -49,13 +75,10 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<long>(ref this._MaxProtectedSmallGridSize, value, "MaxProtectedSmallGridSize");
+        		this.SetValue<long>(ref this._MaxProtectedSmallGridSize, value, nameof (MaxProtectedSmallGridSize));
 			}
 		}
 
-		// Token: 0x17000005 RID: 5
-		// (get) Token: 0x0600002B RID: 43 RVA: 0x00002EA7 File Offset: 0x000010A7
-		// (set) Token: 0x0600002C RID: 44 RVA: 0x00002EAF File Offset: 0x000010AF
 		public float MinProtectSpeed
 		{
 			get
@@ -64,13 +87,10 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<float>(ref this._MinProtectSpeed, value, "MinProtectSpeed");
+        		this.SetValue<float>(ref this._MinProtectSpeed, value, nameof (MinProtectSpeed));
 			}
 		}
 
-		// Token: 0x17000006 RID: 6
-		// (get) Token: 0x0600002D RID: 45 RVA: 0x00002EC3 File Offset: 0x000010C3
-		// (set) Token: 0x0600002E RID: 46 RVA: 0x00002ECB File Offset: 0x000010CB
 		public bool ProtectGrid
 		{
 			get
@@ -79,13 +99,10 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<bool>(ref this._ProtectGrid, value, "ProtectGrid");
+        		this.SetValue<bool>(ref this._ProtectGrid, value, nameof (ProtectGrid));
 			}
 		}
 
-		// Token: 0x17000007 RID: 7
-		// (get) Token: 0x0600002F RID: 47 RVA: 0x00002EDF File Offset: 0x000010DF
-		// (set) Token: 0x06000030 RID: 48 RVA: 0x00002EE7 File Offset: 0x000010E7
 		public bool ProtectVoxels
 		{
 			get
@@ -94,13 +111,10 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<bool>(ref this._ProtectVoxels, value, "ProtectVoxels");
+        		this.SetValue<bool>(ref this._ProtectVoxels, value, nameof (ProtectVoxels));
 			}
 		}
 
-		// Token: 0x17000008 RID: 8
-		// (get) Token: 0x06000031 RID: 49 RVA: 0x00002EFB File Offset: 0x000010FB
-		// (set) Token: 0x06000032 RID: 50 RVA: 0x00002F03 File Offset: 0x00001103
 		public List<string> DrillsSettings
 		{
 			get
@@ -109,13 +123,10 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<List<string>>(ref this._DrillsSettings, value, "DrillsSettings");
+        		this.SetValue<List<string>>(ref this._DrillsSettings, value, nameof (DrillsSettings));
 			}
 		}
 
-		// Token: 0x17000009 RID: 9
-		// (get) Token: 0x06000033 RID: 51 RVA: 0x00002F17 File Offset: 0x00001117
-		// (set) Token: 0x06000034 RID: 52 RVA: 0x00002F22 File Offset: 0x00001122
 		public bool DrillIgnoreSubtypes
 		{
 			get
@@ -124,13 +135,10 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<bool>(ref this._DrillIgnoreSubtypes, !value, "DrillIgnoreSubtypes");
+        		this.SetValue<bool>(ref this._DrillIgnoreSubtypes, !value, nameof (DrillIgnoreSubtypes));
 			}
 		}
 
-		// Token: 0x1700000A RID: 10
-		// (get) Token: 0x06000035 RID: 53 RVA: 0x00002F39 File Offset: 0x00001139
-		// (set) Token: 0x06000036 RID: 54 RVA: 0x00002F41 File Offset: 0x00001141
 		public bool DrillStoneDumpRightClick
 		{
 			get
@@ -139,13 +147,10 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<bool>(ref this._DrillStoneDumpRightClick, value, "DrillStoneDumpRightClick");
+        		this.SetValue<bool>(ref this._DrillStoneDumpRightClick, value, nameof (DrillStoneDumpRightClick));
 			}
 		}
 
-		// Token: 0x1700000B RID: 11
-		// (get) Token: 0x06000037 RID: 55 RVA: 0x00002F55 File Offset: 0x00001155
-		// (set) Token: 0x06000038 RID: 56 RVA: 0x00002F5D File Offset: 0x0000115D
 		public bool DrillDisableRightClick
 		{
 			get
@@ -154,7 +159,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<bool>(ref this._DrillDisableRightClick, value, "DrillDisableRightClick");
+        		this.SetValue<bool>(ref this._DrillDisableRightClick, value, nameof (DrillDisableRightClick));
 			}
 		}
 
@@ -169,7 +174,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<DrillingMode>(ref this._ParallelDrill, value, "ParallelDrill");
+        		this.SetValue<DrillingMode>(ref this._ParallelDrill, value, nameof (ParallelDrill));
 			}
 		}
 
@@ -184,7 +189,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<int>(ref this._DrillUpdateRate, value, "DrillUpdateRate");
+        		this.SetValue<int>(ref this._DrillUpdateRate, value, nameof (DrillUpdateRate));
 			}
 		}
 
@@ -199,7 +204,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<string>(ref this._PveMessageEntered, value, "PveMessageEntered");
+        		this.SetValue<string>(ref this._PveMessageEntered, value, nameof (PveMessageEntered));
 			}
 		}
 
@@ -214,7 +219,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<string>(ref this._PveMessageLeft, value, "PveMessageLeft");
+        		this.SetValue<string>(ref this._PveMessageLeft, value, nameof (PveMessageLeft));
 			}
 		}
 
@@ -229,7 +234,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<bool>(ref this._PveZoneEnabled, value, "PveZoneEnabled");
+        		this.SetValue<bool>(ref this._PveZoneEnabled, value, nameof (PveZoneEnabled));
 			}
 		}
 
@@ -244,7 +249,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<float>(ref this._PveX, value, "PveX");
+        		this.SetValue<float>(ref this._PveX, value, nameof (PveX));
 			}
 		}
 
@@ -259,7 +264,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<float>(ref this._PveY, value, "PveY");
+        		this.SetValue<float>(ref this._PveY, value, nameof (PveY));
 			}
 		}
 
@@ -274,7 +279,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<float>(ref this._PveZ, value, "PveZ");
+        		this.SetValue<float>(ref this._PveZ, value, nameof (PveZ));
 			}
 		}
 
@@ -289,7 +294,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<float>(ref this._PveZoneRadius, value, "PveZoneRadius");
+        		this.SetValue<float>(ref this._PveZoneRadius, value, nameof (PveZoneRadius));
 			}
 		}
 
@@ -304,7 +309,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<float>(ref this._RaycastLimit, value, "RaycastLimit");
+        		this.SetValue<float>(ref this._RaycastLimit, value, nameof (RaycastLimit));
 			}
 		}
 
@@ -319,7 +324,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<float>(ref this._TimerMinDelay, value, "TimerMinDelay");
+        		this.SetValue<float>(ref this._TimerMinDelay, value, nameof (TimerMinDelay));
 			}
 		}
 
@@ -334,7 +339,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<bool>(ref this._DisableTrigNow, value, "DisableTrigNow");
+        		this.SetValue<bool>(ref this._DisableTrigNow, value, nameof (DisableTrigNow));
 			}
 		}
 
@@ -349,7 +354,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<bool>(ref this._Enabled, value, "Enabled");
+        		this.SetValue<bool>(ref this._Enabled, value, nameof (Enabled));
 			}
 		}
 
@@ -364,7 +369,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<bool>(ref this._BeaconAlert, value, "BeaconAlert");
+        		this.SetValue<bool>(ref this._BeaconAlert, value, nameof (BeaconAlert));
 			}
 		}
 
@@ -379,7 +384,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<bool>(ref this._RemoveMass, value, "RemoveMass");
+        		this.SetValue<bool>(ref this._RemoveMass, value, nameof (RemoveMass));
 			}
 		}
 
@@ -394,7 +399,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<List<ulong>>(ref this._Mods, value, "Mods");
+        		this.SetValue<List<ulong>>(ref this._Mods, value, nameof (Mods));
 			}
 		}
 
@@ -409,7 +414,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<List<string>>(ref this._BeaconSubTypes, value, "BeaconSubTypes");
+        		this.SetValue<List<string>>(ref this._BeaconSubTypes, value, nameof (BeaconSubTypes));
 			}
 		}
 
@@ -424,7 +429,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<string>(ref this._RedAlertText, value, "RedAlertText");
+        		this.SetValue<string>(ref this._RedAlertText, value, nameof (RedAlertText));
 			}
 		}
 
@@ -439,7 +444,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<string>(ref this._WithOutBeaconText, value, "WithOutBeaconText");
+        		this.SetValue<string>(ref this._WithOutBeaconText, value, nameof (WithOutBeaconText));
 			}
 		}
 
@@ -454,7 +459,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<string>(ref this._WithDefaultNameText, value, "WithDefaultNameText");
+        		this.SetValue<string>(ref this._WithDefaultNameText, value, nameof (WithDefaultNameText));
 			}
 		}
 
@@ -469,7 +474,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<bool>(ref this._ShipToolsEnabled, value, "ShipToolsEnabled");
+        		this.SetValue<bool>(ref this._ShipToolsEnabled, value, nameof (ShipToolsEnabled));
 			}
 		}
 
@@ -484,7 +489,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<List<string>>(ref this._ShipTools, value, "ShipTools");
+        		this.SetValue<List<string>>(ref this._ShipTools, value, nameof (ShipTools));
 			}
 		}
 
@@ -499,7 +504,7 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<bool>(ref this._CheckForUpdates, value, "CheckForUpdates");
+        		this.SetValue<bool>(ref this._CheckForUpdates, value, nameof (CheckForUpdates));
 			}
 		}
 
@@ -507,7 +512,7 @@ namespace DePatch
 		// (get) Token: 0x06000067 RID: 103 RVA: 0x000031F5 File Offset: 0x000013F5
 		// (set) Token: 0x06000068 RID: 104 RVA: 0x000031FD File Offset: 0x000013FD
 		[XmlIgnore]
-		public decimal GridColisionAverage
+		public Decimal GridColisionAverage
 		{
 			get
 			{
@@ -515,113 +520,8 @@ namespace DePatch
 			}
 			set
 			{
-				this.SetValue<decimal>(delegate(decimal x)
-				{
-					this._gridColisionAverage = x;
-				}, value, "GridColisionAverage");
-			}
-		}
-
-		// Token: 0x0400001A RID: 26
-		private float _RaycastLimit = 15000f;
-
-		// Token: 0x0400001B RID: 27
-		private float _TimerMinDelay = 3f;
-
-		// Token: 0x0400001C RID: 28
-		private bool _DisableTrigNow;
-
-		// Token: 0x0400001D RID: 29
-		private bool _Enabled;
-
-		// Token: 0x0400001E RID: 30
-		private bool _CheckForUpdates = false;
-
-		// Token: 0x0400001F RID: 31
-		private bool _ShipToolsEnabled;
-
-		// Token: 0x04000020 RID: 32
-		private bool _BeaconAlert;
-
-		// Token: 0x04000021 RID: 33
-		private bool _RemoveMass;
-
-		// Token: 0x04000022 RID: 34
-		private List<ulong> _Mods = new List<ulong>();
-
-		// Token: 0x04000023 RID: 35
-		private List<string> _ShipTools = new List<string>();
-
-		// Token: 0x04000024 RID: 36
-		private List<string> _BeaconSubTypes = new List<string>();
-
-		// Token: 0x04000025 RID: 37
-		private string _RedAlertText = "ВНИМАНИЕ!: эта сетка будет удалена при автоматической очистке! \n Чтобы избежать этого, исправьте следующее: \nWARNING: This grid will be deleted on automated cleanup! To avoid this, fix the following:";
-
-		// Token: 0x04000026 RID: 38
-		private string _WithOutBeaconText = "  * На данном гриде не установлен блок маяка. Что бы его не удалило, установите МАЯК!.\nGrid does not have a beacon.  Build one to avoid deletion.\n";
-
-		// Token: 0x04000027 RID: 39
-		private string _WithDefaultNameText = "  * Переименуйте Грид в панели инфо \"Наименование\"! В нем не должно быть содеражние имени \"Grid\" \nName your grid in the Control Panel Info Tab. It cannot have \"Grid\" in the name.\n";
-
-		// Token: 0x04000028 RID: 40
-		private bool _PveZoneEnabled;
-
-		// Token: 0x04000029 RID: 41
-		private float _PveX;
-
-		// Token: 0x0400002A RID: 42
-		private float _PveY;
-
-		// Token: 0x0400002B RID: 43
-		private float _PveZ;
-
-		// Token: 0x0400002C RID: 44
-		private float _PveZoneRadius = 500000f;
-
-		// Token: 0x0400002D RID: 45
-		private string _PveMessageEntered = "Your grid [{0}] entered to [PVE Zone]! All Weapons on grid are [disabled]";
-
-		// Token: 0x0400002E RID: 46
-		private string _PveMessageLeft = "Youк grid [{0}] left from [PVE Zone]!";
-
-		// Token: 0x0400002F RID: 47
-		private int _DrillUpdateRate = 90;
-
-		// Token: 0x04000030 RID: 48
-		private DrillingMode _ParallelDrill;
-
-		// Token: 0x04000031 RID: 49
-		private bool _DrillDisableRightClick;
-
-		// Token: 0x04000032 RID: 50
-		private bool _DrillStoneDumpRightClick;
-
-		// Token: 0x04000033 RID: 51
-		private bool _DrillIgnoreSubtypes = true;
-
-		// Token: 0x04000034 RID: 52
-		private List<string> _DrillsSettings = new List<string>();
-
-		// Token: 0x04000035 RID: 53
-		private bool _ProtectVoxels;
-
-		// Token: 0x04000036 RID: 54
-		private bool _ProtectGrid;
-
-		// Token: 0x04000037 RID: 55
-		private float _MinProtectSpeed = 40f;
-
-		// Token: 0x04000038 RID: 56
-		private long _MaxProtectedSmallGridSize = 6000L;
-
-		// Token: 0x04000039 RID: 57
-		private long _MaxProtectedLargeGridSize = 6000L;
-
-		// Token: 0x0400003A RID: 58
-		private bool _damageThreading = false;
-
-		// Token: 0x0400003B RID: 59
-		private decimal _gridColisionAverage;
-	}
+        		this.SetValue<Decimal>((Action<Decimal>) (x => this._gridColisionAverage = x), value, nameof (GridColisionAverage));
+      		}
+    	}
+  	}
 }

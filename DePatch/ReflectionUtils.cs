@@ -6,7 +6,9 @@ namespace DePatch
 {
 	public static class ReflectionUtils
 	{
-		public static MethodInfo GetMethod<T>(string name, bool isPrivate = false)
+		public static MethodInfo GetMethod<T>(
+			string name,
+			bool isPrivate = false)
 		{
 			return typeof(T).GetMethod(name, BindingFlags.Instance | (isPrivate ? BindingFlags.NonPublic : BindingFlags.Public));
 		}
