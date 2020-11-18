@@ -1,11 +1,9 @@
-﻿using System;
-
-namespace DePatch
+﻿namespace DePatch
 {
-	public enum DrillingMode
-	{
-		Keen,
-		Parallel,
-		Threading
-	}
+    public enum DrillingMode
+    {
+        Keen,
+        Parallel,
+        Threading
+    }
 }

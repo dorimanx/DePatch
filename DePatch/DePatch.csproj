@@ -125,8 +125,6 @@
     <Compile Include="ShipTools\ShipToolSerializer.cs" />
     <Compile Include="ShipTools\ShipWelderPatch.cs" />
     <Compile Include="OptiDamage\SyncGridDamageContract.cs" />
-    <Compile Include="System\Runtime\CompilerServices\NullableAttribute.cs" />
-    <Compile Include="System\Runtime\CompilerServices\NullableContextAttribute.cs" />
     <Compile Include="ShipTools\ToolType.cs" />
     <Compile Include="UserControl1.xaml.cs">
       <DependentUpon>UserControl1.xaml</DependentUpon>

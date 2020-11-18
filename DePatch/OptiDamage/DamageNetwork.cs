@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using HarmonyLib;
 using NLog;
 using Sandbox.Game.Entities;
@@ -11,9 +9,9 @@ using VRage.Utils;
 
 namespace DePatch
 {
-	[HarmonyPatch(typeof(MySlimBlock), "SendDamage")]
-	public class DamageNetwork
-	{
+    [HarmonyPatch(typeof(MySlimBlock), "SendDamage")]
+    public class DamageNetwork
+    {
         internal static Logger Log = LogManager.GetCurrentClassLogger();
         internal const ushort DAMAGE_CHANNEL = 64467;
         private static readonly ConcurrentDictionary<MyCubeGrid, List<DamageContract>> damageQueue = new ConcurrentDictionary<MyCubeGrid, List<DamageContract>>();

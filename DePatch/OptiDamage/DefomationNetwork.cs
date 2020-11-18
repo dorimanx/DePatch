@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
 using HarmonyLib;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Cube;
@@ -11,13 +8,13 @@ using System.Linq;
 
 namespace DePatch
 {
-	[HarmonyPatch(typeof(MySlimBlock), "SendDamageBatch")]
-	public class DefomationNetwork
-	{
-		internal static bool Prefix(
-		  Dictionary<MySlimBlock, float> blocks,
-		  MyStringHash damageType,
-		  long attackerId)
+    [HarmonyPatch(typeof(MySlimBlock), "SendDamageBatch")]
+    public class DefomationNetwork
+    {
+        internal static bool Prefix(
+          Dictionary<MySlimBlock, float> blocks,
+          MyStringHash damageType,
+          long attackerId)
         {
             if (!DePatchPlugin.Instance.Config.DamageThreading)
             {

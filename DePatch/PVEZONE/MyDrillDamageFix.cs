@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using HarmonyLib;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Weapons;
@@ -10,17 +9,17 @@ using VRageMath;
 
 namespace DePatch
 {
-	[HarmonyPatch(typeof(MyDrillBase), "TryDrillBlocks")]
-	internal class MyDrillDamageFix
-	{
-		private static FieldInfo drillEntity;
+    [HarmonyPatch(typeof(MyDrillBase), "TryDrillBlocks")]
+    internal class MyDrillDamageFix
+    {
+        private static FieldInfo drillEntity;
 
         public static FieldInfo DrillEntity { get => drillEntity; set => drillEntity = value; }
 
         private static bool Prefix(MyDrillBase __instance, ref bool __result, MyCubeGrid grid)
-		{
-			if (!DePatchPlugin.Instance.Config.PveZoneEnabled)
-				return true;
+        {
+            if (!DePatchPlugin.Instance.Config.PveZoneEnabled)
+                return true;
 
             if (MyDrillDamageFix.DrillEntity.GetValue(__instance) is MyHandDrill handDrill)
             {
@@ -39,14 +38,14 @@ namespace DePatch
                 }
             }
             return true;
-		}
+        }
 
-		static MyDrillDamageFix()
-		{
+        static MyDrillDamageFix()
+        {
             if (typeof(MyDrillBase).GetField("m_drillEntity", BindingFlags.Instance | BindingFlags.NonPublic) is null)
-				throw new MissingFieldException("m_drillEntity is missing");
+                throw new MissingFieldException("m_drillEntity is missing");
 
             MyDrillDamageFix.DrillEntity = typeof(MyDrillBase).GetField("m_drillEntity", BindingFlags.Instance | BindingFlags.NonPublic);
-		}
-	}
+        }
+    }
 }

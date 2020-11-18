@@ -1,15 +1,13 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Sandbox.Game.Entities;
 using VRageMath;
 
 namespace DePatch
 {
-	[HarmonyPatch(typeof(MyCubeGrid), "PerformCutouts")]
-	internal class VoxelDefenderV2
-	{
-		private static bool Prefix(MyCubeGrid __instance)
+    [HarmonyPatch(typeof(MyCubeGrid), "PerformCutouts")]
+    internal class VoxelDefenderV2
+    {
+        private static bool Prefix(MyCubeGrid __instance)
         {
             if (!DePatchPlugin.Instance.Config.ProtectVoxels)
                 return true;
@@ -20,12 +18,12 @@ namespace DePatch
                     __instance.Physics.AngularVelocity.Length() > DePatchPlugin.Instance.Config.MinProtectSpeed))
                 {
                     Vector3D position = __instance.PositionComp.GetPosition();
-                    __instance.Physics.LinearVelocity = Vector3D.Backward;
-                    __instance.Physics.LinearVelocity = Vector3D.Up;
                     __instance.Physics.ApplyImpulse(position - ((__instance.Physics.LinearVelocity + __instance.Physics.AngularVelocity) * __instance.Mass / 4.0f),
                         position + __instance.Physics.AngularVelocity);
-                    __instance.Physics.LinearVelocity = Vector3D.Zero;
-                    __instance.Physics.AngularVelocity = Vector3D.Zero;
+
+                    __instance.Physics.LinearVelocity = Vector3D.Backward;
+                    __instance.Physics.LinearVelocity = Vector3D.Up;
+                    __instance.Physics?.ClearSpeed();
                 }
                 return false;
             }

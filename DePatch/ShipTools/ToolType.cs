@@ -1,10 +1,8 @@
-﻿using System;
-
-namespace DePatch
+﻿namespace DePatch
 {
-	public enum ToolType
-	{
-		Welder,
-		Grinder
-	}
+    public enum ToolType
+    {
+        Welder,
+        Grinder
+    }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows.Controls;
 using HarmonyLib;
@@ -21,61 +20,56 @@ using VRage.Game;
 
 namespace DePatch
 {
-	public class DePatchPlugin : TorchPluginBase, IWpfPlugin, ITorchPlugin, IDisposable
-	{
-		public static readonly Logger Log = LogManager.GetCurrentClassLogger();
+    public class DePatchPlugin : TorchPluginBase, IWpfPlugin, ITorchPlugin, IDisposable
+    {
+        public static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-		public static DePatchPlugin Instance;
+        public static DePatchPlugin Instance;
 
-		private TorchSessionManager _sessionManager;
+        private TorchSessionManager _sessionManager;
 
-		public Persistent<DeConfig> ConfigPersistent;
+        public Persistent<DeConfig> ConfigPersistent;
 
-		public UserControl1 Control;
+        public UserControlDepatch Control;
 
-		public DeConfig Config
-		{
-			get
-			{
-        		return this.ConfigPersistent?.Data;
-			}
-		}
+        public DeConfig Config => ConfigPersistent?.Data;
 
-		public override void Init(ITorchBase torch)
-		{
-			base.Init(torch);
-			DePatchPlugin.Instance = this;
-			this.SetupConfig();
-			if (this.Config.CheckForUpdates && DeUpdater.CheckAndUpdate((TorchPluginBase)this, torch))
-			{
-				Process.Start(Assembly.GetAssembly(typeof(InstanceManager)).Location, string.Join(" ", Environment.GetCommandLineArgs()));
-				Environment.Exit(0);
-			}
-			if (!this.Config.Enabled)
-				return;
+        public override void Init(ITorchBase torch)
+        {
+            base.Init(torch);
+            DePatchPlugin.Instance = this;
+            SetupConfig();
 
-			new Harmony("net.ltp.depatch").PatchAll();
+            if (Config.CheckForUpdates && DeUpdater.CheckAndUpdate((TorchPluginBase)this, torch))
+            {
+                Process.Start(Assembly.GetAssembly(typeof(InstanceManager)).Location, string.Join(" ", Environment.GetCommandLineArgs()));
+                Environment.Exit(0);
+            }
+            if (!Config.Enabled)
+                return;
 
-			this._sessionManager = base.Torch.Managers.GetManager<TorchSessionManager>();
+            new Harmony("net.ltp.depatch").PatchAll();
 
-			this.Config.Mods.ForEach(delegate (ulong m)
-			{
-				this._sessionManager.AddOverrideMod(m);
-			});
-			if (this.Config.DamageThreading)
-				this._sessionManager.AddOverrideMod(2274830517UL);
+            _sessionManager = base.Torch.Managers.GetManager<TorchSessionManager>();
 
-			DePatchPlugin.Log.Info("Mod Loader Complete overriding");
-			if (this._sessionManager != null)
-				Torch.GameStateChanged += this.Torch_GameStateChanged;
-		}
+            Config.Mods.ForEach(delegate (ulong m)
+            {
+                _sessionManager.AddOverrideMod(m);
+            });
+            if (Config.DamageThreading)
+                _sessionManager.AddOverrideMod(2274830517UL);
 
-		private void Torch_GameStateChanged(MySandboxGame game, TorchGameState newState)
+            DePatchPlugin.Log.Info("Mod Loader Complete overriding");
+            if (_sessionManager != null)
+                Torch.GameStateChanged += Torch_GameStateChanged;
+        }
+
+        private void Torch_GameStateChanged(MySandboxGame game, TorchGameState newState)
         {
             if (newState != TorchGameState.Loaded)
                 return;
 
-            if (this.Config.PveZoneEnabled)
+            if (Config.PveZoneEnabled)
                 PVE.Init(this);
 
             DrillSettings.InitDefinitions();
@@ -83,9 +77,9 @@ namespace DePatch
             if (DePatchPlugin.Instance.Config.ProtectGrid)
                 MyGridDeformationPatch.Init();
 
-            MySession.Static.OnSavingCheckpoint += new Action<MyObjectBuilder_Checkpoint>(this.Static_OnSavingCheckpoint);
+            MySession.Static.OnSavingCheckpoint += new Action<MyObjectBuilder_Checkpoint>(Static_OnSavingCheckpoint);
 
-            if (this.Config.DamageThreading)
+            if (Config.DamageThreading)
                 SessionPatch.Timer.Start();
         }
 
@@ -101,40 +95,47 @@ namespace DePatch
               }).Start();
         }
 
-        public void SetupConfig()
-		{
-			string path = Path.Combine(this.StoragePath, "DePatch.cfg");
-			try
-			{
-				this.ConfigPersistent = Persistent<DeConfig>.Load(path, true);
-			}
-			catch (Exception ex)
-			{
-				DePatchPlugin.Log.Warn<Exception>(ex);
-			}
-     		if (this.ConfigPersistent?.Data != null)
-        		return;
-
-			DePatchPlugin.Log.Info("Create Default Config, because none was found!");
-			this.ConfigPersistent = new Persistent<DeConfig>(path, new DeConfig());
-      		this.ConfigPersistent.Save((string) null);
-		}
-
-		public UserControl GetControl()
-		{
-			if (this.Control == null)
-				this.Control = new UserControl1(this);
-
-      		return (UserControl) this.Control;
-		}
-		public override void Dispose()
-		{
-			if (this._sessionManager != null)
-			{
-				Torch.GameStateChanged -= this.Torch_GameStateChanged;
-			}
-			if (this._sessionManager != null)
-                this._sessionManager = null;
+        public void LoadConfig()
+        {
+            string path = Path.Combine(StoragePath, "DePatch.cfg");
+            if (ConfigPersistent?.Data != null)
+                ConfigPersistent = Persistent<DeConfig>.Load(path, true);
         }
-	}
+
+        public void SetupConfig()
+        {
+            string path = Path.Combine(StoragePath, "DePatch.cfg");
+            try
+            {
+                ConfigPersistent = Persistent<DeConfig>.Load(path, true);
+            }
+            catch (Exception ex)
+            {
+                DePatchPlugin.Log.Warn<Exception>(ex);
+            }
+            if (ConfigPersistent?.Data != null)
+                return;
+
+            DePatchPlugin.Log.Info("Create Default Config, because none was found!");
+            ConfigPersistent = new Persistent<DeConfig>(path, new DeConfig());
+            ConfigPersistent.Save((string)null);
+        }
+
+        public UserControl GetControl()
+        {
+            if (Control == null)
+                Control = new UserControlDepatch(this);
+
+            return Control;
+        }
+        public override void Dispose()
+        {
+            if (_sessionManager != null)
+            {
+                Torch.GameStateChanged -= Torch_GameStateChanged;
+            }
+            if (_sessionManager != null)
+                _sessionManager = null;
+        }
+    }
 }

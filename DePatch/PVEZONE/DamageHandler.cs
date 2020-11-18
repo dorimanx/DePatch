@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.Linq;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Character;
 using Sandbox.Game.Entities.Cube;
@@ -14,45 +12,45 @@ using VRageMath;
 
 namespace DePatch
 {
-	public static class DamageHandler
-	{
+    public static class DamageHandler
+    {
         private static bool _init;
 
-		public static void Init()
-		{
-			if (!DePatchPlugin.Instance.Config.PveZoneEnabled)
-			{
-				return;
-			}
-			if (DamageHandler._init)
-			{
-				return;
-			}
+        public static void Init()
+        {
+            if (!DePatchPlugin.Instance.Config.PveZoneEnabled)
+            {
+                return;
+            }
+            if (DamageHandler._init)
+            {
+                return;
+            }
             DamageHandler._init = true;
-			MyAPIGateway.Session.DamageSystem.RegisterBeforeDamageHandler(0, new BeforeDamageApplied(ProcessDamage));
-		}
+            MyAPIGateway.Session.DamageSystem.RegisterBeforeDamageHandler(0, new BeforeDamageApplied(ProcessDamage));
+        }
 
-		private static void ProcessDamage(object target, ref MyDamageInformation info)
-		{
-			long num1 = info.AttackerId;
-			MySlimBlock mySlimBlock = target as MySlimBlock;
+        private static void ProcessDamage(object target, ref MyDamageInformation info)
+        {
+            long num1 = info.AttackerId;
+            MySlimBlock mySlimBlock = target as MySlimBlock;
             long num2;
             long num3 = 10L;
 
-			if (mySlimBlock == null)
-			{
-				if (target is MyCharacter)
-				{
-					return;
-				}
-				num2 = 0L;
-			}
-			else
-			{
-				if (!PVE.EntitiesInZone.Contains(mySlimBlock.CubeGrid.EntityId))
-					return;
+            if (mySlimBlock == null)
+            {
+                if (target is MyCharacter)
+                {
+                    return;
+                }
+                num2 = 0L;
+            }
+            else
+            {
+                if (!PVE.EntitiesInZone.Contains(mySlimBlock.CubeGrid.EntityId))
+                    return;
 
-				num2 = ((mySlimBlock.CubeGrid.BigOwners.Count > 0) ? mySlimBlock.CubeGrid.BigOwners[0] : 0L);
+                num2 = ((mySlimBlock.CubeGrid.BigOwners.Count > 0) ? mySlimBlock.CubeGrid.BigOwners[0] : 0L);
             }
             if (MyEntities.TryGetEntityById(info.AttackerId, out MyEntity myEntity, true))
             {
@@ -120,10 +118,10 @@ namespace DePatch
             }
 
             if (num1 == 0L || num3 == 0L)
-			{
-				info.Amount = 0f;
+            {
+                info.Amount = 0f;
                 info.IsDeformation = false;
-			}
+            }
             else
             {
                 ulong steamId1 = MySession.Static.Players.TryGetSteamId(num1);
@@ -137,5 +135,5 @@ namespace DePatch
                 }
             }
         }
-	}
+    }
 }
