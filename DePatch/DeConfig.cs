@@ -11,6 +11,8 @@ namespace DePatch
         private float _RaycastLimit = 15000f;
         private float _TimerMinDelay = 3f;
         private bool _DisableTrigNow;
+        private bool _DisableAssemblerCoop;
+        private bool _DisableAssemblerLoop;
         private bool _Enabled;
         private bool _CheckForUpdates = false;
         private bool _ShipToolsEnabled;
@@ -88,6 +90,17 @@ namespace DePatch
         {
             get => _stopExplosion;
             set => SetValue(ref _stopExplosion, value, "StopExplosion");
+        }
+
+        public bool DisableAssemblerCoop
+        {
+            get => _DisableAssemblerCoop;
+            set => SetValue(ref _DisableAssemblerCoop, value, "DisableAssemblerCoop");
+        }
+        public bool DisableAssemblerLoop
+        {
+            get => _DisableAssemblerLoop;
+            set => SetValue(ref _DisableAssemblerLoop, value, "DisableAssemblerLoop");
         }
 
         public List<string> DrillsSettings

@@ -12,10 +12,10 @@ namespace DePatch
         private static bool _init;
         public static void Init()
         {
-            if (!MyGridDeformationPatch._init)
+            if (!_init)
             {
                 MyAPIGateway.Session.DamageSystem.RegisterBeforeDamageHandler(1, new BeforeDamageApplied(HandleGridDamage));
-                MyGridDeformationPatch._init = true;
+                _init = true;
             }
         }
         private static void HandleGridDamage(object target, ref MyDamageInformation damage)
@@ -75,7 +75,6 @@ namespace DePatch
                             { //by voxel
                                 damage.Amount = 0f;
                                 damage.IsDeformation = false;
-                                Vector3 GridGravity = grid.Physics.Gravity;
                                 if (Lineargridspeed > 30 || Angulargridspeed > 30)
                                 {
                                     Vector3D position = grid.PositionComp.GetPosition();

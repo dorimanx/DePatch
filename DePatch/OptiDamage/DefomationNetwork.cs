@@ -2,9 +2,7 @@
 using HarmonyLib;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Cube;
-using VRage.Game.ModAPI;
 using VRage.Utils;
-using System.Linq;
 
 namespace DePatch
 {
@@ -16,20 +14,20 @@ namespace DePatch
           MyStringHash damageType,
           long attackerId)
         {
-            if (!DePatchPlugin.Instance.Config.DamageThreading)
+            if (DePatchPlugin.Instance.Config.DamageThreading)
             {
-                return true;
-            }
-            if (blocks.Count >= 1)
-            {
-                foreach (var (key, contract) in from KeyValuePair<MySlimBlock, float> block in blocks
-                                                let damage = block.Value
-                                                let key = block.Key
-                                                where (double)damage >= 1.0 && key != null && (key.CubeGrid != null && !key.CubeGrid.MarkedForClose) && (!key.CubeGrid.Closed && key.FatBlock != null && (!key.FatBlock.MarkedForClose && !key.FatBlock.Closed))
-                                                let contract = new DamageContract(key.FatBlock.EntityId, damage, damageType, new MyHitInfo?(), attackerId)
-                                                select (key, contract))
+                if (blocks.Count < 1)
                 {
-                    _ = DamageNetwork.GetDamageQueue().AddOrUpdate(key.CubeGrid, new List<DamageContract>
+                    return false;
+                }
+                foreach (KeyValuePair<MySlimBlock, float> keyValuePair in blocks)
+                {
+                    float value = keyValuePair.Value;
+                    MySlimBlock key = keyValuePair.Key;
+                    if (value >= 1f && key != null && key.CubeGrid != null && !key.CubeGrid.MarkedForClose && !key.CubeGrid.Closed && key.FatBlock != null && !key.FatBlock.MarkedForClose && !key.FatBlock.Closed)
+                    {
+                        DamageContract contract = new DamageContract(key.FatBlock.EntityId, value, damageType, null, attackerId);
+                        _ = DamageNetwork.DamageQueue.AddOrUpdate(key.CubeGrid, new List<DamageContract>
                     {
                         contract
                     }, delegate (MyCubeGrid b, List<DamageContract> l)
@@ -37,11 +35,11 @@ namespace DePatch
                         l.Add(contract);
                         return l;
                     });
+                    }
                 }
-
                 return false;
             }
-            return false;
+            return true;
         }
     }
 }

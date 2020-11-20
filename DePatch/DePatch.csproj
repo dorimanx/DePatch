@@ -88,6 +88,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GamePatches\MyAssemblerPatch.cs" />
     <Compile Include="OptiDamage\DamageContract.cs" />
     <Compile Include="PVEZONE\DamageHandler.cs" />
     <Compile Include="OptiDamage\DamageNetwork.cs" />

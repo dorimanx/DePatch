@@ -80,14 +80,14 @@
                     <Label
 						Content="Mods"
 						HorizontalAlignment="Left"
-						Margin="10,228,0,0"
+						Margin="10,275,0,0"
 						VerticalAlignment="Top"
 						RenderTransformOrigin="0.55,1.808" />
                     <TextBox
 						Name="ModsBlock"
 						HorizontalAlignment="Left"
 						Height="124"
-						Margin="10,254,0,0"
+						Margin="10,301,0,0"
 						TextWrapping="Wrap"
 						Text="Mods here"
 						VerticalAlignment="Top"
@@ -99,9 +99,21 @@
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=CheckForUpdates}" />
                     <CheckBox
+						Content="Disable Assembler Queue Loop"
+						HorizontalAlignment="Left"
+                        Margin="10,203,0,0"
+						VerticalAlignment="Top"
+						IsChecked="{Binding Path=DisableAssemblerLoop}" />
+                    <CheckBox
+						Content="Disable Assembler Cooperative"
+						HorizontalAlignment="Left"
+                        Margin="10,223,0,0"
+						VerticalAlignment="Top"
+						IsChecked="{Binding Path=DisableAssemblerCoop}" />
+                    <CheckBox
 						Content="OptiDamage System"
 						HorizontalAlignment="Left"
-						Margin="10,203,0,0"
+						Margin="10,255,0,0"
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=DamageThreading}" Width="127" Height="20" />
                 </Grid>

@@ -16,16 +16,18 @@ namespace DePatch
 {
     internal class MyVoxelDefenderPatch
     {
-        private static FieldInfo m_grid = ReflectionUtils.GetField<MyGridPhysics>(nameof(m_grid), true);
+        private static FieldInfo m_grid = ReflectionUtils.GetField<MyGridPhysics>(nameof(Grid), true);
+
+        public static FieldInfo Grid { get => m_grid; set => m_grid = value; }
 
         private static bool Prefix(
-          MyGridPhysics __instance,
-          HkBreakOffLogicResult __result,
-          HkRigidBody otherBody,
-          uint shapeKey,
-          ref float maxImpulse)
+            MyGridPhysics __instance,
+            HkBreakOffLogicResult __result,
+            HkRigidBody otherBody,
+            uint shapeKey,
+            ref float maxImpulse)
         {
-            __result = MyVoxelDefenderPatch.Logic(__instance, otherBody, shapeKey, ref maxImpulse);
+            _ = Logic(__instance, otherBody, shapeKey, ref maxImpulse);
             return false;
         }
 
@@ -47,7 +49,7 @@ namespace DePatch
             if (controllingPlayer != null)
                 user = controllingPlayer.Id.SteamId;
 
-            if (!MySessionComponentSafeZones.IsActionAllowed((MyEntity)m_grid.GetValue(__instance), MySafeZoneAction.Damage, 0L, user) || (MySession.Static.Settings.EnableVoxelDestruction && entity1 is MyVoxelBase))
+            if (!MySessionComponentSafeZones.IsActionAllowed((MyEntity)Grid.GetValue(__instance), MySafeZoneAction.Damage, 0L, user) || (MySession.Static.Settings.EnableVoxelDestruction && entity1 is MyVoxelBase))
             {
                 return HkBreakOffLogicResult.DoNotBreakOff;
             }
@@ -73,7 +75,7 @@ namespace DePatch
                 {
                     if (!MySession.Static.Settings.EnableSubgridDamage &&
                         otherBody.GetEntity(0U) as MyCubeGrid != null &&
-                        MyCubeGridGroups.Static.Physical.HasSameGroup((MyCubeGrid)m_grid.GetValue(__instance), otherBody.GetEntity(0U) as MyCubeGrid))
+                        MyCubeGridGroups.Static.Physical.HasSameGroup((MyCubeGrid)Grid.GetValue(__instance), otherBody.GetEntity(0U) as MyCubeGrid))
                     {
                         breakOffLogicResult = HkBreakOffLogicResult.DoNotBreakOff;
                     }

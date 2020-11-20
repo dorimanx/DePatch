@@ -52,19 +52,21 @@ namespace DePatch
             {
                 list.Remove(__instance.CubeGrid);
             }
-
-            foreach (var (myCubeGrid, inventoryBase, grinderAmount) in from MyEntity myEntity in list
-                                          let myCubeGrid = myEntity as MyCubeGrid
-                                          where myCubeGrid  != null && myEntity.Physics != null
-                                          let inventoryBase = __instance.GetInventoryBase()
-                                          let grinderAmount = MySession.Static.GrinderSpeedMultiplier * enumerable.First().Speed
-                                          select (myCubeGrid, inventoryBase, grinderAmount))
-            {
-                slimBlocks.Clear();
-                myCubeGrid.GetBlocksInsideSphere(ref boundingSphereD, slimBlocks, true);
-                foreach (MySlimBlock mySlimBlock in slimBlocks)
-                    mySlimBlock.DecreaseMountLevel(grinderAmount, inventoryBase, false, 0L);
-            }
-        }
-    }
+			foreach (MyEntity myEntity in list)
+			{
+				MyCubeGrid myCubeGrid = myEntity as MyCubeGrid;
+				if (myCubeGrid != null && myEntity.Physics != null)
+				{
+					MyInventoryBase inventoryBase = __instance.GetInventoryBase();
+					float grinderAmount = MySession.Static.GrinderSpeedMultiplier * enumerable.First().Speed;
+                	slimBlocks.Clear();
+                	myCubeGrid.GetBlocksInsideSphere(ref boundingSphereD, slimBlocks, true);
+                	foreach (MySlimBlock mySlimBlock in slimBlocks)
+					{
+                    	mySlimBlock.DecreaseMountLevel(grinderAmount, inventoryBase, false, 0L);
+					}
+            	}
+        	}
+    	}
+	}
 }

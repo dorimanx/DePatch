@@ -14,32 +14,18 @@ namespace DePatch
     {
         internal static Logger Log = LogManager.GetCurrentClassLogger();
         internal const ushort DAMAGE_CHANNEL = 64467;
-        private static readonly ConcurrentDictionary<MyCubeGrid, List<DamageContract>> damageQueue = new ConcurrentDictionary<MyCubeGrid, List<DamageContract>>();
-
-        public static ConcurrentDictionary<MyCubeGrid, List<DamageContract>> GetDamageQueue()
-        {
-            return damageQueue;
-        }
+		public static ConcurrentDictionary<MyCubeGrid, List<DamageContract>> DamageQueue { get; } = new ConcurrentDictionary<MyCubeGrid, List<DamageContract>>();
 
         internal static bool Prefix(MySlimBlock block, float damage, MyStringHash damageType, MyHitInfo? hitInfo, long attackerId)
         {
-            if (!DePatchPlugin.Instance.Config.DamageThreading)
+            if (DePatchPlugin.Instance.Config.DamageThreading)
             {
-                return true;
-            }
-
-            if (damage >= 1.0 && block != null && block.CubeGrid != null && !block.CubeGrid.MarkedForClose && !block.CubeGrid.Closed && block.FatBlock != null && !block.FatBlock.MarkedForClose && !block.FatBlock.Closed)
-            {
+                if (damage < 1f || block == null || block.CubeGrid == null || block.CubeGrid.MarkedForClose || block.CubeGrid.Closed || block.FatBlock == null || block.FatBlock.MarkedForClose || block.FatBlock.Closed)
+                {
+                    return false;
+                }
                 DamageContract contract = new DamageContract(block.FatBlock.EntityId, damage, damageType, hitInfo, attackerId);
-                _ = GetLists(block, contract);
-                return false;
-            }
-            return false;
-        }
-
-        private static List<DamageContract> GetLists(MySlimBlock block, DamageContract contract)
-        {
-            return GetDamageQueue().AddOrUpdate(block.CubeGrid, new List<DamageContract>
+                _ = DamageNetwork.DamageQueue.AddOrUpdate(block.CubeGrid, new List<DamageContract>
             {
                 contract
             }, delegate (MyCubeGrid b, List<DamageContract> l)
@@ -47,6 +33,9 @@ namespace DePatch
                 l.Add(contract);
                 return l;
             });
+                return false;
+            }
+            return true;
         }
     }
 }
