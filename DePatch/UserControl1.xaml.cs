@@ -131,5 +131,10 @@ namespace DePatch
                 window.ShowDialog();
             }
         }
+
+        private void ModsBlock_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }

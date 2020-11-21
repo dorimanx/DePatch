@@ -13,6 +13,8 @@ namespace DePatch
         private bool _DisableTrigNow;
         private bool _DisableAssemblerCoop;
         private bool _DisableAssemblerLoop;
+        private bool _DisableProductionOnShip;
+        private bool _DisableNanoBotsOnShip;
         private bool _Enabled;
         private bool _CheckForUpdates = false;
         private bool _ShipToolsEnabled;
@@ -101,6 +103,18 @@ namespace DePatch
         {
             get => _DisableAssemblerLoop;
             set => SetValue(ref _DisableAssemblerLoop, value, "DisableAssemblerLoop");
+        }
+
+        public bool DisableProductionOnShip
+        {
+            get => _DisableProductionOnShip;
+            set => SetValue(ref _DisableProductionOnShip, value, "DisableProductionOnShip");
+        }
+
+        public bool DisableNanoBotsOnShip
+        {
+            get => _DisableProductionOnShip;
+            set => SetValue(ref _DisableNanoBotsOnShip, value, "DisableNanoBotsOnShip");
         }
 
         public List<string> DrillsSettings

@@ -78,20 +78,20 @@
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=DisableTrigNow}" />
                     <Label
-						Content="Mods"
+						Content="Client Only Mods"
 						HorizontalAlignment="Left"
-						Margin="10,275,0,0"
+						Margin="228,10,0,0"
 						VerticalAlignment="Top"
-						RenderTransformOrigin="0.55,1.808" />
+						RenderTransformOrigin="0.55,1.808" Grid.ColumnSpan="2" Width="104" />
                     <TextBox
 						Name="ModsBlock"
 						HorizontalAlignment="Left"
 						Height="124"
-						Margin="10,301,0,0"
+						Margin="228,36,0,0"
 						TextWrapping="Wrap"
-						Text="Mods here"
+						Text="Write Mods Here with ;"
 						VerticalAlignment="Top"
-						Width="209" />
+						Width="190" Grid.ColumnSpan="2" TextChanged="ModsBlock_TextChanged" />
                     <CheckBox
 						Content="Check For Updates"
 						HorizontalAlignment="Left"
@@ -111,11 +111,29 @@
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=DisableAssemblerCoop}" />
                     <CheckBox
+						Content="Disable Production Blocks On Ships"
+						HorizontalAlignment="Left"
+                        Margin="10,243,0,0"
+						VerticalAlignment="Top"
+						IsChecked="{Binding Path=DisableProductionOnShip}" />
+                    <CheckBox
+						Content="Disable Nanobots On Ships"
+						HorizontalAlignment="Left"
+                        Margin="10,263,0,0"
+						VerticalAlignment="Top"
+						IsChecked="{Binding Path=DisableNanoBotsOnShip}" />
+                    <Label
+						Content="Experemental Options"
+						HorizontalAlignment="Left"
+						Margin="10,302,0,0"
+						VerticalAlignment="Top"
+						RenderTransformOrigin="0.55,1.808" Width="133" />
+                    <CheckBox
 						Content="OptiDamage System"
 						HorizontalAlignment="Left"
-						Margin="10,255,0,0"
+						Margin="10,328,0,0"
 						VerticalAlignment="Top"
-						IsChecked="{Binding Path=DamageThreading}" Width="127" Height="20" />
+						IsChecked="{Binding Path=DamageThreading}" Width="127" Height="20" RenderTransformOrigin="0.475,0.883" />
                 </Grid>
             </TabItem>
             <TabItem
