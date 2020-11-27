@@ -13,12 +13,11 @@ namespace DePatch
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (DrillsGrid.SelectedItem == null || !(DrillsGrid.SelectedItem is DrillSettings))
+            object selectedItem = DrillsGrid.SelectedItem;
+            if (selectedItem != null && selectedItem is DrillSettings)
             {
-                return;
+                DrillSettings.drills.Remove((DrillSettings)selectedItem);
             }
-
-            DrillSettings.drills.Remove((DrillSettings)DrillsGrid.SelectedItem);
         }
     }
 }

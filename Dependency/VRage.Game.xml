@@ -523,12 +523,6 @@
             Entity component containing animation controller.
             </summary>
         </member>
-        <member name="F:VRage.Game.Components.MyAnimationControllerComponent.m_variablesWrite">
-            <summary>Final variable storage used to update the controller.</summary>
-        </member>
-        <member name="F:VRage.Game.Components.MyAnimationControllerComponent.m_animVariables">
-            <summary>Delta storage for variable changes since the last update started.</summary>
-        </member>
         <member name="P:VRage.Game.Components.MyAnimationControllerComponent.ComponentTypeDebugString">
             <summary>
             Name of the component type for debug purposes (e.g.: "Position")
@@ -1964,7 +1958,15 @@
         </member>
         <member name="M:VRage.Game.ModAPI.IMyGridGroups.GetGroup(VRage.Game.ModAPI.IMyCubeGrid,VRage.Game.ModAPI.GridLinkTypeEnum)">
             <summary>
-            Returns all grids connected to the given grid by the specified link type.
+            OBSOLETE: Use GetGroup with passing your own collection, it is better for simulation speed. Returns all grids connected to the given grid by the specified link type. Array always contains node.
+            </summary>
+            <param name="node"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.IMyGridGroups.GetGroup(VRage.Game.ModAPI.IMyCubeGrid,VRage.Game.ModAPI.GridLinkTypeEnum,System.Collections.Generic.ICollection{VRage.Game.ModAPI.IMyCubeGrid})">
+            <summary>
+            Returns all grids connected to the given grid by the specified link type. Array always contains node.
             </summary>
             <param name="node"></param>
             <param name="type"></param>
@@ -2086,13 +2088,16 @@
             <param name="dummies">Dictionary of dummies, can be null to just return count</param>
             <returns>Number of dummies in model</returns>
         </member>
-        <member name="M:VRage.Game.ModAPI.IMyMultiplayer.ReplicateEntityForClient(System.Int64,System.UInt64)">
+        <member name="M:VRage.Game.ModAPI.IMyMultiplayer.RegisterSecureMessageHandler(System.UInt16,System.Action{System.UInt16,System.Byte[],System.UInt64,System.Boolean})">
             <summary>
-            Forces the server to send an entity to a client even if it's outside of render range.
-            Pass 0 as steamId to replicate to all connected clients.
+            Allows you do reliable checks WHO have sent message to you.
             </summary>
-            <param name="entityId"></param>
-            <param name="steamId"></param>
+            <param name="id">Uniq handler id</param>
+            <param name="messageHandler">Call function</param>
+            <param name="ushort">HandlerId</param>
+            <param name="byte[][]">Package</param>
+            <param name="ulong">Player SteamID or 0 for Dedicated server</param>
+            <param name="bool">Sent message comes from server</param>
         </member>
         <member name="P:VRage.Game.ModAPI.IMyParallelTask.DefaultOptions">
             <summary>
@@ -2816,7 +2821,12 @@
         </member>
         <member name="P:VRage.Game.ModAPI.IMySlimBlock.Neighbours">
             <summary>
-            The blocks that neighbour this block
+            OBSOLETE:  allocates memory use GetNeighbours function. The blocks that neighbour this block
+            </summary>
+        </member>
+        <member name="M:VRage.Game.ModAPI.IMySlimBlock.GetNeighbours(System.Collections.Generic.ICollection{VRage.Game.ModAPI.IMySlimBlock})">
+            <summary>
+             The blocks that neighbour this block. Doesn't allocate memory
             </summary>
         </member>
         <member name="M:VRage.Game.ModAPI.IMySlimBlock.GetWorldBoundingBox(VRageMath.BoundingBoxD@,System.Boolean)">
@@ -3531,7 +3541,8 @@
         <member name="T:VRage.Game.ModAPI.Ingame.Utilities.MyCommandLine">
             <summary>
             A utility class to parse arguments from a command line string. Switches are defined with hyphen (-switch). Quotes can be
-            placed around an argument to parse verbatim.
+            placed around an argument to parse verbatim, but inner quotes will be copied verbatim. For example, "one"two" will result
+            in the string one"two.
             </summary>
         </member>
         <member name="M:VRage.Game.ModAPI.Ingame.Utilities.MyCommandLine.#ctor">
@@ -4079,6 +4090,19 @@
             <param name="key"></param>
             <param name="value"></param>
         </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.MyIni.AddSection(System.String)">
+            <summary>
+            Adds an empty section
+            </summary>
+            <param name="section"></param>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.MyIni.DeleteSection(System.String)">
+            <summary>
+            Deletes an entire selection
+            </summary>
+            <param name="section"></param>
+            <returns><c>true</c> if a section was deleted; <c>false</c> otherwise.</returns>
+        </member>
         <member name="M:VRage.Game.ModAPI.Ingame.Utilities.MyIni.Clear">
             <summary>
                 Empties this configuration
@@ -4529,6 +4553,363 @@
             </summary>
             <param name="stringBuilder"></param>
         </member>
+        <member name="T:VRage.Game.ModAPI.Ingame.Utilities.StringSegment">
+            <summary>
+            Represents a segment of a string.
+            </summary>
+        </member>
+        <member name="F:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.Text">
+            <summary>
+            The original text string
+            </summary>
+        </member>
+        <member name="F:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.Start">
+            <summary>
+            Where the segment starts
+            </summary>
+        </member>
+        <member name="F:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.Length">
+            <summary>
+            The length of the segment
+            </summary>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.#ctor(System.String)">
+            <summary>
+            Creates a new <see cref="T:VRage.Game.ModAPI.Ingame.Utilities.StringSegment"/> encompassing an entire string
+            </summary>
+            <param name="text"></param>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.#ctor(System.String,System.Int32,System.Int32)">
+            <summary>
+            Creates a new <see cref="T:VRage.Game.ModAPI.Ingame.Utilities.StringSegment"/> for the given string area
+            </summary>
+            <param name="text">The original text string</param>
+            <param name="start">Where the segment starts</param>
+            <param name="length">The length of the segment</param>
+        </member>
+        <member name="P:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.IsEmpty">
+            <summary>
+            Determines whether this is an empty/undefined string segment
+            </summary>
+        </member>
+        <member name="P:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.IsCached">
+            <summary>
+            Determines whether this segment has been pre-cached in such a way that no allocation will occur when using <see cref="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.ToString"/>
+            </summary>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.IndexOf(System.Char)">
+            <summary>
+            Reports the zero-based index of the first occurence of the specified character, relative to <see cref="F:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.Start"/>. Returns -1 if nothing was found.
+            </summary>
+            <param name="ch"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.IndexOf(System.Char,System.Int32)">
+            <summary>
+            Reports the zero-based index of the first occurence of the specified character, relative to <see cref="F:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.Start"/>. Returns -1 if nothing was found.
+            </summary>
+            <param name="ch"></param>
+            <param name="start">Where to start the search (relative to <see cref="F:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.Start"/>)</param>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.IndexOfAny(System.Char[])">
+            <summary>
+            Reports the zero-based index of the first occurence of one of the provided characters, relative to <see cref="F:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.Start"/>. Returns -1 if nothing was found.
+            </summary>
+            <param name="chars"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.Equals(System.Object)">
+            <summary>Indicates whether this instance and a specified object are equal.</summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns>true if <paramref name="obj">obj</paramref> and this instance are the same type and represent the same value; otherwise, false.</returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.GetHashCode">
+            <summary>Returns the hash code for this instance.</summary>
+            <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.Equals(System.String)">
+            <summary>
+            Compares this string segment with the given string in a case sensitive manner.
+            </summary>
+            <param name="other"></param>
+            <returns><c>true</c> if the string segment equals the string; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.Equals(VRage.Game.ModAPI.Ingame.Utilities.StringSegment)">
+            <summary>
+            Compares this string segment with another in a case sensitive manner.
+            </summary>
+            <param name="other"></param>
+            <returns><c>true</c> if the string segments are equal; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.EqualsIgnoreCase(System.String)">
+            <summary>
+            Compares this string segment with the given string in a case insensitive manner.
+            </summary>
+            <param name="other"></param>
+            <returns><c>true</c> if the string segment equals the string; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.EqualsIgnoreCase(VRage.Game.ModAPI.Ingame.Utilities.StringSegment)">
+            <summary>
+            Compares this string segment with another in a case insensitive manner.
+            </summary>
+            <param name="other"></param>
+            <returns><c>true</c> if the string segments are equal; <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.ToString">
+            <summary>
+            Returns a string containing just this segment.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.Item(System.Int32)">
+            <summary>
+            Gets a character at a position relative to <see cref="F:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.Start"/>.
+            </summary>
+            <param name="i"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.GetLines(System.Collections.Generic.List{VRage.Game.ModAPI.Ingame.Utilities.StringSegment})">
+            <summary>
+            Fills a list with individual string segments representing the lines of text within this string segment, separated by newlines.
+            </summary>
+            <param name="lines"></param>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegment.GetLines(System.Collections.Generic.List{System.String})">
+            <summary>
+            Fills a list with individual strings representing the lines of text within this string segment, separated by newlines.
+            </summary>
+            <param name="lines"></param>
+        </member>
+        <member name="T:VRage.Game.ModAPI.Ingame.Utilities.StringSegmentComparer">
+            <summary>
+            A comparer designed to compare <see cref="T:VRage.Game.ModAPI.Ingame.Utilities.StringSegment"/> instances in a case sensitive manner. Use <see cref="F:VRage.Game.ModAPI.Ingame.Utilities.StringSegmentComparer.DEFAULT"/> for a default instance
+            </summary>
+        </member>
+        <member name="F:VRage.Game.ModAPI.Ingame.Utilities.StringSegmentComparer.DEFAULT">
+            <summary>
+            A default instance of <see cref="T:VRage.Game.ModAPI.Ingame.Utilities.StringSegmentComparer"/>
+            </summary>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegmentComparer.Equals(VRage.Game.ModAPI.Ingame.Utilities.StringSegment,VRage.Game.ModAPI.Ingame.Utilities.StringSegment)">
+            <summary>Determines whether the specified objects are equal.</summary>
+            <param name="x">The first object of type T to compare.</param>
+            <param name="y">The second object of type T to compare.</param>
+            <returns>true if the specified objects are equal; otherwise, false.</returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegmentComparer.GetHashCode(VRage.Game.ModAPI.Ingame.Utilities.StringSegment)">
+            <summary>Returns a hash code for the specified object.</summary>
+            <param name="obj">The <see cref="T:System.Object"></see> for which a hash code is to be returned.</param>
+            <returns>A hash code for the specified object.</returns>
+            <exception cref="T:System.ArgumentNullException">The type of <paramref name="obj">obj</paramref> is a reference type and <paramref name="obj">obj</paramref> is null.</exception>
+        </member>
+        <member name="T:VRage.Game.ModAPI.Ingame.Utilities.StringSegmentIgnoreCaseComparer">
+            <summary>
+            A comparer designed to compare <see cref="T:VRage.Game.ModAPI.Ingame.Utilities.StringSegment"/> instances in a case insensitive manner. Use <see cref="F:VRage.Game.ModAPI.Ingame.Utilities.StringSegmentIgnoreCaseComparer.DEFAULT"/> for a default instance
+            </summary>
+        </member>
+        <member name="F:VRage.Game.ModAPI.Ingame.Utilities.StringSegmentIgnoreCaseComparer.DEFAULT">
+            <summary>
+            A default instance of <see cref="T:VRage.Game.ModAPI.Ingame.Utilities.StringSegmentIgnoreCaseComparer"/>
+            </summary>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegmentIgnoreCaseComparer.Equals(VRage.Game.ModAPI.Ingame.Utilities.StringSegment,VRage.Game.ModAPI.Ingame.Utilities.StringSegment)">
+            <summary>Determines whether the specified objects are equal.</summary>
+            <param name="x">The first object of type T to compare.</param>
+            <param name="y">The second object of type T to compare.</param>
+            <returns>true if the specified objects are equal; otherwise, false.</returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.StringSegmentIgnoreCaseComparer.GetHashCode(VRage.Game.ModAPI.Ingame.Utilities.StringSegment)">
+            <summary>Returns a hash code for the specified object.</summary>
+            <param name="obj">The <see cref="T:System.Object"></see> for which a hash code is to be returned.</param>
+            <returns>A hash code for the specified object.</returns>
+            <exception cref="T:System.ArgumentNullException">The type of <paramref name="obj">obj</paramref> is a reference type and <paramref name="obj">obj</paramref> is null.</exception>
+        </member>
+        <member name="T:VRage.Game.ModAPI.Ingame.Utilities.TextPtr">
+            <summary>
+            A parser utility structure representing a pointer to a location within a string.
+            </summary>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.op_Implicit(VRage.Game.ModAPI.Ingame.Utilities.TextPtr)~System.Int32">
+            <summary>
+            Implicitly return the index into the string
+            </summary>
+            <param name="ptr"></param>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.op_Implicit(VRage.Game.ModAPI.Ingame.Utilities.TextPtr)~System.String">
+            <summary>
+            Implicitly return the original string
+            </summary>
+            <param name="ptr"></param>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.op_Addition(VRage.Game.ModAPI.Ingame.Utilities.TextPtr,System.Int32)">
+            <summary>
+            Add an offset to a pointer
+            </summary>
+            <param name="ptr"></param>
+            <param name="offset"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.op_Increment(VRage.Game.ModAPI.Ingame.Utilities.TextPtr)">
+            <summary>
+            Increment a pointer by one
+            </summary>
+            <param name="ptr"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.op_Subtraction(VRage.Game.ModAPI.Ingame.Utilities.TextPtr,System.Int32)">
+            <summary>
+            Subtract an offset from a pointer
+            </summary>
+            <param name="ptr"></param>
+            <param name="offset"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.op_Decrement(VRage.Game.ModAPI.Ingame.Utilities.TextPtr)">
+            <summary>
+            Decrement a pointer by one
+            </summary>
+            <param name="ptr"></param>
+            <returns></returns>
+        </member>
+        <member name="F:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.Content">
+            <summary>
+            The original content string
+            </summary>
+        </member>
+        <member name="F:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.Index">
+            <summary>
+            The index being pointed at by this structure
+            </summary>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.#ctor(System.String)">
+            <summary>
+            Create a new text pointer at the first character in the given string
+            </summary>
+            <param name="content"></param>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.#ctor(System.String,System.Int32)">
+            <summary>
+            Create a new text pointer at the given index of the given string
+            </summary>
+            <param name="content"></param>
+            <param name="index"></param>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.IsOutOfBounds">
+            <summary>
+            Determines whether this pointer is currently out of bounds (before or after the string content)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.Char">
+            <summary>
+            Returns the character currently being pointed at, or <c>\0</c> if out of bounds
+            </summary>
+        </member>
+        <member name="P:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.IsEmpty">
+            <summary>
+            Determines whether this pointer is an empty pointer, i.e. not pointing at anything at all.
+            </summary>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.FindLineNo">
+            <summary>
+            Determines what line number this pointer is currently at.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.Find(System.String)">
+            <summary>
+            Finds the given text string
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.Find(System.Char)">
+            <summary>
+            Finds the given character
+            </summary>
+            <param name="ch"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.FindAny(System.Char[])">
+            <summary>
+            Finds one of the given characters
+            </summary>
+            <param name="chs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.FindInLine(System.Char)">
+            <summary>
+            Finds the given character within the current line
+            </summary>
+            <param name="ch"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.FindAnyInLine(System.Char[])">
+            <summary>
+            Finds one of the given characters within the current line
+            </summary>
+            <param name="chs"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.FindEndOfLine(System.Boolean)">
+            <summary>
+            Finds the end of the current line
+            </summary>
+            <param name="skipNewline">Whether the actual newline character(s) should also be skipped. Defaults to false</param>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.StartsWithCaseInsensitive(System.String)">
+            <summary>
+            Determines if the current pointer location starts with the given string - in a case insensitive manner.
+            </summary>
+            <param name="what"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.StartsWith(System.String)">
+            <summary>
+            Determines if the current pointer location starts with the given string - in a case sensitive manner.
+            </summary>
+            <param name="what"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.SkipWhitespace(System.Boolean)">
+            <summary>
+            Skips whitespace
+            </summary>
+            <param name="skipNewline">Whether to also skip newlines</param>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.IsEndOfLine">
+            <summary>
+            Determines whether the pointer is currently at the end of a line (right before a newline character set or end of the string)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.IsStartOfLine">
+            <summary>
+            Determines whether the pointer is currently at the beginning of a line (right after a newline character set or start of the string)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.IsNewLine">
+            <summary>
+            Determines whether the pointer is currently at a newline (end of the string is not a newline)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.TrimStart">
+            <summary>
+            Advances the pointer location until all whitespace is skipped - does not skip newlines
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.Game.ModAPI.Ingame.Utilities.TextPtr.TrimEnd">
+            <summary>
+            Reverses the pointer location until all whitespace is skipped - does not skip newlines
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:VRage.Game.ModAPI.Interfaces.IMyCameraController.IsInFirstPersonView">
             <summary>
             Gets or sets if the current camera view is first person.
@@ -4560,12 +4941,12 @@
             If not, it should fall to ControlledObject
             </returns>
         </member>
-        <member name="M:VRage.Game.ModAPI.Interfaces.IMyDecalProxy.AddDecals(VRage.Game.ModAPI.MyHitInfo@,VRage.Utils.MyStringHash,System.Object,VRage.Game.ModAPI.Interfaces.IMyDecalHandler,VRage.Utils.MyStringHash)">
+        <member name="M:VRage.Game.ModAPI.Interfaces.IMyDecalProxy.AddDecals(VRage.Game.ModAPI.MyHitInfo@,VRage.Utils.MyStringHash,VRageMath.Vector3,System.Object,VRage.Game.ModAPI.Interfaces.IMyDecalHandler,VRage.Utils.MyStringHash,VRage.Utils.MyStringHash)">
             <param name="hitInfo">Hithinfo on world coordinates</param>
             <param name="source"></param>
             <param name="customdata"></param>
             <param name="decalHandler"></param>
-            <param name="material"></param>
+            <param name="physicalMaterial"></param>
         </member>
         <member name="M:VRage.Game.ModAPI.Interfaces.IMyDecalHandler.AddDecal(VRageRender.MyDecalRenderInfo@,System.Collections.Generic.List{System.UInt32})">
             <param name="renderData">Position and normal on local coordinates for regular actors.
@@ -6308,537 +6689,6 @@
             <param name="signature"></param>
             <returns></returns>
         </member>
-        <member name="M:VRage.Game.VisualScripting.ScriptBuilder.MyVSCompiler.Compile">
-            <summary>
-            Creates a fresh new compilation of source files.
-            Does not load any assembly.
-            </summary>
-            <returns>Success if no compilation errors were encountered.</returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.ScriptBuilder.MyVSCompiler.LoadAssembly(System.String)">
-            <summary>
-            Loads assembly.
-            <returns>Loading success.</returns>
-            </summary>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.ScriptBuilder.MyVSCompiler.Emit(System.IO.Stream,System.IO.Stream)">
-            <summary>
-            Write the final assembly and it's symbols to the provided streams.
-            </summary>
-            <param name="assemblyOutputStream"></param>
-            <param name="symbolsOutputStream"></param>
-            <returns></returns>
-        </member>
-        <member name="T:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxBuilderNode">
-            <summary>
-            This node does not generate any syntax, but runs the preprocessing
-            part and initializes the collecting of syntax.
-            </summary>
-        </member>
-        <member name="T:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxDelayNode">
-            <summary>
-            Sequence dependent node that creates syntax for timed delay
-            </summary>
-        </member>
-        <member name="T:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxEventNode">
-            <summary>
-            This node represents a Method signature / entrypoint to method.
-            Contains only general information about the method signature.
-            Generates no syntax.
-            </summary>
-        </member>
-        <member name="T:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxForLoopNode">
-            <summary>
-            Sequence dependent node that creates syntax for For loops
-            with support for custom initial index, increment and last index.
-            </summary>
-        </member>
-        <member name="T:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxGetterNode">
-            <summary>
-            This node represents a class variable name getter.
-            Genertes no syntax and only provides other node with
-            variable name.
-            </summary>
-        </member>
-        <member name="T:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxInputNode">
-            <summary>
-            Special case of Event node. The logic is the same for both,
-            but on the gui side the logic is different. Thats why I kept
-            it separated also here.
-            </summary>
-        </member>
-        <member name="T:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxInterfaceMethodNode">
-            <summary>
-            Simple method declaration node for implementing the interface methods.
-            </summary>
-        </member>
-        <member name="T:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxKeyEventNode">
-            <summary>
-            Special case of Event node that also generates some syntax.
-            Creates a simple if statement that filters the input to this node.
-            </summary>
-        </member>
-        <member name="T:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxLogicGateNode">
-            <summary>
-            Sequence independent node that creates syntax for basic 
-            boolean algebra operations. AND OR NOT XOR NAND NOR.
-            It joins all provided values into a change of operations
-            started and ended with parenthesis.
-            </summary>
-        </member>
-        <member name="F:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.Depth">
-            <summary>
-            Depth of the node in the graph.
-            </summary>
-        </member>
-        <member name="P:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.Preprocessed">
-            <summary>
-            Tells if the node was already preprocessed.
-            (default value is false)
-            </summary>
-        </member>
-        <member name="P:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.SequenceDependent">
-            <summary>
-            Tells whenever the node has sequence or not.
-            </summary>
-        </member>
-        <member name="F:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.SubTreeNodes">
-            <summary>
-            Nodes that got referenced more than once at one syntax level.
-            </summary>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.Reset">
-            <summary>
-            Resets nodes to state when they are ready for new run of the builder.
-            </summary>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.VariableSyntaxName(System.String,System.Boolean)">
-            <summary>
-            Unique identifier within class syntax.
-            </summary>
-        </member>
-        <member name="P:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.Collected">
-            <summary>
-            Is getting set to true the first time the syntax from this node is collected.
-            Prevents duplicities in syntax.
-            </summary>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.CollectInputExpressions(System.Collections.Generic.List{Microsoft.CodeAnalysis.CSharp.Syntax.StatementSyntax},System.Collections.Generic.List{Microsoft.CodeAnalysis.CSharp.Syntax.StatementSyntax})">
-            <summary>
-            Returns ordered set of expressions from value suppliers.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.CollectSequenceExpressions(System.Collections.Generic.List{Microsoft.CodeAnalysis.CSharp.Syntax.StatementSyntax},System.Collections.Generic.List{Microsoft.CodeAnalysis.CSharp.Syntax.StatementSyntax})">
-            <summary>
-            Returns ordered set of all expressions.
-            </summary>
-            <param name="expressions"></param>
-        </member>
-        <member name="P:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.SequenceInputs">
-            <summary>
-            List of sequence input nodes connected to this one.
-            </summary>
-        </member>
-        <member name="P:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.SequenceOutputs">
-            <summary>
-            List of sequence output nodes connected to this one.
-            </summary>
-        </member>
-        <member name="P:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.Outputs">
-            <summary>
-            Output nodes.
-            </summary>
-        </member>
-        <member name="P:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.Inputs">
-            <summary>
-            Input Nodes.
-            </summary>
-        </member>
-        <member name="F:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.m_objectBuilder">
-            <summary>
-            Data container;
-            </summary>
-        </member>
-        <member name="P:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.ObjectBuilder">
-            <summary>
-            Data container getter.
-            </summary>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.#ctor(VRage.Game.MyObjectBuilder_ScriptNode)">
-            <summary>
-            Constructor.
-            </summary>
-            <param name="ob">Should never be a base of _scriptNode.</param>
-        </member>
-        <member name="P:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.Navigator">
-            <summary>
-            Member used for in-graph navigation.
-            </summary>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.Preprocess(System.Int32)">
-            <summary>
-            Pre-generation process that loads necessary data in derived nodes
-            and adjusts the internal state of graph to generation ready state.
-            </summary>
-            <param name="currentDepth"></param>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.TryRegisterNode(System.Int32,System.Collections.Generic.List{VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode})">
-            <summary>
-            Tries to put the node of id into collection.
-            </summary>
-            <param name="nodeID">Id of looked for node.</param>
-            <param name="collection">Target collection.</param>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxNode.GetHashCode">
-            <summary>
-            Method that is needed for Hashing purposes.
-            Id should be a unique identifier within a graph.
-            </summary>
-            <returns>Id of node.</returns>
-        </member>
-        <member name="T:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxOutputNode">
-            <summary>
-            Output node that fills in the output values of a method.
-            </summary>
-        </member>
-        <member name="T:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxScriptNode">
-            <summary>
-            Represents a method call from local instance of Script class.
-            Contains some data that are used out of the graph generation process.
-            </summary>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.ScriptBuilder.Nodes.MyVisualSyntaxScriptNode.InstanceDeclaration">
-            <summary>
-            MyClass m_instanceName = new MyClass();
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:VRage.Game.VisualScripting.MyVisualScriptBuilder">
-            <summary>
-            Creates class syntax for provided file.
-            
-            Notes:
-            WorldScripts
-                Consist of Event methods having only input purpose, so they have no output variables and void return value.
-                One event type with same signature can appear on multiple places in the script. Such situaltion mean that 
-                the method body will have multiple sections that will be later evaluated independently without 
-                any order dependency.
-            
-            NormalScripts
-                Should have only one input as entry point of the method and multiple or none Output nodes. Output nodes have
-                parameters defined. Method signature will contain input variables (from input node), output variables (from 
-                outputs - all outputs must have same signature) and bool return value. 
-                Return value tells the system if the output node was reached and whenever we should or should not continue
-                executing the sequence chain.
-            </summary>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.MyVisualScriptBuilder.Load">
-            <summary>
-            Loads the script file.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.MyVisualScriptBuilder.Build">
-            <summary>
-            Creates syntax of a class generated out of interactionNodes.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MyRoslynExtensions.IsDerivedTypeOf(Microsoft.CodeAnalysis.ITypeSymbol,Microsoft.CodeAnalysis.ITypeSymbol)">
-            <summary>
-            Checks symbol history for ancestor of the type.
-            </summary>
-            <param name="derivedType"></param>
-            <param name="type"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MyRoslynExtensions.IsSequenceDependent(Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax)">
-            <summary>
-            Checks for sequnce dependency by Attribute.
-            </summary>
-            <param name="methodSyntax"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MyRoslynExtensions.IsStatic(Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax)">
-            <summary>
-            Checks for Static modification in method syntax.
-            </summary>
-            <param name="methodSyntax"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MyRoslynExtensions.DeclaringClass(Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax)">
-            <summary>
-            Looks class that is the method container.
-            </summary>
-            <param name="methodSyntax"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MyRoslynExtensions.SerializeToObjectBuilder(Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax)">
-            <summary>
-            Creates string that can be further loaded from string.
-            Full signature with parameters.
-            </summary>
-            <param name="syntax"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MyRoslynExtensions.SerializeToObjectBuilder(Microsoft.CodeAnalysis.ITypeSymbol)">
-            <summary>
-            Creates string representation of type symbol that can be further
-            reconstructed. Full namespace + name.
-            </summary>
-            <param name="typeSymbol"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MyRoslynExtensions.IsOut(Microsoft.CodeAnalysis.CSharp.Syntax.ParameterSyntax)">
-            <summary>
-            Checks parameter for Out keyword.
-            </summary>
-            <param name="paramSyntax"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MyRoslynExtensions.LiteComparator(Microsoft.CodeAnalysis.ITypeSymbol,Microsoft.CodeAnalysis.ITypeSymbol)">
-            <summary>
-            Comapres two types for equality by theire name.
-            </summary>
-            <param name="current"></param>
-            <param name="another"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MyRoslynExtensions.IsString(Microsoft.CodeAnalysis.ITypeSymbol)">
-            <summary>
-            Is type of string?
-            </summary>
-            <param name="symbol"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MyRoslynExtensions.IsInt(Microsoft.CodeAnalysis.ITypeSymbol)">
-            <summary>
-            Is type of integer?
-            </summary>
-            <param name="symbol"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MyRoslynExtensions.IsFloat(Microsoft.CodeAnalysis.ITypeSymbol)">
-            <summary>
-            Is type of float?
-            </summary>
-            <param name="symbol"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MyRoslynExtensions.IsBool(Microsoft.CodeAnalysis.ITypeSymbol)">
-            <summary>
-            Is type of Bool?
-            </summary>
-            <param name="symbol"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.UsingStatementSyntax(System.String)">
-            <summary>
-            Creates using directive from identifiers "System","Collection".
-            </summary>
-            <param name="identifiers">Separated identifiers.</param>
-            <returns>Null if less than 2 identifiers passed.</returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.GenericFieldDeclaration(System.Type,System.String,System.Nullable{Microsoft.CodeAnalysis.SyntaxTokenList})">
-            <summary>
-            Generic Field declaration creation.
-            </summary>
-            <param name="type">Field type.</param>
-            <param name="fieldVariableName">Name of the field.</param>
-            <param name="modifiers">Modifiers - null creates public modifier list</param>
-            <returns>Complete field declaration syntax.</returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.GenericTypeSyntax(System.Type)">
-            <summary>
-            Generic type syntax creation.
-            </summary>
-            <param name="type">C# type</param>
-            <returns>Type Syntax</returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.GenericObjectCreation(System.Type,System.Collections.Generic.IEnumerable{Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax})">
-            <summary>
-            Creates generic type object creation syntax. new type(argumentExpressions).
-            </summary>
-            <param name="type">Type of created object.</param>
-            <param name="argumentExpressions">Initializer argument expressions.</param>
-            <returns>Object creatation expression.</returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.DelegateAssignment(System.String,System.String)">
-            <summary>
-            deletageIdentifier += methodName;
-            </summary>
-            <param name="deletageIdentifier"></param>
-            <param name="methodName"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.DelegateRemoval(System.String,System.String)">
-            <summary>
-            delegateIdentifier -= methodName
-            </summary>
-            <param name="deletageIdentifier"></param>
-            <param name="methodName"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.PublicClass(System.String)">
-            <summary>
-            Creates public class with empty body.
-            </summary>
-            <param name="name"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.MemberDeclaration(System.String,System.String)">
-            <summary>
-            Creates basic member declaration with provided name and type.
-            </summary>
-            <param name="memberName">Valid name.</param>
-            <param name="memberType">Valid type.</param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.VariableAssignmentExpression(System.String,System.String,Microsoft.CodeAnalysis.CSharp.SyntaxKind)">
-            <summary>
-            Creates assignment expression for given variableName and value.
-            </summary>
-            <param name="variableName"></param>
-            <param name="value"></param>
-            <param name="expressionKind"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.VectorAssignmentExpression(System.String,System.String,System.Double,System.Double,System.Double)">
-            <summary>
-            Creates assignment expression variableName = vectorType(x,y,z);
-            </summary>
-            <param name="variableName"></param>
-            <param name="vectorType"></param>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.ReferenceTypeInstantiation(System.String,System.String,Microsoft.CodeAnalysis.CSharp.Syntax.LiteralExpressionSyntax[])">
-            <summary>
-            Expression of type "var variableName = new type(values....);"
-            </summary>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.VectorArgumentSyntax(System.Double)">
-            <summary>
-            Creates arguments of type NumericLiteral for given value.
-            </summary>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.ArithmeticStatement(System.String,System.String,System.String,System.String)">
-            <summary>
-            Craetes expression of type "var resultVariableName = leftSide 'operation' rightSide;"
-            </summary>
-            <param name="resultVariableName"></param>
-            <param name="leftSide"></param>
-            <param name="rightSide"></param>
-            <param name="operation"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.IfExpressionSyntax(Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax,System.Collections.Generic.List{Microsoft.CodeAnalysis.CSharp.Syntax.StatementSyntax},System.Collections.Generic.List{Microsoft.CodeAnalysis.CSharp.Syntax.StatementSyntax})">
-            <summary>
-            Creates conditional statement with given statements for true/false clauses and condition syntax.
-            </summary>
-            <param name="condition"></param>
-            <param name="statements"></param>
-            <param name="elseStatements"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.IfExpressionSyntax(System.String,System.Collections.Generic.List{Microsoft.CodeAnalysis.CSharp.Syntax.StatementSyntax},System.Collections.Generic.List{Microsoft.CodeAnalysis.CSharp.Syntax.StatementSyntax})">
-            <summary>
-            Creates conditional statement with given statements for true/false clauses and condition variable name.
-            </summary>
-            <param name="conditionVariableName"></param>
-            <param name="statements"></param>
-            <param name="elseStatements"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.CastExpression(System.String,System.String,System.String)">
-            <summary>
-            Creates declaration statement for expression of "var varName = (type)castedVariableName;"
-            </summary>
-            <param name="castedVariableName"></param>
-            <param name="type"></param>
-            <param name="resultVariableName"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.PublicMethodDeclaration(System.String,Microsoft.CodeAnalysis.CSharp.SyntaxKind,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String})">
-            <summary>
-            Creates public void methodName(paramType1 paramName1,..,paramTypeN paramNameN) {}.
-            </summary>
-            <param name="methodName"></param>
-            <param name="inputParameterNames"></param>
-            <param name="inputParameterTypes"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.Parameters(System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String},System.Boolean)">
-            <summary>
-            Craetes parameter list syntax from given parameterNames.
-            </summary>
-            <param name="parameterNames"></param>
-            <param name="types"></param>
-            <param name="areOutputs">Adds out keyword to every single one.</param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.ParameterSyntax(System.String,System.String)">
-            <summary>
-            Creates parameter syntax out of given data.
-            </summary>
-            <param name="name">Unique variable name within script class.</param>
-            <param name="typeSyntaxNode"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.ParameterSyntax(System.String,System.Type)">
-            <summary>
-            Creates parameter syntax out of given data.
-            </summary>
-            <param name="name">Unique variable name within script class.</param>
-            <param name="type">The type of the parameter</param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.LocalVariable(System.String,System.String,Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax)">
-            <summary>
-            Creates syntax for output variable declaration.
-            Can be used to create var type.
-            </summary>
-            <param name="typeData"></param>
-            <param name="variableName"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.MethodInvocation(System.String,System.Collections.Generic.IEnumerable{System.String},System.String)">
-            <summary>
-             Creates syntax of type "Method(arg0,arg1,..);"
-            </summary>
-            <param name="className">Used for static method invocation.</param>
-            <param name="methodName">Name of the method.</param>
-            <param name="orderedVariableNames">Should be the same order as method signature.</param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.CreateArgumentSyntax(System.String)">
-            <summary>
-            Craetes simple argument.
-            </summary>
-            <param name="value"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.SimpleAssignment(System.String,Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax)">
-            <summary>
-            Creates assignment for given variable.
-            variableName = rightSide;
-            </summary>
-            <param name="variableName"></param>
-            <param name="rightSide"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VRage.Game.VisualScripting.Utils.MySyntaxFactory.Constructor(Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax)">
-            <summary>
-            Creates corresponding parameterless constructor to passed class.
-            </summary>
-            <param name="classDeclaration"></param>
-            <returns></returns>
-        </member>
         <member name="P:VRage.Game.Voxels.IMyStorage.StorageId">
             <summary>
             Unique identifier for this storage.
@@ -6918,7 +6768,7 @@
             The procedural provider of data for this storage, can be null.
             </summary>
         </member>
-        <member name="M:VRage.Game.Voxels.IMyStorage.SetCompressedDataCache(System.Byte[])">
+        <member name="M:VRage.Game.Voxels.IMyStorage.SetDataCache(System.Byte[],System.Boolean)">
             <summary>
             Sets cache for compressed storage data
             </summary>
@@ -6930,7 +6780,7 @@
             </summary>
             <returns>Uncompressed voxel data</returns>
         </member>
-        <member name="P:VRage.Game.Voxels.IMyStorage.AreCompressedDataCached">
+        <member name="P:VRage.Game.Voxels.IMyStorage.AreDataCached">
             <summary>
             Returns true if storage compressed data are cached
             </summary>
@@ -7245,6 +7095,12 @@
             <summary>
             Returns a new entity ID for the entity with the given old entity ID.
             The function will return the same new entityId only if the saveMapping argument is set to true.
+            </summary>
+        </member>
+        <member name="M:VRage.ModAPI.IMyRemapHelper.RemapEntityName(System.Int64)">
+            <summary>
+            Returns a new entity name for the entity with the given old entity name.
+            The function will return the same new name only if the saveMapping argument is set to true.
             </summary>
         </member>
         <member name="M:VRage.ModAPI.IMyRemapHelper.RemapGroupId(System.String,System.Int32)">
@@ -9715,6 +9571,26 @@
             Toggles signals between fading mode and always visible mode
             </summary>
         </member>
+        <member name="F:MyCommonTexts.ControlName_SpectatorLock">
+            <summary>
+            Lock/unlock to entity
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.ControlName_SpectatorSwitchMode">
+            <summary>
+            Next camera mode
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.ControlName_SpectatorNextPlayer">
+            <summary>
+            Next player
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.ControlName_SpectatorPrevPlayer">
+            <summary>
+            Previous player
+            </summary>
+        </member>
         <member name="F:MyCommonTexts.ControlName_HoldToSprint">
             <summary>
             Hold to sprint
@@ -10252,7 +10128,7 @@
         </member>
         <member name="F:MyCommonTexts.MessageBoxTextErrorLoadingEntities">
             <summary>
-            An error occurred while adding one or more objects. See log file for more details.
+            An error occurred while loading the world. The world may be corrupted and can't be loaded. Please, restart the game and try again.
             </summary>
         </member>
         <member name="F:MyCommonTexts.MessageBoxTextAreYouSureToMoveGridToClipboard">
@@ -10283,6 +10159,11 @@
         <member name="F:MyCommonTexts.DialogTextDownloadWorldFailed">
             <summary>
             Downloading the world has failed!
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.DialogTextCheckServerStatus">
+            <summary>
+            Checking server status.
             </summary>
         </member>
         <member name="F:MyCommonTexts.DialogTextJoiningWorld">
@@ -10492,7 +10373,7 @@
         </member>
         <member name="F:MyCommonTexts.MultiplayerErrorConnectionFailed">
             <summary>
-            Connection to server failed: {0}
+            Connection to server failed.
             </summary>
         </member>
         <member name="F:MyCommonTexts.MultiplayerStateConnectingToServer">
@@ -10657,7 +10538,7 @@
         </member>
         <member name="F:MyCommonTexts.LobbyNoUser">
             <summary>
-            No user is logged in to the {0} service.
+            Disconnected from network as player signed out of {0} service.
             </summary>
         </member>
         <member name="F:MyCommonTexts.ToolTipWorldSettingsDescription">
@@ -10767,7 +10648,7 @@
         </member>
         <member name="F:MyCommonTexts.MultiplayerError_IncorrectVersion">
             <summary>
-            Server has different version of the game. Your version: {0}; Server version: {1}; You can change the branch, before launching the game, in game properties.
+            Server has different version of the game. Your version: {0}; Server version: {1}. Please, update either the server or the game to the same version.
             </summary>
         </member>
         <member name="F:MyCommonTexts.MultiplayerError_FamilyShareDisabled">
@@ -10953,6 +10834,11 @@
         <member name="F:MyCommonTexts.MultiplayerErrorTicketAlreadyUsed">
             <summary>
             Ticket already used
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.MultiplayerErrorNotFound">
+            <summary>
+            Server not found.
             </summary>
         </member>
         <member name="F:MyCommonTexts.MultiplayerErrorTicketCanceled">
@@ -12330,6 +12216,16 @@
             Enable voice chat
             </summary>
         </member>
+        <member name="F:MyCommonTexts.PushToTalk">
+            <summary>
+            Push to talk
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.MicSensitivity">
+            <summary>
+            Microphone sensitivity
+            </summary>
+        </member>
         <member name="F:MyCommonTexts.ScreenGraphicsOptions_Tonemapping">
             <summary>
             Tonemapping
@@ -13323,7 +13219,7 @@
         </member>
         <member name="F:MyCommonTexts.ServerDetails_IPAddress">
             <summary>
-            IP Address
+            Connect to
             </summary>
         </member>
         <member name="F:MyCommonTexts.ServerDetails_ModDownloadSize">
@@ -14607,6 +14503,11 @@
             SCENE TOO COMPLEX
             </summary>
         </member>
+        <member name="F:MyCommonTexts.PerformanceWarningHeading_ReducedReplicationRange">
+            <summary>
+            SCENE TOO COMPLEX
+            </summary>
+        </member>
         <member name="F:MyCommonTexts.PerformanceWarningHeading_UnsafeGrids">
             <summary>
             UNSAFE GRIDS
@@ -14675,6 +14576,11 @@
         <member name="F:MyCommonTexts.PerformanceWarningIssuesServer_PoorConnection">
             <summary>
             Poor network quality
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.PerformanceWarningIssuesServer_ReducedReplicationRange">
+            <summary>
+            The Sync Distance have been reduced because of complexity of the surroundings to {0}m.
             </summary>
         </member>
         <member name="F:MyCommonTexts.GeneralWarningIssues_Experimental">
@@ -15399,7 +15305,7 @@
         </member>
         <member name="F:MyCommonTexts.SaveGameErrorOverBlockLimits">
             <summary>
-            Saved world exceeds safe block limits and could not be loaded.
+            Saved world exceeds experimental block limits and could not be loaded.
             </summary>
         </member>
         <member name="F:MyCommonTexts.MultiplayerWarningPing">
@@ -16207,6 +16113,16 @@
             Switch to Whisper channel
             </summary>
         </member>
+        <member name="F:MyCommonTexts.ChatCommand_HelpSimple_FYou">
+            <summary>
+            Play emote Go Clang yourself
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.ChatCommand_HelpSimple_Drunk">
+            <summary>
+            Play emote Drunk
+            </summary>
+        </member>
         <member name="F:MyCommonTexts.ChatCommand_HelpSimple_Wave">
             <summary>
             Play emote Wave
@@ -16696,6 +16612,11 @@
             The First Jump
             </summary>
         </member>
+        <member name="F:MyCommonTexts.SimpleNewGame_SparksOfTheFuture">
+            <summary>
+            Sparks of the Future
+            </summary>
+        </member>
         <member name="F:MyCommonTexts.SimpleNewGame_Workshop">
             <summary>
             Workshop
@@ -16724,6 +16645,11 @@
         <member name="F:MyCommonTexts.SimpleNewGame_TheFirstJump_Description">
             <summary>
             This scenario offers a linear story with action-packed gameplay, while the majority of Space Engineers scenarios feature unique sandbox environments where players create their own challenges.
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.SimpleNewGame_SparksOfTheFuture_Description">
+            <summary>
+            Welcome to Sparks of the Future! Enjoy some competition at the shooting-range or on the dance floor. Explore the many shops available at Sparks of the Future Central. Looking for a distraction from your daily activities or do you seek the vibrant city life? You can find it all here at Sparks of the Future!
             </summary>
         </member>
         <member name="F:MyCommonTexts.SettingSymmetryXGamepad">
@@ -17371,6 +17297,11 @@
             Scene is too complex. Remove some grids. Quality of simulation, deformations and voxel changes will be reduced to improve performance.
             </summary>
         </member>
+        <member name="F:MyCommonTexts.ExperimentalOutOfMemoryCrashMessageBox">
+            <summary>
+            Last time, the game crashed due to running out of memory. This is usually caused by too large a world in experimental mode. Please consider switching to safe mode.  Would you like to enable safe mode now?
+            </summary>
+        </member>
         <member name="F:MyCommonTexts.ScreenDebugAdminMenu_RevertBoulders">
             <summary>
             Revert Boulders
@@ -17429,6 +17360,106 @@
         <member name="F:MyCommonTexts.GridsRemovedWhilePasting">
             <summary>
             After removal of all DLC blocks you do not own and that are not allowed by server, no other blocks remained.
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.HelpScreen_GamepadAdvanced_NextToolbar">
+            <summary>
+            Next Toolbar
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.HelpScreen_GamepadAdvanced_PreviousToolbar">
+            <summary>
+            Previous Toolbar
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.HelpScreen_GeneralGame">
+            <summary>
+            General
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.HelpScreen_ActionSetup">
+            <summary>
+            Action setup screen
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.PerformanceWarningIssues_BetaTest_Header">
+            <summary>
+            Public Beta Test build
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.PerformanceWarningIssues_BetaTest_Message">
+            <summary>
+            You are playing on experimental Public Beta Test build.
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.PerformanceWarningIssues_SimplifiedSimulation_Header">
+            <summary>
+            Simplified Simulation
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.PerformanceWarningIssues_SimplifiedSimulation_Message">
+            <summary>
+            This world is using simplified survival simulation. Resources are not properly consumed, inventories are not updated and ammunition is not consumed. It is not recommended to play survival in this world.
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.ChatCommand_HelpSimple_Charge">
+            <summary>
+            Play emote Charge
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.ChatCommand_HelpSimple_ComeHereBaby">
+            <summary>
+            Play emote Come here baby
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.ChatCommand_HelpSimple_DanceDisco1">
+            <summary>
+            Play emote Dance disco 1
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.ChatCommand_HelpSimple_DanceDisco2">
+            <summary>
+            Play emote Dance disco 2
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.ChatCommand_HelpSimple_LookingAround">
+            <summary>
+            Play emote Looking around
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.ChatCommand_HelpSimple_Stretching">
+            <summary>
+            Play emote Stretching
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.ChatCommand_HelpSimple_Whatever">
+            <summary>
+            Play emote Whatever
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.ChatCommand_HelpSimple_yelling">
+            <summary>
+            Play emote Yelling
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.MessageBoxTextBetaFeedback">
+            <summary>
+            Thank you very much for participating in our beta test. Would you care for taking a time to give us a short feedback?
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.MessageBoxCaptionBetaFeedback">
+            <summary>
+            BETA FEEDBACK
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.SimpleNewGame_ScrapRace">
+            <summary>
+            Scrap Race
+            </summary>
+        </member>
+        <member name="F:MyCommonTexts.SimpleNewGame_ScrapRace_Description">
+            <summary>
+            Scrap Race is racing scenario designed for multiplayer. Pick your vehicle of choice and compete against other lowlifes, thrillseekers, and speed-freaks from across the system. Unlike human life is entertainment here at Pertam the most valuable commodity and we offer the finest! So join today! Get building, get racing, or get left in the dust.
             </summary>
         </member>
     </members>

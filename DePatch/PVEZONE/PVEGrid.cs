@@ -19,24 +19,24 @@ namespace DePatch
 
         public PVEGrid(MyCubeGrid grid)
         {
-            this.CubeGrid = grid;
+            CubeGrid = grid;
         }
 
         public void OnGridEntered()
         {
-            if (this.CubeGrid.BigOwners.Count >= 1)
-                MyVisualScriptLogicProvider.ShowNotification(DePatchPlugin.Instance.Config.PveMessageEntered.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageEntered, this.CubeGrid.DisplayName) : DePatchPlugin.Instance.Config.PveMessageEntered, 10000, "White", PVEGrid.FindOnlineOwner(this.CubeGrid).Identity.IdentityId);
+            if (CubeGrid.BigOwners.Count >= 1)
+                MyVisualScriptLogicProvider.ShowNotification(DePatchPlugin.Instance.Config.PveMessageEntered.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageEntered, CubeGrid.DisplayName) : DePatchPlugin.Instance.Config.PveMessageEntered, 10000, "White", PVEGrid.FindOnlineOwner(CubeGrid).Identity.IdentityId);
         }
 
         public void OnGridLeft()
         {
-            if (this.CubeGrid.BigOwners.Count >= 1)
-                MyVisualScriptLogicProvider.ShowNotification(DePatchPlugin.Instance.Config.PveMessageLeft.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageLeft, this.CubeGrid.DisplayName) : DePatchPlugin.Instance.Config.PveMessageLeft, 10000, "White", PVEGrid.FindOnlineOwner(this.CubeGrid).Identity.IdentityId);
+            if (CubeGrid.BigOwners.Count >= 1)
+                MyVisualScriptLogicProvider.ShowNotification(DePatchPlugin.Instance.Config.PveMessageLeft.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageLeft, CubeGrid.DisplayName) : DePatchPlugin.Instance.Config.PveMessageLeft, 10000, "White", PVEGrid.FindOnlineOwner(CubeGrid).Identity.IdentityId);
         }
 
         public bool InPVEZone()
         {
-            return PVE.PVESphere.Contains(this.CubeGrid.PositionComp.GetPosition()) == ContainmentType.Contains;
+            return PVE.PVESphere.Contains(CubeGrid.PositionComp.GetPosition()) == ContainmentType.Contains;
         }
 
         private static MyPlayer FindOnlineOwner(MyCubeGrid grid)
@@ -54,11 +54,11 @@ namespace DePatch
             {
                 return null;
             }
-            foreach (long key in list)
+            foreach (long item in list)
             {
-                if (dictionary.ContainsKey(key))
+                if (dictionary.ContainsKey(item))
                 {
-                    return dictionary[key];
+                    return dictionary[item];
                 }
             }
             return null;

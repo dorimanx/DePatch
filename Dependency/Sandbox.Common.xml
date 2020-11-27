@@ -3423,31 +3423,6 @@
             Provides access to the Grid Group system
             </summary>
         </member>
-        <member name="T:Sandbox.ModAPI.MyWhitelistTarget">
-            <summary>
-                Determines what target a whitelisting entry does or should support.
-            </summary>
-        </member>
-        <member name="F:Sandbox.ModAPI.MyWhitelistTarget.None">
-            <summary>
-                No target. Depending on the context, this may mean no support at all or unrestricted support.
-            </summary>
-        </member>
-        <member name="F:Sandbox.ModAPI.MyWhitelistTarget.ModApi">
-            <summary>
-                The entry supports or must support ModAPI level entry.
-            </summary>
-        </member>
-        <member name="F:Sandbox.ModAPI.MyWhitelistTarget.Ingame">
-            <summary>
-                The entry supports or must support Ingame level entry.
-            </summary>
-        </member>
-        <member name="F:Sandbox.ModAPI.MyWhitelistTarget.Both">
-            <summary>
-                A shortcut flag meaning the entry supports or must support both ModAPI and Ingame level entries.
-            </summary>
-        </member>
         <member name="M:Sandbox.Common.ModAPI.IMyVendingMachine.SelectNextItem">
             <summary>
             Select next item.

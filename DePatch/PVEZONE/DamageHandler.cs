@@ -22,12 +22,12 @@ namespace DePatch
             {
                 return;
             }
-            if (DamageHandler._init)
+            if (_init)
             {
                 return;
             }
-            DamageHandler._init = true;
-            MyAPIGateway.Session.DamageSystem.RegisterBeforeDamageHandler(0, new BeforeDamageApplied(ProcessDamage));
+            _init = true;
+            MyAPIGateway.Session.DamageSystem.RegisterBeforeDamageHandler(0, ProcessDamage);
         }
 
         private static void ProcessDamage(object target, ref MyDamageInformation info)
@@ -50,9 +50,9 @@ namespace DePatch
                 if (!PVE.EntitiesInZone.Contains(mySlimBlock.CubeGrid.EntityId))
                     return;
 
-                num2 = ((mySlimBlock.CubeGrid.BigOwners.Count > 0) ? mySlimBlock.CubeGrid.BigOwners[0] : 0L);
+                num2 = (mySlimBlock.CubeGrid.BigOwners.Count > 0) ? mySlimBlock.CubeGrid.BigOwners[0] : 0L;
             }
-            if (MyEntities.TryGetEntityById(info.AttackerId, out MyEntity myEntity, true))
+            if (MyEntities.TryGetEntityById(info.AttackerId, out MyEntity myEntity, allowClosed: true))
             {
                 if (myEntity is MyVoxelBase)
                     return;
@@ -85,7 +85,7 @@ namespace DePatch
                 }
                 if (myEntity as MyCubeGrid != null)
                 {
-                    num1 = (((myEntity as MyCubeGrid).BigOwners.Count > 0) ? (myEntity as MyCubeGrid).BigOwners[0] : 0L);
+                    num1 = ((myEntity as MyCubeGrid).BigOwners.Count > 0) ? (myEntity as MyCubeGrid).BigOwners[0] : 0L;
                 }
                 if (myEntity as MyLargeTurretBase != null)
                 {
@@ -127,7 +127,7 @@ namespace DePatch
                 ulong steamId1 = MySession.Static.Players.TryGetSteamId(num1);
                 ulong steamId2 = MySession.Static.Players.TryGetSteamId(num2);
                 if (!MySession.Static.Players.IdentityIsNpc(num1) && num2 != 0L &&
-                    !MySession.Static.Players.IdentityIsNpc(num2) && num2 != info.AttackerId && (long)steamId1 != (long)steamId2 &&
+                    !MySession.Static.Players.IdentityIsNpc(num2) && num2 != info.AttackerId && steamId1 != steamId2 &&
                     MySession.Static.Factions.TryGetPlayerFaction(num1) != MySession.Static.Factions.TryGetPlayerFaction(num2))
                 {
                     info.Amount = 0f;

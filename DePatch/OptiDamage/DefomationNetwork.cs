@@ -22,11 +22,15 @@ namespace DePatch
                 }
                 foreach (KeyValuePair<MySlimBlock, float> keyValuePair in blocks)
                 {
-                    float value = keyValuePair.Value;
                     MySlimBlock key = keyValuePair.Key;
-                    if (value >= 1f && key != null && key.CubeGrid != null && !key.CubeGrid.MarkedForClose && !key.CubeGrid.Closed && key.FatBlock != null && !key.FatBlock.MarkedForClose && !key.FatBlock.Closed)
+                    if (keyValuePair.Value >= 1f && key != null &&
+                        key.CubeGrid != null &&
+                        !key.CubeGrid.MarkedForClose &&
+                        !key.CubeGrid.Closed && key.FatBlock != null &&
+                        !key.FatBlock.MarkedForClose &&
+                        !key.FatBlock.Closed)
                     {
-                        DamageContract contract = new DamageContract(key.FatBlock.EntityId, value, damageType, null, attackerId);
+                        DamageContract contract = new DamageContract(key.FatBlock.EntityId, keyValuePair.Value, damageType, null, attackerId);
                         _ = DamageNetwork.DamageQueue.AddOrUpdate(key.CubeGrid, new List<DamageContract>
                     {
                         contract

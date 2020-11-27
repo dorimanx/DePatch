@@ -26,6 +26,35 @@
             Common interface for MyGameServerItem and IMyLobby
             </summary>
         </member>
+        <member name="M:VRage.GameServices.MyNetworking.CollectNetworkParameters(System.String[])">
+            <summary>
+            Extract a set of network parameters from an array of command line arguments.
+            </summary>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VRage.GameServices.IMyPeer2Peer.RequestChannel(System.Int32)">
+            <summary>
+            Request the usage a of a given channel.
+            </summary>
+        </member>
+        <member name="M:VRage.GameServices.MyNullPeer2Peer.RequestChannel(System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="P:VRage.GameServices.MyNullPeer2Peer.DetailedStats">
+            <inheritdoc />
+        </member>
+        <member name="P:VRage.GameServices.MyNullPeer2Peer.Stats">
+            <inheritdoc />
+        </member>
+        <member name="P:VRage.GameServices.MyNullPeer2Peer.ClientStats">
+            <inheritdoc />
+        </member>
+        <member name="P:VRage.GameServices.MyGameServerItem.ConnectionString">
+            <summary>
+            String that can be used by the platform to identify and establish a connection with the server.
+            </summary>
+        </member>
         <member name="F:VRage.GameServices.MyModMetadata.ModVersion">
             <summary>
             Version of the mod
@@ -41,6 +70,51 @@
             Maximum supported version of the game
             </summary>
         </member>
+        <member name="P:VRage.GameServices.MyServerDiscoveryAggregator.LANSupport">
+             
+             LAN
+            
+        </member>
+        <member name="P:VRage.GameServices.MyServerDiscoveryAggregator.DedicatedSupport">
+             
+             INTERNET
+            
+        </member>
+        <member name="P:VRage.GameServices.MyServerDiscoveryAggregator.FavoritesSupport">
+             
+             FAVORITES
+            
+        </member>
+        <member name="P:VRage.GameServices.MyServerDiscoveryAggregator.HistorySupport">
+             
+             HISTORY
+            
+        </member>
+        <member name="P:VRage.GameServices.MyServerDiscoveryAggregator.PingSupport">
+             
+             PING
+            
+        </member>
+        <member name="E:VRage.GameServices.MyServerDiscoveryAggregator.OnServerChangeRequested">
+             
+             INVITES
+            
+        </member>
+        <member name="M:VRage.GameServices.MyServerDiscoveryAggregator.GetServerRules(VRage.GameServices.MyGameServerItem,VRage.GameServices.ServerRulesResponse,System.Action)">
+             
+             SERVER INFO
+            
+        </member>
+        <member name="P:VRage.GameServices.MyServerDiscoveryAggregator.FriendSupport">
+             
+             OTHER
+            
+        </member>
+        <member name="M:VRage.GameServices.MyServerDiscoveryAggregator.Connect(VRage.GameServices.MyGameServerItem,System.Action{VRage.Network.JoinResult})">
+             
+             CONNECTION
+            
+        </member>
         <member name="P:VRage.GameServices.MyWorkshopItem.Compatibility">
             <summary>
             Whether this mod is compatible with the current game version.
@@ -55,6 +129,16 @@
         <member name="M:VRage.GameServices.MyWorkshopItem.Download">
             <summary>
             Download the newest version of this workshop item.
+            </summary>
+        </member>
+        <member name="M:VRage.GameServices.MyWorkshopItem.Rate(System.Boolean)">
+            <summary>
+            Rate this workshop item by giving thumbs up or thumbs down.
+            </summary>
+        </member>
+        <member name="M:VRage.GameServices.MyWorkshopItem.UpdateRating">
+            <summary>
+            Updates MyRating property of this workshop item.
             </summary>
         </member>
         <member name="M:VRage.GameServices.MyWorkshopItem.DownloadPreviewImage(System.String,System.Action{VRage.GameServices.MyWorkshopItem,System.Boolean})">
@@ -413,9 +497,6 @@
             Generic interface for all analytics library integrations
             </summary>
         </member>
-        <member name="M:VRage.CrashInfo.#ctor(System.String,System.String)">
-            <inheritdoc />
-        </member>
         <member name="M:VRage.CrashInfo.ToString">
             <inheritdoc />
         </member>
@@ -490,11 +571,108 @@
             Right stick up
             </summary>
         </member>
+        <member name="F:VRage.Input.MyJoystickAxesEnum.ZLeft">
+            <summary>
+            Left trigger - using Xinput
+            </summary>
+        </member>
+        <member name="F:VRage.Input.MyJoystickAxesEnum.ZRight">
+            <summary>
+            Right trigger - using Xinput
+            </summary>
+        </member>
         <member name="M:VRage.IVRagePlatform.GetTypeModel">
             <summary>
             Get the ProtoBuf type model for this platform.
             </summary>
             <returns>A type model compatible with this platform.</returns>
+        </member>
+        <member name="T:VRage.Scripting.MyApiTarget">
+            <summary>
+                API target
+            </summary>
+        </member>
+        <member name="F:VRage.Scripting.MyApiTarget.None">
+            <summary>
+                No API target. Unrestricted compilation (no whitelisting, no instruction counting)
+            </summary>
+        </member>
+        <member name="F:VRage.Scripting.MyApiTarget.Mod">
+            <summary>
+                Mod API target. Whitelisted, but no instruction counting.
+            </summary>
+        </member>
+        <member name="F:VRage.Scripting.MyApiTarget.Ingame">
+            <summary>
+                Ingame API target. Whitelisted and instruction counted.
+            </summary>
+        </member>
+        <member name="T:VRage.Scripting.Script">
+            <summary>
+                Represents a named script.
+            </summary>
+        </member>
+        <member name="F:VRage.Scripting.Script.Name">
+            <summary>
+                The name of the script.
+            </summary>
+        </member>
+        <member name="F:VRage.Scripting.Script.Code">
+            <summary>
+                The code content of the script.
+            </summary>
+        </member>
+        <member name="T:VRage.Scripting.MyWhitelistTarget">
+            <summary>
+                Determines what target a whitelisting entry does or should support.
+            </summary>
+        </member>
+        <member name="F:VRage.Scripting.MyWhitelistTarget.None">
+            <summary>
+                No target. Depending on the context, this may mean no support at all or unrestricted support.
+            </summary>
+        </member>
+        <member name="F:VRage.Scripting.MyWhitelistTarget.ModApi">
+            <summary>
+                The entry supports or must support ModAPI level entry.
+            </summary>
+        </member>
+        <member name="F:VRage.Scripting.MyWhitelistTarget.Ingame">
+            <summary>
+                The entry supports or must support Ingame level entry.
+            </summary>
+        </member>
+        <member name="F:VRage.Scripting.MyWhitelistTarget.Both">
+            <summary>
+                A shortcut flag meaning the entry supports or must support both ModAPI and Ingame level entries.
+            </summary>
+        </member>
+        <member name="T:VRage.Scripting.IMyWhitelistBatch">
+            <summary>
+                A handle which enables adding members to the whitelist in a batch. It is highly
+                recommended that you try to group your changes into as few batches as possible.
+            </summary>
+        </member>
+        <member name="M:VRage.Scripting.IMyWhitelistBatch.AllowNamespaceOfTypes(VRage.Scripting.MyWhitelistTarget,System.Type[])">
+            <summary>
+                Adds the entire namespace of one or more given types.
+            </summary>
+            <param name="target"></param>
+            <param name="types"></param>
+        </member>
+        <member name="M:VRage.Scripting.IMyWhitelistBatch.AllowTypes(VRage.Scripting.MyWhitelistTarget,System.Type[])">
+            <summary>
+                Adds one or more specific types and all their members to the whitelist.
+            </summary>
+            <param name="target"></param>
+            <param name="types"></param>
+        </member>
+        <member name="M:VRage.Scripting.IMyWhitelistBatch.AllowMembers(VRage.Scripting.MyWhitelistTarget,System.Reflection.MemberInfo[])">
+            <summary>
+                Adds only the specified members to the whitelist.
+            </summary>
+            <param name="target"></param>
+            <param name="members"></param>
         </member>
         <member name="P:VRage.IVRageWindow.DrawEnabled">
             <summary>
@@ -1016,7 +1194,7 @@
             Starts profiling block.
             </summary>
         </member>
-        <member name="M:VRage.Profiler.MyStatsGraph.End(System.Nullable{System.Single},System.Single,System.String,System.String,System.String,System.String,System.Int32,System.String)">
+        <member name="M:VRage.Profiler.MyStatsGraph.End(System.Nullable{System.Single},System.Single,System.String,System.String,System.String,System.Int32,System.String,System.Int32,System.String)">
             <summary>
             End profiling block.
             </summary>
@@ -1194,6 +1372,11 @@
             Whether the replicable should be included in replication islands.
             </summary>
         </member>
+        <member name="P:VRage.Network.IMyReplicable.PCU">
+            <summary>
+            PCU Cost of this replicable.
+            </summary>
+        </member>
         <member name="M:VRage.Network.IMyReplicable.ShouldReplicate(VRage.Network.MyClientInfo)">
             <summary>
             Whether the replicable should be replicated on a specific client. 
@@ -1286,7 +1469,7 @@
             Called when state group is being destroyed.
             </summary>
         </member>
-        <member name="M:VRage.Network.IMyStateGroup.Serialize(VRage.Library.Collections.BitStream,VRage.Network.Endpoint,VRage.Library.Utils.MyTimeSpan,VRage.Library.Utils.MyTimeSpan,System.Byte,System.Int32,System.Collections.Generic.HashSet{System.String})">
+        <member name="M:VRage.Network.IMyStateGroup.Serialize(VRage.Library.Collections.BitStream,VRage.Network.MyClientInfo,VRage.Library.Utils.MyTimeSpan,VRage.Library.Utils.MyTimeSpan,System.Byte,System.Int32,System.Collections.Generic.HashSet{System.String})">
             <summary>
             (De)serializes group state or it's diff for client.
             When writing, you can write beyond maxBitPosition, but message won't be sent and ACKs won't be received for it.
@@ -1320,6 +1503,16 @@
         <member name="T:VRage.Network.IMySyncedEntity">
             <summary>
             Entity containing sync properties.
+            </summary>
+        </member>
+        <member name="F:VRage.Network.MyClient.PCULimit">
+            <summary>
+            Maximum PCU the client would like to receive.
+            </summary>
+        </member>
+        <member name="F:VRage.Network.MyClient.LastEnabledLayer">
+            <summary>
+            Index of the last layer that is enbled.
             </summary>
         </member>
         <member name="M:VRage.Network.MyClient.IsPreceding(System.Int32,System.Int32,System.Int32)">
@@ -1486,6 +1679,13 @@
             Adds replicable to a replication layer if it's not already in a smaller one.
             If it's the last layer, it also adds any physically connected replicables.
             </summary>
+        </member>
+        <member name="M:VRage.Network.MyReplicationServer.SetClientPCULimit(VRage.Network.EndpointId,System.Int32)">
+            <summary>
+            Set the PCU limit for a client given it's endpoint.
+            </summary>
+            <param name="clientEndpoint"></param>
+            <param name="pcuLimit"></param>
         </member>
         <member name="M:VRage.Network.MyReplicationServer.IsReplicated(VRage.Network.IMyReplicable)">
             <summary>

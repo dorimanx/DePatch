@@ -23,22 +23,25 @@ namespace DePatch
                     }
                     else
                     {
-                        PVEGrid.Grids[__instance].Tick = PVEGrid.Grids[__instance].Tick + 1;
-                        if (PVEGrid.Grids[__instance].Tick + 1 > 10)
+                        PVEGrid pVEGrid = PVEGrid.Grids[__instance];
+                        if (++pVEGrid.Tick <= 10)
                         {
-                            PVEGrid.Grids[__instance].Tick = 0;
-                            if (!PVEGrid.Grids[__instance].InPVEZone() || !PVE.EntitiesInZone.Contains(__instance.EntityId))
+                            return;
+                        }
+                        pVEGrid.Tick = 0;
+                        bool flag = pVEGrid.InPVEZone();
+                        bool flag2 = PVE.EntitiesInZone.Contains(__instance.EntityId);
+                        if (!(flag && flag2))
+                        {
+                            if (!flag && flag2)
                             {
-                                if (!PVEGrid.Grids[__instance].InPVEZone() && PVE.EntitiesInZone.Contains(__instance.EntityId))
-                                {
-                                    PVEGrid.Grids[__instance].OnGridLeft();
-                                    PVE.EntitiesInZone.Remove(__instance.EntityId);
-                                }
-                                if (PVEGrid.Grids[__instance].InPVEZone() && !PVE.EntitiesInZone.Contains(__instance.EntityId))
-                                {
-                                    PVEGrid.Grids[__instance].OnGridEntered();
-                                    PVE.EntitiesInZone.Add(__instance.EntityId);
-                                }
+                                pVEGrid.OnGridLeft();
+                                PVE.EntitiesInZone.Remove(__instance.EntityId);
+                            }
+                            if (flag && !flag2)
+                            {
+                                pVEGrid.OnGridEntered();
+                                PVE.EntitiesInZone.Add(__instance.EntityId);
                             }
                         }
                     }

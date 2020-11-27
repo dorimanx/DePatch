@@ -14,7 +14,7 @@ namespace DePatch
     {
         internal static Logger Log = LogManager.GetCurrentClassLogger();
         internal const ushort DAMAGE_CHANNEL = 64467;
-		public static ConcurrentDictionary<MyCubeGrid, List<DamageContract>> DamageQueue { get; } = new ConcurrentDictionary<MyCubeGrid, List<DamageContract>>();
+        public static ConcurrentDictionary<MyCubeGrid, List<DamageContract>> DamageQueue { get; } = new ConcurrentDictionary<MyCubeGrid, List<DamageContract>>();
 
         internal static bool Prefix(MySlimBlock block, float damage, MyStringHash damageType, MyHitInfo? hitInfo, long attackerId)
         {

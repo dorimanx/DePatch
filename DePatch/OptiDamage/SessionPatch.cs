@@ -18,29 +18,28 @@ namespace DePatch
 
         internal static void Prefix()
         {
-            if (DePatchPlugin.Instance.Config.DamageThreading)
+            if (!DePatchPlugin.Instance.Config.DamageThreading)
             {
-                ICollection<MyPlayer> onlinePlayers = MySession.Static.Players.GetOnlinePlayers();
-                if (DamageNetwork.DamageQueue.Count != 0 && onlinePlayers.Count != 0 && Timer.ElapsedMilliseconds >= 500L)
-                {
-                    foreach (KeyValuePair<MyCubeGrid, List<DamageContract>> keyValuePair in DamageNetwork.DamageQueue.ToList().Where(b => b.Key != null && b.Value.Count > 0))
-                    {
-                        KeyValuePair<MyCubeGrid, List<DamageContract>> element = keyValuePair;
-                        IEnumerable<MyPlayer> source = onlinePlayers.Where(b => b != null &&
-                            b.Controller != null && b.Controller.ControlledEntity != null &&
-                            b.Controller.ControlledEntity.Entity != null).Where(
-                            b => Vector3D.DistanceSquared(b.Controller.ControlledEntity.Entity.PositionComp.GetPosition(),
-                            element.Key.PositionComp.GetPosition()) < Math.Pow(MySession.Static.Settings.SyncDistance, 2.0));
-
-                        byte[] contract = MyAPIGateway.Utilities.SerializeToBinary(new SyncGridDamageContract(element.Key.EntityId, element.Value.ToArray()));
-                        Task.WaitAll(source.Select(b =>
-                        {
-                            return Task.Factory.StartNew(() => MyAPIGateway.Multiplayer.SendMessageTo(64467, contract, b.Id.SteamId, true));
-                        }).ToArray());
-                    }
-                }
-                Timer.Restart();
+                return;
             }
+            ICollection<MyPlayer> onlinePlayers = MySession.Static.Players.GetOnlinePlayers();
+            if (DamageNetwork.DamageQueue.Count == 0 || onlinePlayers.Count == 0 || Timer.ElapsedMilliseconds < 500)
+            {
+                return;
+            }
+            foreach (KeyValuePair<MyCubeGrid, List<DamageContract>> element in from b in DamageNetwork.DamageQueue.ToList()
+                                                                               where b.Key != null && b.Value.Count > 0
+                                                                               select b)
+            {
+                IEnumerable<MyPlayer> source = from b in onlinePlayers
+                                               where b != null && b.Controller != null && b.Controller.ControlledEntity != null && b.Controller.ControlledEntity.Entity != null
+                                               where Vector3D.DistanceSquared(b.Controller.ControlledEntity.Entity.PositionComp.GetPosition(), element.Key.PositionComp.GetPosition()) < Math.Pow(MySession.Static.Settings.SyncDistance, 2.0)
+                                               select b;
+                byte[] contract = MyAPIGateway.Utilities.SerializeToBinary(new SyncGridDamageContract(element.Key.EntityId, element.Value.ToArray()));
+                Task[] tasks = source.Select((MyPlayer b) => Task.Factory.StartNew(() => MyAPIGateway.Multiplayer.SendMessageTo(64467, contract, b.Id.SteamId))).ToArray();
+                Task.WaitAll(tasks);
+            }
+            Timer.Restart();
         }
     }
 }

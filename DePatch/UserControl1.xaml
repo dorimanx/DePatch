@@ -59,6 +59,62 @@
 						VerticalAlignment="Top"
 						Width="110"
 						Text="{Binding Path=TimerMinDelay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
+                    <Label
+						Content="UpdateAfterSimulation"
+						HorizontalAlignment="Left"
+						Margin="253,186,0,0"
+						VerticalAlignment="Top" Grid.ColumnSpan="2" RenderTransformOrigin="0.481,1.923" />
+                    <TextBox
+						Name="SlowSimulationUpdate1"
+						HorizontalAlignment="Left"
+						Height="26"
+						Margin="112,186,0,0"
+						TextWrapping="Wrap"
+						VerticalAlignment="Top"
+						Width="39"
+						Text="{Binding Path=SlowPBUpdate1, Mode=TwoWay, StringFormat=D}" RenderTransformOrigin="0.529,0.385" Grid.Column="1" />
+                    <Label
+						Content="UpdateAfterSimulation10"
+						HorizontalAlignment="Left"
+						Margin="253,217,0,0"
+						VerticalAlignment="Top" Grid.ColumnSpan="2" />
+                    <TextBox
+						Name="SlowSimulationUpdate10"
+						HorizontalAlignment="Left"
+						Height="26"
+						Margin="112,217,0,0"
+						TextWrapping="Wrap"
+						VerticalAlignment="Top"
+						Width="39"
+						Text="{Binding Path=SlowPBUpdate10, Mode=TwoWay, StringFormat=D}" RenderTransformOrigin="-0.045,-0.077" Grid.Column="1" />
+                    <Label
+						Content="UpdateAfterSimulation100"
+						HorizontalAlignment="Left"
+						Margin="253,248,0,0"
+						VerticalAlignment="Top" Grid.ColumnSpan="2" />
+                    <TextBox
+						Name="SlowSimulationUpdate100"
+						HorizontalAlignment="Left"
+						Height="26"
+						Margin="112,248,0,0"
+						TextWrapping="Wrap"
+						VerticalAlignment="Top"
+						Width="39"
+						Text="{Binding Path=SlowPBUpdate100, Mode=TwoWay, StringFormat=D}" RenderTransformOrigin="0.559,0.615" Grid.Column="1" />
+                    <Label
+						Content="Ignored PB SubTypes with ;"
+						HorizontalAlignment="Left"
+						Margin="253,274,0,0"
+						VerticalAlignment="Top" Grid.ColumnSpan="2" RenderTransformOrigin="0.479,0.692" />
+                    <TextBox
+						Name="IgnorePBSubTypesHere"
+						HorizontalAlignment="Left"
+						Height="46"
+						Margin="253,300,0,0"
+						TextWrapping="Wrap"
+						VerticalAlignment="Top"
+						Width="194"
+                        Text="{Binding Path=SlowPBIgnored, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" RenderTransformOrigin="0.559,0.615" Grid.ColumnSpan="2" />
                     <CheckBox
 						Content="Remove Artificial Mass"
 						HorizontalAlignment="Left"
@@ -80,18 +136,18 @@
                     <Label
 						Content="Client Only Mods"
 						HorizontalAlignment="Left"
-						Margin="228,10,0,0"
+						Margin="253,10,0,0"
 						VerticalAlignment="Top"
 						RenderTransformOrigin="0.55,1.808" Grid.ColumnSpan="2" Width="104" />
                     <TextBox
 						Name="ModsBlock"
 						HorizontalAlignment="Left"
 						Height="124"
-						Margin="228,36,0,0"
+						Margin="253,36,0,0"
 						TextWrapping="Wrap"
 						Text="Write Mods Here with ;"
 						VerticalAlignment="Top"
-						Width="190" Grid.ColumnSpan="2" TextChanged="ModsBlock_TextChanged" />
+						Width="190" Grid.ColumnSpan="2" />
                     <CheckBox
 						Content="Check For Updates"
 						HorizontalAlignment="Left"
@@ -122,6 +178,12 @@
                         Margin="10,263,0,0"
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=DisableNanoBotsOnShip}" />
+                    <CheckBox
+						Content="Enable Program Block SlowDown"
+						HorizontalAlignment="Left"
+                        Margin="253,171,0,0"
+						VerticalAlignment="Top"
+						IsChecked="{Binding Path=SlowPBEnabled}" Grid.ColumnSpan="2" />
                     <Label
 						Content="Experemental Options"
 						HorizontalAlignment="Left"

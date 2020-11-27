@@ -35,7 +35,7 @@ namespace DePatch
                     {
                         text = text + "\n" + DePatchPlugin.Instance.Config.WithOutBeaconText;
                     }
-                    if (MyBeaconAlertPatch.IsBadName(myTerminalBlock.CubeGrid.DisplayName))
+                    if (IsBadName(myTerminalBlock.CubeGrid.DisplayName))
                     {
                         text = text + "\n" + DePatchPlugin.Instance.Config.WithDefaultNameText;
                     }
@@ -50,7 +50,7 @@ namespace DePatch
 
         private static bool IsBadName(string name)
         {
-            foreach (string badName in MyBeaconAlertPatch.BadNames)
+            foreach (string badName in BadNames)
             {
                 if (name.Contains(badName))
                     return true;

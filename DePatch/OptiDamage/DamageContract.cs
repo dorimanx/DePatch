@@ -7,15 +7,6 @@ namespace DePatch
     [ProtoContract]
     public struct DamageContract
     {
-        public DamageContract(long blockId, float damage, MyStringHash damageType, MyHitInfo? hitInfo, long attackerId)
-        {
-            this.BlockId = blockId;
-            this.Damage = damage;
-            this.DamageType = damageType;
-            this.HitInfo = hitInfo;
-            this.AttackerId = attackerId;
-        }
-
         [ProtoMember(1)]
         public long BlockId;
 
@@ -30,5 +21,14 @@ namespace DePatch
 
         [ProtoMember(5)]
         public long AttackerId;
+
+        public DamageContract(long blockId, float damage, MyStringHash damageType, MyHitInfo? hitInfo, long attackerId)
+        {
+            BlockId = blockId;
+            Damage = damage;
+            DamageType = damageType;
+            HitInfo = hitInfo;
+            AttackerId = attackerId;
+        }
     }
 }

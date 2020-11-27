@@ -6,6 +6,12 @@ using Torch.Views;
 
 namespace DePatch
 {
+    public class DisplayTab : Torch.Views.DisplayAttribute
+    {
+        public string Tab = "";
+        public bool LiveUpdate = false;
+    }
+
     public class DeConfig : ViewModel
     {
         private float _RaycastLimit = 15000f;
@@ -16,7 +22,7 @@ namespace DePatch
         private bool _DisableProductionOnShip;
         private bool _DisableNanoBotsOnShip;
         private bool _Enabled;
-        private bool _CheckForUpdates = false;
+        private bool _CheckForUpdates;
         private bool _ShipToolsEnabled;
         private bool _BeaconAlert;
         private bool _RemoveMass;
@@ -47,8 +53,12 @@ namespace DePatch
         private long _MaxProtectedLargeGridSize = 10000L;
         private bool _damageThreading;
         private Decimal _gridColisionAverage;
+        private bool _slowPBUpdateEnable;
+        private int _slowPBUpdate1 = 2;
+        private int _slowPBUpdate10 = 4;
+        private int _slowPBUpdate100 = 2;
+        private string _slowPBIgnored = "";
 
-        [Display(Name = "DamageThreading", Description = "Right now it's not working! just keep it OFF")]
         public bool DamageThreading
         {
             get => _damageThreading;
@@ -73,14 +83,12 @@ namespace DePatch
             set => SetValue(ref _MinProtectSpeed, value, "MinProtectSpeed");
         }
 
-        [Display(Name = "ProtectGrid", Description = "Prevents damage to grids from voxels or ramming by other grids")]
         public bool ProtectGrid
         {
             get => _ProtectGrid;
             set => SetValue(ref _ProtectGrid, value, "ProtectGrid");
         }
 
-        [Display(Name = "ProtectVoxels", Description = "Prevents damage to voxels from impacts with grids")]
         public bool ProtectVoxels
         {
             get => _ProtectVoxels;
@@ -273,7 +281,6 @@ namespace DePatch
             set => SetValue(ref _ShipTools, value, "ShipTools");
         }
 
-        [Display(Name = "CheckForUpdates", Description = "Right now not working! just keep it OFF")]
         public bool CheckForUpdates
         {
             get => _CheckForUpdates;
@@ -286,5 +293,20 @@ namespace DePatch
             get => _gridColisionAverage;
             set => SetValue((Action<Decimal>)(x => _gridColisionAverage = x), value, "GridColisionAverage");
         }
+
+        [DisplayTab(Name = "Enabled", GroupName = "ProgramBlock", Tab = "Optimizations", Order = 1)]
+        public bool SlowPBEnabled { get => _slowPBUpdateEnable; set => SetValue(ref _slowPBUpdateEnable, value); }
+
+        [DisplayTab(Name = "Update 1 Slow", GroupName = "ProgramBlock", Order = 2, Tab = "Optimizations", Description = "Description 1-> vanilla, 5-> 4 frames idle, 1 update")]
+        public int SlowPBUpdate1 { get => _slowPBUpdate1; set => SetValue(ref _slowPBUpdate1, Math.Max(1, value)); }
+
+        [DisplayTab(Name = "Update 10 Slow", GroupName = "ProgramBlock", Order = 2, Tab = "Optimizations", Description = "Description 1-> vanilla, 5-> 49 frames idle, 1 update")]
+        public int SlowPBUpdate10 { get => _slowPBUpdate10; set => SetValue(ref _slowPBUpdate10, Math.Max(1, value)); }
+
+        [DisplayTab(Name = "Update 100 Slow", GroupName = "ProgramBlock", Order = 2, Tab = "Optimizations", Description = "Description 1-> vanilla, 5-> 499 frames idle, 1 update")]
+        public int SlowPBUpdate100 { get => _slowPBUpdate100; set => SetValue(ref _slowPBUpdate100, Math.Max(1, value)); }
+
+        [DisplayTab(Name = "Ignored subtypes", GroupName = "ProgramBlock", Order = 2, Tab = "Optimizations", Description = "This subtypeIds will be ignored. use ' ' or ',' as a separator")]
+        public string SlowPBIgnored { get => _slowPBIgnored; set => SetValue(ref _slowPBIgnored, value); }
     }
 }

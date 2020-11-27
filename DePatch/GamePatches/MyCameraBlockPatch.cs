@@ -11,7 +11,7 @@ namespace DePatch
             if (!DePatchPlugin.Instance.Config.Enabled)
                 return;
 
-            __instance.BlockDefinition.RaycastDistanceLimit = (double)DePatchPlugin.Instance.Config.RaycastLimit;
+            __instance.BlockDefinition.RaycastDistanceLimit = DePatchPlugin.Instance.Config.RaycastLimit;
         }
     }
 }

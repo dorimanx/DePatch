@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Sandbox.Definitions;
-using Sandbox.Game.Entities;
 using SpaceEngineers.Game.Entities.Blocks;
 
 namespace DePatch
@@ -13,7 +12,7 @@ namespace DePatch
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.RemoveMass)
                 return;
 
-            ((MyVirtualMassDefinition)((MyCubeBlock)__instance).BlockDefinition).VirtualMass = 0.0f;
+            ((MyVirtualMassDefinition)__instance.BlockDefinition).VirtualMass = 0f;
         }
     }
 }

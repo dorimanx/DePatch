@@ -1,9 +1,10 @@
 ﻿using System;
 using Sandbox.Game.Entities;
 using VRage.Game;
-using VRageMath;
 using VRage.Game.ModAPI;
 using Sandbox.ModAPI;
+using VRage.Utils;
+using VRage.Game.Entity;
 
 namespace DePatch
 {
@@ -12,104 +13,74 @@ namespace DePatch
         private static bool _init;
         public static void Init()
         {
+            if (!DePatchPlugin.Instance.Config.Enabled)
+                return;
+
             if (!_init)
             {
-                MyAPIGateway.Session.DamageSystem.RegisterBeforeDamageHandler(1, new BeforeDamageApplied(HandleGridDamage));
+                MyAPIGateway.Session.DamageSystem.RegisterBeforeDamageHandler(1, HandleGridDamage);
                 _init = true;
             }
         }
         private static void HandleGridDamage(object target, ref MyDamageInformation damage)
         {
-            try
+            if (DePatchPlugin.Instance.Config.ProtectGrid && DePatchPlugin.Instance.Config.Enabled)
             {
-                if (DePatchPlugin.Instance.Config.ProtectGrid)
+                if (damage.Type == MyDamageType.Deformation || damage.Type == MyDamageType.Fall)
                 {
-                    if ((damage.Type == MyDamageType.Deformation || damage.Type == MyDamageType.Fall) &&
-                        damage.Type != MyDamageType.Environment && damage.Type != MyDamageType.Bullet && damage.Type != MyDamageType.Rocket &&
-                        damage.Type != MyDamageType.Grind && damage.Type != MyDamageType.Weapon && damage.Type != MyDamageType.Weld &&
-                        damage.Type != MyDamageType.Explosion)
+                    MyEntities.TryGetEntityById(damage.AttackerId, out MyEntity AttackerEntity, allowClosed: true);
+
+                    try
                     {
-                        MyCubeGrid grid;
-                        try
-                        {
-                            grid = (MyCubeGrid)(target as IMySlimBlock).CubeGrid;
-                        }
-                        catch
-                        {
-                            return;
-                        }
+                        IMySlimBlock GridBlock = target as IMySlimBlock;
+                        VRage.Game.Components.MyPhysicsComponentBase GridPhysics = GridBlock.CubeGrid.Physics;
+                        IMyCubeGrid GridCube = GridBlock.CubeGrid;
+                        MyCubeGrid Grid = (MyCubeGrid)GridCube;
 
-                        float speed = DePatchPlugin.Instance.Config.MinProtectSpeed;
-                        float Lineargridspeed = grid.Physics.LinearVelocity.Length();
-                        float Angulargridspeed = grid.Physics.AngularVelocity.Length();
-                        var attacker = MyAPIGateway.Entities.GetEntityById(damage.AttackerId);
-                        if (grid != null && grid.Physics != null && grid.GridSizeEnum == MyCubeSize.Small && grid.BlocksCount < DePatchPlugin.Instance.Config.MaxProtectedSmallGridSize)
+                        if (GridBlock != null && GridPhysics != null &&
+                            (GridCube.GridSizeEnum == MyCubeSize.Large && Grid.BlocksCount < DePatchPlugin.Instance.Config.MaxProtectedLargeGridSize ||
+                             GridCube.GridSizeEnum == MyCubeSize.Small && Grid.BlocksCount < DePatchPlugin.Instance.Config.MaxProtectedSmallGridSize))
                         {
-                            if (attacker == null && Lineargridspeed < speed && Angulargridspeed < speed)
-                            { //by voxel
-                                damage.Amount = 0f;
-                                damage.IsDeformation = false;
-                            }
-                            else
-                            {
-                                if (Lineargridspeed > speed || Angulargridspeed > speed)
-                                { // by player or Voxel
-                                    if (grid.BlocksCount > 50)
-                                    {
-                                        Vector3D position = grid.PositionComp.GetPosition();
-                                        damage.Amount = 0f;
-                                        damage.IsDeformation = false;
-                                        grid.Physics.ApplyImpulse(position - ((grid.Physics.LinearVelocity + grid.Physics.AngularVelocity) * grid.Mass / 4.0f),
-                                            position + grid.Physics.AngularVelocity);
+                            float speed = DePatchPlugin.Instance.Config.MinProtectSpeed;
+                            var LinearVelocity = GridPhysics.LinearVelocity;
+                            var AngularVelocity = GridPhysics.AngularVelocity;
 
-                                        grid.Physics?.ClearSpeed();
-                                    }
-                                }
-                            }
-                            return;
-                        }
-
-                        if (grid != null && grid.Physics != null && grid.GridSizeEnum == MyCubeSize.Large && grid.BlocksCount < DePatchPlugin.Instance.Config.MaxProtectedLargeGridSize)
-                        {
-                            if (attacker == null && Lineargridspeed < speed && Angulargridspeed < speed)
-                            { //by voxel
-                                damage.Amount = 0f;
-                                damage.IsDeformation = false;
-                                if (Lineargridspeed > 30 || Angulargridspeed > 30)
+                            if (LinearVelocity.Length() < speed && AngularVelocity.Length() < speed)
+                            { //by voxel or grid on low speed
+                                if (Grid.BlocksCount > 50)
                                 {
-                                    Vector3D position = grid.PositionComp.GetPosition();
-                                    grid.Physics.LinearVelocity = Vector3D.Backward;
-                                    grid.Physics.LinearVelocity = Vector3D.Up;
-                                    grid.Physics.ApplyImpulse(position - ((grid.Physics.LinearVelocity + grid.Physics.AngularVelocity) * grid.Mass / 4.0f),
-                                        position + grid.Physics.AngularVelocity);
-
-                                    grid.Physics?.ClearSpeed();
+                                    if (damage.IsDeformation) damage.IsDeformation = false;
+                                    if (damage.Amount != 0f) damage.Amount = 0f;
                                 }
                             }
                             else
                             {
-                                if (Lineargridspeed > speed || Angulargridspeed > speed)
-                                { // by player or Voxel
-                                    if (grid.BlocksCount > 50)
-                                    {
-                                        Vector3D position = grid.PositionComp.GetPosition();
-                                        damage.Amount = 0f;
-                                        damage.IsDeformation = false;
-                                        grid.Physics.LinearVelocity = Vector3D.Backward;
-                                        grid.Physics.LinearVelocity = Vector3D.Up;
-                                        grid.Physics.ApplyImpulse(position - ((grid.Physics.LinearVelocity + grid.Physics.AngularVelocity) * grid.Mass / 4.0f),
-                                                position + grid.Physics.AngularVelocity);
+                                if (AttackerEntity is MyVoxelBase)
+                                { // by voxel on high speed
+                                    GridPhysics?.ClearSpeed();
 
-                                        grid.Physics?.ClearSpeed();
-                                    }
+                                    if (damage.IsDeformation) damage.IsDeformation = false;
+                                    if (damage.Amount != 0f) damage.Amount = 0f;
+
+                                    GridPhysics.ApplyImpulse(
+                                        Grid.PositionComp.GetPosition() -
+                                        ((LinearVelocity + AngularVelocity) * Grid.GridSize * 200f),
+                                        Grid.PositionComp.GetPosition() + MyUtils.GetRandomVector3D());
+
+                                    GridPhysics?.ClearSpeed();
+                                }
+
+                                if (Grid.BlocksCount > 50)
+                                { // by grid bump high speed
+                                    if (damage.IsDeformation) damage.IsDeformation = false;
+                                    if (damage.Amount != 0f) damage.Amount = 0f;
                                 }
                             }
-                            return;
                         }
                     }
+                    catch (Exception ex) { DePatchPlugin.Log.Warn(ex); }
                 }
             }
-            catch (Exception ex) { DePatchPlugin.Log.Warn(ex); }
         }
     }
 }

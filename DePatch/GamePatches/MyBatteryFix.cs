@@ -11,7 +11,7 @@ namespace DePatch
     {
         private static void Prefix(MyBatteryBlock __instance, ref ChargeMode value)
         {
-            if (Enum.IsDefined(typeof(ChargeMode), (object)value))
+            if (Enum.IsDefined(typeof(ChargeMode), value))
                 return;
             value = ChargeMode.Auto;
         }

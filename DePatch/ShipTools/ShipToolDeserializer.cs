@@ -6,10 +6,7 @@ namespace DePatch
     {
         public static ShipTool Deserialize(string raw)
         {
-            string[] array = raw.Split(new char[]
-            {
-                ':'
-            });
+            string[] array = raw.Split(':');
             return new ShipTool
             {
                 Type = (ToolType)Enum.Parse(typeof(ToolType), array[2]),

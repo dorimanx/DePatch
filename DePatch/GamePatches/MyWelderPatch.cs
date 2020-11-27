@@ -11,8 +11,8 @@ namespace DePatch
     public static class MyWelderPatch
     {
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
-        internal static readonly MethodInfo update;
-        internal static readonly MethodInfo updatePatch;
+        internal static readonly MethodInfo update = typeof(MyShipWelder).GetMethod("Activate", BindingFlags.Instance | BindingFlags.NonPublic) ?? throw new Exception("Failed to find method to patch");
+        internal static readonly MethodInfo updatePatch = typeof(MyWelderPatch).GetMethod("Patchm", BindingFlags.Static | BindingFlags.Public) ?? throw new Exception("Failed to find patch method");
 
         public static void Patch(PatchContext ctx) => _ = ctx.GetPattern(update).Prefixes.Add(updatePatch);
 
@@ -46,14 +46,6 @@ namespace DePatch
                 result = true;
             }
             return result;
-        }
-
-        static MyWelderPatch()
-        {
-            MethodInfo method1 = typeof(MyShipWelder).GetMethod("Activate", BindingFlags.Instance | BindingFlags.NonPublic);
-            update = method1 ?? throw new Exception("Failed to find method to patch");
-            MethodInfo method2 = typeof(MyWelderPatch).GetMethod("Patchm", BindingFlags.Static | BindingFlags.Public);
-            updatePatch = method2 ?? throw new Exception("Failed to find patch method");
         }
     }
 }

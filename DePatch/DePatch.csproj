@@ -40,6 +40,12 @@
     <Reference Include="HavokWrapper">
       <HintPath>..\Dependency\HavokWrapper.dll</HintPath>
     </Reference>
+    <Reference Include="Humanizer, Version=2.2.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Humanizer.Core.2.2.0\lib\netstandard1.0\Humanizer.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.Decompiler, Version=6.2.1.6137, Culture=neutral, PublicKeyToken=d4bfe873e7598c49, processorArchitecture=MSIL">
+      <HintPath>..\packages\ICSharpCode.Decompiler.6.2.1.6137\lib\netstandard2.0\ICSharpCode.Decompiler.dll</HintPath>
+    </Reference>
     <Reference Include="NLog">
       <HintPath>..\Dependency\NLog.dll</HintPath>
     </Reference>
@@ -58,7 +64,18 @@
       <HintPath>..\Dependency\SpaceEngineers.Game.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.5.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Reflection.Metadata, Version=1.4.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reflection.Metadata.1.6.0\lib\netstandard2.0\System.Reflection.Metadata.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="Torch">
@@ -89,6 +106,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GamePatches\MyAssemblerPatch.cs" />
+    <Compile Include="GamePatches\MyProgramBlockSlow.cs" />
     <Compile Include="GamePatches\MyWelderPatch.cs" />
     <Compile Include="GamePatches\MyRefineryPatch.cs" />
     <Compile Include="OptiDamage\DamageContract.cs" />
@@ -146,6 +164,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

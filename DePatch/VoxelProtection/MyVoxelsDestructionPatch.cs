@@ -17,12 +17,11 @@ namespace DePatch
 {
     internal class MyVoxelsDestructionPatch
     {
-        private static readonly MethodInfo methodInfo = typeof(MyVoxelGenerator).GetMethod(nameof(RemoveSmallVoxelsUsingChachedVoxels1), BindingFlags.Static | BindingFlags.NonPublic);
-        private static readonly FieldInfo fieldInfo = typeof(MyVoxelGenerator).GetField(nameof(Cache), BindingFlags.Static | BindingFlags.NonPublic);
-        private static readonly MethodInfo ComputeShapeBounds = typeof(MyVoxelGenerator).GetMethod(nameof(ComputeShapeBounds), BindingFlags.Static | BindingFlags.NonPublic);
+        private static MethodInfo RemoveSmallVoxelsUsingChachedVoxels = typeof(MyVoxelGenerator).GetMethod("RemoveSmallVoxelsUsingChachedVoxels", BindingFlags.Static | BindingFlags.NonPublic);
 
-        public static MethodInfo RemoveSmallVoxelsUsingChachedVoxels1 { get; set; } = methodInfo;
-        public static FieldInfo Cache { get; set; } = fieldInfo;
+        private static FieldInfo m_cache = typeof(MyVoxelGenerator).GetField("m_cache", BindingFlags.Static | BindingFlags.NonPublic);
+
+        private static MethodInfo ComputeShapeBounds = typeof(MyVoxelGenerator).GetMethod("ComputeShapeBounds", BindingFlags.Static | BindingFlags.NonPublic);
 
         private static bool Prefix(
           MyVoxelBase voxelMap,
@@ -36,131 +35,135 @@ namespace DePatch
           bool onlyApplyMaterial,
           bool skipCache)
         {
-            if ((!MySession.Static.EnableVoxelDestruction && !applyDamageMaterial) || voxelMap == null || voxelMap.Storage == null || shape == null)
+            MyVoxelBase voxelMap2 = voxelMap;
+            if ((!MySession.Static.EnableVoxelDestruction && !applyDamageMaterial) || voxelMap2 == null || voxelMap2.Storage == null || shape == null)
             {
-                voxelsCountInPercent = 0.0f;
-                voxelMaterial = (MyVoxelMaterialDefinition)null;
+                voxelsCountInPercent = 0f;
+                voxelMaterial = null;
                 return false;
             }
-            int num1 = 0;
+            int num = 0;
             int num2 = 0;
-            bool flag1 = exactCutOutMaterials != null;
+            bool flag = exactCutOutMaterials != null;
             MatrixD transformation = shape.Transformation;
-            MatrixD transformation2 = transformation * voxelMap.PositionComp.WorldMatrixInvScaled;
-            transformation2.Translation += voxelMap.SizeInMetresHalf;
+            MatrixD transformation2 = transformation * voxelMap2.PositionComp.WorldMatrixInvScaled;
+            transformation2.Translation += voxelMap2.SizeInMetresHalf;
             shape.Transformation = transformation2;
             BoundingBoxD worldBoundaries = shape.GetWorldBoundaries();
-            Vector3I minCorner = new Vector3I();
-            Vector3I maxCorner = new Vector3I();
+            Vector3I minCorner = default(Vector3I);
+            Vector3I maxCorner = default(Vector3I);
             ComputeShapeBounds.Invoke(null, new object[6]
             {
-                 voxelMap,
+                 voxelMap2,
                  worldBoundaries,
                  Vector3.Zero,
-                 voxelMap.Storage.Size,
+                 voxelMap2.Storage.Size,
                  minCorner,
                  maxCorner
             });
             bool flag2 = exactCutOutMaterials != null || applyDamageMaterial;
-            Vector3I vector3I = minCorner - 1;
-            Vector3I vector3I2 = maxCorner + 1;
-            voxelMap.Storage.ClampVoxelCoord(ref vector3I, 1);
-            voxelMap.Storage.ClampVoxelCoord(ref vector3I2, 1);
-            if ((MyStorageData)Cache.GetValue(null) == null)
+            Vector3I voxelCoord = minCorner - 1;
+            Vector3I voxelCoord2 = maxCorner + 1;
+            voxelMap2.Storage.ClampVoxelCoord(ref voxelCoord);
+            voxelMap2.Storage.ClampVoxelCoord(ref voxelCoord2);
+            if ((MyStorageData)m_cache.GetValue(null) == null)
             {
-                Cache.SetValue(null, new MyStorageData());
-            } ((MyStorageData)Cache.GetValue(null)).Resize(vector3I, vector3I2);
-
-            MyVoxelRequestFlags myVoxelRequestFlags = (skipCache ? 0 : MyVoxelRequestFlags.AdviseCache) | (flag2 ? MyVoxelRequestFlags.ConsiderContent : 0);
-            voxelMap.Storage.ReadRange((MyStorageData)Cache.GetValue(null), flag2 ? MyStorageDataTypeFlags.ContentAndMaterial : MyStorageDataTypeFlags.Content, 0, vector3I, vector3I2, ref myVoxelRequestFlags);
-            if (!flag1)
+                m_cache.SetValue(null, new MyStorageData());
+            }
+            ((MyStorageData)m_cache.GetValue(null)).Resize(voxelCoord, voxelCoord2);
+            MyVoxelRequestFlags requestFlags = ((!skipCache) ? MyVoxelRequestFlags.AdviseCache : 0) | (flag2 ? MyVoxelRequestFlags.ConsiderContent : 0);
+            voxelMap2.Storage.ReadRange((MyStorageData)m_cache.GetValue(null), (!flag2) ? MyStorageDataTypeFlags.Content : MyStorageDataTypeFlags.ContentAndMaterial, 0, voxelCoord, voxelCoord2, ref requestFlags);
+            if (flag)
             {
-                Vector3I vector3I4 = (vector3I + vector3I2) / 2;
-                voxelMaterial = voxelMap.Storage.GetMaterialAt(ref vector3I4);
+                Vector3I p = ((MyStorageData)m_cache.GetValue(null)).Size3D / 2;
+                voxelMaterial = MyDefinitionManager.Static.GetVoxelMaterialDefinition(((MyStorageData)m_cache.GetValue(null)).Material(ref p));
             }
             else
             {
-                Vector3I vector3I3 = ((MyStorageData)Cache.GetValue(null)).Size3D / 2;
-                voxelMaterial = MyDefinitionManager.Static.GetVoxelMaterialDefinition(((MyStorageData)Cache.GetValue(null)).Material(ref vector3I3));
+                Vector3I voxelCoords = (voxelCoord + voxelCoord2) / 2;
+                voxelMaterial = voxelMap2.Storage.GetMaterialAt(ref voxelCoords);
             }
-
-            Vector3I vector3I5;
-            vector3I5.X = minCorner.X;
-            while (vector3I5.X <= maxCorner.X)
+            MyVoxelMaterialDefinition key = null;
+            Vector3I vector3I = default;
+            vector3I.X = minCorner.X;
+            while (vector3I.X <= maxCorner.X)
             {
-                vector3I5.Y = minCorner.Y;
-                while (vector3I5.Y <= maxCorner.Y)
+                vector3I.Y = minCorner.Y;
+                while (vector3I.Y <= maxCorner.Y)
                 {
-                    vector3I5.Z = minCorner.Z;
-                    while (vector3I5.Z <= maxCorner.Z)
+                    vector3I.Z = minCorner.Z;
+                    while (vector3I.Z <= maxCorner.Z)
                     {
-                        Vector3I vector3I6 = vector3I5 - vector3I;
-                        if (((MyStorageData)Cache.GetValue(null)).Content(((MyStorageData)Cache.GetValue(null)).ComputeLinear(ref vector3I6)) != 0)
+                        Vector3I p2 = vector3I - voxelCoord;
+                        int linearIdx = ((MyStorageData)m_cache.GetValue(null)).ComputeLinear(ref p2);
+                        byte b = ((MyStorageData)m_cache.GetValue(null)).Content(linearIdx);
+                        if (b != 0)
                         {
-                            Vector3D vector3D = (vector3I5 - voxelMap.StorageMin) * 1.0;
-                            if ((double)shape.GetVolume(ref vector3D) != 0.0 && ((MyStorageData)Cache.GetValue(null)).Content(((MyStorageData)Cache.GetValue(null)).ComputeLinear(ref vector3I6)) / 10 != Math.Max(((MyStorageData)Cache.GetValue(null)).Content(((MyStorageData)Cache.GetValue(null)).ComputeLinear(ref vector3I6)) - (shape.GetVolume(ref vector3D) * byte.MaxValue), 0) / 10)
+                            Vector3D voxelPosition = (vector3I - voxelMap2.StorageMin) * 1.0;
+                            float volume = shape.GetVolume(ref voxelPosition);
+                            if (volume != 0f)
                             {
-                                if (!onlyCheck && !onlyApplyMaterial)
+                                int num3 = (int)(volume * 255f);
+                                int num4 = Math.Max(b - num3, 0);
+                                int num5 = b - num4;
+                                if ((int)b / 10 != num4 / 10)
                                 {
-                                    ((MyStorageData)Cache.GetValue(null)).Content(((MyStorageData)Cache.GetValue(null)).ComputeLinear(ref vector3I6),
-                                        (byte)Math.Max(((MyStorageData)Cache.GetValue(null)).Content(((MyStorageData)Cache.GetValue(null)).ComputeLinear(ref vector3I6)) - (shape.GetVolume(ref vector3D) * byte.MaxValue), 0));
-                                }
-
-                                num1 += ((MyStorageData)Cache.GetValue(null)).Content(((MyStorageData)Cache.GetValue(null)).ComputeLinear(ref vector3I6));
-                                num2 += ((MyStorageData)Cache.GetValue(null)).Content(((MyStorageData)Cache.GetValue(null)).ComputeLinear(ref vector3I6)) - Math.Max(((MyStorageData)Cache.GetValue(null)).Content(((MyStorageData)Cache.GetValue(null)).ComputeLinear(ref vector3I6)) - (int)(shape.GetVolume(ref vector3D) * byte.MaxValue), 0);
-                                if (Math.Max(((MyStorageData)Cache.GetValue(null)).Content(((MyStorageData)Cache.GetValue(null)).ComputeLinear(ref vector3I6)) - (shape.GetVolume(ref vector3D) * byte.MaxValue), 0) == 0)
-                                {
-                                    ((MyStorageData)Cache.GetValue(null)).Material(((MyStorageData)Cache.GetValue(null)).ComputeLinear(ref vector3I6), byte.MaxValue);
-                                }
-
-                                if (((MyStorageData)Cache.GetValue(null)).Material(((MyStorageData)Cache.GetValue(null)).ComputeLinear(ref vector3I6)) != byte.MaxValue)
-                                {
-                                    MyVoxelMaterialDefinition key = null;
-                                    if (flag2)
-                                        key = MyDefinitionManager.Static.GetVoxelMaterialDefinition(((MyStorageData)Cache.GetValue(null)).Material(((MyStorageData)Cache.GetValue(null)).ComputeLinear(ref vector3I6)));
-
-                                    if (exactCutOutMaterials != null)
+                                    if (!onlyCheck && !onlyApplyMaterial)
                                     {
-                                        exactCutOutMaterials.TryGetValue(key, out int num6);
-                                        num6 += MyFakes.ENABLE_REMOVED_VOXEL_CONTENT_HACK ? (int)((((MyStorageData)Cache.GetValue(null)).Content(((MyStorageData)Cache.GetValue(null)).ComputeLinear(ref vector3I6)) - Math.Max(((MyStorageData)Cache.GetValue(null)).Content(((MyStorageData)Cache.GetValue(null)).ComputeLinear(ref vector3I6)) - (shape.GetVolume(ref vector3D) * byte.MaxValue), 0)) * 3.9f) : ((MyStorageData)Cache.GetValue(null)).Content(((MyStorageData)Cache.GetValue(null)).ComputeLinear(ref vector3I6)) - Math.Max(((MyStorageData)Cache.GetValue(null)).Content(((MyStorageData)Cache.GetValue(null)).ComputeLinear(ref vector3I6)) - (int)(shape.GetVolume(ref vector3D) * byte.MaxValue), 0);
-                                        exactCutOutMaterials[key] = num6;
+                                        ((MyStorageData)m_cache.GetValue(null)).Content(linearIdx, (byte)num4);
+                                    }
+                                    num += b;
+                                    num2 += num5;
+                                    byte b2 = ((MyStorageData)m_cache.GetValue(null)).Material(linearIdx);
+                                    if (num4 == 0)
+                                    {
+                                        ((MyStorageData)m_cache.GetValue(null)).Material(linearIdx, byte.MaxValue);
+                                    }
+                                    if (b2 != byte.MaxValue)
+                                    {
+                                        if (flag2)
+                                        {
+                                            key = MyDefinitionManager.Static.GetVoxelMaterialDefinition(b2);
+                                        }
+                                        if (exactCutOutMaterials != null)
+                                        {
+                                            exactCutOutMaterials.TryGetValue(key, out var value);
+                                            value = (exactCutOutMaterials[key] = value + (MyFakes.ENABLE_REMOVED_VOXEL_CONTENT_HACK ? ((int)((float)num5 * 3.9f)) : num5));
+                                        }
                                     }
                                 }
                             }
                         }
-                        vector3I5.Z++;
+                        vector3I.Z++;
                     }
-                    vector3I5.Y++;
+                    vector3I.Y++;
                 }
-                vector3I5.X++;
+                vector3I.X++;
             }
             if (num2 > 0 && updateSync && Sync.IsServer && !onlyCheck)
             {
-                shape.SendDrillCutOutRequest(voxelMap, applyDamageMaterial);
+                shape.SendDrillCutOutRequest(voxelMap2, applyDamageMaterial);
             }
-
             if (num2 > 0 && !onlyCheck)
             {
-                RemoveSmallVoxelsUsingChachedVoxels1.Invoke(null, new object[0]);
+                RemoveSmallVoxelsUsingChachedVoxels.Invoke(null, new object[0]);
+                MyStorageDataTypeFlags dataToWrite = MyStorageDataTypeFlags.ContentAndMaterial;
                 if (MyFakes.LOG_NAVMESH_GENERATION && MyAIComponent.Static.Pathfinding != null)
                 {
-                    MyAIComponent.Static.Pathfinding.GetPathfindingLog().LogStorageWrite(voxelMap,
-                        (MyStorageData)Cache.GetValue(null), MyStorageDataTypeFlags.ContentAndMaterial,
-                        vector3I, vector3I2);
+                    MyAIComponent.Static.Pathfinding.GetPathfindingLog().LogStorageWrite(voxelMap2, (MyStorageData)m_cache.GetValue(null), dataToWrite, voxelCoord, voxelCoord2);
                 }
-
-                voxelMap.Storage.WriteRange((MyStorageData)Cache.GetValue(null), MyStorageDataTypeFlags.ContentAndMaterial, vector3I, vector3I2, false, skipCache);
+                voxelMap2.Storage.WriteRange((MyStorageData)m_cache.GetValue(null), dataToWrite, voxelCoord, voxelCoord2, notify: false, skipCache);
             }
-            voxelsCountInPercent = (num1 > 0f) ? (num2 / (float)num1) : 0f;
+            voxelsCountInPercent = (((float)num > 0f) ? ((float)num2 / (float)num) : 0f);
             if (num2 > 0)
             {
-                MySandboxGame.Static.Invoke(delegate ()
+                BoundingBoxD cutOutBox = shape.GetWorldBoundaries();
+                MySandboxGame.Static.Invoke(delegate
                 {
-                    if (voxelMap.Storage != null)
+                    if (voxelMap2.Storage != null)
                     {
-                        voxelMap.Storage.NotifyChanged(minCorner, maxCorner, MyStorageDataTypeFlags.ContentAndMaterial);
-                        BoundingBoxD cutOutBox = shape.GetWorldBoundaries();
-                        MyVoxelGenerator.NotifyVoxelChanged(MyVoxelBase.OperationType.Cut, voxelMap, ref cutOutBox);
+                        voxelMap2.Storage.NotifyChanged(minCorner, maxCorner, MyStorageDataTypeFlags.ContentAndMaterial);
+                        MyVoxelGenerator.NotifyVoxelChanged(MyVoxelBase.OperationType.Cut, voxelMap2, ref cutOutBox);
                     }
                 }, "CutOutShapeWithProperties notify");
             }

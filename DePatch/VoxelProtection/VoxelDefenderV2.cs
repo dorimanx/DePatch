@@ -9,6 +9,8 @@ namespace DePatch
     {
         private static bool Prefix(MyCubeGrid __instance)
         {
+            if (!DePatchPlugin.Instance.Config.Enabled)
+                return true;
             if (!DePatchPlugin.Instance.Config.ProtectVoxels)
                 return true;
 
@@ -21,13 +23,10 @@ namespace DePatch
                     __instance.Physics.ApplyImpulse(position - ((__instance.Physics.LinearVelocity + __instance.Physics.AngularVelocity) * __instance.Mass / 4.0f),
                         position + __instance.Physics.AngularVelocity);
 
-                    __instance.Physics.LinearVelocity = Vector3D.Backward;
-                    __instance.Physics.LinearVelocity = Vector3D.Up;
                     __instance.Physics?.ClearSpeed();
                 }
                 return false;
             }
-
             return false;
         }
     }

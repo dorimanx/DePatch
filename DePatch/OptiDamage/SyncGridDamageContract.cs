@@ -13,8 +13,8 @@ namespace DePatch
 
         public SyncGridDamageContract(long cubeGridId, DamageContract[] damageContracts)
         {
-            this.CubeGridId = cubeGridId;
-            this.DamageContracts = damageContracts;
+            CubeGridId = cubeGridId;
+            DamageContracts = damageContracts;
         }
     }
 }

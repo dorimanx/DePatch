@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Havok;
 using Sandbox.Engine.Physics;
+using Sandbox.Engine.Utils;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Character;
 using Sandbox.Game.Entities.Cube;
@@ -16,9 +17,7 @@ namespace DePatch
 {
     internal class MyVoxelDefenderPatch
     {
-        private static FieldInfo m_grid = ReflectionUtils.GetField<MyGridPhysics>(nameof(Grid), true);
-
-        public static FieldInfo Grid { get => m_grid; set => m_grid = value; }
+        private static FieldInfo m_grid = ReflectionUtils.GetField<MyGridPhysics>("m_grid", isPrivate: true);
 
         private static bool Prefix(
             MyGridPhysics __instance,
@@ -27,7 +26,7 @@ namespace DePatch
             uint shapeKey,
             ref float maxImpulse)
         {
-            _ = Logic(__instance, otherBody, shapeKey, ref maxImpulse);
+            __result = Logic(__instance, otherBody, shapeKey, ref maxImpulse);
             return false;
         }
 
@@ -37,51 +36,61 @@ namespace DePatch
           uint shapeKey,
           ref float maxImpulse)
         {
-            if (maxImpulse == 0.0)
+            if (maxImpulse == 0f)
                 maxImpulse = __instance.Shape.BreakImpulse;
 
-            ulong user = 0;
-            IMyEntity entity1 = otherBody.GetEntity(0U);
-            if (entity1 is MyVoxelBase)
+            ulong user = 0uL;
+            IMyEntity entity = otherBody.GetEntity(0u);
+            if (entity is MyVoxelBase)
                 return HkBreakOffLogicResult.DoNotBreakOff;
 
-            MyPlayer controllingPlayer = MySession.Static.Players.GetControllingPlayer(entity1 as MyEntity);
+            MyPlayer controllingPlayer = MySession.Static.Players.GetControllingPlayer(entity as MyEntity);
             if (controllingPlayer != null)
                 user = controllingPlayer.Id.SteamId;
 
-            if (!MySessionComponentSafeZones.IsActionAllowed((MyEntity)Grid.GetValue(__instance), MySafeZoneAction.Damage, 0L, user) || (MySession.Static.Settings.EnableVoxelDestruction && entity1 is MyVoxelBase))
+            if (!MySessionComponentSafeZones.IsActionAllowed((MyEntity)m_grid.GetValue(__instance), MySafeZoneAction.Damage, 0L, user) ||
+                (MySession.Static.Settings.EnableVoxelDestruction && entity is MyVoxelBase))
             {
                 return HkBreakOffLogicResult.DoNotBreakOff;
             }
-
-            HkBreakOffLogicResult breakOffLogicResult = HkBreakOffLogicResult.UseLimit;
-            if (!Sync.IsServer || __instance.RigidBody == null || __instance.Entity.MarkedForClose || otherBody == null)
-                breakOffLogicResult = HkBreakOffLogicResult.DoNotBreakOff;
+            HkBreakOffLogicResult result = HkBreakOffLogicResult.UseLimit;
+            if (!Sync.IsServer)
+            {
+                result = HkBreakOffLogicResult.DoNotBreakOff;
+            }
+            else if (__instance.RigidBody == null || __instance.Entity.MarkedForClose || otherBody == null)
+            {
+                result = HkBreakOffLogicResult.DoNotBreakOff;
+            }
             else
             {
-                if (otherBody.GetEntity(0U) == null)
+                IMyEntity entity2 = otherBody.GetEntity(0u);
+                if (entity2 == null)
                 {
                     return HkBreakOffLogicResult.DoNotBreakOff;
                 }
-                if (otherBody.GetEntity(0U) is MyEnvironmentSector ||
-                    otherBody.GetEntity(0U) is MyFloatingObject ||
-                    otherBody.GetEntity(0U) is MyDebrisBase ||
-                    otherBody.GetEntity(0U) is MyCharacter ||
-                    otherBody.GetEntity(0U).GetTopMostParent(null) == __instance.Entity)
+                if (entity2 is MyEnvironmentSector || entity2 is MyFloatingObject || entity2 is MyDebrisBase)
                 {
-                    breakOffLogicResult = HkBreakOffLogicResult.DoNotBreakOff;
+                    result = HkBreakOffLogicResult.DoNotBreakOff;
+                }
+                else if (entity2 is MyCharacter)
+                {
+                    result = HkBreakOffLogicResult.DoNotBreakOff;
+                }
+                else if (entity2.GetTopMostParent() == __instance.Entity)
+                {
+                    result = HkBreakOffLogicResult.DoNotBreakOff;
                 }
                 else
                 {
-                    if (!MySession.Static.Settings.EnableSubgridDamage &&
-                        otherBody.GetEntity(0U) as MyCubeGrid != null &&
-                        MyCubeGridGroups.Static.Physical.HasSameGroup((MyCubeGrid)Grid.GetValue(__instance), otherBody.GetEntity(0U) as MyCubeGrid))
+                    if (!MySession.Static.Settings.EnableSubgridDamage && (entity2 as MyCubeGrid) != null &&
+                        MyCubeGridGroups.Static.Physical.HasSameGroup((MyCubeGrid)m_grid.GetValue(__instance), entity2 as MyCubeGrid))
                     {
-                        breakOffLogicResult = HkBreakOffLogicResult.DoNotBreakOff;
+                        result = HkBreakOffLogicResult.DoNotBreakOff;
                     }
-                    else if (__instance.Entity is MyCubeGrid || otherBody.GetEntity(0U) as MyCubeGrid != null)
+                    else if (__instance.Entity is MyCubeGrid || entity2 as MyCubeGrid != null)
                     {
-                        breakOffLogicResult = HkBreakOffLogicResult.UseLimit;
+                        result = HkBreakOffLogicResult.UseLimit;
                     }
                 }
 #pragma warning disable CS0612 // Тип или член устарел
@@ -89,7 +98,8 @@ namespace DePatch
 #pragma warning restore CS0612 // Тип или член устарел
                     __instance.HavokWorld.BreakOffPartsUtil.MarkEntityBreakable(__instance.RigidBody, __instance.Shape.BreakImpulse);
             }
-            return breakOffLogicResult;
+            _ = MyFakes.DEFORMATION_LOGGING;
+            return result;
         }
     }
 }

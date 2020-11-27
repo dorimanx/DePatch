@@ -20,21 +20,16 @@ namespace DePatch
 
         public static string Serialize(DrillSettings settings)
         {
-            return string.Format("{0}:{1}:{2}:{3}", new object[]
-            {
-                settings.Subtype,
-                settings.RightClick,
-                Enum.Format(typeof(DrillingMode), settings.Mode, "g"),
-                settings.TickRate
-            });
+            return string.Format("{0}:{1}:{2}:{3}",
+                    settings.Subtype, settings.RightClick,
+                    Enum.Format(typeof(DrillingMode),
+                    settings.Mode, "g"),
+                    settings.TickRate);
         }
 
         public static DrillSettings Deserialize(string raw)
         {
-            string[] array = raw.Split(new char[]
-            {
-                ':'
-            });
+            string[] array = raw.Split(':');
             return new DrillSettings
             {
                 Subtype = array[0],
@@ -44,19 +39,16 @@ namespace DePatch
             };
         }
 
-        public static void InitDefinitions()
-        {
-            (from b in MyDefinitionManager.Static.GetAllDefinitions()
-             where b is MyShipDrillDefinition
-             select b into d
-             where DrillSettings.drills.ToList<DrillSettings>().FindAll((DrillSettings b) => b.Subtype == d.Id.SubtypeName).Count == 0
-             select d).ForEach(delegate (MyDefinitionBase d)
-             {
-                 DrillSettings.drills.Add(new DrillSettings
-                 {
-                     Subtype = d.Id.SubtypeName
-                 });
-             });
-        }
+        public static void InitDefinitions() => (from b in MyDefinitionManager.Static.GetAllDefinitions()
+                                                 where b is MyShipDrillDefinition
+                                                 select b into d
+                                                 where drills.ToList().FindAll((DrillSettings b) => b.Subtype == d.Id.SubtypeName).Count == 0
+                                                 select d).ForEach(delegate (MyDefinitionBase d)
+                                                 {
+                                                     drills.Add(new DrillSettings
+                                                     {
+                                                         Subtype = d.Id.SubtypeName
+                                                     });
+                                                 });
     }
 }

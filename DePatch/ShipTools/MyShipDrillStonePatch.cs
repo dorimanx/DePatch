@@ -24,7 +24,7 @@ namespace DePatch
             if (!items.ContainsKey(stoneDefinition))
                 return;
 
-            inventory.RemoveItemsOfType(items[stoneDefinition], stoneDefinition, MyItemFlags.None, false);
+            inventory.RemoveItemsOfType(items[stoneDefinition], stoneDefinition);
         }
     }
 }

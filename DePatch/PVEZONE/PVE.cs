@@ -14,10 +14,10 @@ namespace DePatch
 
         public static void Init(DePatchPlugin plugin)
         {
-            PVE.Log.Info("Initing PVE ZONE...");
-            PVE.PVESphere = new BoundingSphereD(new Vector3D((double)plugin.Config.PveX, (double)plugin.Config.PveY, (double)plugin.Config.PveZ), (double)plugin.Config.PveZoneRadius);
+            Log.Info("Initing PVE ZONE...");
+            PVESphere = new BoundingSphereD(new Vector3D(plugin.Config.PveX, plugin.Config.PveY, plugin.Config.PveZ), plugin.Config.PveZoneRadius);
             DamageHandler.Init();
-            PVE.Log.Info("Complete!");
+            Log.Info("Complete!");
         }
     }
 }

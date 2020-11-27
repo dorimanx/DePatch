@@ -6309,6 +6309,12 @@
             </summary>
             <param name="quaternion1">Source quaternion.</param><param name="quaternion2">Source quaternion.</param>
         </member>
+        <member name="M:VRageMath.Quaternion.op_Multiply(VRageMath.Quaternion,VRageMath.Vector3)">
+            <summary>
+            Multiplies a vector by a quaternion. Resulting vector rotated by quaternion
+            </summary>
+            <param name="quaternion">Source quaternion.</param><param name="vector">Vector to be rotated.</param>
+        </member>
         <member name="M:VRageMath.Quaternion.op_Multiply(VRageMath.Quaternion,System.Single)">
             <summary>
             Multiplies a quaternion by a scalar value.
@@ -6654,6 +6660,12 @@
             Multiplies two quaternions.
             </summary>
             <param name="quaternion1">Source quaternion.</param><param name="quaternion2">Source quaternion.</param>
+        </member>
+        <member name="M:VRageMath.QuaternionD.op_Multiply(VRageMath.QuaternionD,VRageMath.Vector3D)">
+            <summary>
+            Multiplies a vector by a quaternion. Resulting a vector rotated by quaternion.
+            </summary>
+            <param name="quaternion">Source quaternion.</param><param name="vector">Vector to be rotated.</param>
         </member>
         <member name="M:VRageMath.QuaternionD.op_Multiply(VRageMath.QuaternionD,System.Double)">
             <summary>
