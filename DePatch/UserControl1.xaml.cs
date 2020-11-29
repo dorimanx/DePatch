@@ -74,29 +74,35 @@ namespace DePatch
                 MyProgramBlockSlow.Init();
             }
 
-            if (ModsBlock.Text.Length > 10 && ModsBlock.Text.Split(new char[]
-                {
-                    ';'
-                }).Length != 0)
+            if (ModsBlock.Text.Length == 0)
             {
                 Plugin.Config.Mods.Clear();
-                foreach (string s in ModsBlock.Text.Split(new char[]
-            {
-                    ';'
-            }))
-                {
-                    if (!ulong.TryParse(s, out ulong item))
-                    {
-                        break;
-                    }
-                    Plugin.Config.Mods.Add(item);
-                    item = 0UL;
-                }
             }
-            ModsBlock.Text = string.Join(";", Plugin.Config.Mods);
-
+            else
+            {
+                if (ModsBlock.Text.Length > 10 && ModsBlock.Text.Split(new char[]
+                    {
+                    ';'
+                    }).Length != 0)
+                {
+                    Plugin.Config.Mods.Clear();
+                    foreach (string s in ModsBlock.Text.Split(new char[]
+                {
+                    ';'
+                }))
+                    {
+                        if (!ulong.TryParse(s, out ulong item))
+                        {
+                            break;
+                        }
+                        Plugin.Config.Mods.Add(item);
+                        item = 0UL;
+                    }
+                }
+                ModsBlock.Text = string.Join(";", Plugin.Config.Mods);
+            }
             Plugin.ConfigPersistent.Save(null);
-            Plugin.SetupConfig();
+            Plugin.LoadConfig();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)

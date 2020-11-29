@@ -2,6 +2,7 @@
 using Sandbox.Game.Entities;
 using VRage.Game;
 using VRage.Game.ModAPI;
+using VRage.Game.Components;
 using Sandbox.ModAPI;
 using VRage.Utils;
 using VRage.Game.Entity;
@@ -32,10 +33,21 @@ namespace DePatch
 
                     try
                     {
-                        IMySlimBlock GridBlock = target as IMySlimBlock;
-                        VRage.Game.Components.MyPhysicsComponentBase GridPhysics = GridBlock.CubeGrid.Physics;
-                        IMyCubeGrid GridCube = GridBlock.CubeGrid;
-                        MyCubeGrid Grid = (MyCubeGrid)GridCube;
+                        IMySlimBlock GridBlock;
+                        MyPhysicsComponentBase GridPhysics;
+                        IMyCubeGrid GridCube;
+                        MyCubeGrid Grid;
+                        try
+                        {
+                            GridBlock = target as IMySlimBlock;
+                            GridPhysics = GridBlock.CubeGrid.Physics;
+                            GridCube = GridBlock.CubeGrid;
+                            Grid = (MyCubeGrid)GridCube;
+                        }
+                        catch
+                        {
+                            return;
+                        }
 
                         if (GridBlock != null && GridPhysics != null &&
                             (GridCube.GridSizeEnum == MyCubeSize.Large && Grid.BlocksCount < DePatchPlugin.Instance.Config.MaxProtectedLargeGridSize ||
@@ -47,10 +59,18 @@ namespace DePatch
 
                             if (LinearVelocity.Length() < speed && AngularVelocity.Length() < speed)
                             { //by voxel or grid on low speed
-                                if (Grid.BlocksCount > 50)
+                                if (AttackerEntity is MyVoxelBase)
                                 {
                                     if (damage.IsDeformation) damage.IsDeformation = false;
                                     if (damage.Amount != 0f) damage.Amount = 0f;
+                                }
+                                else
+                                {
+                                    if (Grid.BlocksCount > DePatchPlugin.Instance.Config.MaxBlocksDoDamage)
+                                    {
+                                        if (damage.IsDeformation) damage.IsDeformation = false;
+                                        if (damage.Amount != 0f) damage.Amount = 0f;
+                                    }
                                 }
                             }
                             else
@@ -60,7 +80,15 @@ namespace DePatch
                                     GridPhysics?.ClearSpeed();
 
                                     if (damage.IsDeformation) damage.IsDeformation = false;
-                                    if (damage.Amount != 0f) damage.Amount = 0f;
+
+                                    float damagehit = damage.Amount;
+                                    if (damagehit != 0f)
+                                    {
+                                        if (damagehit > DePatchPlugin.Instance.Config.DamgeToBlocksVoxel)
+                                            damagehit = DePatchPlugin.Instance.Config.DamgeToBlocksVoxel;
+                                        else
+                                            damage.Amount = damagehit;
+                                    }
 
                                     GridPhysics.ApplyImpulse(
                                         Grid.PositionComp.GetPosition() -
@@ -70,10 +98,18 @@ namespace DePatch
                                     GridPhysics?.ClearSpeed();
                                 }
 
-                                if (Grid.BlocksCount > 50)
+                                if (Grid.BlocksCount > DePatchPlugin.Instance.Config.MaxBlocksDoDamage)
                                 { // by grid bump high speed
                                     if (damage.IsDeformation) damage.IsDeformation = false;
-                                    if (damage.Amount != 0f) damage.Amount = 0f;
+
+                                    float damagehit = damage.Amount;
+                                    if (damagehit != 0f)
+                                    {
+                                        if (damagehit > DePatchPlugin.Instance.Config.DamgeToBlocksRamming)
+                                            damagehit = DePatchPlugin.Instance.Config.DamgeToBlocksRamming;
+                                        else
+                                            damage.Amount = damagehit;
+                                    }
                                 }
                             }
                         }

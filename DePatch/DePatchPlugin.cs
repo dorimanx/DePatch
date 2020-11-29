@@ -91,17 +91,15 @@ namespace DePatch
 
         public void LoadConfig()
         {
-            string path = Path.Combine(StoragePath, "DePatch.cfg");
             if (ConfigPersistent?.Data != null)
-                ConfigPersistent = Persistent<DeConfig>.Load(path, true);
+                ConfigPersistent = Persistent<DeConfig>.Load(Path.Combine(StoragePath, "DePatch.cfg"), true);
         }
 
         public void SetupConfig()
         {
-            string path = Path.Combine(base.StoragePath, "DePatch.cfg");
             try
             {
-                ConfigPersistent = Persistent<DeConfig>.Load(path);
+                ConfigPersistent = Persistent<DeConfig>.Load(Path.Combine(base.StoragePath, "DePatch.cfg"));
             }
             catch (Exception ex)
             {
@@ -111,8 +109,8 @@ namespace DePatch
                 return;
 
             Log.Info("Create Default Config, because none was found!");
-            ConfigPersistent = new Persistent<DeConfig>(path, new DeConfig());
-            ConfigPersistent.Save();
+            ConfigPersistent = new Persistent<DeConfig>(Path.Combine(base.StoragePath, "DePatch.cfg"), new DeConfig());
+            ConfigPersistent.Save(null);
         }
 
         public UserControl GetControl()

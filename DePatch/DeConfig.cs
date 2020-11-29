@@ -51,6 +51,9 @@ namespace DePatch
         private float _MinProtectSpeed = 40f;
         private long _MaxProtectedSmallGridSize = 10000L;
         private long _MaxProtectedLargeGridSize = 10000L;
+        private float _DamgeToBlocksVoxel = 0f;
+        private float _DamgeToBlocksRamming = 200f;
+        private long _MaxBlocksDoDamage = 50L;
         private bool _damageThreading;
         private Decimal _gridColisionAverage;
         private bool _slowPBUpdateEnable;
@@ -102,11 +105,30 @@ namespace DePatch
             set => SetValue(ref _stopExplosion, value, "StopExplosion");
         }
 
+        public float DamgeToBlocksVoxel
+        {
+            get => _DamgeToBlocksVoxel;
+            set => SetValue(ref _DamgeToBlocksVoxel, value, "DamgeToBlocksVoxel");
+        }
+
+        public float DamgeToBlocksRamming
+        {
+            get => _DamgeToBlocksRamming;
+            set => SetValue(ref _DamgeToBlocksRamming, value, "DamgeToBlocksRamming");
+        }
+
+        public long MaxBlocksDoDamage
+        {
+            get => _MaxBlocksDoDamage;
+            set => SetValue(ref _MaxBlocksDoDamage, value, "MaxBlocksDoDamage");
+        }
+
         public bool DisableAssemblerCoop
         {
             get => _DisableAssemblerCoop;
             set => SetValue(ref _DisableAssemblerCoop, value, "DisableAssemblerCoop");
         }
+
         public bool DisableAssemblerLoop
         {
             get => _DisableAssemblerLoop;
