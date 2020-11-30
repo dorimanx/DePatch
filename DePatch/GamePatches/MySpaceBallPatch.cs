@@ -17,11 +17,11 @@ namespace DePatch
             typeof(MyCubeGrid)
         }, new ParameterModifier[0]);
 
-        internal static readonly MethodInfo UpdatePatch = typeof(MySpaceBallPatch).GetMethod("PatchMethod", BindingFlags.Static | BindingFlags.Public) ?? throw new Exception("Failed to find patch method");
+        internal static readonly MethodInfo UpdatePatch = typeof(MySpaceBallPatch).GetMethod("PatchMethod", BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("Failed to find patch method");
 
         internal static readonly MethodInfo UpdateMass = typeof(MySpaceBall).GetMethod("RefreshPhysicsBody", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        internal static readonly MethodInfo UpdateMassPatch = typeof(MySpaceBallPatch).GetMethod("PatchMassMethod", BindingFlags.Static | BindingFlags.Public) ?? throw new Exception("Failed to find patch method");
+        internal static readonly MethodInfo UpdateMassPatch = typeof(MySpaceBallPatch).GetMethod("PatchMassMethod", BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("Failed to find patch method");
 
         public static void Patch(PatchContext ctx)
         {
@@ -29,7 +29,7 @@ namespace DePatch
             ctx.GetPattern(UpdateMass).Prefixes.Add(UpdateMassPatch);
         }
 
-        public static void PatchMethod(MySpaceBall __instance)
+        private static void PatchMethod(MySpaceBall __instance)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.RemoveMass)
                 return;
@@ -37,7 +37,7 @@ namespace DePatch
             ((MySpaceBallDefinition)__instance.BlockDefinition).MaxVirtualMass = 0f;
         }
 
-        public static void PatchMassMethod(MySpaceBall __instance)
+        private static void PatchMassMethod(MySpaceBall __instance)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.RemoveMass)
                 return;

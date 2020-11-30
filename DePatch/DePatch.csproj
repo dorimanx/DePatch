@@ -38,7 +38,7 @@
       <HintPath>..\Dependency\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="HavokWrapper">
-      <HintPath>..\Dependency\HavokWrapper.dll</HintPath>
+      <HintPath>..\GameBinaries\HavokWrapper.dll</HintPath>
     </Reference>
     <Reference Include="Humanizer, Version=2.2.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
       <HintPath>..\packages\Humanizer.Core.2.2.0\lib\netstandard1.0\Humanizer.dll</HintPath>
@@ -47,21 +47,21 @@
       <HintPath>..\packages\ICSharpCode.Decompiler.6.2.1.6137\lib\netstandard2.0\ICSharpCode.Decompiler.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
-      <HintPath>..\Dependency\NLog.dll</HintPath>
+      <HintPath>..\TorchBinaries\NLog.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="ProtoBuf.Net.Core">
-      <HintPath>..\Dependency\ProtoBuf.Net.Core.dll</HintPath>
+      <HintPath>..\GameBinaries\ProtoBuf.Net.Core.dll</HintPath>
     </Reference>
     <Reference Include="Sandbox.Common">
-      <HintPath>..\Dependency\Sandbox.Common.dll</HintPath>
+      <HintPath>..\GameBinaries\Sandbox.Common.dll</HintPath>
     </Reference>
     <Reference Include="Sandbox.Game">
-      <HintPath>..\Dependency\Sandbox.Game.dll</HintPath>
+      <HintPath>..\GameBinaries\Sandbox.Game.dll</HintPath>
     </Reference>
     <Reference Include="SpaceEngineers.Game">
-      <HintPath>..\Dependency\SpaceEngineers.Game.dll</HintPath>
+      <HintPath>..\GameBinaries\SpaceEngineers.Game.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -79,25 +79,25 @@
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="Torch">
-      <HintPath>..\Dependency\Torch.dll</HintPath>
+      <HintPath>..\TorchBinaries\Torch.dll</HintPath>
     </Reference>
     <Reference Include="Torch.API">
-      <HintPath>..\Dependency\Torch.API.dll</HintPath>
+      <HintPath>..\TorchBinaries\Torch.API.dll</HintPath>
     </Reference>
     <Reference Include="Torch.Server">
-      <HintPath>..\Dependency\Torch.Server.exe</HintPath>
+      <HintPath>..\TorchBinaries\Torch.Server.exe</HintPath>
     </Reference>
     <Reference Include="VRage">
-      <HintPath>..\Dependency\VRage.dll</HintPath>
+      <HintPath>..\GameBinaries\VRage.dll</HintPath>
     </Reference>
     <Reference Include="VRage.Game">
-      <HintPath>..\Dependency\VRage.Game.dll</HintPath>
+      <HintPath>..\GameBinaries\VRage.Game.dll</HintPath>
     </Reference>
     <Reference Include="VRage.Library">
-      <HintPath>..\Dependency\VRage.Library.dll</HintPath>
+      <HintPath>..\GameBinaries\VRage.Library.dll</HintPath>
     </Reference>
     <Reference Include="VRage.Math">
-      <HintPath>..\Dependency\VRage.Math.dll</HintPath>
+      <HintPath>..\GameBinaries\VRage.Math.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>

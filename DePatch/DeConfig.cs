@@ -143,7 +143,7 @@ namespace DePatch
 
         public bool DisableNanoBotsOnShip
         {
-            get => _DisableProductionOnShip;
+            get => _DisableNanoBotsOnShip;
             set => SetValue(ref _DisableNanoBotsOnShip, value, "DisableNanoBotsOnShip");
         }
 
