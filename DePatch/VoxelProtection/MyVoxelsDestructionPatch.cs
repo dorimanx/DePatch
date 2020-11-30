@@ -17,11 +17,11 @@ namespace DePatch
 {
     internal class MyVoxelsDestructionPatch
     {
-        private static MethodInfo RemoveSmallVoxelsUsingChachedVoxels = typeof(MyVoxelGenerator).GetMethod("RemoveSmallVoxelsUsingChachedVoxels", BindingFlags.Static | BindingFlags.NonPublic);
+        private static MethodInfo RemoveSmallVoxelsUsingChachedVoxels = typeof(MyVoxelGenerator).GetMethod("RemoveSmallVoxelsUsingChachedVoxels", BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
 
-        private static FieldInfo m_cache = typeof(MyVoxelGenerator).GetField("m_cache", BindingFlags.Static | BindingFlags.NonPublic);
+        private static FieldInfo m_cache = typeof(MyVoxelGenerator).GetField("m_cache", BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
 
-        private static MethodInfo ComputeShapeBounds = typeof(MyVoxelGenerator).GetMethod("ComputeShapeBounds", BindingFlags.Static | BindingFlags.NonPublic);
+        private static MethodInfo ComputeShapeBounds = typeof(MyVoxelGenerator).GetMethod("ComputeShapeBounds", BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
 
         private static bool Prefix(
           MyVoxelBase voxelMap,

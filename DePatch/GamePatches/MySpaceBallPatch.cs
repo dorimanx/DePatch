@@ -17,11 +17,11 @@ namespace DePatch
             typeof(MyCubeGrid)
         }, new ParameterModifier[0]);
 
-        internal static readonly MethodInfo UpdatePatch = typeof(MySpaceBallPatch).GetMethod("PatchMethod", BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("Failed to find patch method");
+        internal static readonly MethodInfo UpdatePatch = typeof(MySpaceBallPatch).GetMethod("PatchMethod", BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("Failed to find patch method");
 
         internal static readonly MethodInfo UpdateMass = typeof(MySpaceBall).GetMethod("RefreshPhysicsBody", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        internal static readonly MethodInfo UpdateMassPatch = typeof(MySpaceBallPatch).GetMethod("PatchMassMethod", BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("Failed to find patch method");
+        internal static readonly MethodInfo UpdateMassPatch = typeof(MySpaceBallPatch).GetMethod("PatchMassMethod", BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("Failed to find patch method");
 
         public static void Patch(PatchContext ctx)
         {

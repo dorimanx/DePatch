@@ -12,7 +12,7 @@ namespace DePatch
     {
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
         internal static readonly MethodInfo update = typeof(MyShipWelder).GetMethod("Activate", BindingFlags.Instance | BindingFlags.NonPublic) ?? throw new Exception("Failed to find method to patch");
-        internal static readonly MethodInfo updatePatch = typeof(MyWelderPatch).GetMethod("Patchm", BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("Failed to find patch method");
+        internal static readonly MethodInfo updatePatch = typeof(MyWelderPatch).GetMethod("Patchm", BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("Failed to find patch method");
 
         public static void Patch(PatchContext ctx) => ctx.GetPattern(update).Prefixes.Add(updatePatch);
 
