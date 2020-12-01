@@ -44,7 +44,6 @@ namespace DePatch
 
         private static bool Prefix(MyShipDrill __instance)
         {
-            MyShipDrill __instance2 = __instance;
             if (!DrillThread.IsAlive)
             {
                 DrillThread.Start();
@@ -55,33 +54,33 @@ namespace DePatch
                 {
                     Parallel.Start(delegate
                     {
-                        AsyncUpdate(__instance2);
+                        AsyncUpdate(__instance);
                     });
                 }
                 else if (DePatchPlugin.Instance.Config.ParallelDrill == DrillingMode.Keen)
                 {
-                    AsyncUpdate(__instance2);
+                    AsyncUpdate(__instance);
                 }
                 else if (DePatchPlugin.Instance.Config.ParallelDrill == DrillingMode.Threading)
                 {
-                    pendingDrillers.Add(__instance2);
+                    pendingDrillers.Add(__instance);
                 }
             }
             else
             {
-                switch (DrillSettings.drills.ToList().Find((DrillSettings b) => b.Subtype == __instance2.DefinitionId.SubtypeName).Mode)
+                switch (DrillSettings.drills.ToList().Find((DrillSettings b) => b.Subtype == __instance.DefinitionId.SubtypeName).Mode)
                 {
                     case DrillingMode.Parallel:
                         Parallel.Start(delegate
                         {
-                            AsyncUpdate(__instance2);
+                            AsyncUpdate(__instance);
                         });
                         break;
                     case DrillingMode.Keen:
-                        AsyncUpdate(__instance2);
+                        AsyncUpdate(__instance);
                         break;
                     case DrillingMode.Threading:
-                        pendingDrillers.Add(__instance2);
+                        pendingDrillers.Add(__instance);
                         break;
                 }
             }
@@ -90,45 +89,61 @@ namespace DePatch
 
         private static void AsyncUpdate(MyShipDrill drill)
         {
-            MyShipDrill drill2 = drill;
-            Receiver_IsPoweredChanged.Invoke(drill2, new object[0]);
-            InitSubBlocks.Invoke(drill2, new object[0]);
-            if (drill2.Parent == null || drill2.Parent.Physics == null)
+            Receiver_IsPoweredChanged.Invoke(drill, new object[0]);
+            InitSubBlocks.Invoke(drill, new object[0]);
+
+            if (drill.Parent == null || drill.Parent.Physics == null)
             {
                 return;
             }
-            m_drillFrameCountdown.SetValue(drill2, (int)m_drillFrameCountdown.GetValue(drill2) - 10);
-            if ((int)m_drillFrameCountdown.GetValue(drill2) > 0)
+
+            m_drillFrameCountdown.SetValue(drill, (int)m_drillFrameCountdown.GetValue(drill) - 10);
+            if ((int)m_drillFrameCountdown.GetValue(drill) > 0)
             {
                 return;
             }
-            DrillSettings drillSettings = DrillSettings.drills.ToList().Find((DrillSettings b) => b.Subtype == drill2.DefinitionId.SubtypeName);
+
+            DrillSettings drillSettings = DrillSettings.drills.ToList().Find((DrillSettings b) => b.Subtype == drill.DefinitionId.SubtypeName);
             if (DePatchPlugin.Instance.Config.DrillIgnoreSubtypes)
             {
-                m_drillFrameCountdown.SetValue(drill2, (int)m_drillFrameCountdown.GetValue(drill2) + DePatchPlugin.Instance.Config.DrillUpdateRate);
+                m_drillFrameCountdown.SetValue(drill, (int)m_drillFrameCountdown.GetValue(drill) + DePatchPlugin.Instance.Config.DrillUpdateRate);
             }
             else
             {
-                m_drillFrameCountdown.SetValue(drill2, (int)((float)(int)m_drillFrameCountdown.GetValue(drill2) + drillSettings.TickRate));
+                m_drillFrameCountdown.SetValue(drill, (int)(float)((int)m_drillFrameCountdown.GetValue(drill) + drillSettings.TickRate));
             }
-            if (!drill2.CanShoot(MyShootActionEnum.PrimaryAction, drill2.OwnerId, out var _))
+
+            if (!drill.CanShoot(MyShootActionEnum.PrimaryAction, drill.OwnerId, out var _))
             {
-                ShakeAmount.SetValue(drill2, 0f);
+                ShakeAmount.SetValue(drill, 0f);
                 return;
             }
-            bool flag = (bool)m_wantsToCollect.GetValue(drill2);
-            bool drillIgnoreSubtypes = DePatchPlugin.Instance.Config.DrillIgnoreSubtypes;
-            bool flag2 = false;
-            MyDrillBase obj = (MyDrillBase)m_drillBase.GetValue(drill2);
-            flag2 = drill2.Enabled || (drillIgnoreSubtypes ? (flag || !DePatchPlugin.Instance.Config.DrillDisableRightClick) : ((!drillSettings.RightClick) ? flag : (flag || drillSettings.RightClick)));
-            if (obj.Drill(flag2))
+
+            bool collectOre;
+            if (drill.Enabled)
             {
-                ShakeAmount.SetValue(drill2, 1f);
+                collectOre = true;
+            }
+            else if (DePatchPlugin.Instance.Config.DrillIgnoreSubtypes)
+            {
+                collectOre = ((bool)m_wantsToCollect.GetValue(drill) || DePatchPlugin.Instance.Config.DrillDisableRightClick);
+            }
+            else if (drillSettings.DisableRightClick)
+            {
+                collectOre = ((bool)m_wantsToCollect.GetValue(drill) || drillSettings.DisableRightClick);
             }
             else
             {
-                ShakeAmount.SetValue(drill2, 0.5f);
+                collectOre = (bool)m_wantsToCollect.GetValue(drill);
             }
+
+            MyDrillBase myDrillBase = (MyDrillBase)m_drillBase.GetValue(drill);
+            if (myDrillBase.Drill(collectOre, true, false, 0.1f))
+            {
+                ShakeAmount.SetValue(drill, 1f);
+                return;
+            }
+            ShakeAmount.SetValue(drill, 0.5f);
         }
     }
 }

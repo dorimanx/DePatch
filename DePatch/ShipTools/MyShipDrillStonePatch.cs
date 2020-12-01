@@ -12,8 +12,6 @@ namespace DePatch
     {
         private static Dictionary<MyDefinitionId, MyFixedPoint> items = new Dictionary<MyDefinitionId, MyFixedPoint>();
 
-        private static MyDefinitionId stoneDefinition = MyDefinitionId.Parse("MyObjectBuilder_Ore/Stone");
-
         private static void Prefix(MyShipDrill __instance, MyInventoryBase inventory)
         {
             if (!DePatchPlugin.Instance.Config.DrillStoneDumpRightClick || (bool)MyShipDrillParallelPatch.m_wantsToCollect.GetValue(__instance))
@@ -21,10 +19,10 @@ namespace DePatch
 
             items.Clear();
             inventory.CountItems(items);
-            if (!items.ContainsKey(stoneDefinition))
+            if (!items.ContainsKey(MyDefinitionId.Parse("MyObjectBuilder_Ore/Stone")))
                 return;
 
-            inventory.RemoveItemsOfType(items[stoneDefinition], stoneDefinition);
+            inventory.RemoveItemsOfType(items[MyDefinitionId.Parse("MyObjectBuilder_Ore/Stone")], MyDefinitionId.Parse("MyObjectBuilder_Ore/Stone"));
         }
     }
 }

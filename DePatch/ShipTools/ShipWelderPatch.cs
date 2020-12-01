@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
@@ -7,6 +8,7 @@ using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.Weapons;
 using Sandbox.Game.World;
 using SpaceEngineers.Game.Entities.Blocks;
+using VRage.Game;
 using VRage.Game.Entity;
 using VRageMath;
 
@@ -21,11 +23,33 @@ namespace DePatch
 
         private static void Prefix(MyShipWelder __instance)
         {
-            MyShipWelder __instance2 = __instance;
-            if (!DePatchPlugin.Instance.Config.Enabled && !DePatchPlugin.Instance.Config.ShipToolsEnabled)
+            if (!DePatchPlugin.Instance.Config.Enabled)
                 return;
 
-            IEnumerable<ShipTool> enumerable = ShipTool.shipTools.Where((ShipTool t) => t.Subtype == __instance2.DefinitionId.SubtypeId.String);
+            if (!__instance.CubeGrid.IsStatic &&
+                    (__instance.CubeGrid.GridSizeEnum == MyCubeSize.Large ||
+                    __instance.CubeGrid.GridSizeEnum == MyCubeSize.Small)
+                    && DePatchPlugin.Instance.Config.DisableNanoBotsOnShip)
+            {
+                string subtypeLarge = "SELtdLargeNanobotBuildAndRepairSystem";
+                string subtypeSmall = "SELtdSmallNanobotBuildAndRepairSystem";
+                var blockSubType = __instance.BlockDefinition.Id.SubtypeName;
+
+                if (__instance != null && (
+                        string.Compare(subtypeLarge, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0 ||
+                        string.Compare(subtypeSmall, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0))
+                {
+                    if (__instance.Enabled)
+                    {
+                        __instance.Enabled = false;
+                    }
+                }
+            }
+
+            if (!DePatchPlugin.Instance.Config.ShipToolsEnabled)
+                return;
+
+            IEnumerable<ShipTool> enumerable = ShipTool.shipTools.Where((ShipTool t) => t.Subtype == __instance.DefinitionId.SubtypeId.String);
             if (enumerable.Count() == 0)
             {
                 DePatchPlugin.Instance.Control.Dispatcher.Invoke(delegate
@@ -33,38 +57,41 @@ namespace DePatch
                     ShipTool.shipTools.Add(new ShipTool
                     {
                         Speed = ShipTool.DEFAULT_SPEED,
-                        Subtype = __instance2.DefinitionId.SubtypeId.String,
+                        Subtype = __instance.DefinitionId.SubtypeId.String,
                         Type = ToolType.Welder
                     });
                 });
                 enumerable.AddItem(new ShipTool
                 {
                     Speed = ShipTool.DEFAULT_SPEED,
-                    Subtype = __instance2.DefinitionId.SubtypeId.String,
+                    Subtype = __instance.DefinitionId.SubtypeId.String,
                     Type = ToolType.Welder
                 });
             }
             List<MyEntity> list = new List<MyEntity>();
-            BoundingSphere boundingSphere = (BoundingSphere)m_detectorSphere.GetValue(__instance2);
-            BoundingSphereD boundingSphereD = new BoundingSphereD(Vector3D.Transform(boundingSphere.Center, __instance2.CubeGrid.WorldMatrix), boundingSphere.Radius);
+            BoundingSphere boundingSphere = (BoundingSphere)m_detectorSphere.GetValue(__instance);
+            BoundingSphereD boundingSphereD = new BoundingSphereD(Vector3D.Transform(boundingSphere.Center, __instance.CubeGrid.WorldMatrix), boundingSphere.Radius);
             MyGamePruningStructure.GetAllEntitiesInSphere(ref boundingSphereD, list);
-            if (list.Contains(__instance2.CubeGrid))
+            if (list.Contains(__instance.CubeGrid))
             {
-                list.Remove(__instance2.CubeGrid);
+                list.Remove(__instance.CubeGrid);
             }
             foreach (MyEntity myEntity in list)
             {
                 MyCubeGrid myCubeGrid = myEntity as MyCubeGrid;
                 if (myCubeGrid != null && myEntity.Physics != null)
                 {
-                    MyInventoryBase inventoryBase = __instance2.GetInventoryBase();
-                    bool helpOthers = __instance2.HelpOthers;
                     float welderMountAmount = MySession.Static.WelderSpeedMultiplier * enumerable.First().Speed;
+                    float maxAllowedBoneMovement = MyShipWelder.WELDER_MAX_REPAIR_BONE_MOVEMENT_SPEED * 250f * 0.001f;
                     slimBlocks.Clear();
-                    myCubeGrid.GetBlocksInsideSphere(ref boundingSphereD, slimBlocks, checkTriangles: true);
+                    myCubeGrid.GetBlocksInsideSphere(ref boundingSphereD, slimBlocks, false);
+
                     foreach (MySlimBlock mySlimBlock in slimBlocks)
                     {
-                        mySlimBlock.IncreaseMountLevel(welderMountAmount, __instance.OwnerId, inventoryBase, 0.6f, helpOthers);
+                        mySlimBlock.IncreaseMountLevel(welderMountAmount,
+                            __instance.OwnerId, __instance.GetInventoryBase(),
+                            maxAllowedBoneMovement, __instance.HelpOthers,
+                            __instance.IDModule.ShareMode, false, false);
                     }
                 }
             }

@@ -46,7 +46,10 @@ namespace DePatch
             ShipToolsGrid.ItemsSource = ShipTool.shipTools;
             DrillModeCombobox.ItemsSource = Enum.GetValues(typeof(DrillingMode)).Cast<DrillingMode>();
             DrillModeCombobox.SelectedIndex = (int)Plugin.Config.ParallelDrill;
-            MyProgramBlockSlow.Init();
+            if (IgnorePBSubTypesHere.Text.Length > 1)
+            {
+                MyProgramBlockSlow.Init();
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -140,8 +143,8 @@ namespace DePatch
             {
                 Title = "Subtypes Editor",
                 Content = new UserControl2(),
-                Height = 520.0,
-                Width = 370.0
+                Height = 515.0,
+                Width = 515.0
             }.ShowDialog();
         }
     }

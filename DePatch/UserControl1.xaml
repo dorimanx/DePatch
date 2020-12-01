@@ -461,7 +461,7 @@
                     <CheckBox
 						Content="Stone Dump Right Click"
 						Margin="157,80,180,500"
-						IsEnabled="False"
+                        IsEnabled="False"
 						IsChecked="{Binding Path=DrillStoneDumpRightClick}" />
                     <CheckBox
 						Name="IgnoreDrillSubtypes"

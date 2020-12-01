@@ -14,18 +14,16 @@ namespace DePatch
 
         public DrillingMode Mode { get; set; }
 
-        public bool RightClick { get; set; }
+        public bool DisableRightClick { get; set; }
 
         public float TickRate { get; set; } = 90f;
 
-        public static string Serialize(DrillSettings settings)
-        {
-            return string.Format("{0}:{1}:{2}:{3}",
-                    settings.Subtype, settings.RightClick,
-                    Enum.Format(typeof(DrillingMode),
-                    settings.Mode, "g"),
-                    settings.TickRate);
-        }
+        public static string Serialize(DrillSettings settings) => string.Format("{0}:{1}:{2}:{3}",
+                                                                  settings.Subtype,
+                                                                  settings.DisableRightClick,
+                                                                  Enum.Format(typeof(DrillingMode),
+                                                                  settings.Mode, "g"),
+                                                                  settings.TickRate);
 
         public static DrillSettings Deserialize(string raw)
         {
@@ -33,7 +31,7 @@ namespace DePatch
             return new DrillSettings
             {
                 Subtype = array[0],
-                RightClick = bool.Parse(array[1]),
+                DisableRightClick = bool.Parse(array[1]),
                 Mode = (DrillingMode)Enum.Parse(typeof(DrillingMode), array[2]),
                 TickRate = float.Parse(array[3])
             };
