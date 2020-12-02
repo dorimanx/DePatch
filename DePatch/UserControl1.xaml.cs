@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Torch.API;
+using Torch.Views;
 
 namespace DePatch
 {
@@ -20,7 +21,7 @@ namespace DePatch
         public UserControlDepatch(DePatchPlugin plugin) : this()
         {
             Plugin = plugin;
-            base.DataContext = plugin.Config;
+            DataContext = plugin.Config;
             ModsBlock.Text = string.Join(";", plugin.Config.Mods);
             RaycastLimitTextBox.Text = plugin.Config.RaycastLimit.ToString("0");
             TimerDelayTextBox.Text = plugin.Config.TimerMinDelay.ToString("0");
@@ -104,8 +105,8 @@ namespace DePatch
                 }
                 ModsBlock.Text = string.Join(";", Plugin.Config.Mods);
             }
-            Plugin.ConfigPersistent.Save(null);
-            Plugin.LoadConfig();
+
+            Plugin.Save();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -146,6 +147,28 @@ namespace DePatch
                 Height = 515.0,
                 Width = 515.0
             }.ShowDialog();
+        }
+
+        private void EditBlocks_OnClick(object sender, RoutedEventArgs e)
+        {
+            Plugin.LoadConfig();
+            new CollectionEditor
+            {
+                Owner = Window.GetWindow(this)
+            }.Edit((ICollection<string>)Plugin.Config.TargetedBlocks, "Disabled Blocks - Use typeId and/or subtypeId");
+
+            Plugin.Save();
+        }
+
+        private void EditFactions_OnClick(object sender, RoutedEventArgs e)
+        {
+            Plugin.LoadConfig();
+            new CollectionEditor
+            {
+                Owner = Window.GetWindow(this)
+            }.Edit((ICollection<string>)Plugin.Config.ExemptedFactions, "Exempted Factions/Players - Use player names or faction tags");
+
+            Plugin.Save();
         }
     }
 }

@@ -40,9 +40,16 @@ namespace DePatch
                         string.Compare(subtypeSmall, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0))
                 {
                     if (__instance.Enabled)
-                    {
                         __instance.Enabled = false;
-                    }
+                }
+            }
+
+            if (DePatchPlugin.Instance.Config.EnableBlockDisabler)
+            {
+                if (__instance != null && PlayersUtility.KeepBlockOffWelder(__instance))
+                {
+                    if (__instance.Enabled)
+                        __instance.Enabled = false;
                 }
             }
 

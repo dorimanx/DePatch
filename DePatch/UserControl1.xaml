@@ -580,6 +580,39 @@
                         IsChecked="{Binding Path=StopExplosion}" />
                 </Grid>
             </TabItem>
+            <TabItem
+				Header="BlocksDisabler">
+                <Grid
+					Background="#FFE5E5E5">
+                    <Label
+						Content="This Code is Shitty! but we love it!"
+						HorizontalAlignment="Left"
+						Margin="228,21,0,0"
+						VerticalAlignment="Top" />
+                    <CheckBox
+                        Content="Enable Block Disabler"
+                        HorizontalAlignment="Left"
+                        Margin="10,23,0,558"
+                        IsChecked="{Binding Path=EnableBlockDisabler}"
+                        Width="139" />
+                    <CheckBox
+                        Content="Faction Member Ovveride"
+                        HorizontalAlignment="Left"
+                        Margin="10,44,0,537"
+                        IsChecked="{Binding Path=AllowFactions}"
+                        Width="162" />
+                    <Button
+                        Grid.Column="0"
+                        Margin="10,88,298,465"
+                        Content="Edit Disabled Blocks"
+                        Click="EditBlocks_OnClick" />
+                    <Button
+                        Grid.Column="0"
+                        Margin="10,146,298,406"
+                        Content="Exempt Players/Factions"
+                        Click="EditFactions_OnClick" />
+                </Grid>
+            </TabItem>
         </TabControl>
     </Grid>
 </UserControl>

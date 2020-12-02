@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 using Torch;
+using Torch.Collections;
 using Torch.Views;
 
 namespace DePatch
@@ -55,12 +57,16 @@ namespace DePatch
         private float _DamgeToBlocksRamming = 200f;
         private long _MaxBlocksDoDamage = 50L;
         private bool _damageThreading;
-        private Decimal _gridColisionAverage;
+        private decimal _gridColisionAverage;
         private bool _slowPBUpdateEnable;
         private int _slowPBUpdate1 = 2;
         private int _slowPBUpdate10 = 4;
         private int _slowPBUpdate100 = 2;
         private string _slowPBIgnored = "";
+        private bool _enableBlockDisabler;
+        private bool _AllowFactions;
+        private MtObservableList<string> _targetedBlocks = new MtObservableList<string>();
+        private MtObservableList<string> _exemptedFactions = new MtObservableList<string>();
 
         public bool DamageThreading
         {
@@ -309,40 +315,108 @@ namespace DePatch
         }
 
         [XmlIgnore]
-        public Decimal GridColisionAverage
+        public decimal GridColisionAverage
         {
             get => _gridColisionAverage;
-            set => SetValue((Action<Decimal>)(x => _gridColisionAverage = x), value, "GridColisionAverage");
+            set => SetValue(x => _gridColisionAverage = x, value, "GridColisionAverage");
         }
 
         public bool SlowPBEnabled
         {
             get => _slowPBUpdateEnable;
-            set => SetValue(ref _slowPBUpdateEnable, value);
+            set => SetValue(ref _slowPBUpdateEnable, value, "SlowPBEnabled");
         }
 
         public int SlowPBUpdate1
         {
             get => _slowPBUpdate1;
-            set => SetValue(ref _slowPBUpdate1, Math.Max(1, value));
+            set => SetValue(ref _slowPBUpdate1, Math.Max(1, value), "SlowPBUpdate1");
         }
 
         public int SlowPBUpdate10
         {
             get => _slowPBUpdate10;
-            set => SetValue(ref _slowPBUpdate10, Math.Max(1, value));
+            set => SetValue(ref _slowPBUpdate10, Math.Max(1, value), "SlowPBUpdate10");
         }
 
         public int SlowPBUpdate100
         {
             get => _slowPBUpdate100;
-            set => SetValue(ref _slowPBUpdate100, Math.Max(1, value));
+            set => SetValue(ref _slowPBUpdate100, Math.Max(1, value), "SlowPBUpdate100");
         }
 
         public string SlowPBIgnored
         {
             get => _slowPBIgnored;
-            set => SetValue(ref _slowPBIgnored, value);
+            set => SetValue(ref _slowPBIgnored, value, "SlowPBIgnored");
+        }
+
+        public bool EnableBlockDisabler
+        {
+            get => _enableBlockDisabler;
+            set => SetValue(ref _enableBlockDisabler, value, "EnableBlockDisabler");
+        }
+
+        public bool AllowFactions
+        {
+            get => _AllowFactions;
+            set => SetValue(ref _AllowFactions, value, "AllowFactions");
+        }
+
+        [XmlIgnore]
+        public MtObservableList<string> TargetedBlocks
+        {
+            get
+            {
+                return _targetedBlocks;
+            }
+            set => SetValue(ref _targetedBlocks, value, "TargetedBlocks");
+        }
+
+        [XmlArray("TargetedBlocks")]
+        [XmlArrayItem("TargetedBlocks", ElementName = "Block Types/Subtypes")]
+        public string[] TargetedBlocksSerial
+        {
+            get => TargetedBlocks.ToArray();
+            set
+            {
+                TargetedBlocks.Clear();
+                if (value != null)
+                {
+                    foreach (string i in value)
+                    {
+                        TargetedBlocks.Add(i);
+                    }
+                }
+            }
+        }
+
+        [XmlIgnore]
+        public MtObservableList<string> ExemptedFactions
+        {
+            get
+            {
+                return _exemptedFactions;
+            }
+            set => SetValue(ref _exemptedFactions, value, "ExemptedFactions");
+        }
+
+        [XmlArray("ExemptedFactions")]
+        [XmlArrayItem("ExemptedFactions", ElementName = "Faction Tags")]
+        public string[] ExemptedFactionsSerial
+        {
+            get => ExemptedFactions.ToArray();
+            set
+            {
+                ExemptedFactions.Clear();
+                if (value != null)
+                {
+                    foreach (string i in value)
+                    {
+                        ExemptedFactions.Add(i);
+                    }
+                }
+            }
         }
     }
 }

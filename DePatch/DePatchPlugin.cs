@@ -32,6 +32,8 @@ namespace DePatch
 
         public DeConfig Config => ConfigPersistent?.Data;
 
+        public void Save() => ConfigPersistent.Save();
+
         public override void Init(ITorchBase torch)
         {
             base.Init(torch);
@@ -92,14 +94,14 @@ namespace DePatch
         public void LoadConfig()
         {
             if (ConfigPersistent?.Data != null)
-                ConfigPersistent = Persistent<DeConfig>.Load(Path.Combine(StoragePath, "DePatch.cfg"), true);
+                ConfigPersistent = Persistent<DeConfig>.Load(Path.Combine(StoragePath, "DePatch.cfg"), false);
         }
 
         public void SetupConfig()
         {
             try
             {
-                ConfigPersistent = Persistent<DeConfig>.Load(Path.Combine(base.StoragePath, "DePatch.cfg"));
+                ConfigPersistent = Persistent<DeConfig>.Load(Path.Combine(StoragePath, "DePatch.cfg"));
             }
             catch (Exception ex)
             {
@@ -109,7 +111,7 @@ namespace DePatch
                 return;
 
             Log.Info("Create Default Config, because none was found!");
-            ConfigPersistent = new Persistent<DeConfig>(Path.Combine(base.StoragePath, "DePatch.cfg"), new DeConfig());
+            ConfigPersistent = new Persistent<DeConfig>(Path.Combine(StoragePath, "DePatch.cfg"), new DeConfig());
             ConfigPersistent.Save(null);
         }
 
