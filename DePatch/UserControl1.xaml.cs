@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Torch.API;
 using Torch.Views;
+using Torch.Collections;
 
 namespace DePatch
 {
@@ -72,6 +73,8 @@ namespace DePatch
             Plugin.Config.ShipTools = ShipTool.shipTools.Select(t => ShipToolSerializer.Serialize(t)).ToList();
             Plugin.Config.DrillsSettings = DrillSettings.drills.Select(t => DrillSettings.Serialize(t)).ToList();
             Plugin.Config.ParallelDrill = (DrillingMode)DrillModeCombobox.SelectedIndex;
+            Plugin.Config.TargetedBlocks = (MtObservableList<string>)(ICollection<string>)Plugin.Config.TargetedBlocks;
+            Plugin.Config.ExemptedFactions = (MtObservableList<string>)(ICollection<string>)Plugin.Config.ExemptedFactions;
 
             if (IgnorePBSubTypesHere.Text.Length > 1)
             {
@@ -107,6 +110,7 @@ namespace DePatch
             }
 
             Plugin.Save();
+            Plugin.LoadConfig();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -151,24 +155,25 @@ namespace DePatch
 
         private void EditBlocks_OnClick(object sender, RoutedEventArgs e)
         {
-            Plugin.LoadConfig();
             new CollectionEditor
             {
                 Owner = Window.GetWindow(this)
             }.Edit((ICollection<string>)Plugin.Config.TargetedBlocks, "Disabled Blocks - Use typeId and/or subtypeId");
-
-            Plugin.Save();
         }
 
         private void EditFactions_OnClick(object sender, RoutedEventArgs e)
         {
-            Plugin.LoadConfig();
             new CollectionEditor
             {
                 Owner = Window.GetWindow(this)
             }.Edit((ICollection<string>)Plugin.Config.ExemptedFactions, "Exempted Factions/Players - Use player names or faction tags");
+        }
 
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            Plugin.LoadConfig();
             Plugin.Save();
+            Plugin.LoadConfig();
         }
     }
 }

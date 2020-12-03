@@ -510,7 +510,7 @@
 						Margin="193,98,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
-						Width="120"
+						Width="59"
 						Text="{Binding Path=DamgeToBlocksVoxel}" RenderTransformOrigin="0.508,0.478" />
                     <Label
 						Content="Above Velocity Damage From Ramming"
@@ -523,7 +523,7 @@
 						Margin="193,162,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
-						Width="120"
+						Width="59"
 						Text="{Binding Path=DamgeToBlocksRamming}" />
                     <TextBox
 						HorizontalAlignment="Left"
@@ -531,7 +531,7 @@
 						Margin="193,42,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
-						Width="120"
+						Width="59"
 						Text="{Binding Path=MinProtectSpeed}" />
                     <Label
 						Content="Max Protected LargeGrid Size"
@@ -578,6 +578,28 @@
                         Margin="10,50,0,0"
                         VerticalAlignment="Top"
                         IsChecked="{Binding Path=StopExplosion}" />
+                    <CheckBox Content="Enable Over Max Speed Grid Purge" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,305,0,0" Width="215" IsChecked="{Binding Path=EnableGridMaxSpeedPurge}"/>
+                    <TextBox
+                        HorizontalAlignment="Left"
+                        Height="23"
+                        TextWrapping="Wrap"
+                        VerticalAlignment="Top"
+                        Width="64"
+                        Margin="249,329,0,0"
+                        Text="{Binding Path=LargeGridMaxSpeedPurge}"/>
+                    <Label Content="Large Grid Max Over Speed Before DELETE" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,329,0,0" Width="234"/>
+                    <Label Content="Small Grid Max Over Speed Before DELETE" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,360,0,0"/>
+                    <TextBox
+                        HorizontalAlignment="Left"
+                        Height="23"
+                        TextWrapping="Wrap"
+                        VerticalAlignment="Top"
+                        Width="66"
+                        Margin="249,360,0,0"
+                        RenderTransformOrigin="0.536,0.158"
+                        Text="{Binding Path=SmallGridMaxSpeedPurge}"/>
+                    <Label Content="=====================================================" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,274,0,0" Width="454"/>
+
                 </Grid>
             </TabItem>
             <TabItem
@@ -587,7 +609,7 @@
                     <Label
 						Content="This Code is Shitty! but we love it!"
 						HorizontalAlignment="Left"
-						Margin="228,21,0,0"
+						Margin="228,17,0,0"
 						VerticalAlignment="Top" />
                     <CheckBox
                         Content="Enable Block Disabler"
@@ -603,14 +625,15 @@
                         Width="162" />
                     <Button
                         Grid.Column="0"
-                        Margin="10,88,298,465"
+                        Margin="10,138,298,415"
                         Content="Edit Disabled Blocks"
                         Click="EditBlocks_OnClick" />
                     <Button
                         Grid.Column="0"
-                        Margin="10,146,298,406"
+                        Margin="10,75,298,477"
                         Content="Exempt Players/Factions"
                         Click="EditFactions_OnClick" />
+                    <Button Content="Save This Config" HorizontalAlignment="Left" Margin="257,52,0,0" VerticalAlignment="Top" Width="127" Height="37" Click="Button_Click_4" RenderTransformOrigin="0.529,0.486"/>
                 </Grid>
             </TabItem>
         </TabControl>

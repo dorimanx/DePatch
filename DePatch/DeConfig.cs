@@ -67,6 +67,9 @@ namespace DePatch
         private bool _AllowFactions;
         private MtObservableList<string> _targetedBlocks = new MtObservableList<string>();
         private MtObservableList<string> _exemptedFactions = new MtObservableList<string>();
+        private bool _EnableGridMaxSpeedPurge;
+        private float _LargeGridMaxSpeedPurge = 500f;
+        private float _SmallGridMaxSpeedPurge = 500f;
 
         public bool DamageThreading
         {
@@ -366,10 +369,7 @@ namespace DePatch
         [XmlIgnore]
         public MtObservableList<string> TargetedBlocks
         {
-            get
-            {
-                return _targetedBlocks;
-            }
+            get => _targetedBlocks;
             set => SetValue(ref _targetedBlocks, value, "TargetedBlocks");
         }
 
@@ -394,10 +394,7 @@ namespace DePatch
         [XmlIgnore]
         public MtObservableList<string> ExemptedFactions
         {
-            get
-            {
-                return _exemptedFactions;
-            }
+            get => _exemptedFactions;
             set => SetValue(ref _exemptedFactions, value, "ExemptedFactions");
         }
 
@@ -417,6 +414,24 @@ namespace DePatch
                     }
                 }
             }
+        }
+
+        public bool EnableGridMaxSpeedPurge
+        {
+            get => _EnableGridMaxSpeedPurge;
+            set => SetValue(ref _EnableGridMaxSpeedPurge, value, "EnableGridMaxSpeedPurge");
+        }
+
+        public float LargeGridMaxSpeedPurge
+        {
+            get => _LargeGridMaxSpeedPurge;
+            set => SetValue(ref _LargeGridMaxSpeedPurge, value, "LargeGridMaxSpeedPurge");
+        }
+
+        public float SmallGridMaxSpeedPurge
+        {
+            get => _SmallGridMaxSpeedPurge;
+            set => SetValue(ref _SmallGridMaxSpeedPurge, value, "SmallGridMaxSpeedPurge");
         }
     }
 }
