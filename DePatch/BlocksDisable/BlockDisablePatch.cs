@@ -69,13 +69,21 @@ namespace DePatch
 
                 if (DePatchPlugin.Instance.Config.EnableBlockDisabler)
                 {
-                    if (__instance != null && __instance.IsFunctional)
+                    if (__instance != null && __instance.IsFunctional && __instance.Enabled)
                     {
-                        if (!MySession.Static.Players.IsPlayerOnline(__instance.OwnerId) && __instance.Enabled &&
-                            string.Compare("ShipWelder", __instance.BlockDefinition.Id.TypeId.ToString().Substring(16), StringComparison.InvariantCultureIgnoreCase) != 0 &&
-                            PlayersUtility.KeepBlockOff(__instance))
+                        if (string.Compare("ShipWelder", __instance.BlockDefinition.Id.TypeId.ToString().Substring(16), StringComparison.InvariantCultureIgnoreCase) == 0 ||
+                            string.Compare("MyProgrammableBlock", __instance.BlockDefinition.Id.TypeId.ToString().Substring(16), StringComparison.InvariantCultureIgnoreCase) == 0)
                         {
-                            __instance.Enabled = false;
+                            // weldertypes are off in ShipWelderPatch.cs
+                            // ProgramBlocksTypes are off in MyProgramBlockSlow.cs
+                        }
+                        else
+                        {
+                            if (!MySession.Static.Players.IsPlayerOnline(__instance.OwnerId))
+                            {
+                                if (PlayersUtility.KeepBlockOff(__instance))
+                                    __instance.Enabled = false;
+                            }
                         }
                     }
                 }

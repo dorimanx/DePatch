@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using VRage.Utils;
 using HarmonyLib;
+using Sandbox.Game.World;
 
 namespace DePatch
 {
@@ -50,24 +51,38 @@ namespace DePatch
 
         public static bool Prefix(MyProgrammableBlock __instance, UpdateType updateSource)
         {
-            if (!DePatchPlugin.Instance.Config.Enabled)
-                return true;
+            if (DePatchPlugin.Instance.Config.Enabled && __instance.Enabled)
+            {
+                if (DePatchPlugin.Instance.Config.EnableBlockDisabler)
+                {
+                    if (__instance.IsFunctional && !MySession.Static.Players.IsPlayerOnline(__instance.OwnerId))
+                    {
+                        if (PlayersUtility.KeepBlockOffProgramBlocks(__instance))
+                            __instance.Enabled = false;
+                    }
+                }
 
-            if (!DePatchPlugin.Instance.Config.SlowPBEnabled)
-                return true;
+                if (!DePatchPlugin.Instance.Config.SlowPBEnabled || __instance.Enabled == false)
+                    return true;
 
-            if (ignoredTimers.Contains(__instance.BlockDefinition.Id.SubtypeId))
-                return true;
+                if (ignoredTimers.Contains(__instance.BlockDefinition.Id.SubtypeId))
+                    return true;
 
-            if (updateSource == UpdateType.Update1) {
-                var sl = DePatchPlugin.Instance.Config.SlowPBUpdate1;
-                if (sl == 1) { return true; } else { return Slow(__instance.EntityId, timers1, sl); }
-            } else if (updateSource == UpdateType.Update10) {
-                var sl = DePatchPlugin.Instance.Config.SlowPBUpdate10;
-                if (sl == 1) { return true; } else { return Slow(__instance.EntityId, timers10, sl); }
-            } else if (updateSource == UpdateType.Update100) {
-                var sl = DePatchPlugin.Instance.Config.SlowPBUpdate100;
-                if (sl == 1) { return true; } else { return Slow(__instance.EntityId, timers100, sl); }
+                if (updateSource == UpdateType.Update1)
+                {
+                    var sl = DePatchPlugin.Instance.Config.SlowPBUpdate1;
+                    if (sl == 1) { return true; } else { return Slow(__instance.EntityId, timers1, sl); }
+                }
+                else if (updateSource == UpdateType.Update10)
+                {
+                    var sl = DePatchPlugin.Instance.Config.SlowPBUpdate10;
+                    if (sl == 1) { return true; } else { return Slow(__instance.EntityId, timers10, sl); }
+                }
+                else if (updateSource == UpdateType.Update100)
+                {
+                    var sl = DePatchPlugin.Instance.Config.SlowPBUpdate100;
+                    if (sl == 1) { return true; } else { return Slow(__instance.EntityId, timers100, sl); }
+                }
             }
             return true;
         }

@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using Torch.API;
 using Torch.Views;
-using Torch.Collections;
 
 namespace DePatch
 {
@@ -29,6 +28,7 @@ namespace DePatch
             SlowSimulationUpdate1.Text = plugin.Config.SlowPBUpdate1.ToString("0");
             SlowSimulationUpdate10.Text = plugin.Config.SlowPBUpdate10.ToString("0");
             SlowSimulationUpdate100.Text = plugin.Config.SlowPBUpdate100.ToString("0");
+
 
             if (plugin.Config.BeaconSubTypes.Count == 0)
             {
@@ -73,8 +73,6 @@ namespace DePatch
             Plugin.Config.ShipTools = ShipTool.shipTools.Select(t => ShipToolSerializer.Serialize(t)).ToList();
             Plugin.Config.DrillsSettings = DrillSettings.drills.Select(t => DrillSettings.Serialize(t)).ToList();
             Plugin.Config.ParallelDrill = (DrillingMode)DrillModeCombobox.SelectedIndex;
-            Plugin.Config.TargetedBlocks = (MtObservableList<string>)(ICollection<string>)Plugin.Config.TargetedBlocks;
-            Plugin.Config.ExemptedFactions = (MtObservableList<string>)(ICollection<string>)Plugin.Config.ExemptedFactions;
 
             if (IgnorePBSubTypesHere.Text.Length > 1)
             {
@@ -171,7 +169,6 @@ namespace DePatch
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            Plugin.LoadConfig();
             Plugin.Save();
             Plugin.LoadConfig();
         }

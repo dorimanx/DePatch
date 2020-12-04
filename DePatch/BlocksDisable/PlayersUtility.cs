@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using Sandbox.Definitions;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.World;
-using VRage.Game.ModAPI;
-using VRage.ObjectBuilders;
-using VRage.Utils;
 using SpaceEngineers.Game.Entities.Blocks;
 using VRage.Game;
+using Sandbox.Game.Entities.Blocks;
 
 namespace DePatch
 {
@@ -27,6 +25,19 @@ namespace DePatch
         }
 
         public static bool KeepBlockOffWelder(MyShipWelder block)
+        {
+            if (MySession.Static.Players.IdentityIsNpc(block.OwnerId))
+            {
+                return false;
+            }
+            if (IsMatch(block.BlockDefinition))
+            {
+                return !OwnerFactionOnline(block.OwnerId);
+            }
+            return false;
+        }
+
+        public static bool KeepBlockOffProgramBlocks(MyProgrammableBlock block)
         {
             if (MySession.Static.Players.IdentityIsNpc(block.OwnerId))
             {

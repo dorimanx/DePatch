@@ -32,7 +32,7 @@ namespace DePatch
 
         public DeConfig Config => ConfigPersistent?.Data;
 
-        public void Save() => ConfigPersistent.Save();
+        public void Save() => ConfigPersistent.Save(null);
 
         public override void Init(ITorchBase torch)
         {
@@ -94,7 +94,7 @@ namespace DePatch
         public void LoadConfig()
         {
             if (ConfigPersistent?.Data != null)
-                ConfigPersistent = Persistent<DeConfig>.Load(Path.Combine(StoragePath, "DePatch.cfg"), false);
+                ConfigPersistent = Persistent<DeConfig>.Load(Path.Combine(StoragePath, "DePatch.cfg"));
         }
 
         public void SetupConfig()
