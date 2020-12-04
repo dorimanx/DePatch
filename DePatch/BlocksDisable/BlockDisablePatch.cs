@@ -4,10 +4,10 @@ using Torch.Managers.PatchManager;
 using System;
 using NLog;
 using VRage.Game.ModAPI;
-using VRage.Game.Components;
 using Sandbox.Game.Entities;
 using VRage.Game;
 using Sandbox.Game.Entities.Blocks;
+using Sandbox.Game.World;
 
 namespace DePatch
 {
@@ -26,65 +26,56 @@ namespace DePatch
                 {
                     try
                     {
-                        float speedlarge = DePatchPlugin.Instance.Config.LargeGridMaxSpeedPurge;
-                        float speedsmall = DePatchPlugin.Instance.Config.SmallGridMaxSpeedPurge;
-                        MyPhysicsComponentBase GridPhysics = __instance.CubeGrid.Physics;
-                        IMyCubeGrid GridCube = __instance.CubeGrid;
-                        MyCubeGrid Grid = (MyCubeGrid)GridCube;
-
-                        var LinearVelocity = GridPhysics.LinearVelocity;
-                        var AngularVelocity = GridPhysics.AngularVelocity;
-
-                        if (__instance != null && GridPhysics != null && GridCube.GridSizeEnum == MyCubeSize.Large && (LinearVelocity.Length() > speedlarge || AngularVelocity.Length() > speedlarge))
+                        if (__instance != null && __instance.CubeGrid.Physics != null)
                         {
-                            var b = Grid.GetFatBlocks<MyCockpit>();
-                            var d = Grid.GetFatBlocks<MyCryoChamber>();
-                            foreach (var c in b)
+                            float speedlarge = DePatchPlugin.Instance.Config.LargeGridMaxSpeedPurge;
+                            float speedsmall = DePatchPlugin.Instance.Config.SmallGridMaxSpeedPurge;
+                            switch (((IMyCubeGrid)__instance.CubeGrid).GridSizeEnum)
                             {
-                                c.RemovePilot();
-                            }
-                            foreach (var e in d)
-                            {
-                                e.RemovePilot();
-                            }
-                            Log.Error("Large Grid Name =" + Grid.DisplayName + " Detected Flying Above Max Speed " + speedlarge + "ms" + " and was DELETED");
-                            Grid.Close();
-                        }
+                                case MyCubeSize.Large when __instance.CubeGrid.Physics.LinearVelocity.Length() > speedlarge || __instance.CubeGrid.Physics.AngularVelocity.Length() > speedlarge:
+                                case MyCubeSize.Small when __instance.CubeGrid.Physics.LinearVelocity.Length() > speedsmall || __instance.CubeGrid.Physics.AngularVelocity.Length() > speedsmall:
+                                    {
+                                        foreach (var a in __instance.CubeGrid.GetFatBlocks<MyCockpit>())
+                                        {
+                                            if (a != null)
+                                                a.RemovePilot();
+                                        }
+                                        foreach (var b in __instance.CubeGrid.GetFatBlocks<MyCryoChamber>())
+                                        {
+                                            if (b != null)
+                                                b.RemovePilot();
+                                        }
 
-                        if (__instance != null && GridPhysics != null && GridCube.GridSizeEnum == MyCubeSize.Small && (LinearVelocity.Length() > speedsmall || AngularVelocity.Length() > speedsmall))
-                        {
-                            var b = Grid.GetFatBlocks<MyCockpit>();
-                            var d = Grid.GetFatBlocks<MyCryoChamber>();
-                            foreach (var c in b)
-                            {
-                                c.RemovePilot();
+                                        if (((IMyCubeGrid)__instance.CubeGrid).GridSizeEnum == MyCubeSize.Large)
+                                            Log.Error("Large Grid Name =" + ((MyCubeGrid)(IMyCubeGrid)__instance.CubeGrid).DisplayName + " Detected Flying Above Max Speed " + speedlarge + "ms" + " and was DELETED");
+                                        
+                                        if (((IMyCubeGrid)__instance.CubeGrid).GridSizeEnum == MyCubeSize.Small)
+                                            Log.Error("Small Grid Name =" + ((MyCubeGrid)(IMyCubeGrid)__instance.CubeGrid).DisplayName + " Detected Flying Above Max Speed " + speedsmall + "ms" + " and was DELETED");
+                                        
+                                        __instance.CubeGrid.Close();
+                                        break;
+                                    }
+
+                                default:
+                                    break;
                             }
-                            foreach (var e in d)
-                            {
-                                e.RemovePilot();
-                            }
-                            Log.Error("Small Grid Name =" + Grid.DisplayName + " Detected Flying Above Max Speed " + speedsmall + "ms" + " and was DELETED");
-                            Grid.Close();
                         }
                     }
-                    catch
+                    catch (Exception e)
                     {
+                        Log.Error("Problem in OverSpeed Function, turn it off and report to dev" + e);
                     }
                 }
 
                 if (DePatchPlugin.Instance.Config.EnableBlockDisabler)
                 {
-                    if (__instance != null && (string.Compare("ShipWelder", __instance.BlockDefinition.Id.TypeId.ToString().Substring(16), StringComparison.InvariantCultureIgnoreCase) == 0))
+                    if (__instance != null && __instance.IsFunctional)
                     {
-                    }
-                    else
-                    {
-                        if (__instance != null && PlayersUtility.KeepBlockOff(__instance))
+                        if (!MySession.Static.Players.IsPlayerOnline(__instance.OwnerId) && __instance.Enabled &&
+                            string.Compare("ShipWelder", __instance.BlockDefinition.Id.TypeId.ToString().Substring(16), StringComparison.InvariantCultureIgnoreCase) != 0 &&
+                            PlayersUtility.KeepBlockOff(__instance))
                         {
-                            if (__instance.Enabled)
-                            {
-                                __instance.Enabled = false;
-                            }
+                            __instance.Enabled = false;
                         }
                     }
                 }

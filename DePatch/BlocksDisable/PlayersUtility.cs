@@ -46,16 +46,13 @@ namespace DePatch
             {
                 return false;
             }
-            bool found = false;
             foreach (string name in blockList)
             {
                 if (!name.Equals(definition.ToString().Substring(16), StringComparison.OrdinalIgnoreCase))
                 {
-                    MyObjectBuilderType typeId = definition.Id.TypeId;
-                    if (!name.Equals(typeId.ToString().Substring(16), StringComparison.OrdinalIgnoreCase))
+                    if (!name.Equals(definition.Id.TypeId.ToString().Substring(16), StringComparison.OrdinalIgnoreCase))
                     {
-                        MyStringHash subtypeId = definition.Id.SubtypeId;
-                        if (!name.Equals(subtypeId.ToString(), StringComparison.OrdinalIgnoreCase))
+                        if (!name.Equals(definition.Id.SubtypeId.ToString(), StringComparison.OrdinalIgnoreCase))
                         {
                             continue;
                         }
@@ -63,7 +60,7 @@ namespace DePatch
                 }
                 return true;
             }
-            return found;
+            return false;
         }
 
         private static bool OwnerFactionOnline(long owner)
@@ -72,19 +69,18 @@ namespace DePatch
             {
                 return true;
             }
-            MyFaction faction = MySession.Static.Factions.GetPlayerFaction(owner);
-            if (faction == null)
+            if (MySession.Static.Factions.GetPlayerFaction(owner) == null)
             {
                 return false;
             }
-            if (faction.IsEveryoneNpc() || ExemptPlayerOrFaction(faction.FactionId))
+            if (MySession.Static.Factions.GetPlayerFaction(owner).IsEveryoneNpc() || ExemptPlayerOrFaction(MySession.Static.Factions.GetPlayerFaction(owner).FactionId))
             {
                 return true;
             }
 
             if (DePatchPlugin.Instance.Config.AllowFactions)
             {
-                foreach (KeyValuePair<long, MyFactionMember> member in faction.Members)
+                foreach (KeyValuePair<long, MyFactionMember> member in MySession.Static.Factions.GetPlayerFaction(owner).Members)
                 {
                     if (MySession.Static.Players.IsPlayerOnline(member.Key))
                     {
@@ -106,17 +102,16 @@ namespace DePatch
             {
                 return true;
             }
-            MyIdentity identity = MySession.Static.Players.TryGetIdentity(id);
-            if (identity != null)
+            if (MySession.Static.Players.TryGetIdentity(id) != null)
             {
-                MyFaction playerFaction = MySession.Static.Factions.GetPlayerFaction(id);
-                if (logicException.Contains(identity.DisplayName) || (playerFaction != null && logicException.Contains(playerFaction.Tag)))
+                if (logicException.Contains(MySession.Static.Players.TryGetIdentity(id).DisplayName) ||
+                    (MySession.Static.Factions.GetPlayerFaction(id) != null &&
+                    logicException.Contains(MySession.Static.Factions.GetPlayerFaction(id).Tag)))
                 {
                     return true;
                 }
             }
-            IMyFaction faction = MySession.Static.Factions.TryGetFactionById(id);
-            if (faction != null && logicException.Contains(faction.Tag))
+            if (MySession.Static.Factions.TryGetFactionById(id) != null && logicException.Contains(MySession.Static.Factions.TryGetFactionById(id).Tag))
             {
                 return true;
             }
