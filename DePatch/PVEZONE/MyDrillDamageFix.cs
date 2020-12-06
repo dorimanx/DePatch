@@ -22,18 +22,56 @@ namespace DePatch
             if (drillEntity.GetValue(__instance) is MyHandDrill handDrill)
             {
                 MyPlayer myPlayer = MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == handDrill.OwnerIdentityId);
-                if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+
+                if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                 {
-                    __result = false;
-                    return false;
+                    bool zone1 = false;
+                    bool zone2 = false;
+
+                    if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        zone1 = true;
+                    if (PVE.PVESphere2.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        zone2 = true;
+
+                    if (zone1 || zone2)
+                    {
+                        __result = false;
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                    {
+                        __result = false;
+                        return false;
+                    }
                 }
             }
             else
             {
-                if (drillEntity.GetValue(__instance) is MyShipDrill myShipDrill && PVE.EntitiesInZone.Contains(myShipDrill.CubeGrid.EntityId))
+                if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                 {
-                    __result = false;
-                    return false;
+                    bool zone1 = false;
+                    bool zone2 = false;
+                    if (drillEntity.GetValue(__instance) is MyShipDrill myShipDrill && PVE.EntitiesInZone.Contains(myShipDrill.CubeGrid.EntityId))
+                        zone1 = true;
+                    if (drillEntity.GetValue(__instance) is MyShipDrill myShipDrill2 && PVE.EntitiesInZone2.Contains(myShipDrill2.CubeGrid.EntityId))
+                        zone2 = true;
+
+                    if (zone1 || zone2)
+                    {
+                        __result = false;
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (drillEntity.GetValue(__instance) is MyShipDrill myShipDrill && PVE.EntitiesInZone.Contains(myShipDrill.CubeGrid.EntityId))
+                    {
+                        __result = false;
+                        return false;
+                    }
                 }
             }
             return true;

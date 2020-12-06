@@ -41,6 +41,15 @@ namespace DePatch
         private float _PveZoneRadius = 500000f;
         private string _PveMessageEntered = "Your grid [{0}] entered to [PVE Zone]! All Weapons on grid cannot fire!";
         private string _PveMessageLeft = "Your grid [{0}] left from [PVE Zone]! All Weapons can fire now.";
+
+        private bool _PveZoneEnabled2;
+        private float _PveX2 = 10000;
+        private float _PveY2 = 10000;
+        private float _PveZ2 = 10000;
+        private float _PveZoneRadius2 = 500000f;
+        private string _PveMessageEntered2 = "Your grid [{0}] entered to [PVE Zone 2]! All Weapons on grid cannot fire!";
+        private string _PveMessageLeft2 = "Your grid [{0}] left from [PVE Zone 2]! All Weapons can fire now.";
+
         private int _DrillUpdateRate = 90;
         private DrillingMode _ParallelDrill;
         private bool _DrillDisableRightClick;
@@ -352,6 +361,49 @@ namespace DePatch
         {
             get => _slowPBIgnored;
             set => SetValue(ref _slowPBIgnored, value, "SlowPBIgnored");
+        }
+
+
+        public string PveMessageEntered2
+        {
+            get => _PveMessageEntered2;
+            set => SetValue(ref _PveMessageEntered2, value, "PveMessageEntered2");
+        }
+
+        public string PveMessageLeft2
+        {
+            get => _PveMessageLeft2;
+            set => SetValue(ref _PveMessageLeft2, value, "PveMessageLeft2");
+        }
+
+        public bool PveZoneEnabled2
+        {
+            get => _PveZoneEnabled2;
+            set => SetValue(ref _PveZoneEnabled2, value, "PveZoneEnabled2");
+        }
+
+        public float PveX2
+        {
+            get => _PveX2;
+            set => SetValue(ref _PveX2, value, "PveX2");
+        }
+
+        public float PveY2
+        {
+            get => _PveY2;
+            set => SetValue(ref _PveY2, value, "PveY2");
+        }
+
+        public float PveZ2
+        {
+            get => _PveZ2;
+            set => SetValue(ref _PveZ2, value, "PveZ2");
+        }
+
+        public float PveZoneRadius2
+        {
+            get => _PveZoneRadius2;
+            set => SetValue(ref _PveZoneRadius2, value, "PveZoneRadius2");
         }
 
         public bool EnableBlockDisabler

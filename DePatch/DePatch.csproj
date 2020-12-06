@@ -117,6 +117,7 @@
     <Compile Include="OptiDamage\DefomationNetwork.cs" />
     <Compile Include="DePatchPlugin.cs" />
     <Compile Include="DeUpdater.cs" />
+    <Compile Include="PVEZONE\PVEGrid2.cs" />
     <Compile Include="ShipTools\DrillingMode.cs" />
     <Compile Include="ShipTools\DrillSettings.cs" />
     <Compile Include="VoxelProtection\ExplosionPatch.cs" />

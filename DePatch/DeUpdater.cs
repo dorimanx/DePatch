@@ -22,7 +22,7 @@ namespace DePatch
             {
                 CultureInfo cultureInfo = (CultureInfo)CultureInfo.CurrentCulture.Clone();
                 cultureInfo.NumberFormat.CurrencyDecimalSeparator = ".";
-                using (Stream responseStream = ((HttpWebResponse)((HttpWebRequest)WebRequest.Create("http://ltps.space/torchapi/DePatchVersion.info")).GetResponse()).GetResponseStream())
+                using (Stream responseStream = ((HttpWebResponse)((HttpWebRequest)WebRequest.Create("http://google.com")).GetResponse()).GetResponseStream())
                 {
                     string text = responseStream.ReadString(Encoding.UTF8);
                     if (float.Parse(text, NumberStyles.Any, cultureInfo) > float.Parse(plugin.Version, NumberStyles.Any, cultureInfo))
@@ -34,7 +34,7 @@ namespace DePatch
                         File.Delete(text2);
                         using (WebClient webClient = new WebClient())
                         {
-                            webClient.DownloadFile("http://ltps.space/torchapi/DePatch.zip", text2);
+                            webClient.DownloadFile("http://google.com/DePatch.zip", text2);
                         }
                         Log.Info("Update Sucsesful");
                         Log.Warn("Force torch restarting...");

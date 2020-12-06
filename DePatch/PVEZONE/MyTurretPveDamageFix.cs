@@ -27,10 +27,28 @@ namespace DePatch
             }
             if (entity is MyCubeGrid && action == MySafeZoneAction.Shooting)
             {
-                if (PVE.EntitiesInZone.Contains(entity.EntityId))
+                if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                 {
-                    __result = false;
-                    return false;
+                    bool zone1 = false;
+                    bool zone2 = false;
+                    if (PVE.EntitiesInZone.Contains(entity.EntityId))
+                        zone1 = true;
+                    if (PVE.EntitiesInZone2.Contains(entity.EntityId))
+                        zone2 = true;
+
+                    if (zone1 || zone2)
+                    {
+                        __result = false;
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (PVE.EntitiesInZone.Contains(entity.EntityId))
+                    {
+                        __result = false;
+                        return false;
+                    }
                 }
             }
             else
@@ -38,10 +56,29 @@ namespace DePatch
                 if (entity as MyCharacter != null && action == MySafeZoneAction.Shooting)
                 {
                     MyPlayer myPlayer = MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == (entity as MyCharacter).GetPlayerIdentityId());
-                    if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+
+                    if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                     {
-                        __result = false;
-                        return false;
+                        bool zone1 = false;
+                        bool zone2 = false;
+                        if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                            zone1 = true;
+                        if (PVE.PVESphere2.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                            zone2 = true;
+
+                        if (zone1 || zone2)
+                        {
+                            __result = false;
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            __result = false;
+                            return false;
+                        }
                     }
                 }
             }

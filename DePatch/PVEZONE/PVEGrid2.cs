@@ -7,37 +7,37 @@ using VRageMath;
 
 namespace DePatch
 {
-    internal class PVEGrid
+    internal class PVEGrid2
     {
-        public static readonly Dictionary<MyCubeGrid, PVEGrid> Grids = new Dictionary<MyCubeGrid, PVEGrid>();
+        public static readonly Dictionary<MyCubeGrid, PVEGrid2> Grids2 = new Dictionary<MyCubeGrid, PVEGrid2>();
 
         private MyCubeGrid cubeGrid;
 
         public MyCubeGrid CubeGrid { get => cubeGrid; set => cubeGrid = value; }
 
-        public PVEGrid(MyCubeGrid grid)
+        public PVEGrid2(MyCubeGrid grid)
         {
             CubeGrid = grid;
         }
 
-        public void OnGridEntered()
+        public void OnGridEntered2()
         {
             if (CubeGrid.BigOwners.Count >= 1)
-                MyVisualScriptLogicProvider.ShowNotification(DePatchPlugin.Instance.Config.PveMessageEntered.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageEntered, CubeGrid.DisplayName) : DePatchPlugin.Instance.Config.PveMessageEntered, 10000, "White", PVEGrid.FindOnlineOwner(CubeGrid).Identity.IdentityId);
+                MyVisualScriptLogicProvider.ShowNotification(DePatchPlugin.Instance.Config.PveMessageEntered2.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageEntered2, CubeGrid.DisplayName) : DePatchPlugin.Instance.Config.PveMessageEntered2, 10000, "White", PVEGrid2.FindOnlineOwner2(CubeGrid).Identity.IdentityId);
         }
 
-        public void OnGridLeft()
+        public void OnGridLeft2()
         {
             if (CubeGrid.BigOwners.Count >= 1)
-                MyVisualScriptLogicProvider.ShowNotification(DePatchPlugin.Instance.Config.PveMessageLeft.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageLeft, CubeGrid.DisplayName) : DePatchPlugin.Instance.Config.PveMessageLeft, 10000, "White", PVEGrid.FindOnlineOwner(CubeGrid).Identity.IdentityId);
+                MyVisualScriptLogicProvider.ShowNotification(DePatchPlugin.Instance.Config.PveMessageLeft2.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageLeft2, CubeGrid.DisplayName) : DePatchPlugin.Instance.Config.PveMessageLeft2, 10000, "White", PVEGrid2.FindOnlineOwner2(CubeGrid).Identity.IdentityId);
         }
 
-        public bool InPVEZone()
+        public bool InPVEZone2()
         {
-            return PVE.PVESphere.Contains(CubeGrid.PositionComp.GetPosition()) == ContainmentType.Contains;
+            return PVE.PVESphere2.Contains(CubeGrid.PositionComp.GetPosition()) == ContainmentType.Contains;
         }
 
-        private static MyPlayer FindOnlineOwner(MyCubeGrid grid)
+        private static MyPlayer FindOnlineOwner2(MyCubeGrid grid)
         {
             MyPlayer controllingPlayer = MySession.Static.Players.GetControllingPlayer(grid);
             List<long> list = grid.BigOwners.ToList<long>();

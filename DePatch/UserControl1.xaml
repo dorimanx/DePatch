@@ -153,6 +153,7 @@
 						HorizontalAlignment="Left"
 						Margin="10,183,0,0"
 						VerticalAlignment="Top"
+                        IsEnabled="False"
 						IsChecked="{Binding Path=CheckForUpdates}" />
                     <CheckBox
 						Content="Disable Assembler Queue Loop"
@@ -273,9 +274,8 @@
                 <Grid
 					Background="#FFE5E5E5">
                     <CheckBox
-						Content="Zone Enabled"
-						Width="100"
-						Margin="10,10,379,570"
+						Content="Zone Enabled (needs restart)"
+						Margin="10,10,299,570"
 						IsChecked="{Binding Path=PveZoneEnabled}" />
                     <Grid
 						Background="#FFE5E5E5"
@@ -340,27 +340,56 @@
 							VerticalAlignment="Top" />
                         <TextBox
 							HorizontalAlignment="Left"
-							Height="82"
+							Height="42"
 							Margin="10,131,0,0"
 							TextWrapping="Wrap"
 							VerticalAlignment="Top"
-							Width="245"
+							Width="457"
 							AcceptsReturn="True"
 							Text="{Binding Path=PveMessageEntered, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <Label
 							Content="Message Left"
 							HorizontalAlignment="Left"
-							Margin="10,218,0,0"
+							Margin="10,185,0,0"
 							VerticalAlignment="Top" />
                         <TextBox
 							HorizontalAlignment="Left"
-							Height="82"
-							Margin="10,249,0,0"
+							Height="42"
+							Margin="10,211,0,0"
 							TextWrapping="Wrap"
 							VerticalAlignment="Top"
-							Width="245"
+							Width="457"
 							AcceptsReturn="True"
 							Text="{Binding Path=PveMessageLeft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <CheckBox Content="Zone 2 Enabled" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,273,0,0" IsChecked="{Binding Path=PveZoneEnabled2}" />
+                        <Label Content="Zone X" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="52,303,0,0"/>
+                        <Label Content="Zone Y" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="170,303,0,0"/>
+                        <Label Content="Zone Z" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="295,303,0,0"/>
+                        <TextBox HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Margin="10,329,0,0" Text="{Binding Path=PveX2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"/>
+                        <TextBox HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Margin="135,329,0,0" Text="{Binding Path=PveY2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"/>
+                        <TextBox HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Margin="260,329,0,0" Text="{Binding Path=PveZ2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"/>
+                        <Label Content="Radius (m)" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,352,0,0"/>
+                        <TextBox HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Margin="81,356,0,0" Text="{Binding Path=PveZoneRadius2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"/>
+                        <Label Content="Message Entered" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,383,0,0"/>
+                        <Label Content="Message Left" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,456,0,0"/>
+                        <TextBox
+                            HorizontalAlignment="Left"
+                            Height="42"
+                            Margin="10,414,0,0"
+                            TextWrapping="Wrap"
+                            VerticalAlignment="Top"
+                            Width="457"
+                            AcceptsReturn="True"
+                            Text="{Binding PveMessageEntered2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox
+                            HorizontalAlignment="Left"
+                            Height="42"
+                            Margin="10,487,0,0"
+                            TextWrapping="Wrap"
+                            VerticalAlignment="Top"
+                            Width="457"
+                            AcceptsReturn="True"
+                            Text="{Binding PveMessageLeft2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
                 </Grid>
             </TabItem>
@@ -511,7 +540,7 @@
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
 						Width="59"
-						Text="{Binding Path=DamgeToBlocksVoxel}" RenderTransformOrigin="0.508,0.478" />
+						Text="{Binding Path=DamgeToBlocksVoxel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <Label
 						Content="Above Velocity Damage From Ramming"
 						HorizontalAlignment="Left"
@@ -524,7 +553,7 @@
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
 						Width="59"
-						Text="{Binding Path=DamgeToBlocksRamming}" />
+						Text="{Binding Path=DamgeToBlocksRamming, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBox
 						HorizontalAlignment="Left"
 						Height="23"
@@ -532,7 +561,7 @@
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
 						Width="59"
-						Text="{Binding Path=MinProtectSpeed}" />
+						Text="{Binding Path=MinProtectSpeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <Label
 						Content="Max Protected LargeGrid Size"
 						HorizontalAlignment="Left"
@@ -545,7 +574,7 @@
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
 						Width="120"
-						Text="{Binding Path=MaxProtectedLargeGridSize}" />
+						Text="{Binding Path=MaxProtectedLargeGridSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <Label
 						Content="Max Protected SmallGrid Size"
 						HorizontalAlignment="Left"
@@ -563,7 +592,7 @@
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
 						Width="120"
-						Text="{Binding Path=MaxBlocksDoDamage}" />
+						Text="{Binding Path=MaxBlocksDoDamage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBox
 						HorizontalAlignment="Left"
 						Height="23"
@@ -571,7 +600,7 @@
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
 						Width="120"
-						Text="{Binding Path=MaxProtectedSmallGridSize}" />
+						Text="{Binding Path=MaxProtectedSmallGridSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <CheckBox
                         Content="Stop Voxels Explosion"
                         HorizontalAlignment="Left"
@@ -586,7 +615,7 @@
                         VerticalAlignment="Top"
                         Width="64"
                         Margin="249,329,0,0"
-                        Text="{Binding Path=LargeGridMaxSpeedPurge}"/>
+                        Text="{Binding Path=LargeGridMaxSpeedPurge, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <Label Content="Large Grid Max Over Speed Before DELETE" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,329,0,0" Width="234"/>
                     <Label Content="Small Grid Max Over Speed Before DELETE" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,360,0,0"/>
                     <TextBox
@@ -597,7 +626,7 @@
                         Width="66"
                         Margin="249,360,0,0"
                         RenderTransformOrigin="0.536,0.158"
-                        Text="{Binding Path=SmallGridMaxSpeedPurge}"/>
+                        Text="{Binding Path=SmallGridMaxSpeedPurge, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <Label Content="=====================================================" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,274,0,0" Width="454"/>
 
                 </Grid>
