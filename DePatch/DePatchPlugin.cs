@@ -30,6 +30,10 @@ namespace DePatch
 
         public UserControlDepatch Control;
 
+        public static bool GameIsReady = false;
+
+        public SpeedingMode Mode { get; set; }
+
         public DeConfig Config => ConfigPersistent?.Data;
 
         public void Save() => ConfigPersistent.Save(null);
@@ -68,6 +72,8 @@ namespace DePatch
         {
             if (newState != TorchGameState.Loaded)
                 return;
+
+            GameIsReady = true;
 
             if (Config.PveZoneEnabled)
                 PVE.Init(this);

@@ -18,6 +18,9 @@ namespace DePatch
 
         public static void Init()
         {
+            if (!DePatchPlugin.Instance.Config.Enabled)
+                return;
+
             if (!DePatchPlugin.Instance.Config.PveZoneEnabled)
             {
                 return;
@@ -67,20 +70,50 @@ namespace DePatch
 
                 num2 = (mySlimBlock.CubeGrid.BigOwners.Count > 0) ? mySlimBlock.CubeGrid.BigOwners[0] : 0L;
             }
-            if (MyEntities.TryGetEntityById(info.AttackerId, out MyEntity myEntity, allowClosed: true))
+
+            /* Warhead Protection inside PVE Zones */
+            if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
             {
-                if (myEntity is MyVoxelBase)
+                bool zone1 = false;
+                bool zone2 = false;
+                if (mySlimBlock != null && PVE.EntitiesInZone.Contains(mySlimBlock.CubeGrid.EntityId) && info.Type == MyDamageType.Explosion)
+                    zone1 = true;
+                if (mySlimBlock != null && PVE.EntitiesInZone2.Contains(mySlimBlock.CubeGrid.EntityId) && info.Type == MyDamageType.Explosion)
+                    zone2 = true;
+
+                if (zone1 || zone2)
+                {
+                    info.Amount = 0f;
+                    info.IsDeformation = false;
+                    return;
+                }
+            }
+            else
+            {
+                if (mySlimBlock != null && PVE.EntitiesInZone.Contains(mySlimBlock.CubeGrid.EntityId) && info.Type == MyDamageType.Explosion)
+                {
+                    info.Amount = 0f;
+                    info.IsDeformation = false;
+                    return;
+                }
+            }
+
+            if (MyEntities.TryGetEntityById(info.AttackerId, out MyEntity AttackerEntity, allowClosed: true))
+            {
+                if (AttackerEntity is MyVoxelBase)
                     return;
 
-                if (myEntity is MyAngleGrinder myAngleGrinder)
+                if (AttackerEntity is MyAngleGrinder myAngleGrinder)
                 {
                     num1 = myAngleGrinder.OwnerIdentityId;
                 }
-                if (myEntity is MyHandDrill myHandDrill)
+
+                if (AttackerEntity is MyHandDrill myHandDrill)
                 {
                     num1 = myHandDrill.OwnerIdentityId;
                 }
-                if (myEntity is MyAutomaticRifleGun myAutomaticRifleGun)
+
+                if (AttackerEntity is MyAutomaticRifleGun myAutomaticRifleGun)
                 {
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                     {
@@ -101,7 +134,8 @@ namespace DePatch
                     }
                     num1 = myAutomaticRifleGun.OwnerIdentityId;
                 }
-                if (myEntity is MyEngineerToolBase toolBase)
+
+                if (AttackerEntity is MyEngineerToolBase toolBase)
                 {
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                     {
@@ -120,22 +154,22 @@ namespace DePatch
                         if (PVE.PVESphere.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == toolBase.OwnerIdentityId).Character.PositionComp.GetPosition()) != ContainmentType.Contains)
                             return;
                     }
-
                     num1 = toolBase.OwnerIdentityId;
                 }
-                if (myEntity as MyUserControllableGun != null)
-                {
-                    num1 = (myEntity as MyUserControllableGun).OwnerId;
-                }
-                if (myEntity as MyCubeGrid != null)
-                {
-                    num1 = ((myEntity as MyCubeGrid).BigOwners.Count > 0) ? (myEntity as MyCubeGrid).BigOwners[0] : 0L;
-                }
-                if (myEntity as MyLargeTurretBase != null)
-                {
-                    num1 = (myEntity as MyLargeTurretBase).OwnerId;
-                }
-                if (myEntity is MyCharacter character)
+
+                if ((AttackerEntity as MyUserControllableGun) != null)
+                    num1 = (AttackerEntity as MyUserControllableGun).OwnerId;
+
+                if ((AttackerEntity as MyCubeGrid) != null)
+                    num1 = ((AttackerEntity as MyCubeGrid).BigOwners.Count > 0) ? (AttackerEntity as MyCubeGrid).BigOwners[0] : 0L;
+
+                if ((AttackerEntity as MyLargeTurretBase) != null)
+                    num1 = (AttackerEntity as MyLargeTurretBase).OwnerId;
+
+                if ((AttackerEntity as MyWarhead) != null)
+                    num1 = (AttackerEntity as MyWarhead).OwnerId;
+
+                if (AttackerEntity is MyCharacter character)
                 {
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                     {
@@ -154,18 +188,18 @@ namespace DePatch
                         if (PVE.PVESphere.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == character.GetPlayerIdentityId()).Character.PositionComp.GetPosition()) != ContainmentType.Contains)
                             return;
                     }
-
                     num1 = character.GetPlayerIdentityId();
                 }
-                if (myEntity as MyCubeGrid != null)
+
+                if ((AttackerEntity as MyCubeGrid) != null)
                 {
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                     {
                         bool zone1 = false;
                         bool zone2 = false;
-                        if (!PVE.EntitiesInZone.Contains((myEntity as MyCubeGrid).EntityId))
+                        if (!PVE.EntitiesInZone.Contains((AttackerEntity as MyCubeGrid).EntityId))
                             zone1 = true;
-                        if (!PVE.EntitiesInZone2.Contains((myEntity as MyCubeGrid).EntityId))
+                        if (!PVE.EntitiesInZone2.Contains((AttackerEntity as MyCubeGrid).EntityId))
                             zone2 = true;
 
                         if (zone1 && zone2)
@@ -173,24 +207,25 @@ namespace DePatch
                     }
                     else
                     {
-                        if (!PVE.EntitiesInZone.Contains((myEntity as MyCubeGrid).EntityId))
+                        if (!PVE.EntitiesInZone.Contains((AttackerEntity as MyCubeGrid).EntityId))
                             return;
                     }
 
-                    if (mySlimBlock.CubeGrid.IsStatic && info.Type == MyDamageType.Fall)
+                    if (mySlimBlock != null && mySlimBlock.CubeGrid.IsStatic && info.Type == MyDamageType.Fall)
                     {
                         num3 = 0L;
                     }
                 }
-                else if (myEntity as MyUserControllableGun != null)
+
+                if ((AttackerEntity as MyUserControllableGun) != null)
                 {
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                     {
                         bool zone1 = false;
                         bool zone2 = false;
-                        if (!PVE.EntitiesInZone.Contains((myEntity as MyUserControllableGun).CubeGrid.EntityId))
+                        if (!PVE.EntitiesInZone.Contains((AttackerEntity as MyUserControllableGun).CubeGrid.EntityId))
                             zone1 = true;
-                        if (!PVE.EntitiesInZone2.Contains((myEntity as MyUserControllableGun).CubeGrid.EntityId))
+                        if (!PVE.EntitiesInZone2.Contains((AttackerEntity as MyUserControllableGun).CubeGrid.EntityId))
                             zone2 = true;
 
                         if (zone1 && zone2)
@@ -198,29 +233,31 @@ namespace DePatch
                     }
                     else
                     {
-                        if (!PVE.EntitiesInZone.Contains((myEntity as MyUserControllableGun).CubeGrid.EntityId))
+                        if (!PVE.EntitiesInZone.Contains((AttackerEntity as MyUserControllableGun).CubeGrid.EntityId))
                             return;
                     }
                 }
+
+                if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
+                {
+                    bool zone1 = false;
+                    bool zone2 = false;
+                    if ((AttackerEntity as MyLargeTurretBase) != null && !PVE.EntitiesInZone.Contains((AttackerEntity as MyLargeTurretBase).CubeGrid.EntityId) ||
+                        (AttackerEntity as MyWarhead) != null && !PVE.EntitiesInZone.Contains((AttackerEntity as MyWarhead).CubeGrid.EntityId))
+                        zone1 = true;
+
+                    if ((AttackerEntity as MyLargeTurretBase) != null && !PVE.EntitiesInZone2.Contains((AttackerEntity as MyLargeTurretBase).CubeGrid.EntityId) ||
+                        (AttackerEntity as MyWarhead) != null && !PVE.EntitiesInZone2.Contains((AttackerEntity as MyWarhead).CubeGrid.EntityId))
+                        zone2 = true;
+
+                    if (zone1 && zone2)
+                        return;
+                }
                 else
                 {
-                    if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
-                    {
-                        bool zone1 = false;
-                        bool zone2 = false;
-                        if (myEntity as MyLargeTurretBase != null && !PVE.EntitiesInZone.Contains((myEntity as MyLargeTurretBase).CubeGrid.EntityId))
-                            zone1 = true;
-                        if (myEntity as MyLargeTurretBase != null && !PVE.EntitiesInZone2.Contains((myEntity as MyLargeTurretBase).CubeGrid.EntityId))
-                            zone2 = true;
-
-                        if (zone1 && zone2)
-                            return;
-                    }
-                    else
-                    {
-                        if (myEntity as MyLargeTurretBase != null && !PVE.EntitiesInZone.Contains((myEntity as MyLargeTurretBase).CubeGrid.EntityId))
-                            return;
-                    }
+                    if ((AttackerEntity as MyLargeTurretBase) != null && !PVE.EntitiesInZone.Contains((AttackerEntity as MyLargeTurretBase).CubeGrid.EntityId) ||
+                        (AttackerEntity as MyWarhead) != null && !PVE.EntitiesInZone.Contains((AttackerEntity as MyWarhead).CubeGrid.EntityId))
+                        return;
                 }
             }
 

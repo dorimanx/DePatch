@@ -16,6 +16,9 @@ namespace DePatch
 
         private static bool Prefix(MyDrillBase __instance, ref bool __result)
         {
+            if (!DePatchPlugin.Instance.Config.Enabled)
+                return true;
+
             if (!DePatchPlugin.Instance.Config.PveZoneEnabled)
                 return true;
 

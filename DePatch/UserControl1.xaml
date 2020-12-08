@@ -128,7 +128,7 @@
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=BeaconAlert}" />
                     <CheckBox
-						Content="Disable Trigger Now"
+						Content="Disable Timer Trigger Now"
 						HorizontalAlignment="Left"
 						Margin="10,163,0,0"
 						VerticalAlignment="Top"
@@ -151,32 +151,32 @@
                     <CheckBox
 						Content="Check For Updates"
 						HorizontalAlignment="Left"
-						Margin="10,183,0,0"
+						Margin="10,348,0,0"
 						VerticalAlignment="Top"
                         IsEnabled="False"
 						IsChecked="{Binding Path=CheckForUpdates}" />
                     <CheckBox
 						Content="Disable Assembler Queue Loop"
 						HorizontalAlignment="Left"
-                        Margin="10,203,0,0"
+                        Margin="10,183,0,0"
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=DisableAssemblerLoop}" />
                     <CheckBox
 						Content="Disable Assembler Cooperative"
 						HorizontalAlignment="Left"
-                        Margin="10,223,0,0"
+                        Margin="10,203,0,0"
 						VerticalAlignment="Top"
-						IsChecked="{Binding Path=DisableAssemblerCoop}" />
+						IsChecked="{Binding Path=DisableAssemblerCoop}" RenderTransformOrigin="0.507,-0.503" />
                     <CheckBox
 						Content="Disable Production Blocks On Ships"
 						HorizontalAlignment="Left"
-                        Margin="10,243,0,0"
+                        Margin="10,223,0,0"
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=DisableProductionOnShip}" />
                     <CheckBox
 						Content="Disable Nanobots On Ships"
 						HorizontalAlignment="Left"
-                        Margin="10,263,0,0"
+                        Margin="10,243,0,0"
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=DisableNanoBotsOnShip}" />
                     <CheckBox
@@ -186,11 +186,11 @@
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=SlowPBEnabled}" Grid.ColumnSpan="2" />
                     <Label
-						Content="Experemental Options"
+						Content="Experimental Options! for tests only"
 						HorizontalAlignment="Left"
 						Margin="10,302,0,0"
 						VerticalAlignment="Top"
-						RenderTransformOrigin="0.55,1.808" Width="133" />
+						RenderTransformOrigin="0.55,1.808" Width="207" />
                     <CheckBox
 						Content="OptiDamage System"
 						HorizontalAlignment="Left"
@@ -526,30 +526,30 @@
                     <Label
 						Content="Max Protection Velocity"
 						HorizontalAlignment="Left"
-						Margin="193,13,0,0"
+						Margin="181,24,0,0"
 						VerticalAlignment="Top" />
                     <Label
-						Content="Above Velocity Damage From Voxels"
+						Content="Above Velocity Damage&#xD;&#xA;From Voxels (set 0 to 5 max)"
 						HorizontalAlignment="Left"
-						Margin="193,72,0,0"
+						Margin="181,47,0,0"
 						VerticalAlignment="Top" />
                     <TextBox
 						HorizontalAlignment="Left"
 						Height="23"
-						Margin="193,98,0,0"
+						Margin="389,62,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
 						Width="59"
 						Text="{Binding Path=DamgeToBlocksVoxel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <Label
-						Content="Above Velocity Damage From Ramming"
+						Content="Above Velocity Damage&#xA;From Ramming (set 1 to 5 max)"
 						HorizontalAlignment="Left"
-						Margin="193,131,0,0"
-						VerticalAlignment="Top" />
+						Margin="180,83,0,0"
+						VerticalAlignment="Top" Height="51" />
                     <TextBox
 						HorizontalAlignment="Left"
 						Height="23"
-						Margin="193,162,0,0"
+						Margin="389,93,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
 						Width="59"
@@ -557,7 +557,7 @@
                     <TextBox
 						HorizontalAlignment="Left"
 						Height="23"
-						Margin="193,42,0,0"
+						Margin="389,27,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
 						Width="59"
@@ -565,41 +565,41 @@
                     <Label
 						Content="Max Protected LargeGrid Size"
 						HorizontalAlignment="Left"
-						Margin="193,208,0,0"
+						Margin="10,195,0,0"
 						VerticalAlignment="Top" />
                     <TextBox
 						HorizontalAlignment="Left"
 						Height="23"
-						Margin="193,239,0,0"
+						Margin="180,198,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
-						Width="120"
+						Width="100"
 						Text="{Binding Path=MaxProtectedLargeGridSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <Label
 						Content="Max Protected SmallGrid Size"
 						HorizontalAlignment="Left"
-						Margin="10,208,0,0"
+						Margin="10,167,0,0"
 						VerticalAlignment="Top" />
                     <Label
-						Content="Torpedos Max Grid Size"
+						Content="Torpedos Max Grid Size L/S"
 						HorizontalAlignment="Left"
-						Margin="10,131,0,0"
+						Margin="10,139,0,0"
 						VerticalAlignment="Top" />
                     <TextBox
 						HorizontalAlignment="Left"
 						Height="23"
-						Margin="10,162,0,0"
+						Margin="181,142,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
-						Width="120"
+						Width="100"
 						Text="{Binding Path=MaxBlocksDoDamage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBox
 						HorizontalAlignment="Left"
 						Height="23"
-						Margin="10,239,0,0"
+						Margin="181,170,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
-						Width="120"
+						Width="100"
 						Text="{Binding Path=MaxProtectedSmallGridSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <CheckBox
                         Content="Stop Voxels Explosion"
@@ -607,27 +607,30 @@
                         Margin="10,50,0,0"
                         VerticalAlignment="Top"
                         IsChecked="{Binding Path=StopExplosion}" />
-                    <CheckBox Content="Enable Over Max Speed Grid Purge" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,305,0,0" Width="215" IsChecked="{Binding Path=EnableGridMaxSpeedPurge}"/>
+                    <CheckBox Content="Enable Over Max Speed Grid Purge" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,266,0,0" Width="215" IsChecked="{Binding Path=EnableGridMaxSpeedPurge}"/>
                     <TextBox
                         HorizontalAlignment="Left"
                         Height="23"
                         TextWrapping="Wrap"
                         VerticalAlignment="Top"
-                        Width="64"
-                        Margin="249,329,0,0"
+                        Width="60"
+                        Margin="256,303,0,0"
                         Text="{Binding Path=LargeGridMaxSpeedPurge, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Label Content="Large Grid Max Over Speed Before DELETE" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,329,0,0" Width="234"/>
-                    <Label Content="Small Grid Max Over Speed Before DELETE" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,360,0,0"/>
+                    <Label Content="Large Grid Max Over Speed Before Action" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,300,0,0" Width="234"/>
+                    <Label Content="Small Grid Max Over Speed Before Action" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,326,0,0"/>
                     <TextBox
                         HorizontalAlignment="Left"
                         Height="23"
                         TextWrapping="Wrap"
                         VerticalAlignment="Top"
-                        Width="66"
-                        Margin="249,360,0,0"
+                        Width="60"
+                        Margin="256,331,0,0"
                         RenderTransformOrigin="0.536,0.158"
                         Text="{Binding Path=SmallGridMaxSpeedPurge, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Label Content="=====================================================" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,274,0,0" Width="454"/>
+                    <Label Content="=====================================================" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,235,0,0" Width="454"/>
+                    <ComboBox Name="SpeedingModeCombobox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="102" Margin="352,286,0,0"/>
+                    <Label Content="Mode Selector" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="352,260,0,0"/>
+                    <Label Content="When changing,&#xD;&#xA;Push Save Config" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="352,308,0,0"/>
 
                 </Grid>
             </TabItem>

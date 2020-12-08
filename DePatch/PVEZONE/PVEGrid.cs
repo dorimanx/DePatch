@@ -13,45 +13,73 @@ namespace DePatch
 
         private MyCubeGrid cubeGrid;
 
-        public MyCubeGrid CubeGrid { get => cubeGrid; set => cubeGrid = value; }
+        public int Tick;
 
-        public PVEGrid(MyCubeGrid grid)
-        {
-            CubeGrid = grid;
-        }
+        public PVEGrid(MyCubeGrid grid) => cubeGrid = grid;
 
         public void OnGridEntered()
         {
-            if (CubeGrid.BigOwners.Count >= 1)
-                MyVisualScriptLogicProvider.ShowNotification(DePatchPlugin.Instance.Config.PveMessageEntered.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageEntered, CubeGrid.DisplayName) : DePatchPlugin.Instance.Config.PveMessageEntered, 10000, "White", PVEGrid.FindOnlineOwner(CubeGrid).Identity.IdentityId);
+            int OnlinePlayers = MySession.Static.Players.GetOnlinePlayers().Count();
+            if (OnlinePlayers > 0)
+            {
+                MyPlayer GridOwnedByPlayer = FindOnlineOwner(cubeGrid);
+                if (GridOwnedByPlayer != null)
+                {
+                    if (cubeGrid != null && cubeGrid.BigOwners.Count >= 1)
+                        MyVisualScriptLogicProvider.ShowNotification(
+                            DePatchPlugin.Instance.Config.PveMessageEntered.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageEntered, cubeGrid.DisplayName) : DePatchPlugin.Instance.Config.PveMessageEntered,
+                            10000,
+                            "White",
+                            GridOwnedByPlayer.Identity.IdentityId);
+                }
+            }
         }
 
         public void OnGridLeft()
         {
-            if (CubeGrid.BigOwners.Count >= 1)
-                MyVisualScriptLogicProvider.ShowNotification(DePatchPlugin.Instance.Config.PveMessageLeft.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageLeft, CubeGrid.DisplayName) : DePatchPlugin.Instance.Config.PveMessageLeft, 10000, "White", PVEGrid.FindOnlineOwner(CubeGrid).Identity.IdentityId);
+            int OnlinePlayers = MySession.Static.Players.GetOnlinePlayers().Count();
+            if (OnlinePlayers > 0)
+            {
+                MyPlayer GridOwnedByPlayer = FindOnlineOwner(cubeGrid);
+                if (GridOwnedByPlayer != null)
+                {
+                    if (cubeGrid != null && cubeGrid.BigOwners.Count >= 1)
+                        MyVisualScriptLogicProvider.ShowNotification(
+                            DePatchPlugin.Instance.Config.PveMessageLeft.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageLeft, cubeGrid.DisplayName) : DePatchPlugin.Instance.Config.PveMessageLeft,
+                            10000,
+                            "White",
+                            GridOwnedByPlayer.Identity.IdentityId);
+                }
+            }
         }
 
         public bool InPVEZone()
         {
-            return PVE.PVESphere.Contains(CubeGrid.PositionComp.GetPosition()) == ContainmentType.Contains;
+            return PVE.PVESphere.Contains(cubeGrid.PositionComp.GetPosition()) == ContainmentType.Contains;
         }
 
         private static MyPlayer FindOnlineOwner(MyCubeGrid grid)
         {
             MyPlayer controllingPlayer = MySession.Static.Players.GetControllingPlayer(grid);
-            List<long> list = grid.BigOwners.ToList<long>();
-            list.AddList(grid.SmallOwners);
-            Dictionary<long, MyPlayer> dictionary = MySession.Static.Players.GetOnlinePlayers().ToDictionary((MyPlayer b) => b.Identity.IdentityId);
-
             if (controllingPlayer != null)
             {
                 return controllingPlayer;
             }
             if (grid.BigOwners.Count < 1)
             {
-                return null;
+                List<long> listsmall = grid.SmallOwners.ToList();
+                Dictionary<long, MyPlayer> dictionarysmall = MySession.Static.Players.GetOnlinePlayers().ToDictionary((MyPlayer b) => b.Identity.IdentityId);
+                foreach (long item in listsmall)
+                {
+                    if (dictionarysmall.ContainsKey(item))
+                    {
+                        return dictionarysmall[item];
+                    }
+                }
             }
+            List<long> list = grid.BigOwners.ToList();
+            list.AddList(grid.SmallOwners);
+            Dictionary<long, MyPlayer> dictionary = MySession.Static.Players.GetOnlinePlayers().ToDictionary((MyPlayer b) => b.Identity.IdentityId);
             foreach (long item in list)
             {
                 if (dictionary.ContainsKey(item))

@@ -14,10 +14,11 @@ namespace DePatch
         public static BoundingSphereD PVESphere;
         public static BoundingSphereD PVESphere2;
 
-        public static int Tick;
-
         public static void Init(DePatchPlugin plugin)
         {
+            if (!DePatchPlugin.Instance.Config.Enabled)
+                return;
+
             Log.Info("Initing PVE ZONE...");
             PVESphere = new BoundingSphereD(new Vector3D(plugin.Config.PveX, plugin.Config.PveY, plugin.Config.PveZ), plugin.Config.PveZoneRadius);
             PVESphere2 = new BoundingSphereD(new Vector3D(plugin.Config.PveX2, plugin.Config.PveY2, plugin.Config.PveZ2), plugin.Config.PveZoneRadius2);

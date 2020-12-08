@@ -42,12 +42,17 @@ namespace DePatch
             RedTextBox.Text = Plugin.Config.RedAlertText;
             WOBTextBox.Text = Plugin.Config.WithOutBeaconText;
             WDGTextBox.Text = Plugin.Config.WithDefaultNameText;
-            int count = Plugin.Config.ShipTools.Count;
             Plugin.Config.ShipTools.Select(b => ShipToolDeserializer.Deserialize(b)).ForEach(b => ShipTool.shipTools.Add(b));
             Plugin.Config.DrillsSettings.Select(b => DrillSettings.Deserialize(b)).ForEach(b => DrillSettings.drills.Add(b));
             ShipToolsGrid.ItemsSource = ShipTool.shipTools;
             DrillModeCombobox.ItemsSource = Enum.GetValues(typeof(DrillingMode)).Cast<DrillingMode>();
             DrillModeCombobox.SelectedIndex = (int)Plugin.Config.ParallelDrill;
+            SpeedingModeCombobox.ItemsSource = Enum.GetValues(typeof(SpeedingMode)).Cast<SpeedingMode>();
+            SpeedingModeCombobox.SelectedIndex = (int)Plugin.Config.SpeedingModeSelector;
+
+            Plugin.Config.ParallelDrill = (DrillingMode)DrillModeCombobox.SelectedIndex;
+            Plugin.Config.SpeedingModeSelector = (SpeedingMode)SpeedingModeCombobox.SelectedIndex;
+
             if (IgnorePBSubTypesHere.Text.Length > 1)
             {
                 MyProgramBlockSlow.Init();
@@ -73,6 +78,7 @@ namespace DePatch
             Plugin.Config.ShipTools = ShipTool.shipTools.Select(t => ShipToolSerializer.Serialize(t)).ToList();
             Plugin.Config.DrillsSettings = DrillSettings.drills.Select(t => DrillSettings.Serialize(t)).ToList();
             Plugin.Config.ParallelDrill = (DrillingMode)DrillModeCombobox.SelectedIndex;
+            Plugin.Config.SpeedingModeSelector = (SpeedingMode)SpeedingModeCombobox.SelectedIndex;
 
             if (IgnorePBSubTypesHere.Text.Length > 1)
             {

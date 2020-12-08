@@ -43,15 +43,16 @@ namespace DePatch
         private string _PveMessageLeft = "Your grid [{0}] left from [PVE Zone]! All Weapons can fire now.";
 
         private bool _PveZoneEnabled2;
-        private float _PveX2 = 10000;
-        private float _PveY2 = 10000;
-        private float _PveZ2 = 10000;
+        private float _PveX2 = -427294.13f;
+        private float _PveY2 = 1687093.89f;
+        private float _PveZ2 = 2446336.21f;
         private float _PveZoneRadius2 = 500000f;
         private string _PveMessageEntered2 = "Your grid [{0}] entered to [PVE Zone 2]! All Weapons on grid cannot fire!";
         private string _PveMessageLeft2 = "Your grid [{0}] left from [PVE Zone 2]! All Weapons can fire now.";
 
         private int _DrillUpdateRate = 90;
         private DrillingMode _ParallelDrill;
+        private SpeedingMode _SpeedingModeSelector;
         private bool _DrillDisableRightClick;
         private bool _DrillStoneDumpRightClick;
         private bool _DrillIgnoreSubtypes = true;
@@ -63,7 +64,7 @@ namespace DePatch
         private long _MaxProtectedSmallGridSize = 10000L;
         private long _MaxProtectedLargeGridSize = 10000L;
         private float _DamgeToBlocksVoxel = 0f;
-        private float _DamgeToBlocksRamming = 200f;
+        private float _DamgeToBlocksRamming = 1f;
         private long _MaxBlocksDoDamage = 50L;
         private bool _damageThreading;
         private decimal _gridColisionAverage;
@@ -363,7 +364,6 @@ namespace DePatch
             set => SetValue(ref _slowPBIgnored, value, "SlowPBIgnored");
         }
 
-
         public string PveMessageEntered2
         {
             get => _PveMessageEntered2;
@@ -484,6 +484,12 @@ namespace DePatch
         {
             get => _SmallGridMaxSpeedPurge;
             set => SetValue(ref _SmallGridMaxSpeedPurge, value, "SmallGridMaxSpeedPurge");
+        }
+
+        public SpeedingMode SpeedingModeSelector
+        {
+            get => _SpeedingModeSelector;
+            set => SetValue(ref _SpeedingModeSelector, value, "SpeedingModeSelector");
         }
     }
 }

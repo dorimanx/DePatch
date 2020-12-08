@@ -21,6 +21,9 @@ namespace DePatch
     {
         private static bool Prefix(MySessionComponentSafeZones __instance, MyEntity entity, MySafeZoneAction action, ref bool __result)
         {
+            if (!DePatchPlugin.Instance.Config.Enabled)
+                return true;
+
             if (!DePatchPlugin.Instance.Config.PveZoneEnabled)
             {
                 return true;

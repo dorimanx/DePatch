@@ -8,11 +8,11 @@ namespace DePatch
     {
         private static void Prefix(MyCubeGrid __instance)
         {
-            if (DePatchPlugin.Instance.Config.PveZoneEnabled)
+            if (DePatchPlugin.Instance.Config.PveZoneEnabled && DePatchPlugin.Instance.Config.Enabled)
             {
                 try
                 {
-                    if (!PVEGrid.Grids.ContainsKey(__instance))
+					if (!PVEGrid.Grids.ContainsKey(__instance))
                     {
                         PVEGrid.Grids.Add(__instance, new PVEGrid(__instance));
                     }
@@ -32,24 +32,24 @@ namespace DePatch
                     else
                     {
                         PVEGrid pVEGrid = PVEGrid.Grids[__instance];
-                        if (++PVE.Tick <= 10)
+                        if (++pVEGrid.Tick <= 10)
                         {
                             return;
                         }
-                        PVE.Tick = 0;
+                        pVEGrid.Tick = 0;
                         bool flag = pVEGrid.InPVEZone();
                         bool flag2 = PVE.EntitiesInZone.Contains(__instance.EntityId);
                         if (!(flag && flag2))
                         {
-                            if (!flag && flag2)
+                            if (__instance != null && !flag && flag2)
                             {
-                                pVEGrid.OnGridLeft();
                                 PVE.EntitiesInZone.Remove(__instance.EntityId);
+                                pVEGrid?.OnGridLeft();
                             }
-                            if (flag && !flag2)
+                            if (__instance != null && flag && !flag2)
                             {
-                                pVEGrid.OnGridEntered();
                                 PVE.EntitiesInZone.Add(__instance.EntityId);
+                                pVEGrid?.OnGridEntered();
                             }
                         }
                         if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
@@ -59,15 +59,15 @@ namespace DePatch
                             bool flag4 = PVE.EntitiesInZone2.Contains(__instance.EntityId);
                             if (!(flag3 && flag4))
                             {
-                                if (!flag3 && flag4)
+                                if (__instance != null && !flag3 && flag4)
                                 {
-                                    pVEGrid2.OnGridLeft2();
                                     PVE.EntitiesInZone2.Remove(__instance.EntityId);
+                                    pVEGrid2?.OnGridLeft2();
                                 }
-                                if (flag3 && !flag4)
+                                if (__instance != null && flag3 && !flag4)
                                 {
-                                    pVEGrid2.OnGridEntered2();
                                     PVE.EntitiesInZone2.Add(__instance.EntityId);
+                                    pVEGrid2?.OnGridEntered2();
                                 }
                             }
                         }
