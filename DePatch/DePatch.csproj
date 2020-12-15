@@ -63,6 +63,10 @@
     <Reference Include="SpaceEngineers.Game">
       <HintPath>..\GameBinaries\SpaceEngineers.Game.dll</HintPath>
     </Reference>
+    <Reference Include="SpaceEngineers.ObjectBuilders, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\GameBinaries\SpaceEngineers.ObjectBuilders.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Collections.Immutable.1.5.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
@@ -92,6 +96,10 @@
     </Reference>
     <Reference Include="VRage.Game">
       <HintPath>..\GameBinaries\VRage.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Input, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\GameBinaries\VRage.Input.dll</HintPath>
     </Reference>
     <Reference Include="VRage.Library">
       <HintPath>..\GameBinaries\VRage.Library.dll</HintPath>
@@ -135,8 +143,6 @@
     <Compile Include="GamePatches\MySpaceBallPatch.cs" />
     <Compile Include="GamePatches\MyTimerBlockPatch.cs" />
     <Compile Include="PVEZONE\MyTurretPveDamageFix.cs" />
-    <Compile Include="VoxelProtection\MyVoxelDefenderPatch.cs" />
-    <Compile Include="VoxelProtection\MyVoxelsDestructionPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PVEZONE\PVE.cs" />
     <Compile Include="PVEZONE\PVEGrid.cs" />

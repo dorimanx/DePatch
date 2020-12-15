@@ -6,6 +6,7 @@ using VRage.Game.Components;
 using Sandbox.ModAPI;
 using VRage.Utils;
 using VRage.Game.Entity;
+using SpaceEngineers.Game.Entities.Blocks;
 
 namespace DePatch
 {
@@ -50,6 +51,8 @@ namespace DePatch
                             {
                                 if (damage.IsDeformation) damage.IsDeformation = false;
                                 if (damage.Amount != 0f) damage.Amount = 0f;
+
+                                return;
                             }
                             else
                             {
@@ -64,8 +67,6 @@ namespace DePatch
                         {
                             if (AttackerEntity is MyVoxelBase)
                             { // by voxel on high speed
-                                GridPhysics?.ClearSpeed();
-
                                 if (damage.IsDeformation) damage.IsDeformation = false;
 
                                 if (damage.Amount != 0f)
@@ -73,13 +74,7 @@ namespace DePatch
                                     if (damage.Amount >= DePatchPlugin.Instance.Config.DamgeToBlocksVoxel)
                                         damage.Amount = DePatchPlugin.Instance.Config.DamgeToBlocksVoxel;
                                 }
-
-                                GridPhysics.ApplyImpulse(
-                                    Grid.PositionComp.GetPosition() -
-                                    ((LinearVelocity + AngularVelocity) * Grid.GridSize * 200f),
-                                    Grid.PositionComp.GetPosition() + MyUtils.GetRandomVector3D());
-
-                                GridPhysics?.ClearSpeed();
+                                return;
                             }
 
                             if (Grid.BlocksCount > DePatchPlugin.Instance.Config.MaxBlocksDoDamage)
