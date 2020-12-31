@@ -24,11 +24,16 @@ namespace DePatch
                 if (GridOwnedByPlayer != null)
                 {
                     if (cubeGrid2 != null && cubeGrid2.BigOwners.Count >= 1)
-                        MyVisualScriptLogicProvider.ShowNotification(
+                    {
+                        if ((cubeGrid2.DisplayName != "Event Horizon at Universe Gate") || (cubeGrid2.DisplayName != "Event Horizon at Stargate") || (cubeGrid2.DisplayName != "Event Horizon at Atlantis Gate"))
+                        {
+                            MyVisualScriptLogicProvider.ShowNotification(
                             DePatchPlugin.Instance.Config.PveMessageEntered2.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageEntered2, cubeGrid2.DisplayName) : DePatchPlugin.Instance.Config.PveMessageEntered2,
                             10000,
                             "White",
                             GridOwnedByPlayer.Identity.IdentityId);
+                        }
+                    }
                 }
             }
         }
@@ -42,11 +47,16 @@ namespace DePatch
                 if (GridOwnedByPlayer != null)
                 {
                     if (cubeGrid2 != null && cubeGrid2.BigOwners.Count >= 1)
-                        MyVisualScriptLogicProvider.ShowNotification(
+                    {
+                        if ((cubeGrid2.DisplayName != "Event Horizon at Universe Gate") || (cubeGrid2.DisplayName != "Event Horizon at Stargate") || (cubeGrid2.DisplayName != "Event Horizon at Atlantis Gate"))
+                        {
+                            MyVisualScriptLogicProvider.ShowNotification(
                             DePatchPlugin.Instance.Config.PveMessageLeft2.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageLeft2, cubeGrid2.DisplayName) : DePatchPlugin.Instance.Config.PveMessageLeft2,
                             10000,
                             "White",
                             GridOwnedByPlayer.Identity.IdentityId);
+                        }
+                    }
                 }
             }
         }

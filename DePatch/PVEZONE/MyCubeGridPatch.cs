@@ -32,7 +32,7 @@ namespace DePatch
                     else
                     {
                         PVEGrid pVEGrid = PVEGrid.Grids[__instance];
-                        if (++pVEGrid.Tick <= 10)
+                        if (++pVEGrid.Tick <= 5)
                         {
                             return;
                         }

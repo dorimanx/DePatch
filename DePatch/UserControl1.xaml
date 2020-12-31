@@ -197,6 +197,10 @@
 						Margin="10,328,0,0"
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=DamageThreading}" Width="127" Height="20" RenderTransformOrigin="0.475,0.883" />
+                    <CheckBox
+                        Content="Clean Cargo Hacks" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,262,0,0"
+						ToolTip="This will clean extra bottles and tools from cargo if amount of things,&#xA;is above 300 every 25sec if player near by"
+                        IsChecked="{Binding Path=CargoCleanup}"/>
                 </Grid>
             </TabItem>
             <TabItem
@@ -361,7 +365,7 @@
 							Width="457"
 							AcceptsReturn="True"
 							Text="{Binding Path=PveMessageLeft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <CheckBox Content="Zone 2 Enabled" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,273,0,0" IsChecked="{Binding Path=PveZoneEnabled2}" />
+                        <CheckBox Content="Zone 2 Enabled" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,273,0,0" IsEnabled="{Binding Path=PveZoneEnabled}" IsChecked="{Binding Path=PveZoneEnabled2}" />
                         <Label Content="Zone X" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="52,303,0,0"/>
                         <Label Content="Zone Y" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="170,303,0,0"/>
                         <Label Content="Zone Z" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="295,303,0,0"/>
@@ -511,13 +515,15 @@
                 <Grid
 					Background="#FFE5E5E5">
                     <CheckBox
-						Content="Protect Voxels"
+						Content="Protect Voxels From Impact"
+                        ToolTip="When grid hit voxels, voxels will remain intact."
 						HorizontalAlignment="Left"
 						Margin="10,30,0,0"
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=ProtectVoxels}" />
                     <CheckBox
 						Content="Protect Grids"
+                        ToolTip="When Grid is hitting voxels or other objects, it's will be protected according to settings."
 						HorizontalAlignment="Left"
 						Margin="10,70,0,0"
 						VerticalAlignment="Top"
@@ -526,12 +532,12 @@
                     <Label
 						Content="Max Protection Velocity"
 						HorizontalAlignment="Left"
-						Margin="181,24,0,0"
+						Margin="198,21,0,0"
 						VerticalAlignment="Top" />
                     <Label
 						Content="Above Velocity Damage&#xD;&#xA;From Voxels (set 0 to 5 max)"
 						HorizontalAlignment="Left"
-						Margin="181,47,0,0"
+						Margin="198,47,0,0"
 						VerticalAlignment="Top" />
                     <TextBox
 						HorizontalAlignment="Left"
@@ -540,11 +546,13 @@
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
 						Width="59"
-						Text="{Binding Path=DamgeToBlocksVoxel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        ToolTip="When grid is hitting voxels, on high speed,&#xA;it's will get this amount of damage to each block that should be damaged."
+                        IsEnabled="{Binding Path=ProtectGrid}"
+						Text="{Binding Path=DamgeToBlocksVoxel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
                     <Label
-						Content="Above Velocity Damage&#xA;From Ramming (set 1 to 5 max)"
+						Content="Above Velocity Damage&#xA;From Ramming (set 0.1 to 5 max)"
 						HorizontalAlignment="Left"
-						Margin="180,83,0,0"
+						Margin="198,84,0,0"
 						VerticalAlignment="Top" Height="51" />
                     <TextBox
 						HorizontalAlignment="Left"
@@ -553,7 +561,9 @@
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
 						Width="59"
-						Text="{Binding Path=DamgeToBlocksRamming, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        ToolTip="If grid speed is above max protected speed, then it's will get damage as set in settings"
+                        IsEnabled="{Binding Path=ProtectGrid}"
+						Text="{Binding Path=DamgeToBlocksRamming, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
                     <TextBox
 						HorizontalAlignment="Left"
 						Height="23"
@@ -561,77 +571,106 @@
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
 						Width="59"
+                        ToolTip="If grid speed is above max protected speed, then it's will get damage as set in settings"
+                        IsEnabled="{Binding Path=ProtectGrid}"
 						Text="{Binding Path=MinProtectSpeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <Label
 						Content="Max Protected LargeGrid Size"
 						HorizontalAlignment="Left"
-						Margin="10,195,0,0"
+						Margin="10,251,0,0"
 						VerticalAlignment="Top" />
                     <TextBox
 						HorizontalAlignment="Left"
 						Height="23"
-						Margin="180,198,0,0"
+						Margin="198,254,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
 						Width="100"
+                        ToolTip="Max blocks in large size grid to protect it"
+                        IsEnabled="{Binding Path=ProtectGrid}"
 						Text="{Binding Path=MaxProtectedLargeGridSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <Label
 						Content="Max Protected SmallGrid Size"
 						HorizontalAlignment="Left"
-						Margin="10,167,0,0"
+						Margin="10,225,0,0"
 						VerticalAlignment="Top" />
                     <Label
 						Content="Torpedos Max Grid Size L/S"
 						HorizontalAlignment="Left"
-						Margin="10,139,0,0"
+						Margin="10,197,0,0"
 						VerticalAlignment="Top" />
                     <TextBox
 						HorizontalAlignment="Left"
 						Height="23"
-						Margin="181,142,0,0"
+						Margin="198,197,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
 						Width="100"
+                        ToolTip="Max Blocks in grid to disable protection, so it's can do damage when ramming other grid."
+                        IsEnabled="{Binding Path=ProtectGrid}"
 						Text="{Binding Path=MaxBlocksDoDamage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBox
 						HorizontalAlignment="Left"
 						Height="23"
-						Margin="181,170,0,0"
+						Margin="198,225,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
 						Width="100"
+                        ToolTip="Max blocks in small size grid to protect it"
+                        IsEnabled="{Binding Path=ProtectGrid}"
 						Text="{Binding Path=MaxProtectedSmallGridSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <CheckBox
                         Content="Stop Voxels Explosion"
                         HorizontalAlignment="Left"
                         Margin="10,50,0,0"
                         VerticalAlignment="Top"
+                        ToolTip="If missiles or warheads hit voxels, they will not destroy it"
                         IsChecked="{Binding Path=StopExplosion}" />
-                    <CheckBox Content="Enable Over Max Speed Grid Purge" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,266,0,0" Width="215" IsChecked="{Binding Path=EnableGridMaxSpeedPurge}"/>
+                    <CheckBox Content="Enable Over Max Speed Grid Actions" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,335,0,0" Width="215" IsChecked="{Binding Path=EnableGridMaxSpeedPurge}"/>
                     <TextBox
                         HorizontalAlignment="Left"
                         Height="23"
                         TextWrapping="Wrap"
                         VerticalAlignment="Top"
                         Width="60"
-                        Margin="256,303,0,0"
+                        Margin="256,362,0,0"
                         Text="{Binding Path=LargeGridMaxSpeedPurge, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Label Content="Large Grid Max Over Speed Before Action" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,300,0,0" Width="234"/>
-                    <Label Content="Small Grid Max Over Speed Before Action" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,326,0,0"/>
+                    <Label Content="Large Grid Max Over Speed Before Action" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,364,0,0" Width="234"/>
+                    <Label Content="Small Grid Max Over Speed Before Action" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,390,0,0"/>
                     <TextBox
                         HorizontalAlignment="Left"
                         Height="23"
                         TextWrapping="Wrap"
                         VerticalAlignment="Top"
                         Width="60"
-                        Margin="256,331,0,0"
+                        Margin="256,390,0,0"
                         RenderTransformOrigin="0.536,0.158"
                         Text="{Binding Path=SmallGridMaxSpeedPurge, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Label Content="=====================================================" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,235,0,0" Width="454"/>
-                    <ComboBox Name="SpeedingModeCombobox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="102" Margin="352,286,0,0"/>
-                    <Label Content="Mode Selector" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="352,260,0,0"/>
-                    <Label Content="When changing,&#xD;&#xA;Push Save Config" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="352,308,0,0"/>
-
+                    <Label Content="=======================================================" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,291,0,0" Width="454"/>
+                    <ComboBox Name="SpeedingModeCombobox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="102" Margin="351,347,0,0"/>
+                    <Label Content="Mode Selector" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="351,317,0,0"/>
+                    <Label Content="When changing,&#xD;&#xA;Push Save Config" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="352,374,0,0"/>
+                    <CheckBox
+                        Content="Convert Grid To Static"
+                        ToolTip="When grid hitting voxels in gravity above 0.2 with set speed and it's has min 6 thrusters and has less than 4 wheels and altitude is below 150m, grid will be stopped and converted to static."
+                        HorizontalAlignment="Left"
+                        Margin="10,90,0,0"
+                        VerticalAlignment="Top"
+                        RenderTransformOrigin="4,-0.6"
+                        IsEnabled="{Binding Path=ProtectGrid}"
+                        IsChecked="{Binding ConvertToStatic}" Height="17" Width="135" />
+                    <TextBox
+                        HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="63" Margin="217,135,0,0" RenderTransformOrigin="0.494,0.514"
+						ToolTip="When Grid hit planet voxels and Grid speed is equal or above set speed,&#xA;it's will be converted if it's not Rover"
+                        IsEnabled="{Binding Path=ProtectGrid}"
+                        Text="{Binding Path=StaticConvertSpeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox
+                        HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="63" Margin="217,163,0,0" RenderTransformOrigin="0.465,0.443"
+ 						ToolTip="If grid size is larger than set amount of blocks,&#xA;it's will be converted to static if it's not rover and above max impact speed"
+                        IsEnabled="{Binding Path=ProtectGrid}"
+                        Text="{Binding Path=MaxGridSizeToConvert, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="Min Grid Speed before Convert" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,135,0,0"/>
+                    <Label Content="Convert Grid with Above Max Blocks" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,158,0,0"/>
                 </Grid>
             </TabItem>
             <TabItem

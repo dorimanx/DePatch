@@ -26,11 +26,16 @@ namespace DePatch
                 if (GridOwnedByPlayer != null)
                 {
                     if (cubeGrid != null && cubeGrid.BigOwners.Count >= 1)
-                        MyVisualScriptLogicProvider.ShowNotification(
-                            DePatchPlugin.Instance.Config.PveMessageEntered.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageEntered, cubeGrid.DisplayName) : DePatchPlugin.Instance.Config.PveMessageEntered,
-                            10000,
-                            "White",
-                            GridOwnedByPlayer.Identity.IdentityId);
+                    {
+                        if ((cubeGrid.DisplayName != "Event Horizon at Universe Gate") || (cubeGrid.DisplayName != "Event Horizon at Stargate") || (cubeGrid.DisplayName != "Event Horizon at Atlantis Gate"))
+                        {
+                            MyVisualScriptLogicProvider.ShowNotification(
+                                DePatchPlugin.Instance.Config.PveMessageEntered.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageEntered, cubeGrid.DisplayName) : DePatchPlugin.Instance.Config.PveMessageEntered,
+                                10000,
+                                "White",
+                                GridOwnedByPlayer.Identity.IdentityId);
+                        }
+                    }
                 }
             }
         }
@@ -44,11 +49,16 @@ namespace DePatch
                 if (GridOwnedByPlayer != null)
                 {
                     if (cubeGrid != null && cubeGrid.BigOwners.Count >= 1)
-                        MyVisualScriptLogicProvider.ShowNotification(
+                    {
+                        if ((cubeGrid.DisplayName != "Event Horizon at Universe Gate") || (cubeGrid.DisplayName != "Event Horizon at Stargate") || (cubeGrid.DisplayName != "Event Horizon at Atlantis Gate"))
+                        {
+                            MyVisualScriptLogicProvider.ShowNotification(
                             DePatchPlugin.Instance.Config.PveMessageLeft.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageLeft, cubeGrid.DisplayName) : DePatchPlugin.Instance.Config.PveMessageLeft,
                             10000,
                             "White",
                             GridOwnedByPlayer.Identity.IdentityId);
+                        }
+                    }
                 }
             }
         }

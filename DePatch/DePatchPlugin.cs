@@ -32,6 +32,8 @@ namespace DePatch
 
         public static bool GameIsReady = false;
 
+        public static int StaticTick = 0;
+
         public SpeedingMode Mode { get; set; }
 
         public DeConfig Config => ConfigPersistent?.Data;

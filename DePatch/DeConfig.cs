@@ -61,11 +61,14 @@ namespace DePatch
         private bool _stopExplosion = true;
         private bool _ProtectGrid;
         private float _MinProtectSpeed = 40f;
+        private float _StaticConvertSpeed = 70f;
         private long _MaxProtectedSmallGridSize = 10000L;
         private long _MaxProtectedLargeGridSize = 10000L;
-        private float _DamgeToBlocksVoxel = 0f;
-        private float _DamgeToBlocksRamming = 1f;
+        private long _MaxGridSizeToConvert = 500L;
+        private float _DamgeToBlocksVoxel = 0.2f;
+        private float _DamgeToBlocksRamming = 0.5f;
         private long _MaxBlocksDoDamage = 50L;
+        private bool _ConvertToStatic;
         private bool _damageThreading;
         private decimal _gridColisionAverage;
         private bool _slowPBUpdateEnable;
@@ -80,11 +83,18 @@ namespace DePatch
         private bool _EnableGridMaxSpeedPurge;
         private float _LargeGridMaxSpeedPurge = 500f;
         private float _SmallGridMaxSpeedPurge = 500f;
+        private bool _CargoCleanup = true;
 
         public bool DamageThreading
         {
             get => _damageThreading;
             set => SetValue(ref _damageThreading, value, "DamageThreading");
+        }
+
+        public bool CargoCleanup
+        {
+            get => _CargoCleanup;
+            set => SetValue(ref _CargoCleanup, value, "CargoCleanup");
         }
 
         public long MaxProtectedLargeGridSize
@@ -139,6 +149,24 @@ namespace DePatch
         {
             get => _MaxBlocksDoDamage;
             set => SetValue(ref _MaxBlocksDoDamage, value, "MaxBlocksDoDamage");
+        }
+
+        public bool ConvertToStatic
+        {
+            get => _ConvertToStatic;
+            set => SetValue(ref _ConvertToStatic, value, "ConvertToStatic");
+        }
+
+        public long MaxGridSizeToConvert
+        {
+            get => _MaxGridSizeToConvert;
+            set => SetValue(ref _MaxGridSizeToConvert, value, "MaxGridSizeToConvert");
+        }
+
+        public float StaticConvertSpeed
+        {
+            get => _StaticConvertSpeed;
+            set => SetValue(ref _StaticConvertSpeed, value, "StaticConvertSpeed");
         }
 
         public bool DisableAssemblerCoop

@@ -103,6 +103,9 @@ namespace DePatch
                 if (AttackerEntity is MyVoxelBase)
                     return;
 
+                if (mySlimBlock != null && mySlimBlock.CubeGrid.DisplayName.Contains("Container MK-"))
+                    return;
+
                 if (AttackerEntity is MyAngleGrinder myAngleGrinder)
                 {
                     num1 = myAngleGrinder.OwnerIdentityId;
