@@ -115,6 +115,7 @@
   <ItemGroup>
     <Compile Include="BlocksDisable\PlayersUtility.cs" />
     <Compile Include="BlocksDisable\BlockDisablePatch.cs" />
+    <Compile Include="GamePatches\CargoCleanup.cs" />
     <Compile Include="GamePatches\MyAssemblerPatch.cs" />
     <Compile Include="GamePatches\MyProgramBlockSlow.cs" />
     <Compile Include="GamePatches\MyRefineryPatch.cs" />

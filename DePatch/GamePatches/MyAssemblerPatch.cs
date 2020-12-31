@@ -7,10 +7,21 @@ namespace DePatch
     [HarmonyPatch(typeof(MyAssembler), "UpdateBeforeSimulation100")]
     internal class MyAssemblerPatch
     {
+        public static int CleanupTick = 1;
         private static void Prefix(MyAssembler __instance)
         {
             if (!DePatchPlugin.Instance.Config.Enabled)
                 return;
+
+            if (DePatchPlugin.Instance.Config.CargoCleanup)
+            {
+                if (++CleanupTick >= 300)
+                {
+                    CleanupTick = 1;
+                    CargoCleanup.SearchAndDeleteItemStacks();
+                }
+            }
+
             try
             {
                 if (__instance.IsSlave && DePatchPlugin.Instance.Config.DisableAssemblerCoop)

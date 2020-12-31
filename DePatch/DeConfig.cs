@@ -83,7 +83,7 @@ namespace DePatch
         private bool _EnableGridMaxSpeedPurge;
         private float _LargeGridMaxSpeedPurge = 500f;
         private float _SmallGridMaxSpeedPurge = 500f;
-        private bool _CargoCleanup = true;
+        private bool _CargoCleanup;
 
         public bool DamageThreading
         {
