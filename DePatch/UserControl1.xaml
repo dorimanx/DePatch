@@ -548,7 +548,7 @@
 						Width="59"
                         ToolTip="When grid is hitting voxels, on high speed,&#xA;it's will get this amount of damage to each block that should be damaged."
                         IsEnabled="{Binding Path=ProtectGrid}"
-						Text="{Binding Path=DamgeToBlocksVoxel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
+						Text="{Binding Path=DamageToBlocksVoxel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
                     <Label
 						Content="Above Velocity Damage&#xA;From Ramming (set 0.1 to 5 max)"
 						HorizontalAlignment="Left"
@@ -563,7 +563,7 @@
 						Width="59"
                         ToolTip="If grid speed is above max protected speed, then it's will get damage as set in settings"
                         IsEnabled="{Binding Path=ProtectGrid}"
-						Text="{Binding Path=DamgeToBlocksRamming, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
+						Text="{Binding Path=DamageToBlocksRamming, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
                     <TextBox
 						HorizontalAlignment="Left"
 						Height="23"

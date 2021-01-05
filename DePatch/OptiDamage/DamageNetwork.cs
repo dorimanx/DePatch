@@ -7,7 +7,7 @@ using Sandbox.Game.Entities.Cube;
 using VRage.Game.ModAPI;
 using VRage.Utils;
 
-namespace DePatch
+namespace DePatch.OptiDamage
 {
     [HarmonyPatch(typeof(MySlimBlock), "SendDamage")]
     public class DamageNetwork
@@ -24,7 +24,7 @@ namespace DePatch
                 {
                     return false;
                 }
-                DamageContract contract = new DamageContract(block.FatBlock.EntityId, damage, damageType, hitInfo, attackerId);
+                var contract = new DamageContract(block.FatBlock.EntityId, damage, damageType, hitInfo, attackerId);
                 _ = DamageNetwork.DamageQueue.AddOrUpdate(block.CubeGrid, new List<DamageContract>
             {
                 contract

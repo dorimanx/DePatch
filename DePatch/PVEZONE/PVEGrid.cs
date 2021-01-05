@@ -5,36 +5,34 @@ using Sandbox.Game.Entities;
 using Sandbox.Game.World;
 using VRageMath;
 
-namespace DePatch
+namespace DePatch.PVEZONE
 {
     internal class PVEGrid
     {
-        public static readonly Dictionary<MyCubeGrid, PVEGrid> Grids = new Dictionary<MyCubeGrid, PVEGrid>();
+        public static Dictionary<MyCubeGrid, PVEGrid> Grids = new Dictionary<MyCubeGrid, PVEGrid>();
 
         private MyCubeGrid cubeGrid;
-
-        public int Tick;
 
         public PVEGrid(MyCubeGrid grid) => cubeGrid = grid;
 
         public void OnGridEntered()
         {
-            int OnlinePlayers = MySession.Static.Players.GetOnlinePlayers().Count();
-            if (OnlinePlayers > 0)
+            if (MySession.Static.Players.GetOnlinePlayers().Count() > 0)
             {
-                MyPlayer GridOwnedByPlayer = FindOnlineOwner(cubeGrid);
+                var GridOwnedByPlayer = FindOnlineOwner(cubeGrid);
                 if (GridOwnedByPlayer != null)
                 {
                     if (cubeGrid != null && cubeGrid.BigOwners.Count >= 1)
                     {
-                        if ((cubeGrid.DisplayName != "Event Horizon at Universe Gate") || (cubeGrid.DisplayName != "Event Horizon at Stargate") || (cubeGrid.DisplayName != "Event Horizon at Atlantis Gate"))
+                        if (cubeGrid.DisplayName.Contains("Event Horizon at ") || cubeGrid.DisplayName.Contains("Container MK-"))
                         {
-                            MyVisualScriptLogicProvider.ShowNotification(
-                                DePatchPlugin.Instance.Config.PveMessageEntered.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageEntered, cubeGrid.DisplayName) : DePatchPlugin.Instance.Config.PveMessageEntered,
-                                10000,
-                                "White",
-                                GridOwnedByPlayer.Identity.IdentityId);
+                            return;
                         }
+                        MyVisualScriptLogicProvider.ShowNotification(
+                            DePatchPlugin.Instance.Config.PveMessageEntered.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageEntered, cubeGrid.DisplayName) : DePatchPlugin.Instance.Config.PveMessageEntered,
+                            10000,
+                            "White",
+                            GridOwnedByPlayer.Identity.IdentityId);
                     }
                 }
             }
@@ -42,22 +40,22 @@ namespace DePatch
 
         public void OnGridLeft()
         {
-            int OnlinePlayers = MySession.Static.Players.GetOnlinePlayers().Count();
-            if (OnlinePlayers > 0)
+            if (MySession.Static.Players.GetOnlinePlayers().Count() > 0)
             {
-                MyPlayer GridOwnedByPlayer = FindOnlineOwner(cubeGrid);
+                var GridOwnedByPlayer = FindOnlineOwner(cubeGrid);
                 if (GridOwnedByPlayer != null)
                 {
                     if (cubeGrid != null && cubeGrid.BigOwners.Count >= 1)
                     {
-                        if ((cubeGrid.DisplayName != "Event Horizon at Universe Gate") || (cubeGrid.DisplayName != "Event Horizon at Stargate") || (cubeGrid.DisplayName != "Event Horizon at Atlantis Gate"))
+                        if (cubeGrid.DisplayName.Contains("Event Horizon at ") || cubeGrid.DisplayName.Contains("Container MK-"))
                         {
-                            MyVisualScriptLogicProvider.ShowNotification(
+                            return;
+                        }
+                        MyVisualScriptLogicProvider.ShowNotification(
                             DePatchPlugin.Instance.Config.PveMessageLeft.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageLeft, cubeGrid.DisplayName) : DePatchPlugin.Instance.Config.PveMessageLeft,
                             10000,
                             "White",
                             GridOwnedByPlayer.Identity.IdentityId);
-                        }
                     }
                 }
             }
@@ -70,16 +68,16 @@ namespace DePatch
 
         private static MyPlayer FindOnlineOwner(MyCubeGrid grid)
         {
-            MyPlayer controllingPlayer = MySession.Static.Players.GetControllingPlayer(grid);
+            var controllingPlayer = MySession.Static.Players.GetControllingPlayer(grid);
             if (controllingPlayer != null)
             {
                 return controllingPlayer;
             }
             if (grid.BigOwners.Count < 1)
             {
-                List<long> listsmall = grid.SmallOwners.ToList();
-                Dictionary<long, MyPlayer> dictionarysmall = MySession.Static.Players.GetOnlinePlayers().ToDictionary((MyPlayer b) => b.Identity.IdentityId);
-                foreach (long item in listsmall)
+                var listsmall = grid.SmallOwners.ToList();
+                var dictionarysmall = MySession.Static.Players.GetOnlinePlayers().ToDictionary((MyPlayer b) => b.Identity.IdentityId);
+                foreach (var item in listsmall)
                 {
                     if (dictionarysmall.ContainsKey(item))
                     {
@@ -87,10 +85,10 @@ namespace DePatch
                     }
                 }
             }
-            List<long> list = grid.BigOwners.ToList();
+            var list = grid.BigOwners.ToList();
             list.AddList(grid.SmallOwners);
-            Dictionary<long, MyPlayer> dictionary = MySession.Static.Players.GetOnlinePlayers().ToDictionary((MyPlayer b) => b.Identity.IdentityId);
-            foreach (long item in list)
+            var dictionary = MySession.Static.Players.GetOnlinePlayers().ToDictionary((MyPlayer b) => b.Identity.IdentityId);
+            foreach (var item in list)
             {
                 if (dictionary.ContainsKey(item))
                 {

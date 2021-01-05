@@ -9,19 +9,19 @@ using Sandbox.Game.World;
 using VRage.Game.Entity;
 using VRageMath;
 
-namespace DePatch
+namespace DePatch.ShipTools
 {
     [HarmonyPatch(typeof(MyShipGrinder), "Activate")]
     internal class ShipGrinderPatch
     {
         private static readonly FieldInfo m_detectorSphere = typeof(MyShipToolBase).GetField("m_detectorSphere", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        private static readonly HashSet<MySlimBlock> slimBlocks = new HashSet<MySlimBlock>();
+        private static readonly HashSet<MySlimBlock> SlimBlocks = new HashSet<MySlimBlock>();
 
-        private static void Prefix(MyShipGrinder __instance)
+        private static bool Prefix(MyShipGrinder __instance)
         {
             if (!DePatchPlugin.Instance.Config.Enabled && !DePatchPlugin.Instance.Config.ShipToolsEnabled)
-                return;
+                return true;
 
             IEnumerable<ShipTool> enumerable = ShipTool.shipTools.Where((ShipTool t) => t.Subtype == __instance.DefinitionId.SubtypeId.String);
             if (enumerable.Count() == 0)
@@ -42,29 +42,30 @@ namespace DePatch
                     Type = ToolType.Grinder
                 });
             }
-            List<MyEntity> list = new List<MyEntity>();
-            BoundingSphere boundingSphere = (BoundingSphere)m_detectorSphere.GetValue(__instance);
-            BoundingSphereD boundingSphereD = new BoundingSphereD(Vector3D.Transform(boundingSphere.Center, __instance.CubeGrid.WorldMatrix), boundingSphere.Radius);
+            var list = new List<MyEntity>();
+            var boundingSphere = (BoundingSphere)m_detectorSphere.GetValue(__instance);
+            var boundingSphereD = new BoundingSphereD(Vector3D.Transform(boundingSphere.Center, __instance.CubeGrid.WorldMatrix), boundingSphere.Radius);
             MyGamePruningStructure.GetAllEntitiesInSphere(ref boundingSphereD, list);
+
             if (list.Contains(__instance.CubeGrid))
             {
                 list.Remove(__instance.CubeGrid);
             }
-            foreach (MyEntity myEntity in list)
+            foreach (var myEntity in list)
             {
-                MyCubeGrid myCubeGrid = myEntity as MyCubeGrid;
-                if (myCubeGrid != null && myEntity.Physics != null)
+                if (!(myEntity is MyCubeGrid myCubeGrid) || myEntity.Physics == null) continue;
+
+                var inventoryBase = __instance.GetInventoryBase();
+                var grinderAmount = MySession.Static.GrinderSpeedMultiplier * enumerable.First().Speed;
+                SlimBlocks.Clear();
+                myCubeGrid.GetBlocksInsideSphere(ref boundingSphereD, SlimBlocks, false);
+
+                foreach (var mySlimBlock in SlimBlocks)
                 {
-                    MyInventoryBase inventoryBase = __instance.GetInventoryBase();
-                    float grinderAmount = MySession.Static.GrinderSpeedMultiplier * enumerable.First().Speed;
-                    slimBlocks.Clear();
-                    myCubeGrid.GetBlocksInsideSphere(ref boundingSphereD, slimBlocks, false);
-                    foreach (MySlimBlock mySlimBlock in slimBlocks)
-                    {
-                        mySlimBlock.DecreaseMountLevel(grinderAmount, inventoryBase, false, 0L, false);
-                    }
+                    mySlimBlock.DecreaseMountLevel(grinderAmount, inventoryBase, false, 0L, false);
                 }
             }
+            return true;
         }
     }
 }

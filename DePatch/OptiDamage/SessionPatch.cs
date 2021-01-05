@@ -9,37 +9,38 @@ using Sandbox.Game.World;
 using Sandbox.ModAPI;
 using VRageMath;
 
-namespace DePatch
+namespace DePatch.OptiDamage
 {
     [HarmonyPatch(typeof(MySession), "UpdateComponents")]
     public class SessionPatch
     {
         public static Stopwatch Timer = new Stopwatch();
 
-        internal static void Prefix()
+        internal static bool Prefix()
         {
             if (!DePatchPlugin.Instance.Config.DamageThreading)
             {
-                return;
+                return true;
             }
-            ICollection<MyPlayer> onlinePlayers = MySession.Static.Players.GetOnlinePlayers();
+            var onlinePlayers = MySession.Static.Players.GetOnlinePlayers();
             if (DamageNetwork.DamageQueue.Count == 0 || onlinePlayers.Count == 0 || Timer.ElapsedMilliseconds < 500)
             {
-                return;
+                return true;
             }
-            foreach (KeyValuePair<MyCubeGrid, List<DamageContract>> element in from b in DamageNetwork.DamageQueue.ToList()
+            foreach (var element in from b in DamageNetwork.DamageQueue.ToList()
                                                                                where b.Key != null && b.Value.Count > 0
                                                                                select b)
             {
-                IEnumerable<MyPlayer> source = from b in onlinePlayers
+                var source = from b in onlinePlayers
                                                where b != null && b.Controller != null && b.Controller.ControlledEntity != null && b.Controller.ControlledEntity.Entity != null
                                                where Vector3D.DistanceSquared(b.Controller.ControlledEntity.Entity.PositionComp.GetPosition(), element.Key.PositionComp.GetPosition()) < Math.Pow(MySession.Static.Settings.SyncDistance, 2.0)
                                                select b;
-                byte[] contract = MyAPIGateway.Utilities.SerializeToBinary(new SyncGridDamageContract(element.Key.EntityId, element.Value.ToArray()));
+                var contract = MyAPIGateway.Utilities.SerializeToBinary(new SyncGridDamageContract(element.Key.EntityId, element.Value.ToArray()));
                 Task[] tasks = source.Select((MyPlayer b) => Task.Factory.StartNew(() => MyAPIGateway.Multiplayer.SendMessageTo(64467, contract, b.Id.SteamId))).ToArray();
                 Task.WaitAll(tasks);
             }
             Timer.Restart();
+            return true;
         }
     }
 }

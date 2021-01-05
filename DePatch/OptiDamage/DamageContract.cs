@@ -2,7 +2,7 @@
 using VRage.Game.ModAPI;
 using VRage.Utils;
 
-namespace DePatch
+namespace DePatch.OptiDamage
 {
     [ProtoContract]
     public struct DamageContract

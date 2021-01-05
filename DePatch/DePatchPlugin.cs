@@ -4,6 +4,10 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Controls;
+using DePatch.OptiDamage;
+using DePatch.PVEZONE;
+using DePatch.ShipTools;
+using DePatch.VoxelProtection;
 using HarmonyLib;
 using NLog;
 using Sandbox;
@@ -18,7 +22,7 @@ using VRage.Game;
 
 namespace DePatch
 {
-    public class DePatchPlugin : TorchPluginBase, IWpfPlugin, ITorchPlugin, IDisposable
+    public class DePatchPlugin : TorchPluginBase, IWpfPlugin
     {
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
@@ -26,19 +30,17 @@ namespace DePatch
 
         private TorchSessionManager _sessionManager;
 
-        public Persistent<DeConfig> ConfigPersistent;
+        private Persistent<DeConfig> _configPersistent;
 
         public UserControlDepatch Control;
 
-        public static bool GameIsReady = false;
+        public static bool GameIsReady;
 
         public static int StaticTick = 0;
 
-        public SpeedingMode Mode { get; set; }
+        public DeConfig Config => _configPersistent?.Data;
 
-        public DeConfig Config => ConfigPersistent?.Data;
-
-        public void Save() => ConfigPersistent.Save(null);
+        public void Save() => _configPersistent.Save();
 
         public override void Init(ITorchBase torch)
         {
@@ -91,36 +93,39 @@ namespace DePatch
                 SessionPatch.Timer.Start();
         }
 
-        private void Static_OnSavingCheckpoint(MyObjectBuilder_Checkpoint obj) => new Thread((ThreadStart)delegate
-                                                                                {
-                                                                                    lock (MyShipDrillParallelPatch.pendingDrillers)
-                                                                                    {
-                                                                                        Thread.Sleep(5000);
-                                                                                    }
-                                                                                }).Start();
+        private static void Static_OnSavingCheckpoint(MyObjectBuilder_Checkpoint obj)
+        {
+            new Thread((ThreadStart) delegate
+            {
+                lock (MyShipDrillParallelPatch.pendingDrillers)
+                {
+                    Thread.Sleep(5000);
+                }
+            }).Start();
+        }
 
         public void LoadConfig()
         {
-            if (ConfigPersistent?.Data != null)
-                ConfigPersistent = Persistent<DeConfig>.Load(Path.Combine(StoragePath, "DePatch.cfg"));
+            if (_configPersistent?.Data != null)
+                _configPersistent = Persistent<DeConfig>.Load(Path.Combine(StoragePath, "DePatch.cfg"));
         }
 
-        public void SetupConfig()
+        private void SetupConfig()
         {
             try
             {
-                ConfigPersistent = Persistent<DeConfig>.Load(Path.Combine(StoragePath, "DePatch.cfg"));
+                _configPersistent = Persistent<DeConfig>.Load(Path.Combine(StoragePath, "DePatch.cfg"));
             }
             catch (Exception ex)
             {
                 Log.Warn(ex);
             }
-            if (ConfigPersistent?.Data != null)
+            if (_configPersistent?.Data != null)
                 return;
 
             Log.Info("Create Default Config, because none was found!");
-            ConfigPersistent = new Persistent<DeConfig>(Path.Combine(StoragePath, "DePatch.cfg"), new DeConfig());
-            ConfigPersistent.Save(null);
+            _configPersistent = new Persistent<DeConfig>(Path.Combine(StoragePath, "DePatch.cfg"), new DeConfig());
+            _configPersistent.Save(null);
         }
 
         public UserControl GetControl()
@@ -136,8 +141,7 @@ namespace DePatch
             {
                 Torch.GameStateChanged -= Torch_GameStateChanged;
             }
-            if (_sessionManager != null)
-                _sessionManager = null;
+            _sessionManager = null;
         }
     }
 }

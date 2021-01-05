@@ -1,19 +1,16 @@
 ﻿using HarmonyLib;
 using Sandbox.Game.Entities;
 
-namespace DePatch
+namespace DePatch.VoxelProtection
 {
     [HarmonyPatch(typeof(MyCubeGrid), "PerformCutouts")]
     internal class VoxelDefenderV2
     {
-        private static bool Prefix(MyCubeGrid __instance)
+        private static bool Prefix()
         {
             if (!DePatchPlugin.Instance.Config.Enabled)
                 return true;
-            if (!DePatchPlugin.Instance.Config.ProtectVoxels)
-                return true;
-
-            return false;
+            return !DePatchPlugin.Instance.Config.ProtectVoxels;
         }
     }
 }

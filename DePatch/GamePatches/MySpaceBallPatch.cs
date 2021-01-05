@@ -6,7 +6,7 @@ using SpaceEngineers.Game.Entities.Blocks;
 using Torch.Managers.PatchManager;
 using VRage.Game;
 
-namespace DePatch
+namespace DePatch.GamePatches
 {
     [PatchShim]
     public static class MySpaceBallPatch
@@ -29,20 +29,22 @@ namespace DePatch
             ctx.GetPattern(UpdateMass).Prefixes.Add(UpdateMassPatch);
         }
 
-        private static void PatchMethod(MySpaceBall __instance)
+        private static bool PatchMethod(MySpaceBall __instance)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.RemoveMass)
-                return;
+                return true;
 
             ((MySpaceBallDefinition)__instance.BlockDefinition).MaxVirtualMass = 0f;
+            return true;
         }
 
-        private static void PatchMassMethod(MySpaceBall __instance)
+        private static bool PatchMassMethod(MySpaceBall __instance)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.RemoveMass)
-                return;
+                return true;
 
             __instance.VirtualMass = 0f;
+            return true;
         }
     }
 }

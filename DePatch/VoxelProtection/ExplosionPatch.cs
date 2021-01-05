@@ -1,22 +1,17 @@
-﻿using System.Reflection;
+﻿using HarmonyLib;
 using Sandbox.Game;
-using Torch.Managers.PatchManager;
 
-namespace DePatch
+namespace DePatch.VoxelProtection
 {
-    [PatchShim]
-    public static class VoxelExplosionPatch
+    [HarmonyPatch(typeof(MyExplosionInfo), "AffectVoxels", MethodType.Getter)]
+    internal class VoxelExplosionPatch
     {
-        public static void Patch(PatchContext ctx)
+        private static bool Prefix(MyExplosionInfo __instance, ref bool __result)
         {
-            MethodInfo p = typeof(MyExplosionInfo).GetMethod("get_AffectVoxels", BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-            MethodInfo q = typeof(VoxelExplosionPatch).GetMethod("PatchGetter");
-            ctx.GetPattern(p).Prefixes.Add(q);
-        }
+            if (!DePatchPlugin.Instance.Config.StopExplosion)
+                return true;
 
-        public static bool PatchGetter(MyExplosionInfo __instance, ref bool __result)
-        {
-            __result = (!DePatchPlugin.Instance.Config.StopExplosion && (__instance.ExplosionFlags & MyExplosionFlags.AFFECT_VOXELS) == MyExplosionFlags.AFFECT_VOXELS);
+            __result = (__instance.ExplosionFlags & MyExplosionFlags.AFFECT_VOXELS) == MyExplosionFlags.AFFECT_VOXELS;
             return false;
         }
     }

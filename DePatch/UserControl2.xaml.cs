@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using DePatch.ShipTools;
 
 namespace DePatch
 {
@@ -13,7 +14,7 @@ namespace DePatch
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            object selectedItem = DrillsGrid.SelectedItem;
+            var selectedItem = DrillsGrid.SelectedItem;
             if (selectedItem != null && selectedItem is DrillSettings)
             {
                 DrillSettings.drills.Remove((DrillSettings)selectedItem);

@@ -4,7 +4,7 @@ using NLog;
 using SpaceEngineers.Game.Entities.Blocks;
 using Torch.Managers.PatchManager;
 
-namespace DePatch
+namespace DePatch.GamePatches
 {
     [PatchShim]
     public static class MyTimerBlockPatch
@@ -26,11 +26,12 @@ namespace DePatch
             Log.Info("Patching Successful!");
         }
 
-        private static void PatchMethod(MyTimerBlock __instance)
+        private static bool PatchMethod(MyTimerBlock __instance)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || __instance.TriggerDelay >= DePatchPlugin.Instance.Config.TimerMinDelay)
-                return;
+                return true;
             __instance.TriggerDelay = DePatchPlugin.Instance.Config.TimerMinDelay;
+            return true;
         }
 
         private static bool TrigMethod(MyTimerBlock __instance)

@@ -6,7 +6,7 @@ using Sandbox.Game.Weapons;
 using Sandbox.Game.World;
 using VRageMath;
 
-namespace DePatch
+namespace DePatch.PVEZONE
 {
     [HarmonyPatch(typeof(MyDrillBase), "TryDrillBlocks")]
     internal class MyDrillDamageFix
@@ -24,12 +24,12 @@ namespace DePatch
 
             if (drillEntity.GetValue(__instance) is MyHandDrill handDrill)
             {
-                MyPlayer myPlayer = MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == handDrill.OwnerIdentityId);
+                var myPlayer = MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == handDrill.OwnerIdentityId);
 
                 if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                 {
-                    bool zone1 = false;
-                    bool zone2 = false;
+                    var zone1 = false;
+                    var zone2 = false;
 
                     if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
                         zone1 = true;
@@ -55,8 +55,8 @@ namespace DePatch
             {
                 if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                 {
-                    bool zone1 = false;
-                    bool zone2 = false;
+                    var zone1 = false;
+                    var zone2 = false;
                     if (drillEntity.GetValue(__instance) is MyShipDrill myShipDrill && PVE.EntitiesInZone.Contains(myShipDrill.CubeGrid.EntityId))
                         zone1 = true;
                     if (drillEntity.GetValue(__instance) is MyShipDrill myShipDrill2 && PVE.EntitiesInZone2.Contains(myShipDrill2.CubeGrid.EntityId))

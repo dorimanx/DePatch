@@ -1,523 +1,483 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Collections.ObjectModel;
 using System.Xml.Serialization;
+using DePatch.BlocksDisable;
+using DePatch.ShipTools;
 using Torch;
-using Torch.Collections;
-using Torch.Views;
 
 namespace DePatch
 {
-    public class DisplayTab : Torch.Views.DisplayAttribute
-    {
-        public string Tab = "";
-        public bool LiveUpdate = false;
-    }
-
     public class DeConfig : ViewModel
     {
-        private float _RaycastLimit = 15000f;
-        private float _TimerMinDelay = 3f;
-        private bool _DisableTrigNow;
-        private bool _DisableAssemblerCoop;
-        private bool _DisableAssemblerLoop;
-        private bool _DisableProductionOnShip;
-        private bool _DisableNanoBotsOnShip;
-        private bool _Enabled;
-        private bool _CheckForUpdates;
-        private bool _ShipToolsEnabled;
-        private bool _BeaconAlert;
-        private bool _RemoveMass;
-        private List<ulong> _Mods = new List<ulong>();
+        private float _raycastLimit = 15000f;
+        private float _timerMinDelay = 3f;
+        private bool _disableTrigNow;
+        private bool _disableAssemblerCoop;
+        private bool _disableAssemblerLoop;
+        private bool _disableProductionOnShip;
+        private bool _disableNanoBotsOnShip;
+        private bool _enabled;
+        private bool _checkForUpdates;
+        private bool _shipToolsEnabled;
+        private bool _beaconAlert;
+        private bool _removeMass;
+        private List<ulong> _mods = new List<ulong>();
         private List<string> _ShipTools = new List<string>();
-        private List<string> _BeaconSubTypes = new List<string>();
-        private string _RedAlertText = "ВНИМАНИЕ!: эта сетка будет удалена при автоматической очистке! \n Чтобы избежать этого, исправьте следующее: \nWARNING: This grid will be deleted on automated cleanup! To avoid this, fix the following:";
-        private string _WithOutBeaconText = "  * На данном гриде не установлен блок маяка. Что бы его не удалило, установите МАЯК!.\nGrid does not have a beacon.  Build one to avoid deletion.\n";
-        private string _WithDefaultNameText = "  * Переименуйте Грид в панели инфо \"Наименование\"! В нем не должно быть содеражние имени \"Grid\" \nName your grid in the Control Panel Info Tab. It cannot have \"Grid\" in the name.\n";
-        private bool _PveZoneEnabled;
-        private float _PveX;
-        private float _PveY;
-        private float _PveZ;
-        private float _PveZoneRadius = 500000f;
-        private string _PveMessageEntered = "Your grid [{0}] entered to [PVE Zone]! All Weapons on grid cannot fire!";
-        private string _PveMessageLeft = "Your grid [{0}] left from [PVE Zone]! All Weapons can fire now.";
+        private List<string> _beaconSubTypes = new List<string>();
+        private string _redAlertText = "ВНИМАНИЕ!: эта сетка будет удалена при автоматической очистке! \n Чтобы избежать этого, исправьте следующее: \nWARNING: This grid will be deleted on automated cleanup! To avoid this, fix the following:";
+        private string _withOutBeaconText = "  * На данном гриде не установлен блок маяка. Что бы его не удалило, установите МАЯК!.\nGrid does not have a beacon.  Build one to avoid deletion.\n";
+        private string _withDefaultNameText = "  * Переименуйте Грид в панели инфо \"Наименование\"! В нем не должно быть содеражние имени \"Grid\" \nName your grid in the Control Panel Info Tab. It cannot have \"Grid\" in the name.\n";
+        private bool _pveZoneEnabled;
+        private float _pveX;
+        private float _pveY;
+        private float _pveZ;
+        private float _pveZoneRadius = 500000f;
+        private string _pveMessageEntered = "Your grid [{0}] entered to [PVE Zone]! All Weapons on grid cannot fire!";
+        private string _pveMessageLeft = "Your grid [{0}] left from [PVE Zone]! All Weapons can fire now.";
 
-        private bool _PveZoneEnabled2;
-        private float _PveX2 = -427294.13f;
-        private float _PveY2 = 1687093.89f;
-        private float _PveZ2 = 2446336.21f;
-        private float _PveZoneRadius2 = 500000f;
-        private string _PveMessageEntered2 = "Your grid [{0}] entered to [PVE Zone 2]! All Weapons on grid cannot fire!";
-        private string _PveMessageLeft2 = "Your grid [{0}] left from [PVE Zone 2]! All Weapons can fire now.";
+        private bool _pveZoneEnabled2;
+        private float _pveX2 = -427294.13f;
+        private float _pveY2 = 1687093.89f;
+        private float _pveZ2 = 2446336.21f;
+        private float _pveZoneRadius2 = 500000f;
+        private string _pveMessageEntered2 = "Your grid [{0}] entered to [PVE Zone 2]! All Weapons on grid cannot fire!";
+        private string _pveMessageLeft2 = "Your grid [{0}] left from [PVE Zone 2]! All Weapons can fire now.";
 
-        private int _DrillUpdateRate = 90;
-        private DrillingMode _ParallelDrill;
-        private SpeedingMode _SpeedingModeSelector;
-        private bool _DrillDisableRightClick;
-        private bool _DrillStoneDumpRightClick;
-        private bool _DrillIgnoreSubtypes = true;
+        private int _drillUpdateRate = 90;
+        private DrillingMode _parallelDrill;
+        private SpeedingMode _speedingModeSelector;
+        private bool _drillDisableRightClick;
+        private bool _drillStoneDumpRightClick;
+        private bool _drillIgnoreSubtypes = true;
         private List<string> _DrillsSettings = new List<string>();
-        private bool _ProtectVoxels;
+        private bool _protectVoxels;
         private bool _stopExplosion = true;
-        private bool _ProtectGrid;
-        private float _MinProtectSpeed = 40f;
-        private float _StaticConvertSpeed = 70f;
-        private long _MaxProtectedSmallGridSize = 10000L;
-        private long _MaxProtectedLargeGridSize = 10000L;
-        private long _MaxGridSizeToConvert = 500L;
-        private float _DamgeToBlocksVoxel = 0.2f;
-        private float _DamgeToBlocksRamming = 0.5f;
-        private long _MaxBlocksDoDamage = 50L;
-        private bool _ConvertToStatic;
+        private bool _protectGrid;
+        private float _minProtectSpeed = 40f;
+        private float _staticConvertSpeed = 70f;
+        private long _maxProtectedSmallGridSize = 10000L;
+        private long _maxProtectedLargeGridSize = 10000L;
+        private long _maxGridSizeToConvert = 500L;
+        private float _damageToBlocksVoxel = 0.2f;
+        private float _damageToBlocksRamming = 0.5f;
+        private long _maxBlocksDoDamage = 50L;
+        private bool _convertToStatic;
         private bool _damageThreading;
-        private decimal _gridColisionAverage;
-        private bool _slowPBUpdateEnable;
-        private int _slowPBUpdate1 = 2;
-        private int _slowPBUpdate10 = 4;
-        private int _slowPBUpdate100 = 2;
-        private string _slowPBIgnored = "";
+        private decimal _gridCollisionAverage;
+        private bool _slowPbUpdateEnable;
+        private int _slowPbUpdate1 = 2;
+        private int _slowPbUpdate10 = 4;
+        private int _slowPbUpdate100 = 2;
+        private string _slowPbIgnored = "";
         private bool _enableBlockDisabler;
-        private bool _AllowFactions;
-        private MtObservableList<string> _targetedBlocks = new MtObservableList<string>();
-        private MtObservableList<string> _exemptedFactions = new MtObservableList<string>();
-        private bool _EnableGridMaxSpeedPurge;
-        private float _LargeGridMaxSpeedPurge = 500f;
-        private float _SmallGridMaxSpeedPurge = 500f;
-        private bool _CargoCleanup;
+        private bool _allowFactions;
+        private ObservableCollection<string> _targetedBlocks = new ObservableCollection<string>();
+        private ObservableCollection<string> _exemptedFactions = new ObservableCollection<string>();
+        private bool _enableGridMaxSpeedPurge;
+        private float _largeGridMaxSpeedPurge = 500f;
+        private float _smallGridMaxSpeedPurge = 500f;
+        private bool _cargoCleanup;
 
         public bool DamageThreading
         {
             get => _damageThreading;
-            set => SetValue(ref _damageThreading, value, "DamageThreading");
+            set => SetValue(ref _damageThreading, value);
         }
 
         public bool CargoCleanup
         {
-            get => _CargoCleanup;
-            set => SetValue(ref _CargoCleanup, value, "CargoCleanup");
+            get => _cargoCleanup;
+            set => SetValue(ref _cargoCleanup, value);
         }
 
         public long MaxProtectedLargeGridSize
         {
-            get => _MaxProtectedLargeGridSize;
-            set => SetValue(ref _MaxProtectedLargeGridSize, value, "MaxProtectedLargeGridSize");
+            get => _maxProtectedLargeGridSize;
+            set => SetValue(ref _maxProtectedLargeGridSize, value);
         }
 
         public long MaxProtectedSmallGridSize
         {
-            get => _MaxProtectedSmallGridSize;
-            set => SetValue(ref _MaxProtectedSmallGridSize, value, "MaxProtectedSmallGridSize");
+            get => _maxProtectedSmallGridSize;
+            set => SetValue(ref _maxProtectedSmallGridSize, value);
         }
 
         public float MinProtectSpeed
         {
-            get => _MinProtectSpeed;
-            set => SetValue(ref _MinProtectSpeed, value, "MinProtectSpeed");
+            get => _minProtectSpeed;
+            set => SetValue(ref _minProtectSpeed, value);
         }
 
         public bool ProtectGrid
         {
-            get => _ProtectGrid;
-            set => SetValue(ref _ProtectGrid, value, "ProtectGrid");
+            get => _protectGrid;
+            set => SetValue(ref _protectGrid, value);
         }
 
         public bool ProtectVoxels
         {
-            get => _ProtectVoxels;
-            set => SetValue(ref _ProtectVoxels, value, "ProtectVoxels");
+            get => _protectVoxels;
+            set => SetValue(ref _protectVoxels, value);
         }
 
         public bool StopExplosion
         {
             get => _stopExplosion;
-            set => SetValue(ref _stopExplosion, value, "StopExplosion");
+            set => SetValue(ref _stopExplosion, value);
         }
 
-        public float DamgeToBlocksVoxel
+        public float DamageToBlocksVoxel
         {
-            get => _DamgeToBlocksVoxel;
-            set => SetValue(ref _DamgeToBlocksVoxel, value, "DamgeToBlocksVoxel");
+            get => _damageToBlocksVoxel;
+            set => SetValue(ref _damageToBlocksVoxel, value);
         }
 
-        public float DamgeToBlocksRamming
+        public float DamageToBlocksRamming
         {
-            get => _DamgeToBlocksRamming;
-            set => SetValue(ref _DamgeToBlocksRamming, value, "DamgeToBlocksRamming");
+            get => _damageToBlocksRamming;
+            set => SetValue(ref _damageToBlocksRamming, value);
         }
 
         public long MaxBlocksDoDamage
         {
-            get => _MaxBlocksDoDamage;
-            set => SetValue(ref _MaxBlocksDoDamage, value, "MaxBlocksDoDamage");
+            get => _maxBlocksDoDamage;
+            set => SetValue(ref _maxBlocksDoDamage, value);
         }
 
         public bool ConvertToStatic
         {
-            get => _ConvertToStatic;
-            set => SetValue(ref _ConvertToStatic, value, "ConvertToStatic");
+            get => _convertToStatic;
+            set => SetValue(ref _convertToStatic, value);
         }
 
         public long MaxGridSizeToConvert
         {
-            get => _MaxGridSizeToConvert;
-            set => SetValue(ref _MaxGridSizeToConvert, value, "MaxGridSizeToConvert");
+            get => _maxGridSizeToConvert;
+            set => SetValue(ref _maxGridSizeToConvert, value);
         }
 
         public float StaticConvertSpeed
         {
-            get => _StaticConvertSpeed;
-            set => SetValue(ref _StaticConvertSpeed, value, "StaticConvertSpeed");
+            get => _staticConvertSpeed;
+            set => SetValue(ref _staticConvertSpeed, value);
         }
 
         public bool DisableAssemblerCoop
         {
-            get => _DisableAssemblerCoop;
-            set => SetValue(ref _DisableAssemblerCoop, value, "DisableAssemblerCoop");
+            get => _disableAssemblerCoop;
+            set => SetValue(ref _disableAssemblerCoop, value);
         }
 
         public bool DisableAssemblerLoop
         {
-            get => _DisableAssemblerLoop;
-            set => SetValue(ref _DisableAssemblerLoop, value, "DisableAssemblerLoop");
+            get => _disableAssemblerLoop;
+            set => SetValue(ref _disableAssemblerLoop, value);
         }
 
         public bool DisableProductionOnShip
         {
-            get => _DisableProductionOnShip;
-            set => SetValue(ref _DisableProductionOnShip, value, "DisableProductionOnShip");
+            get => _disableProductionOnShip;
+            set => SetValue(ref _disableProductionOnShip, value);
         }
 
         public bool DisableNanoBotsOnShip
         {
-            get => _DisableNanoBotsOnShip;
-            set => SetValue(ref _DisableNanoBotsOnShip, value, "DisableNanoBotsOnShip");
+            get => _disableNanoBotsOnShip;
+            set => SetValue(ref _disableNanoBotsOnShip, value);
         }
 
         public List<string> DrillsSettings
         {
             get => _DrillsSettings;
-            set => SetValue(ref _DrillsSettings, value, "DrillsSettings");
+            set => SetValue(ref _DrillsSettings, value);
         }
 
         public bool DrillIgnoreSubtypes
         {
-            get => !_DrillIgnoreSubtypes;
-            set => SetValue(ref _DrillIgnoreSubtypes, !value, "DrillIgnoreSubtypes");
+            get => !_drillIgnoreSubtypes;
+            set => SetValue(ref _drillIgnoreSubtypes, !value);
         }
 
         public bool DrillStoneDumpRightClick
         {
-            get => _DrillStoneDumpRightClick;
-            set => SetValue(ref _DrillStoneDumpRightClick, value, "DrillStoneDumpRightClick");
+            get => _drillStoneDumpRightClick;
+            set => SetValue(ref _drillStoneDumpRightClick, value);
         }
 
         public bool DrillDisableRightClick
         {
-            get => _DrillDisableRightClick;
-            set => SetValue(ref _DrillDisableRightClick, value, "DrillDisableRightClick");
+            get => _drillDisableRightClick;
+            set => SetValue(ref _drillDisableRightClick, value);
         }
 
         public DrillingMode ParallelDrill
         {
-            get => _ParallelDrill;
-            set => SetValue(ref _ParallelDrill, value, "ParallelDrill");
+            get => _parallelDrill;
+            set => SetValue(ref _parallelDrill, value);
         }
 
         public int DrillUpdateRate
         {
-            get => _DrillUpdateRate;
-            set => SetValue(ref _DrillUpdateRate, value, "DrillUpdateRate");
+            get => _drillUpdateRate;
+            set => SetValue(ref _drillUpdateRate, value);
         }
 
         public string PveMessageEntered
         {
-            get => _PveMessageEntered;
-            set => SetValue(ref _PveMessageEntered, value, "PveMessageEntered");
+            get => _pveMessageEntered;
+            set => SetValue(ref _pveMessageEntered, value);
         }
 
         public string PveMessageLeft
         {
-            get => _PveMessageLeft;
-            set => SetValue(ref _PveMessageLeft, value, "PveMessageLeft");
+            get => _pveMessageLeft;
+            set => SetValue(ref _pveMessageLeft, value);
         }
 
         public bool PveZoneEnabled
         {
-            get => _PveZoneEnabled;
-            set => SetValue(ref _PveZoneEnabled, value, "PveZoneEnabled");
+            get => _pveZoneEnabled;
+            set => SetValue(ref _pveZoneEnabled, value);
         }
 
         public float PveX
         {
-            get => _PveX;
-            set => SetValue(ref _PveX, value, "PveX");
+            get => _pveX;
+            set => SetValue(ref _pveX, value);
         }
 
         public float PveY
         {
-            get => _PveY;
-            set => SetValue(ref _PveY, value, "PveY");
+            get => _pveY;
+            set => SetValue(ref _pveY, value);
         }
 
         public float PveZ
         {
-            get => _PveZ;
-            set => SetValue(ref _PveZ, value, "PveZ");
+            get => _pveZ;
+            set => SetValue(ref _pveZ, value);
         }
 
         public float PveZoneRadius
         {
-            get => _PveZoneRadius;
-            set => SetValue(ref _PveZoneRadius, value, "PveZoneRadius");
+            get => _pveZoneRadius;
+            set => SetValue(ref _pveZoneRadius, value);
         }
 
         public float RaycastLimit
         {
-            get => _RaycastLimit;
-            set => SetValue(ref _RaycastLimit, value, "RaycastLimit");
+            get => _raycastLimit;
+            set => SetValue(ref _raycastLimit, value);
         }
 
         public float TimerMinDelay
         {
-            get => _TimerMinDelay;
-            set => SetValue(ref _TimerMinDelay, value, "TimerMinDelay");
+            get => _timerMinDelay;
+            set => SetValue(ref _timerMinDelay, value);
         }
 
         public bool DisableTrigNow
         {
-            get => _DisableTrigNow;
-            set => SetValue(ref _DisableTrigNow, value, "DisableTrigNow");
+            get => _disableTrigNow;
+            set => SetValue(ref _disableTrigNow, value);
         }
 
         public bool Enabled
         {
-            get => _Enabled;
-            set => SetValue(ref _Enabled, value, "Enabled");
+            get => _enabled;
+            set => SetValue(ref _enabled, value);
         }
 
         public bool BeaconAlert
         {
-            get => _BeaconAlert;
-            set => SetValue(ref _BeaconAlert, value, "BeaconAlert");
+            get => _beaconAlert;
+            set => SetValue(ref _beaconAlert, value);
         }
 
         public bool RemoveMass
         {
-            get => _RemoveMass;
-            set => SetValue(ref _RemoveMass, value, "RemoveMass");
+            get => _removeMass;
+            set => SetValue(ref _removeMass, value);
         }
 
         public List<ulong> Mods
         {
-            get => _Mods;
-            set => SetValue(ref _Mods, value, "Mods");
+            get => _mods;
+            set => SetValue(ref _mods, value);
         }
 
         public List<string> BeaconSubTypes
         {
-            get => _BeaconSubTypes;
-            set => SetValue(ref _BeaconSubTypes, value, "BeaconSubTypes");
+            get => _beaconSubTypes;
+            set => SetValue(ref _beaconSubTypes, value);
         }
 
         public string RedAlertText
         {
-            get => _RedAlertText;
-            set => SetValue(ref _RedAlertText, value, "RedAlertText");
+            get => _redAlertText;
+            set => SetValue(ref _redAlertText, value);
         }
 
         public string WithOutBeaconText
         {
-            get => _WithOutBeaconText;
-            set => SetValue(ref _WithOutBeaconText, value, "WithOutBeaconText");
+            get => _withOutBeaconText;
+            set => SetValue(ref _withOutBeaconText, value);
         }
 
         public string WithDefaultNameText
         {
-            get => _WithDefaultNameText;
-            set => SetValue(ref _WithDefaultNameText, value, "WithDefaultNameText");
+            get => _withDefaultNameText;
+            set => SetValue(ref _withDefaultNameText, value);
         }
 
         public bool ShipToolsEnabled
         {
-            get => _ShipToolsEnabled;
-            set => SetValue(ref _ShipToolsEnabled, value, "ShipToolsEnabled");
+            get => _shipToolsEnabled;
+            set => SetValue(ref _shipToolsEnabled, value);
         }
 
         public List<string> ShipTools
         {
             get => _ShipTools;
-            set => SetValue(ref _ShipTools, value, "ShipTools");
+            set => SetValue(ref _ShipTools, value);
         }
 
         public bool CheckForUpdates
         {
-            get => _CheckForUpdates;
-            set => SetValue(ref _CheckForUpdates, value, "CheckForUpdates");
+            get => _checkForUpdates;
+            set => SetValue(ref _checkForUpdates, value);
         }
 
         [XmlIgnore]
-        public decimal GridColisionAverage
+        public decimal GridCollisionAverage
         {
-            get => _gridColisionAverage;
-            set => SetValue(x => _gridColisionAverage = x, value, "GridColisionAverage");
+            get => _gridCollisionAverage;
+            set => SetValue(ref _gridCollisionAverage, value);
         }
 
-        public bool SlowPBEnabled
+        public bool SlowPbEnabled
         {
-            get => _slowPBUpdateEnable;
-            set => SetValue(ref _slowPBUpdateEnable, value, "SlowPBEnabled");
+            get => _slowPbUpdateEnable;
+            set => SetValue(ref _slowPbUpdateEnable, value);
         }
 
-        public int SlowPBUpdate1
+        public int SlowPbUpdate1
         {
-            get => _slowPBUpdate1;
-            set => SetValue(ref _slowPBUpdate1, Math.Max(1, value), "SlowPBUpdate1");
+            get => _slowPbUpdate1;
+            set => SetValue(ref _slowPbUpdate1, Math.Max(1, value));
         }
 
-        public int SlowPBUpdate10
+        public int SlowPbUpdate10
         {
-            get => _slowPBUpdate10;
-            set => SetValue(ref _slowPBUpdate10, Math.Max(1, value), "SlowPBUpdate10");
+            get => _slowPbUpdate10;
+            set => SetValue(ref _slowPbUpdate10, Math.Max(1, value));
         }
 
-        public int SlowPBUpdate100
+        public int SlowPbUpdate100
         {
-            get => _slowPBUpdate100;
-            set => SetValue(ref _slowPBUpdate100, Math.Max(1, value), "SlowPBUpdate100");
+            get => _slowPbUpdate100;
+            set => SetValue(ref _slowPbUpdate100, Math.Max(1, value));
         }
 
-        public string SlowPBIgnored
+        public string SlowPbIgnored
         {
-            get => _slowPBIgnored;
-            set => SetValue(ref _slowPBIgnored, value, "SlowPBIgnored");
+            get => _slowPbIgnored;
+            set => SetValue(ref _slowPbIgnored, value);
         }
 
         public string PveMessageEntered2
         {
-            get => _PveMessageEntered2;
-            set => SetValue(ref _PveMessageEntered2, value, "PveMessageEntered2");
+            get => _pveMessageEntered2;
+            set => SetValue(ref _pveMessageEntered2, value);
         }
 
         public string PveMessageLeft2
         {
-            get => _PveMessageLeft2;
-            set => SetValue(ref _PveMessageLeft2, value, "PveMessageLeft2");
+            get => _pveMessageLeft2;
+            set => SetValue(ref _pveMessageLeft2, value);
         }
 
         public bool PveZoneEnabled2
         {
-            get => _PveZoneEnabled2;
-            set => SetValue(ref _PveZoneEnabled2, value, "PveZoneEnabled2");
+            get => _pveZoneEnabled2;
+            set => SetValue(ref _pveZoneEnabled2, value);
         }
 
         public float PveX2
         {
-            get => _PveX2;
-            set => SetValue(ref _PveX2, value, "PveX2");
+            get => _pveX2;
+            set => SetValue(ref _pveX2, value);
         }
 
         public float PveY2
         {
-            get => _PveY2;
-            set => SetValue(ref _PveY2, value, "PveY2");
+            get => _pveY2;
+            set => SetValue(ref _pveY2, value);
         }
 
         public float PveZ2
         {
-            get => _PveZ2;
-            set => SetValue(ref _PveZ2, value, "PveZ2");
+            get => _pveZ2;
+            set => SetValue(ref _pveZ2, value);
         }
 
         public float PveZoneRadius2
         {
-            get => _PveZoneRadius2;
-            set => SetValue(ref _PveZoneRadius2, value, "PveZoneRadius2");
+            get => _pveZoneRadius2;
+            set => SetValue(ref _pveZoneRadius2, value);
         }
 
         public bool EnableBlockDisabler
         {
             get => _enableBlockDisabler;
-            set => SetValue(ref _enableBlockDisabler, value, "EnableBlockDisabler");
+            set => SetValue(ref _enableBlockDisabler, value);
         }
 
         public bool AllowFactions
         {
-            get => _AllowFactions;
-            set => SetValue(ref _AllowFactions, value, "AllowFactions");
-        }
-
-        [XmlIgnore]
-        public MtObservableList<string> TargetedBlocks
-        {
-            get => _targetedBlocks;
-            set => SetValue(ref _targetedBlocks, value, "TargetedBlocks");
+            get => _allowFactions;
+            set => SetValue(ref _allowFactions, value);
         }
 
         [XmlArray("TargetedBlocks")]
         [XmlArrayItem("TargetedBlocks", ElementName = "Block Types/Subtypes")]
-        public string[] TargetedBlocksSerial
+        public ObservableCollection<string> TargetedBlocks
         {
-            get => TargetedBlocks.ToArray();
-            set
-            {
-                TargetedBlocks.Clear();
-                if (value != null)
-                {
-                    foreach (string i in value)
-                    {
-                        TargetedBlocks.Add(i);
-                    }
-                }
-            }
-        }
-
-        [XmlIgnore]
-        public MtObservableList<string> ExemptedFactions
-        {
-            get => _exemptedFactions;
-            set => SetValue(ref _exemptedFactions, value, "ExemptedFactions");
+            get => _targetedBlocks;
+            set => SetValue(ref _targetedBlocks, value);
         }
 
         [XmlArray("ExemptedFactions")]
         [XmlArrayItem("ExemptedFactions", ElementName = "Faction Tags")]
-        public string[] ExemptedFactionsSerial
+        public ObservableCollection<string> ExemptedFactions
         {
-            get => ExemptedFactions.ToArray();
-            set
-            {
-                ExemptedFactions.Clear();
-                if (value != null)
-                {
-                    foreach (string i in value)
-                    {
-                        ExemptedFactions.Add(i);
-                    }
-                }
-            }
+            get => _exemptedFactions;
+            set => SetValue(ref _exemptedFactions, value);
         }
 
         public bool EnableGridMaxSpeedPurge
         {
-            get => _EnableGridMaxSpeedPurge;
-            set => SetValue(ref _EnableGridMaxSpeedPurge, value, "EnableGridMaxSpeedPurge");
+            get => _enableGridMaxSpeedPurge;
+            set => SetValue(ref _enableGridMaxSpeedPurge, value);
         }
 
         public float LargeGridMaxSpeedPurge
         {
-            get => _LargeGridMaxSpeedPurge;
-            set => SetValue(ref _LargeGridMaxSpeedPurge, value, "LargeGridMaxSpeedPurge");
+            get => _largeGridMaxSpeedPurge;
+            set => SetValue(ref _largeGridMaxSpeedPurge, value);
         }
 
         public float SmallGridMaxSpeedPurge
         {
-            get => _SmallGridMaxSpeedPurge;
-            set => SetValue(ref _SmallGridMaxSpeedPurge, value, "SmallGridMaxSpeedPurge");
+            get => _smallGridMaxSpeedPurge;
+            set => SetValue(ref _smallGridMaxSpeedPurge, value);
         }
 
         public SpeedingMode SpeedingModeSelector
         {
-            get => _SpeedingModeSelector;
-            set => SetValue(ref _SpeedingModeSelector, value, "SpeedingModeSelector");
+            get => _speedingModeSelector;
+            set => SetValue(ref _speedingModeSelector, value);
         }
     }
 }

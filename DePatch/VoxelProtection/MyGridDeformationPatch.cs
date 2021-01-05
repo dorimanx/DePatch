@@ -1,28 +1,25 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Sandbox.Common.ObjectBuilders;
+using Sandbox.Engine.Multiplayer;
+using Sandbox.Game.Entities;
+using Sandbox.Game.Entities.Blocks;
+using Sandbox.Game.Entities.Cube;
+using Sandbox.Game.GameSystems;
+using Sandbox.Game.Weapons;
+using Sandbox.ModAPI;
 using VRage.Game;
 using VRage.Game.ModAPI;
-using VRage.Game.Components;
-using VRage.ModAPI;
-using VRage.Game.Entity;
-using VRage.ObjectBuilders;
-using Sandbox.ModAPI;
-using Sandbox.Game.Entities;
-using Sandbox.Game.GameSystems;
-using Sandbox.Engine.Multiplayer;
-using Sandbox.Game.Entities.Blocks;
-using Sandbox.Common.ObjectBuilders;
-using System.Collections.Generic;
-using VRageMath;
-using System.Linq;
 using VRage.Groups;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
-using Sandbox.Game.Entities.Cube;
+using VRage.ModAPI;
 using VRage.Network;
-using VRage;
-using Sandbox.Game.Weapons;
+using VRage.ObjectBuilders;
+using VRageMath;
 
-namespace DePatch
+namespace DePatch.VoxelProtection
 {
     public class MyGridDeformationPatch
     {
@@ -42,12 +39,12 @@ namespace DePatch
 
         public static ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> FindGridGroup(string gridname)
         {
-            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = new ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group>();
+            var groups = new ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group>();
             Parallel.ForEach(MyCubeGridGroups.Static.Physical.Groups, group =>
             {
-                foreach (MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Node groupNodes in group.Nodes)
+                foreach (var groupNodes in group.Nodes)
                 {
-                    MyCubeGrid grid = groupNodes.NodeData;
+                    var grid = groupNodes.NodeData;
 
                     if (grid.Physics == null)
                         continue;
@@ -68,18 +65,18 @@ namespace DePatch
             {
                 if (damage.Type == MyDamageType.Deformation || damage.Type == MyDamageType.Fall)
                 {
-                    MyEntities.TryGetEntityById(damage.AttackerId, out MyEntity AttackerEntity, allowClosed: true);
+                    MyEntities.TryGetEntityById(damage.AttackerId, out var AttackerEntity, allowClosed: true);
 
-                    IMySlimBlock GridBlock = target as IMySlimBlock;
-                    MyPhysicsComponentBase GridPhysics = GridBlock?.CubeGrid.Physics;
-                    IMyCubeGrid GridCube = GridBlock?.CubeGrid;
-                    MyCubeGrid Grid = (MyCubeGrid)GridCube;
+                    var GridBlock = target as IMySlimBlock;
+                    var GridPhysics = GridBlock?.CubeGrid.Physics;
+                    var GridCube = GridBlock?.CubeGrid;
+                    var Grid = (MyCubeGrid)GridCube;
 
                     if (GridBlock != null && GridPhysics != null &&
                         (GridCube.GridSizeEnum == MyCubeSize.Large && Grid.BlocksCount < DePatchPlugin.Instance.Config.MaxProtectedLargeGridSize ||
                          GridCube.GridSizeEnum == MyCubeSize.Small && Grid.BlocksCount < DePatchPlugin.Instance.Config.MaxProtectedSmallGridSize))
                     {
-                        float speed = DePatchPlugin.Instance.Config.MinProtectSpeed;
+                        var speed = DePatchPlugin.Instance.Config.MinProtectSpeed;
                         var LinearVelocity = GridPhysics.LinearVelocity;
                         var AngularVelocity = GridPhysics.AngularVelocity;
 
@@ -109,24 +106,24 @@ namespace DePatch
 
                                 if (damage.Amount != 0f)
                                 {
-                                    if (damage.Amount >= DePatchPlugin.Instance.Config.DamgeToBlocksVoxel)
-                                        damage.Amount = DePatchPlugin.Instance.Config.DamgeToBlocksVoxel;
+                                    if (damage.Amount >= DePatchPlugin.Instance.Config.DamageToBlocksVoxel)
+                                        damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksVoxel;
                                 }
 
-                                _ = MyGravityProviderSystem.CalculateNaturalGravityInPoint(Grid.PositionComp.GetPosition(), out float ingravitynow);
+                                _ = MyGravityProviderSystem.CalculateNaturalGravityInPoint(Grid.PositionComp.GetPosition(), out var ingravitynow);
                                 if (ingravitynow <= 20 && ingravitynow >= 0.2)
                                 {
                                     if (DePatchPlugin.Instance.Config.ConvertToStatic &&
                                             Grid.BlocksCount > DePatchPlugin.Instance.Config.MaxGridSizeToConvert &&
                                             (LinearVelocity.Length() >= DePatchPlugin.Instance.Config.StaticConvertSpeed || AngularVelocity.Length() >= DePatchPlugin.Instance.Config.StaticConvertSpeed))
                                     {
-                                        BoundingBoxD worldAABB = Grid.PositionComp.WorldAABB;
-                                        MyPlanet closestPlanet = MyGamePruningStructure.GetClosestPlanet(ref worldAABB);
-                                        double elevation = double.PositiveInfinity;
+                                        var worldAABB = Grid.PositionComp.WorldAABB;
+                                        var closestPlanet = MyGamePruningStructure.GetClosestPlanet(ref worldAABB);
+                                        var elevation = double.PositiveInfinity;
                                         if (closestPlanet != null)
                                         {
-                                            Vector3D centerOfMassWorld = GridPhysics.CenterOfMassWorld;
-                                            Vector3D closestSurfacePointGlobal = closestPlanet.GetClosestSurfacePointGlobal(ref centerOfMassWorld);
+                                            var centerOfMassWorld = GridPhysics.CenterOfMassWorld;
+                                            var closestSurfacePointGlobal = closestPlanet.GetClosestSurfacePointGlobal(ref centerOfMassWorld);
                                             elevation = Vector3D.Distance(closestSurfacePointGlobal, centerOfMassWorld);
                                         }
                                         else
@@ -178,7 +175,7 @@ namespace DePatch
                                             }
 
                                             /* This part of code belong to Foogs great plugin dev! */
-                                            List<MyCubeGrid> grids = MyCubeGridGroups.Static.GetGroups(GridLinkTypeEnum.Logical).GetGroupNodes(Grid);
+                                            var grids = MyCubeGridGroups.Static.GetGroups(GridLinkTypeEnum.Logical).GetGroupNodes(Grid);
                                             grids.SortNoAlloc((x, y) => x.BlocksCount.CompareTo(y.BlocksCount));
                                             grids.Reverse();
                                             grids.SortNoAlloc((x, y) => x.GridSizeEnum.CompareTo(y.GridSizeEnum));
@@ -186,24 +183,24 @@ namespace DePatch
                                             MyMultiplayer.RaiseEvent(grids.First(), (MyCubeGrid x) => new Action(x.ConvertToStatic), default(EndpointId));
 
                                             /* This part of code belong to LordTylus great plugin dev! FixShip after converting to static */
-                                            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> gridWithSubGrids = FindGridGroup(Grid.DisplayName);
-                                            List<MyObjectBuilder_EntityBase> objectBuilderList = new List<MyObjectBuilder_EntityBase>();
-                                            List<MyCubeGrid> gridsList = new List<MyCubeGrid>();
+                                            var gridWithSubGrids = FindGridGroup(Grid.DisplayName);
+                                            var objectBuilderList = new List<MyObjectBuilder_EntityBase>();
+                                            var gridsList = new List<MyCubeGrid>();
 
                                             foreach (var item in gridWithSubGrids)
                                             {
-                                                foreach (MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Node groupNodes in item.Nodes)
+                                                foreach (var groupNodes in item.Nodes)
                                                 {
-                                                    MyCubeGrid grid = groupNodes.NodeData;
+                                                    var grid = groupNodes.NodeData;
                                                     gridsList.Add(grid);
 
-                                                    MyObjectBuilder_EntityBase ob = grid.GetObjectBuilder(true);
+                                                    var ob = grid.GetObjectBuilder(true);
 
                                                     if (!objectBuilderList.Contains(ob))
                                                     {
                                                         if (ob is MyObjectBuilder_CubeGrid gridBuilder)
                                                         {
-                                                            foreach (MyObjectBuilder_CubeBlock cubeBlock in gridBuilder.CubeBlocks)
+                                                            foreach (var cubeBlock in gridBuilder.CubeBlocks)
                                                             {
                                                                 if (cubeBlock is MyObjectBuilder_OxygenTank o2Tank)
                                                                     o2Tank.AutoRefill = false;
@@ -214,7 +211,7 @@ namespace DePatch
                                                 }
                                             }
 
-                                            foreach (MyCubeGrid grid in gridsList)
+                                            foreach (var grid in gridsList)
                                             {
                                                 IMyEntity entity = grid;
                                                 if (entity == null || entity.MarkedForClose || entity.Closed)
@@ -223,31 +220,31 @@ namespace DePatch
                                                 entity.Close();
                                             }
 
-                                            var DisableThisForNow = false;
-                                            if (DisableThisForNow)
+                                            var DisableThisForNow = true;
+                                            if (!DisableThisForNow)
                                             {
                                                 /* This insane code belong to Dorimanx */
-                                                Vector3D PastePositionUpDown = (Vector3D.Up + Vector3D.Up + Vector3D.Up) * 30;
-                                                Vector3D PastePositioBackForward = (Vector3D.Backward + Vector3D.Backward + Vector3D.Backward) * 30;
-                                                Vector3D PastePositioRightLeft = (Vector3D.Right + Vector3D.Right + Vector3D.Right) * 30;
+                                                var PastePositionUpDown = (Vector3D.Up + Vector3D.Up + Vector3D.Up) * 30;
+                                                var PastePositioBackForward = (Vector3D.Backward + Vector3D.Backward + Vector3D.Backward) * 30;
+                                                var PastePositioRightLeft = (Vector3D.Right + Vector3D.Right + Vector3D.Right) * 30;
                                                 var MinElevation = 35;
 
-                                                for (int i = 0; i < objectBuilderList.Count; i++)
+                                                for (var i = 0; i < objectBuilderList.Count; i++)
                                                 {
-                                                    MyObjectBuilder_EntityBase ob = objectBuilderList[i];
+                                                    var ob = objectBuilderList[i];
 
                                                     if (ob.PositionAndOrientation.HasValue)
                                                     {
-                                                        Vector3D OriginalPosition = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
-                                                        MyPositionAndOrientation PasteTo = ob.PositionAndOrientation.GetValueOrDefault();
+                                                        var OriginalPosition = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
+                                                        var PasteTo = ob.PositionAndOrientation.GetValueOrDefault();
 
                                                         if (elevation < MinElevation)
                                                         {
                                                             PasteTo.Position = OriginalPosition - PastePositionUpDown;
                                                             ob.PositionAndOrientation = PasteTo;
-                                                            Vector3D NewPosition = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
+                                                            var NewPosition = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
 
-                                                            Vector3D closestSurfacePointGlobal = closestPlanet.GetClosestSurfacePointGlobal(ref NewPosition);
+                                                            var closestSurfacePointGlobal = closestPlanet.GetClosestSurfacePointGlobal(ref NewPosition);
                                                             double? elevation2 = Vector3D.Distance(closestSurfacePointGlobal, NewPosition);
 
                                                             if (elevation2 < MinElevation)
@@ -257,9 +254,9 @@ namespace DePatch
 
                                                                 PasteTo.Position = OriginalPosition + PastePositionUpDown;
                                                                 ob.PositionAndOrientation = PasteTo;
-                                                                Vector3D NewPosition2 = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
+                                                                var NewPosition2 = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
 
-                                                                Vector3D closestSurfacePointGlobal2 = closestPlanet.GetClosestSurfacePointGlobal(ref NewPosition2);
+                                                                var closestSurfacePointGlobal2 = closestPlanet.GetClosestSurfacePointGlobal(ref NewPosition2);
                                                                 double? elevation3 = Vector3D.Distance(closestSurfacePointGlobal2, NewPosition2);
 
                                                                 if (elevation3 < MinElevation)
@@ -269,9 +266,9 @@ namespace DePatch
 
                                                                     PasteTo.Position = OriginalPosition - PastePositioBackForward;
                                                                     ob.PositionAndOrientation = PasteTo;
-                                                                    Vector3D NewPosition3 = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
+                                                                    var NewPosition3 = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
 
-                                                                    Vector3D closestSurfacePointGlobal3 = closestPlanet.GetClosestSurfacePointGlobal(ref NewPosition3);
+                                                                    var closestSurfacePointGlobal3 = closestPlanet.GetClosestSurfacePointGlobal(ref NewPosition3);
                                                                     double? elevation4 = Vector3D.Distance(closestSurfacePointGlobal3, NewPosition3);
 
                                                                     if (elevation4 < MinElevation)
@@ -281,9 +278,9 @@ namespace DePatch
 
                                                                         PasteTo.Position = OriginalPosition + PastePositioBackForward;
                                                                         ob.PositionAndOrientation = PasteTo;
-                                                                        Vector3D NewPosition4 = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
+                                                                        var NewPosition4 = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
 
-                                                                        Vector3D closestSurfacePointGlobal4 = closestPlanet.GetClosestSurfacePointGlobal(ref NewPosition4);
+                                                                        var closestSurfacePointGlobal4 = closestPlanet.GetClosestSurfacePointGlobal(ref NewPosition4);
                                                                         double? elevation5 = Vector3D.Distance(closestSurfacePointGlobal4, NewPosition4);
 
                                                                         if (elevation5 < MinElevation)
@@ -293,9 +290,9 @@ namespace DePatch
 
                                                                             PasteTo.Position = OriginalPosition - PastePositioRightLeft;
                                                                             ob.PositionAndOrientation = PasteTo;
-                                                                            Vector3D NewPosition5 = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
+                                                                            var NewPosition5 = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
 
-                                                                            Vector3D closestSurfacePointGlobal5 = closestPlanet.GetClosestSurfacePointGlobal(ref NewPosition5);
+                                                                            var closestSurfacePointGlobal5 = closestPlanet.GetClosestSurfacePointGlobal(ref NewPosition5);
                                                                             double? elevation6 = Vector3D.Distance(closestSurfacePointGlobal5, NewPosition5);
 
                                                                             if (elevation6 < MinElevation)
@@ -305,9 +302,9 @@ namespace DePatch
 
                                                                                 PasteTo.Position = OriginalPosition + PastePositioRightLeft;
                                                                                 ob.PositionAndOrientation = PasteTo;
-                                                                                Vector3D NewPosition6 = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
+                                                                                var NewPosition6 = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
 
-                                                                                Vector3D closestSurfacePointGlobal6 = closestPlanet.GetClosestSurfacePointGlobal(ref NewPosition6);
+                                                                                var closestSurfacePointGlobal6 = closestPlanet.GetClosestSurfacePointGlobal(ref NewPosition6);
                                                                                 double? elevation7 = Vector3D.Distance(closestSurfacePointGlobal6, NewPosition6);
 
 
@@ -328,7 +325,7 @@ namespace DePatch
 
                                             MyAPIGateway.Entities.RemapObjectBuilderCollection(objectBuilderList);
 
-                                            foreach (MyObjectBuilder_EntityBase ob in objectBuilderList)
+                                            foreach (var ob in objectBuilderList)
                                             {
                                                 _ = MyAPIGateway.Entities.CreateFromObjectBuilderParallel(ob, true, null);
                                             }
@@ -341,8 +338,8 @@ namespace DePatch
                                 {
                                     if (damage.Amount != 0f)
                                     {
-                                        if (damage.Amount >= DePatchPlugin.Instance.Config.DamgeToBlocksVoxel)
-                                            damage.Amount = DePatchPlugin.Instance.Config.DamgeToBlocksVoxel;
+                                        if (damage.Amount >= DePatchPlugin.Instance.Config.DamageToBlocksVoxel)
+                                            damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksVoxel;
                                     }
                                 }
                                 return;
@@ -354,11 +351,11 @@ namespace DePatch
 
                                 if (damage.Amount != 0f)
                                 {
-                                    if (DePatchPlugin.Instance.Config.DamgeToBlocksRamming == 0f)
-                                        DePatchPlugin.Instance.Config.DamgeToBlocksRamming = 0.5f;
+                                    if (DePatchPlugin.Instance.Config.DamageToBlocksRamming == 0f)
+                                        DePatchPlugin.Instance.Config.DamageToBlocksRamming = 0.5f;
 
-                                    if (damage.Amount >= DePatchPlugin.Instance.Config.DamgeToBlocksRamming)
-                                        damage.Amount = DePatchPlugin.Instance.Config.DamgeToBlocksRamming;
+                                    if (damage.Amount >= DePatchPlugin.Instance.Config.DamageToBlocksRamming)
+                                        damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksRamming;
                                 }
                             }
                         }

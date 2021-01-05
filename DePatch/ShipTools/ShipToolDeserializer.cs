@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DePatch
+namespace DePatch.ShipTools
 {
     public static class ShipToolDeserializer
     {

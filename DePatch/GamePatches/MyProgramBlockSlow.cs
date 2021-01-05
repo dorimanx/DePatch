@@ -1,12 +1,13 @@
-﻿using Sandbox.Game.Entities.Blocks;
-using Sandbox.ModAPI.Ingame;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using VRage.Utils;
+using DePatch.BlocksDisable;
 using HarmonyLib;
+using Sandbox.Game.Entities.Blocks;
 using Sandbox.Game.World;
+using Sandbox.ModAPI.Ingame;
+using VRage.Utils;
 
-namespace DePatch
+namespace DePatch.GamePatches
 {
     [HarmonyPatch(typeof(MyProgrammableBlock), "Run")]
     public static class MyProgramBlockSlow
@@ -18,7 +19,7 @@ namespace DePatch
         static HashSet<MyStringHash> ignoredTimers = new HashSet<MyStringHash>();
 
         public static void Init() {
-            var subs = DePatchPlugin.Instance.Config.SlowPBIgnored.Split(new[] {",", " "}, StringSplitOptions.None);
+            var subs = DePatchPlugin.Instance.Config.SlowPbIgnored.Split(new[] {",", " "}, StringSplitOptions.None);
             foreach (var x in subs) {
                 if (x.Length > 0) {
                     DePatchPlugin.Log.Error("Added " + x + " to ignored PB's");
@@ -62,7 +63,7 @@ namespace DePatch
                     }
                 }
 
-                if (!DePatchPlugin.Instance.Config.SlowPBEnabled || __instance.Enabled == false)
+                if (!DePatchPlugin.Instance.Config.SlowPbEnabled || __instance.Enabled == false)
                     return true;
 
                 if (ignoredTimers.Contains(__instance.BlockDefinition.Id.SubtypeId))
@@ -70,17 +71,17 @@ namespace DePatch
 
                 if (updateSource == UpdateType.Update1)
                 {
-                    var sl = DePatchPlugin.Instance.Config.SlowPBUpdate1;
+                    var sl = DePatchPlugin.Instance.Config.SlowPbUpdate1;
                     if (sl == 1) { return true; } else { return Slow(__instance.EntityId, timers1, sl); }
                 }
                 else if (updateSource == UpdateType.Update10)
                 {
-                    var sl = DePatchPlugin.Instance.Config.SlowPBUpdate10;
+                    var sl = DePatchPlugin.Instance.Config.SlowPbUpdate10;
                     if (sl == 1) { return true; } else { return Slow(__instance.EntityId, timers10, sl); }
                 }
                 else if (updateSource == UpdateType.Update100)
                 {
-                    var sl = DePatchPlugin.Instance.Config.SlowPBUpdate100;
+                    var sl = DePatchPlugin.Instance.Config.SlowPbUpdate100;
                     if (sl == 1) { return true; } else { return Slow(__instance.EntityId, timers100, sl); }
                 }
             }

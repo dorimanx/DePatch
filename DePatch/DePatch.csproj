@@ -113,8 +113,15 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlocksDisable\BlockDisable.cs" />
+    <Compile Include="BlocksDisable\GridOverSpeed.cs" />
     <Compile Include="BlocksDisable\PlayersUtility.cs" />
-    <Compile Include="BlocksDisable\BlockDisablePatch.cs" />
+    <Compile Include="BlocksDisable\GridSpeedPatch.cs" />
+    <Compile Include="CoolDown\CooldownManager.cs" />
+    <Compile Include="CoolDown\CurrentCooldown.cs" />
+    <Compile Include="CoolDown\EntityIdCooldownKey.cs" />
+    <Compile Include="CoolDown\ICooldownKey.cs" />
+    <Compile Include="CoolDown\SteamIdCooldownKey.cs" />
     <Compile Include="GamePatches\CargoCleanup.cs" />
     <Compile Include="GamePatches\MyAssemblerPatch.cs" />
     <Compile Include="GamePatches\MyProgramBlockSlow.cs" />

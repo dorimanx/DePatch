@@ -1,6 +1,6 @@
 ﻿using ProtoBuf;
 
-namespace DePatch
+namespace DePatch.OptiDamage
 {
     [ProtoContract]
     public struct SyncGridDamageContract

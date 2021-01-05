@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using DePatch.BlocksDisable;
 using HarmonyLib;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Cube;
@@ -12,27 +13,26 @@ using VRage.Game;
 using VRage.Game.Entity;
 using VRageMath;
 
-namespace DePatch
+namespace DePatch.ShipTools
 {
     [HarmonyPatch(typeof(MyShipWelder), "Activate")]
     internal class ShipWelderPatch
     {
         private static readonly FieldInfo m_detectorSphere = typeof(MyShipToolBase).GetField("m_detectorSphere", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        private static readonly HashSet<MySlimBlock> slimBlocks = new HashSet<MySlimBlock>();
+        private static readonly HashSet<MySlimBlock> SlimBlocks = new HashSet<MySlimBlock>();
 
         private static void Prefix(MyShipWelder __instance)
         {
             if (DePatchPlugin.Instance.Config.Enabled && __instance != null && __instance.Enabled)
             {
-
                 if (!__instance.CubeGrid.IsStatic &&
                         (__instance.CubeGrid.GridSizeEnum == MyCubeSize.Large ||
                         __instance.CubeGrid.GridSizeEnum == MyCubeSize.Small)
                         && DePatchPlugin.Instance.Config.DisableNanoBotsOnShip)
                 {
-                    string subtypeLarge = "SELtdLargeNanobotBuildAndRepairSystem";
-                    string subtypeSmall = "SELtdSmallNanobotBuildAndRepairSystem";
+                    var subtypeLarge = "SELtdLargeNanobotBuildAndRepairSystem";
+                    var subtypeSmall = "SELtdSmallNanobotBuildAndRepairSystem";
                     var blockSubType = __instance.BlockDefinition.Id.SubtypeName;
 
                     if (string.Compare(subtypeLarge, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0 ||
@@ -72,35 +72,34 @@ namespace DePatch
                             Type = ToolType.Welder
                         });
                     }
-                    List<MyEntity> list = new List<MyEntity>();
-                    BoundingSphere boundingSphere = (BoundingSphere)m_detectorSphere.GetValue(__instance);
-                    BoundingSphereD boundingSphereD = new BoundingSphereD(Vector3D.Transform(boundingSphere.Center, __instance.CubeGrid.WorldMatrix), boundingSphere.Radius);
-                    MyGamePruningStructure.GetAllEntitiesInSphere(ref boundingSphereD, list);
-                    if (list.Contains(__instance.CubeGrid))
-                    {
-                        list.Remove(__instance.CubeGrid);
-                    }
-                    foreach (MyEntity myEntity in list)
-                    {
-                        MyCubeGrid myCubeGrid = myEntity as MyCubeGrid;
-                        if (myCubeGrid != null && myEntity.Physics != null)
-                        {
-                            float welderMountAmount = MySession.Static.WelderSpeedMultiplier * enumerable.First().Speed;
-                            float maxAllowedBoneMovement = MyShipWelder.WELDER_MAX_REPAIR_BONE_MOVEMENT_SPEED * 250f * 0.001f;
-                            slimBlocks.Clear();
-                            myCubeGrid.GetBlocksInsideSphere(ref boundingSphereD, slimBlocks, false);
+                	var list = new List<MyEntity>();
+                	var boundingSphere = (BoundingSphere)m_detectorSphere.GetValue(__instance);
+                	var boundingSphereD = new BoundingSphereD(Vector3D.Transform(boundingSphere.Center, __instance.CubeGrid.WorldMatrix), boundingSphere.Radius);
+                	MyGamePruningStructure.GetAllEntitiesInSphere(ref boundingSphereD, list);
 
-                            foreach (MySlimBlock mySlimBlock in slimBlocks)
-                            {
-                                mySlimBlock.IncreaseMountLevel(welderMountAmount,
-                                    __instance.OwnerId, __instance.GetInventoryBase(),
-                                    maxAllowedBoneMovement, __instance.HelpOthers,
-                                    __instance.IDModule.ShareMode, false, false);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+                	if (list.Contains(__instance.CubeGrid))
+                	{
+                    	list.Remove(__instance.CubeGrid);
+                	}
+                	foreach (var myEntity in list)
+                	{
+                    	if (!(myEntity is MyCubeGrid myCubeGrid) || myEntity.Physics == null) continue;
+
+                    	var welderMountAmount = MySession.Static.WelderSpeedMultiplier * enumerable.First().Speed;
+                    	var maxAllowedBoneMovement = MyShipWelder.WELDER_MAX_REPAIR_BONE_MOVEMENT_SPEED * 250f * 0.001f;
+                    	SlimBlocks.Clear();
+                    	myCubeGrid.GetBlocksInsideSphere(ref boundingSphereD, SlimBlocks, false);
+
+                    	foreach (var mySlimBlock in SlimBlocks)
+                    	{
+                        	mySlimBlock.IncreaseMountLevel(welderMountAmount,
+                            	__instance.OwnerId, __instance.GetInventoryBase(),
+                            	maxAllowedBoneMovement, __instance.HelpOthers,
+                            	__instance.IDModule.ShareMode, false, false);
+                    	}
+                	}
+            	}
+        	}
+    	}
+	}
 }

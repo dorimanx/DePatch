@@ -1,4 +1,4 @@
-﻿namespace DePatch
+﻿namespace DePatch.ShipTools
 {
     public enum ToolType
     {

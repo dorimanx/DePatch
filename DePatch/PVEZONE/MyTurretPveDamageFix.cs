@@ -8,7 +8,7 @@ using VRage.Game.Entity;
 using VRage.Game.ObjectBuilders.Components;
 using VRageMath;
 
-namespace DePatch
+namespace DePatch.PVEZONE
 {
     [HarmonyPatch(typeof(MySessionComponentSafeZones), "IsActionAllowed", new Type[]
     {
@@ -32,8 +32,8 @@ namespace DePatch
             {
                 if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                 {
-                    bool zone1 = false;
-                    bool zone2 = false;
+                    var zone1 = false;
+                    var zone2 = false;
                     if (PVE.EntitiesInZone.Contains(entity.EntityId))
                         zone1 = true;
                     if (PVE.EntitiesInZone2.Contains(entity.EntityId))
@@ -58,12 +58,12 @@ namespace DePatch
             {
                 if (entity as MyCharacter != null && action == MySafeZoneAction.Shooting)
                 {
-                    MyPlayer myPlayer = MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == (entity as MyCharacter).GetPlayerIdentityId());
+                    var myPlayer = MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == (entity as MyCharacter).GetPlayerIdentityId());
 
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                     {
-                        bool zone1 = false;
-                        bool zone2 = false;
+                        var zone1 = false;
+                        var zone2 = false;
                         if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
                             zone1 = true;
                         if (PVE.PVESphere2.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)

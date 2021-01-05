@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using DePatch.BlocksDisable;
+using DePatch.GamePatches;
+using DePatch.ShipTools;
 using Torch.API;
 using Torch.Views;
 
@@ -25,9 +28,9 @@ namespace DePatch
             ModsBlock.Text = string.Join(";", plugin.Config.Mods);
             RaycastLimitTextBox.Text = plugin.Config.RaycastLimit.ToString("0");
             TimerDelayTextBox.Text = plugin.Config.TimerMinDelay.ToString("0");
-            SlowSimulationUpdate1.Text = plugin.Config.SlowPBUpdate1.ToString("0");
-            SlowSimulationUpdate10.Text = plugin.Config.SlowPBUpdate10.ToString("0");
-            SlowSimulationUpdate100.Text = plugin.Config.SlowPBUpdate100.ToString("0");
+            SlowSimulationUpdate1.Text = plugin.Config.SlowPbUpdate1.ToString("0");
+            SlowSimulationUpdate10.Text = plugin.Config.SlowPbUpdate10.ToString("0");
+            SlowSimulationUpdate100.Text = plugin.Config.SlowPbUpdate100.ToString("0");
 
 
             if (plugin.Config.BeaconSubTypes.Count == 0)
@@ -97,12 +100,12 @@ namespace DePatch
                     }).Length != 0)
                 {
                     Plugin.Config.Mods.Clear();
-                    foreach (string s in ModsBlock.Text.Split(new char[]
+                    foreach (var s in ModsBlock.Text.Split(new char[]
                 {
                     ';'
                 }))
                     {
-                        if (!ulong.TryParse(s, out ulong item))
+                        if (!ulong.TryParse(s, out var item))
                         {
                             break;
                         }
@@ -129,7 +132,7 @@ namespace DePatch
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            object selectedItem = ShipToolsGrid.SelectedItem;
+            var selectedItem = ShipToolsGrid.SelectedItem;
             if (selectedItem != null && selectedItem is ShipTool)
             {
                 ShipTool.shipTools.Remove((ShipTool)selectedItem);

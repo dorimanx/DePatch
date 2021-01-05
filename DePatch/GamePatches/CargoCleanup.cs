@@ -1,15 +1,14 @@
-﻿using NLog;
-using Sandbox.Game.Entities;
-using Sandbox.Game.Entities.Cube;
-using Sandbox.ModAPI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NLog;
+using Sandbox.Game.Entities;
+using Sandbox.Game.Entities.Cube;
 using VRage.Game;
 using VRage.Game.ModAPI;
 using VRage.ObjectBuilders;
 
-namespace DePatch
+namespace DePatch.GamePatches
 {
     public static class CargoCleanup
     {
@@ -20,23 +19,6 @@ namespace DePatch
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
         public static bool DictionaryUpdated = false;
-
-        public static bool IsPlayerNearBy(this MySlimBlock block, float distance)
-        {
-            var players = new List<IMyPlayer>();
-            distance *= distance;
-
-            MyAPIGateway.Multiplayer.Players.GetPlayers(players);
-            foreach (var x in players)
-            {
-                if (x.Character != null)
-                {
-                    var d = (block.WorldPosition - x.Character.GetPosition()).LengthSquared();
-                    if (d < distance) return true;
-                }
-            }
-            return false;
-        }
 
         private static void FindAndCleanInventorys(MySlimBlock slimBlock, Dictionary<MyDefinitionId, int> amountDict)
         {
@@ -89,13 +71,13 @@ namespace DePatch
             List<MySlimBlock> blocks = GetBlocksFromAllGrids((block) =>
             {
                 if (block.FatBlock == null || !block.FatBlock.HasInventory)
-                    return false;
+                    return true;
 
                 if (block.CubeGrid.PlayerPresenceTier != MyUpdateTiersPlayerPresence.Normal)
-                    return false;
+                    return true;
 
                 if (block.FatBlock.GetInventory().ItemCount <= 300)
-                    return false;
+                    return true;
 
                 if (!DictionaryUpdated)
                 {
@@ -118,7 +100,7 @@ namespace DePatch
                     Log.Error(e);
                 }
 
-                return false;
+                return true;
             });
         }
     }

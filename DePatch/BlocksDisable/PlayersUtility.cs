@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Sandbox.Definitions;
+using Sandbox.Game.Entities.Blocks;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.World;
 using SpaceEngineers.Game.Entities.Blocks;
 using VRage.Game;
-using Sandbox.Game.Entities.Blocks;
 
-namespace DePatch
+namespace DePatch.BlocksDisable
 {
     public static class PlayersUtility
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace DePatch
+namespace DePatch.ShipTools
 {
     public class ShipTool
     {

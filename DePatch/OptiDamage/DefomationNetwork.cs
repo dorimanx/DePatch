@@ -4,7 +4,7 @@ using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Cube;
 using VRage.Utils;
 
-namespace DePatch
+namespace DePatch.OptiDamage
 {
     [HarmonyPatch(typeof(MySlimBlock), "SendDamageBatch")]
     public class DefomationNetwork
@@ -20,9 +20,9 @@ namespace DePatch
                 {
                     return false;
                 }
-                foreach (KeyValuePair<MySlimBlock, float> keyValuePair in blocks)
+                foreach (var keyValuePair in blocks)
                 {
-                    MySlimBlock key = keyValuePair.Key;
+                    var key = keyValuePair.Key;
                     if (keyValuePair.Value >= 1f && key != null &&
                         key.CubeGrid != null &&
                         !key.CubeGrid.MarkedForClose &&
@@ -30,7 +30,7 @@ namespace DePatch
                         !key.FatBlock.MarkedForClose &&
                         !key.FatBlock.Closed)
                     {
-                        DamageContract contract = new DamageContract(key.FatBlock.EntityId, keyValuePair.Value, damageType, null, attackerId);
+                        var contract = new DamageContract(key.FatBlock.EntityId, keyValuePair.Value, damageType, null, attackerId);
                         _ = DamageNetwork.DamageQueue.AddOrUpdate(key.CubeGrid, new List<DamageContract>
                     {
                         contract

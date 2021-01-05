@@ -2,7 +2,7 @@
 using NLog;
 using VRageMath;
 
-namespace DePatch
+namespace DePatch.PVEZONE
 {
     internal static class PVE
     {

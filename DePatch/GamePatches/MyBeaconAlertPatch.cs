@@ -6,7 +6,7 @@ using Sandbox.Game.World;
 using Sandbox.ModAPI;
 using VRage.Game.ModAPI;
 
-namespace DePatch
+namespace DePatch.GamePatches
 {
     [HarmonyPatch(typeof(MyEntityController), "RaiseControlledEntityChanged")]
     internal class MyBeaconAlertPatch
@@ -18,10 +18,20 @@ namespace DePatch
             "Large Grid"
         };
 
-        private static void Prefix(MyEntityController __instance)
+        private static bool IsBadName(string name)
+        {
+            foreach (string badName in BadNames)
+            {
+                if (name.Contains(badName))
+                    return true;
+            }
+            return false;
+        }
+
+        private static bool Prefix(MyEntityController __instance)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.BeaconAlert)
-                return;
+                return true;
 
             string text = "";
             if (__instance.ControlledEntity is MyCockpit)
@@ -46,16 +56,7 @@ namespace DePatch
                     MyVisualScriptLogicProvider.ShowNotification(text, 10000, "Green", __instance.Player.Identity.IdentityId);
                 }
             }
-        }
-
-        private static bool IsBadName(string name)
-        {
-            foreach (string badName in BadNames)
-            {
-                if (name.Contains(badName))
-                    return true;
-            }
-            return false;
+            return true;
         }
     }
 }

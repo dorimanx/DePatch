@@ -1,14 +1,14 @@
 ﻿using HarmonyLib;
 using Sandbox.Game.Entities;
 
-namespace DePatch
+namespace DePatch.PVEZONE
 {
     [HarmonyPatch(typeof(MyCubeGrid), "Init")]
     internal class MyNewGridPatch
     {
         private static void Postfix(MyCubeGrid __instance)
         {
-            MyCubeGrid cubegrid = __instance;
+            var cubegrid = __instance;
             if (cubegrid != null)
             {
                 if (DePatchPlugin.GameIsReady && DePatchPlugin.Instance.Config.Enabled)
@@ -19,7 +19,7 @@ namespace DePatch
                         {
                             PVEGrid.Grids?.Add(cubegrid, new PVEGrid(cubegrid));
                         }
-                        PVEGrid pVEGrid = PVEGrid.Grids[cubegrid];
+                        var pVEGrid = PVEGrid.Grids[cubegrid];
                         if (pVEGrid.InPVEZone())
                         {
                             PVE.EntitiesInZone.Add(cubegrid.EntityId);
@@ -33,7 +33,7 @@ namespace DePatch
                         {
                             PVEGrid2.Grids2?.Add(cubegrid, new PVEGrid2(cubegrid));
                         }
-                        PVEGrid2 pVEGrid2 = PVEGrid2.Grids2[cubegrid];
+                        var pVEGrid2 = PVEGrid2.Grids2[cubegrid];
                         if (pVEGrid2.InPVEZone2())
                         {
                             PVE.EntitiesInZone2.Add(cubegrid.EntityId);

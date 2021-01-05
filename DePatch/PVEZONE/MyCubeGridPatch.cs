@@ -1,23 +1,32 @@
-﻿using HarmonyLib;
+﻿using DePatch.CoolDown;
+using HarmonyLib;
 using Sandbox.Game.Entities;
 
-namespace DePatch
+namespace DePatch.PVEZONE
 {
     [HarmonyPatch(typeof(MyCubeGrid), "UpdateAfterSimulation100")]
+
     internal class MyCubeGridPatch
     {
-        private static void Prefix(MyCubeGrid __instance)
+        private static readonly SteamIdCooldownKey LoopRequestID = new SteamIdCooldownKey(76000000000000003);
+        private static readonly SteamIdCooldownKey BootRequestID = new SteamIdCooldownKey(76000000000000004);
+        private static readonly int LoopCooldown = 1 * 1000;
+        private static readonly int BootCooldown = 90 * 1000;
+        public static bool ServerBoot = true;
+        public static bool ServerBootLoopStart = true;
+
+        private static bool Prefix(MyCubeGrid __instance)
         {
             if (DePatchPlugin.Instance.Config.PveZoneEnabled && DePatchPlugin.Instance.Config.Enabled)
             {
                 try
                 {
-					if (!PVEGrid.Grids.ContainsKey(__instance))
+                    if (__instance != null && !PVEGrid.Grids.ContainsKey(__instance))
                     {
                         PVEGrid.Grids.Add(__instance, new PVEGrid(__instance));
                     }
 
-                    if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && !PVEGrid2.Grids2.ContainsKey(__instance))
+                    if (__instance != null && DePatchPlugin.Instance.Config.PveZoneEnabled2 && !PVEGrid2.Grids2.ContainsKey(__instance))
                     {
                         PVEGrid2.Grids2.Add(__instance, new PVEGrid2(__instance));
                     }
@@ -31,14 +40,34 @@ namespace DePatch
                     }
                     else
                     {
-                        PVEGrid pVEGrid = PVEGrid.Grids[__instance];
-                        if (++pVEGrid.Tick <= 5)
+                        if (!ServerBoot)
                         {
-                            return;
+                            /// loop for 1 sec till next grid add / remove
+                            if (!CooldownManager.CheckCooldown(LoopRequestID, null, out long LoopremainingSeconds))
+                            {
+                                var LoopTimer = LoopremainingSeconds;
+                                return true;
+                            }
+                            CooldownManager.StartCooldown(LoopRequestID, null, LoopCooldown);
                         }
-                        pVEGrid.Tick = 0;
-                        bool flag = pVEGrid.InPVEZone();
-                        bool flag2 = PVE.EntitiesInZone.Contains(__instance.EntityId);
+                        else if (ServerBoot)
+                        {
+                            // Allow fast grid add to dictonary on boot. for 90sec
+                            if (CooldownManager.CheckCooldown(BootRequestID, null, out long remainingSecondsBoot))
+                            {
+                                if (ServerBootLoopStart)
+                                {
+                                    CooldownManager.StartCooldown(BootRequestID, null, BootCooldown);
+                                    ServerBootLoopStart = false;
+                                }
+                            }
+                            else
+                                ServerBoot = false;
+                        }
+
+                        var pVEGrid = PVEGrid.Grids[__instance];
+                        var flag = pVEGrid.InPVEZone();
+                        var flag2 = PVE.EntitiesInZone.Contains(__instance.EntityId);
                         if (!(flag && flag2))
                         {
                             if (__instance != null && !flag && flag2)
@@ -54,9 +83,9 @@ namespace DePatch
                         }
                         if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                         {
-                            PVEGrid2 pVEGrid2 = PVEGrid2.Grids2[__instance];
-                            bool flag3 = pVEGrid2.InPVEZone2();
-                            bool flag4 = PVE.EntitiesInZone2.Contains(__instance.EntityId);
+                            var pVEGrid2 = PVEGrid2.Grids2[__instance];
+                            var flag3 = pVEGrid2.InPVEZone2();
+                            var flag4 = PVE.EntitiesInZone2.Contains(__instance.EntityId);
                             if (!(flag3 && flag4))
                             {
                                 if (__instance != null && !flag3 && flag4)
@@ -77,6 +106,7 @@ namespace DePatch
                 {
                 }
             }
+            return true;
         }
     }
 }

@@ -8,7 +8,7 @@ using ParallelTasks;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Weapons;
 
-namespace DePatch
+namespace DePatch.ShipTools
 {
     [HarmonyPatch(typeof(MyShipDrill), "UpdateBeforeSimulation10")]
     internal class MyShipDrillParallelPatch
@@ -33,7 +33,7 @@ namespace DePatch
         {
             while (true)
             {
-                for (int index = 0; index < pendingDrillers.Count; ++index)
+                for (var index = 0; index < pendingDrillers.Count; ++index)
                 {
                     AsyncUpdate(pendingDrillers[index]);
                 }
@@ -82,6 +82,8 @@ namespace DePatch
                     case DrillingMode.Threading:
                         pendingDrillers.Add(__instance);
                         break;
+                    default:
+                        break;
                 }
             }
             return false;
@@ -92,7 +94,7 @@ namespace DePatch
             Receiver_IsPoweredChanged.Invoke(drill, new object[0]);
             InitSubBlocks.Invoke(drill, new object[0]);
 
-            if (drill.Parent == null || drill.Parent.Physics == null)
+            if (drill.Parent?.Physics == null)
             {
                 return;
             }
@@ -137,7 +139,7 @@ namespace DePatch
                 collectOre = (bool)m_wantsToCollect.GetValue(drill);
             }
 
-            MyDrillBase myDrillBase = (MyDrillBase)m_drillBase.GetValue(drill);
+            var myDrillBase = (MyDrillBase)m_drillBase.GetValue(drill);
             if (myDrillBase.Drill(collectOre, true, false, 0.1f))
             {
                 ShakeAmount.SetValue(drill, 1f);

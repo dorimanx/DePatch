@@ -6,11 +6,10 @@ using Sandbox.Game.Weapons;
 using Sandbox.Game.World;
 using Sandbox.ModAPI;
 using VRage.Game;
-using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRageMath;
 
-namespace DePatch
+namespace DePatch.PVEZONE
 {
     public static class DamageHandler
     {
@@ -35,10 +34,10 @@ namespace DePatch
 
         private static void ProcessDamage(object target, ref MyDamageInformation info)
         {
-            long num1 = info.AttackerId;
-            MySlimBlock mySlimBlock = target as MySlimBlock;
+            var num1 = info.AttackerId;
+            var mySlimBlock = target as MySlimBlock;
             long num2;
-            long num3 = 10L;
+            var num3 = 10L;
 
             if (mySlimBlock == null)
             {
@@ -52,8 +51,8 @@ namespace DePatch
             {
                 if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                 {
-                    bool zone1 = false;
-                    bool zone2 = false;
+                    var zone1 = false;
+                    var zone2 = false;
                     if (!PVE.EntitiesInZone.Contains(mySlimBlock.CubeGrid.EntityId))
                         zone1 = true;
                     if (!PVE.EntitiesInZone2.Contains(mySlimBlock.CubeGrid.EntityId))
@@ -74,8 +73,8 @@ namespace DePatch
             /* Warhead Protection inside PVE Zones */
             if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
             {
-                bool zone1 = false;
-                bool zone2 = false;
+                var zone1 = false;
+                var zone2 = false;
                 if (mySlimBlock != null && PVE.EntitiesInZone.Contains(mySlimBlock.CubeGrid.EntityId) && info.Type == MyDamageType.Explosion)
                     zone1 = true;
                 if (mySlimBlock != null && PVE.EntitiesInZone2.Contains(mySlimBlock.CubeGrid.EntityId) && info.Type == MyDamageType.Explosion)
@@ -98,7 +97,7 @@ namespace DePatch
                 }
             }
 
-            if (MyEntities.TryGetEntityById(info.AttackerId, out MyEntity AttackerEntity, allowClosed: true))
+            if (MyEntities.TryGetEntityById(info.AttackerId, out var AttackerEntity, allowClosed: true))
             {
                 if (AttackerEntity is MyVoxelBase)
                     return;
@@ -120,8 +119,8 @@ namespace DePatch
                 {
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                     {
-                        bool zone1 = false;
-                        bool zone2 = false;
+                        var zone1 = false;
+                        var zone2 = false;
                         if (PVE.PVESphere.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == myAutomaticRifleGun.OwnerIdentityId).Character.PositionComp.GetPosition()) != ContainmentType.Contains)
                             zone1 = true;
                         if (PVE.PVESphere2.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == myAutomaticRifleGun.OwnerIdentityId).Character.PositionComp.GetPosition()) != ContainmentType.Contains)
@@ -142,8 +141,8 @@ namespace DePatch
                 {
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                     {
-                        bool zone1 = false;
-                        bool zone2 = false;
+                        var zone1 = false;
+                        var zone2 = false;
                         if (PVE.PVESphere.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == toolBase.OwnerIdentityId).Character.PositionComp.GetPosition()) != ContainmentType.Contains)
                             zone1 = true;
                         if (PVE.PVESphere2.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == toolBase.OwnerIdentityId).Character.PositionComp.GetPosition()) != ContainmentType.Contains)
@@ -169,15 +168,12 @@ namespace DePatch
                 if ((AttackerEntity as MyLargeTurretBase) != null)
                     num1 = (AttackerEntity as MyLargeTurretBase).OwnerId;
 
-                if ((AttackerEntity as MyWarhead) != null)
-                    num1 = (AttackerEntity as MyWarhead).OwnerId;
-
                 if (AttackerEntity is MyCharacter character)
                 {
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                     {
-                        bool zone1 = false;
-                        bool zone2 = false;
+                        var zone1 = false;
+                        var zone2 = false;
                         if (PVE.PVESphere.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == character.GetPlayerIdentityId()).Character.PositionComp.GetPosition()) != ContainmentType.Contains)
                             zone1 = true;
                         if (PVE.PVESphere2.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == character.GetPlayerIdentityId()).Character.PositionComp.GetPosition()) != ContainmentType.Contains)
@@ -198,8 +194,8 @@ namespace DePatch
                 {
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                     {
-                        bool zone1 = false;
-                        bool zone2 = false;
+                        var zone1 = false;
+                        var zone2 = false;
                         if (!PVE.EntitiesInZone.Contains((AttackerEntity as MyCubeGrid).EntityId))
                             zone1 = true;
                         if (!PVE.EntitiesInZone2.Contains((AttackerEntity as MyCubeGrid).EntityId))
@@ -224,8 +220,8 @@ namespace DePatch
                 {
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                     {
-                        bool zone1 = false;
-                        bool zone2 = false;
+                        var zone1 = false;
+                        var zone2 = false;
                         if (!PVE.EntitiesInZone.Contains((AttackerEntity as MyUserControllableGun).CubeGrid.EntityId))
                             zone1 = true;
                         if (!PVE.EntitiesInZone2.Contains((AttackerEntity as MyUserControllableGun).CubeGrid.EntityId))
@@ -243,8 +239,8 @@ namespace DePatch
 
                 if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                 {
-                    bool zone1 = false;
-                    bool zone2 = false;
+                    var zone1 = false;
+                    var zone2 = false;
                     if ((AttackerEntity as MyLargeTurretBase) != null && !PVE.EntitiesInZone.Contains((AttackerEntity as MyLargeTurretBase).CubeGrid.EntityId) ||
                         (AttackerEntity as MyWarhead) != null && !PVE.EntitiesInZone.Contains((AttackerEntity as MyWarhead).CubeGrid.EntityId))
                         zone1 = true;
@@ -271,8 +267,8 @@ namespace DePatch
             }
             else
             {
-                ulong steamId1 = MySession.Static.Players.TryGetSteamId(num1);
-                ulong steamId2 = MySession.Static.Players.TryGetSteamId(num2);
+                var steamId1 = MySession.Static.Players.TryGetSteamId(num1);
+                var steamId2 = MySession.Static.Players.TryGetSteamId(num2);
                 if (!MySession.Static.Players.IdentityIsNpc(num1) && num2 != 0L &&
                     !MySession.Static.Players.IdentityIsNpc(num2) && num2 != info.AttackerId && steamId1 != steamId2 &&
                     MySession.Static.Factions.TryGetPlayerFaction(num1) != MySession.Static.Factions.TryGetPlayerFaction(num2))

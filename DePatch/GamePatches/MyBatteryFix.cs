@@ -3,17 +3,19 @@ using HarmonyLib;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI.Ingame;
 
-namespace DePatch
+namespace DePatch.GamePatches
 {
     [HarmonyPatch(typeof(MyBatteryBlock))]
     [HarmonyPatch("ChargeMode", MethodType.Setter)]
     internal class MyBatteryFix
     {
-        private static void Prefix(MyBatteryBlock __instance, ref ChargeMode value)
+        private static bool Prefix(MyBatteryBlock __instance, ref ChargeMode value)
         {
             if (Enum.IsDefined(typeof(ChargeMode), value))
-                return;
+                return true;
+
             value = ChargeMode.Auto;
+            return true;
         }
     }
 }

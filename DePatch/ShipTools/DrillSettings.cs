@@ -4,7 +4,7 @@ using System.Linq;
 using Sandbox.Definitions;
 using VRage.Game;
 
-namespace DePatch
+namespace DePatch.ShipTools
 {
     internal class DrillSettings
     {
