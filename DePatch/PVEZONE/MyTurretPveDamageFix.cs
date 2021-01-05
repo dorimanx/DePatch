@@ -10,16 +10,10 @@ using VRageMath;
 
 namespace DePatch.PVEZONE
 {
-    [HarmonyPatch(typeof(MySessionComponentSafeZones), "IsActionAllowed", new Type[]
-    {
-        typeof(MyEntity),
-        typeof(MySafeZoneAction),
-        typeof(long),
-        typeof(ulong)
-    })]
+    [HarmonyPatch(typeof(MySessionComponentSafeZones), "IsActionAllowed", typeof(MyEntity), typeof(MySafeZoneAction), typeof(long), typeof(ulong))]
     internal class MyTurretPveDamageFix
     {
-        private static bool Prefix(MySessionComponentSafeZones __instance, MyEntity entity, MySafeZoneAction action, ref bool __result)
+        private static bool Prefix(MySessionComponentSafeZones __instance, MyEntity entity, MySafeZoneAction action, ulong user, ref bool __result)
         {
             if (!DePatchPlugin.Instance.Config.Enabled)
                 return true;
@@ -28,64 +22,59 @@ namespace DePatch.PVEZONE
             {
                 return true;
             }
-            if (entity is MyCubeGrid && action == MySafeZoneAction.Shooting)
+
+            switch (entity)
             {
-                if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
+                case MyCubeGrid grid when action == MySafeZoneAction.Building:
+                {
+                    if (grid.IsFriendlyPlayer(user)) return true;
+                    var zone1 = false;
+                    var zone2 = false;
+                    if (DePatchPlugin.Instance.Config.PveZoneEnabled && PVE.EntitiesInZone.Contains(entity.EntityId))
+                        zone1 = true;
+                    if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && PVE.EntitiesInZone2.Contains(entity.EntityId))
+                        zone2 = true;
+
+                    if (!zone1 && !zone2) return true;
+                    __result = false;
+                    return false;
+                }
+                case MyCubeGrid _ when action == MySafeZoneAction.Shooting:
                 {
                     var zone1 = false;
                     var zone2 = false;
-                    if (PVE.EntitiesInZone.Contains(entity.EntityId))
+                    if (DePatchPlugin.Instance.Config.PveZoneEnabled && PVE.EntitiesInZone.Contains(entity.EntityId))
                         zone1 = true;
-                    if (PVE.EntitiesInZone2.Contains(entity.EntityId))
+                    if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && PVE.EntitiesInZone2.Contains(entity.EntityId))
                         zone2 = true;
 
-                    if (zone1 || zone2)
-                    {
-                        __result = false;
-                        return false;
-                    }
-                }
-                else
-                {
-                    if (PVE.EntitiesInZone.Contains(entity.EntityId))
-                    {
-                        __result = false;
-                        return false;
-                    }
+                    if (!zone1 && !zone2) return true;
+                    __result = false;
+                    return false;
                 }
             }
-            else
+
+            if (!(entity is MyCharacter) || action != MySafeZoneAction.Shooting) return true;
+            var myPlayer = MySession.Static.Players.GetOnlinePlayers().ToList().Find(b => b.Identity.IdentityId == ((MyCharacter) entity).GetPlayerIdentityId());
+
+            if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
             {
-                if (entity as MyCharacter != null && action == MySafeZoneAction.Shooting)
-                {
-                    var myPlayer = MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == (entity as MyCharacter).GetPlayerIdentityId());
+                var zone1 = false;
+                var zone2 = false;
+                if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                    zone1 = true;
+                if (PVE.PVESphere2.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                    zone2 = true;
 
-                    if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
-                    {
-                        var zone1 = false;
-                        var zone2 = false;
-                        if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                            zone1 = true;
-                        if (PVE.PVESphere2.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                            zone2 = true;
-
-                        if (zone1 || zone2)
-                        {
-                            __result = false;
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                        {
-                            __result = false;
-                            return false;
-                        }
-                    }
-                }
+                if (!zone1 && !zone2) return true;
+                __result = false;
+                return false;
             }
-            return true;
+
+            if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) !=
+                ContainmentType.Contains) return true;
+            __result = false;
+            return false;
         }
     }
 }
