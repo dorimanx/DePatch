@@ -27,30 +27,11 @@ namespace DePatch.PVEZONE
             {
                 case MyCubeGrid grid when action == MySafeZoneAction.Building:
                 {
-                    if (grid.IsFriendlyPlayer(user)) return true;
-                    var zone1 = false;
-                    var zone2 = false;
-                    if (DePatchPlugin.Instance.Config.PveZoneEnabled && PVE.EntitiesInZone.Contains(entity.EntityId))
-                        zone1 = true;
-                    if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && PVE.EntitiesInZone2.Contains(entity.EntityId))
-                        zone2 = true;
-
-                    if (!zone1 && !zone2) return true;
-                    __result = false;
-                    return false;
+                    return grid.IsFriendlyPlayer(user) || PVE.CheckEntityInZone(entity, ref __result);
                 }
                 case MyCubeGrid _ when action == MySafeZoneAction.Shooting:
                 {
-                    var zone1 = false;
-                    var zone2 = false;
-                    if (DePatchPlugin.Instance.Config.PveZoneEnabled && PVE.EntitiesInZone.Contains(entity.EntityId))
-                        zone1 = true;
-                    if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && PVE.EntitiesInZone2.Contains(entity.EntityId))
-                        zone2 = true;
-
-                    if (!zone1 && !zone2) return true;
-                    __result = false;
-                    return false;
+                    return PVE.CheckEntityInZone(entity, ref __result);
                 }
             }
 
@@ -59,16 +40,7 @@ namespace DePatch.PVEZONE
 
             if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
             {
-                var zone1 = false;
-                var zone2 = false;
-                if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    zone1 = true;
-                if (PVE.PVESphere2.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    zone2 = true;
-
-                if (!zone1 && !zone2) return true;
-                __result = false;
-                return false;
+                return PVE.CheckEntityInZone(myPlayer, ref __result);
             }
 
             if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) !=
