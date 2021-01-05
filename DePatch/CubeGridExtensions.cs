@@ -16,6 +16,7 @@ namespace DePatch
             if (owner == default) return true;
             MySession.Static.Players.TryGetPlayerId(owner, out var ownerId);
             var ownerPlayer = MySession.Static.Players.GetPlayerById(ownerId);
+            if (ownerPlayer == null) return MySession.Static.IsUserAdmin(steamId);
             var relation = ownerPlayer.GetRelationTo(player.Identity.IdentityId);
             return relation.IsFriendly();
         }
