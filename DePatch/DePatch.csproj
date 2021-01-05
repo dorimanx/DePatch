@@ -122,8 +122,10 @@
     <Compile Include="CoolDown\EntityIdCooldownKey.cs" />
     <Compile Include="CoolDown\ICooldownKey.cs" />
     <Compile Include="CoolDown\SteamIdCooldownKey.cs" />
+    <Compile Include="CubeGridExtensions.cs" />
     <Compile Include="GamePatches\CargoCleanup.cs" />
     <Compile Include="GamePatches\MyAssemblerPatch.cs" />
+    <Compile Include="GamePatches\MyEntityDuplicateFix.cs" />
     <Compile Include="GamePatches\MyProgramBlockSlow.cs" />
     <Compile Include="GamePatches\MyRefineryPatch.cs" />
     <Compile Include="OptiDamage\DamageContract.cs" />

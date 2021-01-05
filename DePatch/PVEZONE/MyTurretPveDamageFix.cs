@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using HarmonyLib;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Character;
@@ -19,9 +18,7 @@ namespace DePatch.PVEZONE
                 return true;
 
             if (!DePatchPlugin.Instance.Config.PveZoneEnabled)
-            {
                 return true;
-            }
 
             switch (entity)
             {
@@ -43,8 +40,9 @@ namespace DePatch.PVEZONE
                 return PVE.CheckEntityInZone(myPlayer, ref __result);
             }
 
-            if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) !=
-                ContainmentType.Contains) return true;
+            if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) != ContainmentType.Contains)
+                return true;
+
             __result = false;
             return false;
         }

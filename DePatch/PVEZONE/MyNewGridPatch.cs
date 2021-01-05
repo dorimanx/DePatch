@@ -10,7 +10,9 @@ namespace DePatch.PVEZONE
         {
             var cubegrid = __instance;
             if (cubegrid == null) return;
+
             if (!DePatchPlugin.GameIsReady || !DePatchPlugin.Instance.Config.Enabled) return;
+
             if (DePatchPlugin.Instance.Config.PveZoneEnabled)
             {
                 if (!PVEGrid.Grids.ContainsKey(cubegrid))
