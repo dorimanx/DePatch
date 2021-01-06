@@ -60,14 +60,12 @@ namespace DePatch.ShipTools
                         Type = ToolType.Grinder
                     });
                 });
-                shipTools.AddItem(new ShipTool
-                {
-                    Speed = ShipTool.DEFAULT_SPEED,
-                    Subtype = __instance.DefinitionId.SubtypeId.String,
-                    Type = ToolType.Grinder
-                });
+                return;
             }
-            var grinderAmount = MySession.Static.GrinderSpeedMultiplier * shipTools.First().Speed;
+
+            var shipTool = shipTools.FirstOrDefault();
+            if (shipTool == null) return;
+            var grinderAmount = MySession.Static.GrinderSpeedMultiplier * shipTool.Speed;
             foreach (var mySlimBlock in targets)
             {
                 mySlimBlock.IncreaseMountLevel(grinderAmount, __instance.OwnerId, __instance.GetInventoryBase());
