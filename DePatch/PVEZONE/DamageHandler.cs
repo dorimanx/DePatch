@@ -37,7 +37,7 @@ namespace DePatch.PVEZONE
             var num1 = info.AttackerId;
             var mySlimBlock = target as MySlimBlock;
             long num2;
-            var num3 = 10L;
+            var num3 = 2f;
 
             if (mySlimBlock == null)
             {
@@ -210,9 +210,13 @@ namespace DePatch.PVEZONE
                             return;
                     }
 
-                    if (mySlimBlock != null && mySlimBlock.CubeGrid.IsStatic && info.Type == MyDamageType.Fall)
+                    if (mySlimBlock != null && mySlimBlock.CubeGrid.Physics != null && (info.Type == MyDamageType.Fall || info.Type == MyDamageType.Deformation))
                     {
-                        num3 = 0L;
+                        var LinearVelocity = mySlimBlock.CubeGrid.Physics.LinearVelocity.Length();
+                        var AngularVelocity = mySlimBlock.CubeGrid.Physics.AngularVelocity.Length();
+
+                        if (mySlimBlock.CubeGrid.Physics != null && (LinearVelocity > 30 || AngularVelocity > 30))
+                            num3 = 1f;
                     }
                 }
 
@@ -260,7 +264,7 @@ namespace DePatch.PVEZONE
                 }
             }
 
-            if (num1 == 0L || num3 == 0L)
+            if (num1 == 0L)
             {
                 info.Amount = 0f;
                 info.IsDeformation = false;
@@ -276,6 +280,11 @@ namespace DePatch.PVEZONE
                     info.Amount = 0f;
                     info.IsDeformation = false;
                 }
+            }
+            if (num3 == 1f)
+            {
+                info.Amount = 0.5f;
+                info.IsDeformation = false;
             }
         }
     }
