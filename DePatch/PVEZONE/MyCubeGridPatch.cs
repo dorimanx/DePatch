@@ -10,7 +10,7 @@ namespace DePatch.PVEZONE
     {
         private static readonly SteamIdCooldownKey LoopRequestID = new SteamIdCooldownKey(76000000000000003);
         private static readonly SteamIdCooldownKey BootRequestID = new SteamIdCooldownKey(76000000000000004);
-        private static readonly int LoopCooldown = 1 * 1000;
+        private static int LoopCooldown = 5;
         private static readonly int BootCooldown = 90 * 1000;
         public static bool ServerBoot = true;
         public static bool ServerBootLoopStart = true;
@@ -42,13 +42,10 @@ namespace DePatch.PVEZONE
                     {
                         if (!ServerBoot)
                         {
-                            /// loop for 1 sec till next grid add / remove
-                            if (!CooldownManager.CheckCooldown(LoopRequestID, null, out long LoopremainingSeconds))
-                            {
-                                var LoopTimer = LoopremainingSeconds;
+                            /// loop for 5 ticks till next grid add / remove
+                            if (++LoopCooldown <= 6)
                                 return true;
-                            }
-                            CooldownManager.StartCooldown(LoopRequestID, null, LoopCooldown);
+                            LoopCooldown = 0;
                         }
                         else if (ServerBoot)
                         {
@@ -81,6 +78,7 @@ namespace DePatch.PVEZONE
                                 pVEGrid?.OnGridEntered();
                             }
                         }
+
                         if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                         {
                             var pVEGrid2 = PVEGrid2.Grids2[__instance];

@@ -42,9 +42,9 @@ namespace DePatch.PVEZONE
             }
             else if (obj is MyEntity entity)
             {
-                if (DePatchPlugin.Instance.Config.PveZoneEnabled && PVE.EntitiesInZone.Contains(entity.EntityId))
+                if (DePatchPlugin.Instance.Config.PveZoneEnabled && EntitiesInZone.Contains(entity.EntityId))
                     zone1 = true;
-                if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && PVE.EntitiesInZone2.Contains(entity.EntityId))
+                if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && EntitiesInZone2.Contains(entity.EntityId))
                     zone2 = true;
 
                 if (!zone1 && !zone2) return true;

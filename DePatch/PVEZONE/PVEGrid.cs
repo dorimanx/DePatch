@@ -9,11 +9,14 @@ namespace DePatch.PVEZONE
 {
     internal class PVEGrid
     {
-        public static Dictionary<MyCubeGrid, PVEGrid> Grids = new Dictionary<MyCubeGrid, PVEGrid>();
-
         private MyCubeGrid cubeGrid;
 
-        public PVEGrid(MyCubeGrid grid) => cubeGrid = grid;
+        public static Dictionary<MyCubeGrid, PVEGrid> Grids = new Dictionary<MyCubeGrid, PVEGrid>();
+
+        public PVEGrid(MyCubeGrid grid)
+        {
+            cubeGrid = grid;
+        }
 
         public void OnGridEntered()
         {

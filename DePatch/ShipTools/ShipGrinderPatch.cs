@@ -1,15 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using DePatch.PVEZONE;
 using HarmonyLib;
-using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.Weapons;
 using Sandbox.Game.World;
 using VRage.Game;
-using VRage.Game.Entity;
-using VRageMath;
 
 namespace DePatch.ShipTools
 {

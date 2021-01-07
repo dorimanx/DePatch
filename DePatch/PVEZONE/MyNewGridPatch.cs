@@ -8,35 +8,38 @@ namespace DePatch.PVEZONE
     {
         private static void Postfix(MyCubeGrid __instance)
         {
-            var cubegrid = __instance;
-            if (cubegrid == null) return;
+            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.PveZoneEnabled) return;
 
-            if (!DePatchPlugin.GameIsReady || !DePatchPlugin.Instance.Config.Enabled) return;
+            if (!DePatchPlugin.GameIsReady)
+                return;
 
-            if (DePatchPlugin.Instance.Config.PveZoneEnabled)
+            if (__instance == null)
+                return;
+
+            if (!PVEGrid.Grids.ContainsKey(__instance))
             {
-                if (!PVEGrid.Grids.ContainsKey(cubegrid))
-                {
-                    PVEGrid.Grids?.Add(cubegrid, new PVEGrid(cubegrid));
-                }
-                var pVEGrid = PVEGrid.Grids[cubegrid];
-                if (pVEGrid.InPVEZone())
-                {
-                    PVE.EntitiesInZone.Add(cubegrid.EntityId);
-                    pVEGrid?.OnGridEntered();
-                }
+                PVEGrid.Grids.Add(__instance, new PVEGrid(__instance));
             }
 
-            if (!DePatchPlugin.Instance.Config.PveZoneEnabled2) return;
-            if (!PVEGrid2.Grids2.ContainsKey(cubegrid))
+            var pVEGrid = PVEGrid.Grids[__instance];
+            if (pVEGrid.InPVEZone())
             {
-                PVEGrid2.Grids2?.Add(cubegrid, new PVEGrid2(cubegrid));
+                PVE.EntitiesInZone.Add(__instance.EntityId);
+                pVEGrid.OnGridEntered();
             }
-            var pVEGrid2 = PVEGrid2.Grids2[cubegrid];
-            if (pVEGrid2.InPVEZone2())
+
+            if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
             {
-                PVE.EntitiesInZone2.Add(cubegrid.EntityId);
-                pVEGrid2?.OnGridEntered2();
+                if (!PVEGrid2.Grids2.ContainsKey(__instance))
+                {
+                    PVEGrid2.Grids2.Add(__instance, new PVEGrid2(__instance));
+                }
+                var pVEGrid2 = PVEGrid2.Grids2[__instance];
+                if (pVEGrid2.InPVEZone2())
+                {
+                    PVE.EntitiesInZone2.Add(__instance.EntityId);
+                    pVEGrid2.OnGridEntered2();
+                }
             }
         }
     }
