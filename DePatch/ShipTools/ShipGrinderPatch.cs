@@ -17,9 +17,12 @@ namespace DePatch.ShipTools
             if (!DePatchPlugin.Instance.Config.Enabled && !DePatchPlugin.Instance.Config.ShipToolsEnabled)
                 return;
 
-            if (PVE.CheckEntityInZone(__instance.CubeGrid))
-                targets.RemoveWhere(b => !__instance.GetUserRelationToOwner(b.BuiltBy).IsFriendly());
-            
+            // if found will return false this why !PVE.CheckEntityInZone
+            if (!PVE.CheckEntityInZone(__instance.CubeGrid))
+            {
+                _ = targets.RemoveWhere(b => !__instance.GetUserRelationToOwner(b.BuiltBy).IsFriendly());
+            }
+
             var enumerable = ShipTool.shipTools.Where(t => t.Subtype == __instance.DefinitionId.SubtypeId.String);
             if (!enumerable.Any())
             {

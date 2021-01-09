@@ -13,10 +13,7 @@ namespace DePatch.PVEZONE
 
         public static Dictionary<MyCubeGrid, PVEGrid2> Grids2 = new Dictionary<MyCubeGrid, PVEGrid2>();
 
-        public PVEGrid2(MyCubeGrid grid2)
-        {
-            cubeGrid2 = grid2;
-        }
+        public PVEGrid2(MyCubeGrid grid2) => cubeGrid2 = grid2;
 
         public void OnGridEntered2()
         {

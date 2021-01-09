@@ -8,9 +8,8 @@ namespace DePatch.PVEZONE
 
     internal class MyCubeGridPatch
     {
-        private static readonly SteamIdCooldownKey LoopRequestID = new SteamIdCooldownKey(76000000000000003);
-        private static readonly SteamIdCooldownKey BootRequestID = new SteamIdCooldownKey(76000000000000004);
-        private static int LoopCooldown = 5;
+        private static readonly SteamIdCooldownKey BootRequestID = new SteamIdCooldownKey(76000000000000003);
+        private static int LoopCooldown = 3;
         private static readonly int BootCooldown = 90 * 1000;
         public static bool ServerBoot = true;
         public static bool ServerBootLoopStart = true;
@@ -42,8 +41,8 @@ namespace DePatch.PVEZONE
                     {
                         if (!ServerBoot)
                         {
-                            /// loop for 5 ticks till next grid add / remove
-                            if (++LoopCooldown <= 6)
+                            /// loop for 3 ticks till next grid add / remove
+                            if (++LoopCooldown <= 3)
                                 return true;
                             LoopCooldown = 0;
                         }

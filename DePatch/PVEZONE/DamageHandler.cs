@@ -168,7 +168,7 @@ namespace DePatch.PVEZONE
                 if ((AttackerEntity as MyLargeTurretBase) != null)
                     num1 = (AttackerEntity as MyLargeTurretBase).OwnerId;
 
-                if (AttackerEntity is MyCharacter character)
+                if (AttackerEntity is MyCharacter character && character != null)
                 {
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                     {

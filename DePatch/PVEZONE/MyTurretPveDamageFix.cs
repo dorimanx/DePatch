@@ -14,7 +14,7 @@ namespace DePatch.PVEZONE
     internal class MyTurretPveDamageFix
     {
         private static readonly SteamIdCooldownKey LoopRequestID = new SteamIdCooldownKey(76000000000000001);
-        private static readonly int LoopCooldown = 120 * 1000;
+        private static readonly int LoopCooldown = 240 * 1000;
         private static bool ServerBoot = true;
         public static bool ServerBootLoopStart = true;
 
@@ -35,7 +35,8 @@ namespace DePatch.PVEZONE
 
                         if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                         {
-                            if (!PVE.CheckEntityInZone(myPlayerBuilding, ref __result))
+                            // if found will return false this why !PVE.CheckEntityInZone
+                            if (myPlayerBuilding != null && !PVE.CheckEntityInZone(myPlayerBuilding, ref __result))
                             {
                                 if (grid.IsFriendlyPlayer(user))
                                     return true;
@@ -45,7 +46,7 @@ namespace DePatch.PVEZONE
                         }
                         else
                         {                          
-                            if (PVE.PVESphere.Contains(myPlayerBuilding.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                            if (myPlayerBuilding != null && PVE.PVESphere.Contains(myPlayerBuilding.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
                             {
                                 if (grid.IsFriendlyPlayer(user))
                                     return true;
@@ -59,7 +60,7 @@ namespace DePatch.PVEZONE
                     {
                         if (ServerBoot)
                         {
-                            // loop for 120 sec after boot to block weapons.
+                            // loop for 240 sec after boot to block weapons.
                             if (CooldownManager.CheckCooldown(LoopRequestID, null, out long remainingSecondsBoot))
                             {
                                 if (ServerBootLoopStart)
@@ -79,17 +80,20 @@ namespace DePatch.PVEZONE
                     }
             }
 
-            if (!(entity is MyCharacter) || action != MySafeZoneAction.Shooting) return true;
+            if (action != MySafeZoneAction.Shooting) return true;
 
-            var myPlayer = MySession.Static.Players.GetOnlinePlayers().ToList().Find(b => b.Identity.IdentityId == ((MyCharacter)entity).GetPlayerIdentityId());
-
-            if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
+            if (entity is MyCharacter character)
             {
-                return PVE.CheckEntityInZone(myPlayer, ref __result);
-            }
+                var myPlayer = MySession.Static.Players.GetOnlinePlayers().ToList().Find(b => b.Identity.IdentityId == character.GetPlayerIdentityId());
+                if (myPlayer != null && DePatchPlugin.Instance.Config.PveZoneEnabled2)
+                {
+                    // if found will return false
+                    return PVE.CheckEntityInZone(myPlayer, ref __result);
+                }
 
-            if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) != ContainmentType.Contains)
-                return true;
+                if (myPlayer != null && PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                    return false;
+            }
 
             __result = false;
             return false;
