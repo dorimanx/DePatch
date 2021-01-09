@@ -21,13 +21,11 @@ namespace DePatch.PVEZONE
                 return;
 
             if (!DePatchPlugin.Instance.Config.PveZoneEnabled)
-            {
                 return;
-            }
+
             if (_init)
-            {
                 return;
-            }
+
             _init = true;
             MyAPIGateway.Session.DamageSystem.RegisterBeforeDamageHandler(0, ProcessDamage);
         }
@@ -159,14 +157,17 @@ namespace DePatch.PVEZONE
                     num1 = toolBase.OwnerIdentityId;
                 }
 
-                if ((AttackerEntity as MyUserControllableGun) != null)
-                    num1 = (AttackerEntity as MyUserControllableGun).OwnerId;
+                if (AttackerEntity is MyUserControllableGun myUserControllableGun)
+                    num1 = myUserControllableGun.OwnerId;
 
-                if ((AttackerEntity as MyCubeGrid) != null)
-                    num1 = ((AttackerEntity as MyCubeGrid).BigOwners.Count > 0) ? (AttackerEntity as MyCubeGrid).BigOwners[0] : 0L;
+                if (AttackerEntity is MyCubeGrid myCubeGrid)
+                    num1 = (myCubeGrid.BigOwners.Count > 0) ? myCubeGrid.BigOwners[0] : 0L;
 
-                if ((AttackerEntity as MyLargeTurretBase) != null)
-                    num1 = (AttackerEntity as MyLargeTurretBase).OwnerId;
+                if (AttackerEntity is MyLargeTurretBase myLargeTurretBase)
+                    num1 = myLargeTurretBase.OwnerId;
+
+                if (AttackerEntity is MyShipToolBase myShipToolBase)
+                    num1 = myShipToolBase.OwnerId;
 
                 if (AttackerEntity is MyCharacter character && character != null)
                 {
@@ -190,15 +191,15 @@ namespace DePatch.PVEZONE
                     num1 = character.GetPlayerIdentityId();
                 }
 
-                if ((AttackerEntity as MyCubeGrid) != null)
+                if (AttackerEntity is MyCubeGrid myCubeGridZone)
                 {
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                     {
                         var zone1 = false;
                         var zone2 = false;
-                        if (!PVE.EntitiesInZone.Contains((AttackerEntity as MyCubeGrid).EntityId))
+                        if (!PVE.EntitiesInZone.Contains(myCubeGridZone.EntityId))
                             zone1 = true;
-                        if (!PVE.EntitiesInZone2.Contains((AttackerEntity as MyCubeGrid).EntityId))
+                        if (!PVE.EntitiesInZone2.Contains(myCubeGridZone.EntityId))
                             zone2 = true;
 
                         if (zone1 && zone2)
@@ -206,7 +207,7 @@ namespace DePatch.PVEZONE
                     }
                     else
                     {
-                        if (!PVE.EntitiesInZone.Contains((AttackerEntity as MyCubeGrid).EntityId))
+                        if (!PVE.EntitiesInZone.Contains(myCubeGridZone.EntityId))
                             return;
                     }
 
@@ -220,15 +221,15 @@ namespace DePatch.PVEZONE
                     }
                 }
 
-                if ((AttackerEntity as MyUserControllableGun) != null)
+                if (AttackerEntity is MyUserControllableGun myUserControllableGunZone)
                 {
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                     {
                         var zone1 = false;
                         var zone2 = false;
-                        if (!PVE.EntitiesInZone.Contains((AttackerEntity as MyUserControllableGun).CubeGrid.EntityId))
+                        if (!PVE.EntitiesInZone.Contains(myUserControllableGunZone.CubeGrid.EntityId))
                             zone1 = true;
-                        if (!PVE.EntitiesInZone2.Contains((AttackerEntity as MyUserControllableGun).CubeGrid.EntityId))
+                        if (!PVE.EntitiesInZone2.Contains(myUserControllableGunZone.CubeGrid.EntityId))
                             zone2 = true;
 
                         if (zone1 && zone2)
@@ -236,7 +237,7 @@ namespace DePatch.PVEZONE
                     }
                     else
                     {
-                        if (!PVE.EntitiesInZone.Contains((AttackerEntity as MyUserControllableGun).CubeGrid.EntityId))
+                        if (!PVE.EntitiesInZone.Contains(myUserControllableGunZone.CubeGrid.EntityId))
                             return;
                     }
                 }
@@ -268,22 +269,33 @@ namespace DePatch.PVEZONE
             {
                 info.Amount = 0f;
                 info.IsDeformation = false;
+
+                if (num3 == 1f)
+                {
+                    info.Amount = 0.5f;
+                    info.IsDeformation = false;
+                }
             }
             else
             {
                 var steamId1 = MySession.Static.Players.TryGetSteamId(num1);
                 var steamId2 = MySession.Static.Players.TryGetSteamId(num2);
-                if (!MySession.Static.Players.IdentityIsNpc(num1) && num2 != 0L &&
-                    !MySession.Static.Players.IdentityIsNpc(num2) && num2 != info.AttackerId && steamId1 != steamId2 &&
-                    MySession.Static.Factions.TryGetPlayerFaction(num1) != MySession.Static.Factions.TryGetPlayerFaction(num2))
+                var Playerfaction = MySession.Static.Factions.TryGetPlayerFaction(num1);
+                var gridFaction = MySession.Static.Factions.TryGetPlayerFaction(num2);
+
+                if (num3 == 1f)
                 {
-                    info.Amount = 0f;
+                    info.Amount = 0.5f;
                     info.IsDeformation = false;
                 }
-            }
-            if (num3 == 1f)
-            {
-                info.Amount = 0.5f;
+
+                if ((num1 != 0L && MySession.Static.Players.IdentityIsNpc(num1)) || (num2 != 0L && MySession.Static.Players.IdentityIsNpc(num2)))
+                    return;
+
+                if ((steamId1 != 0L && steamId2 != 0L && (steamId1 == steamId2)) || (Playerfaction != null && gridFaction != null && (Playerfaction == gridFaction)))
+                    return;
+
+                info.Amount = 0f;
                 info.IsDeformation = false;
             }
         }

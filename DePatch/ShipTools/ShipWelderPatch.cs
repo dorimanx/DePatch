@@ -52,7 +52,7 @@ namespace DePatch.ShipTools
                     {
                         Speed = ShipTool.DEFAULT_SPEED,
                         Subtype = __instance.DefinitionId.SubtypeId.String,
-                        Type = ToolType.Grinder
+                        Type = ToolType.Welder
                     });
                 });
                 return;
@@ -60,10 +60,14 @@ namespace DePatch.ShipTools
 
             var shipTool = shipTools.FirstOrDefault();
             if (shipTool == null) return;
-            var grinderAmount = MySession.Static.GrinderSpeedMultiplier * shipTool.Speed;
+            var welderMountAmount = MySession.Static.WelderSpeedMultiplier * shipTool.Speed;
+			var maxAllowedBoneMovement = MyShipWelder.WELDER_MAX_REPAIR_BONE_MOVEMENT_SPEED * 250f * 0.001f;
             foreach (var mySlimBlock in targets)
             {
-                mySlimBlock.IncreaseMountLevel(grinderAmount, __instance.OwnerId, __instance.GetInventoryBase());
+                mySlimBlock.IncreaseMountLevel(welderMountAmount,
+					__instance.OwnerId, __instance.GetInventoryBase(), 
+					maxAllowedBoneMovement, __instance.HelpOthers,
+					__instance.IDModule.ShareMode, false, false);
             }
         }
 	}
