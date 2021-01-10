@@ -267,6 +267,10 @@ namespace DePatch.PVEZONE
 
             if (num1 == 0L)
             {
+                // grind no owner
+                if (num2 == 0L)
+                    return;
+
                 info.Amount = 0f;
                 info.IsDeformation = false;
 
@@ -283,6 +287,10 @@ namespace DePatch.PVEZONE
                 var Playerfaction = MySession.Static.Factions.TryGetPlayerFaction(num1);
                 var gridFaction = MySession.Static.Factions.TryGetPlayerFaction(num2);
 
+                // grind no owner
+                if (num2 == 0L)
+                    return;
+
                 if (num3 == 1f)
                 {
                     info.Amount = 0.5f;
@@ -297,6 +305,12 @@ namespace DePatch.PVEZONE
 
                 info.Amount = 0f;
                 info.IsDeformation = false;
+
+                if (num3 == 1f)
+                {
+                    info.Amount = 0.5f;
+                    info.IsDeformation = false;
+                }
             }
         }
     }

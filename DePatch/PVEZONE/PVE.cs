@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using NLog;
 using Sandbox.Game.Entities;
+using Sandbox.Game.Weapons;
 using Sandbox.Game.World;
 using VRage.Game.Entity;
 using VRageMath;
@@ -33,12 +34,27 @@ namespace DePatch.PVEZONE
         {
             var zone1 = false;
             var zone2 = false;
+
             if (obj is MyPlayer myPlayer)
             {
-                if (PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    zone1 = true;
-                if (PVESphere2.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    zone2 = true;
+                if (myPlayer == null)
+                {
+                    __result = false;
+                    return false;
+                }
+
+                try
+                {
+                    if (myPlayer != default)
+                    {
+                        if (PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                            zone1 = true;
+                        if (PVESphere2.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                            zone2 = true;
+                    }
+                } catch
+                {
+                }
             }
             else if (obj is MyEntity entity)
             {

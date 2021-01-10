@@ -3,6 +3,7 @@ using DePatch.CoolDown;
 using HarmonyLib;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Character;
+using Sandbox.Game.Weapons;
 using Sandbox.Game.World;
 using VRage.Game.Entity;
 using VRage.Game.ObjectBuilders.Components;
@@ -35,6 +36,9 @@ namespace DePatch.PVEZONE
 
                         if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                         {
+                            if (entity is MyWelder Welder)
+                                return true;
+
                             // if found will return false this why !PVE.CheckEntityInZone
                             if (myPlayerBuilding != null && !PVE.CheckEntityInZone(myPlayerBuilding, ref __result))
                             {
@@ -45,9 +49,12 @@ namespace DePatch.PVEZONE
                             }
                         }
                         else
-                        {                          
+                        {
                             if (myPlayerBuilding != null && PVE.PVESphere.Contains(myPlayerBuilding.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
                             {
+                                if (entity is MyWelder Welder)
+                                    return true;
+
                                 if (grid.IsFriendlyPlayer(user))
                                     return true;
                                 else

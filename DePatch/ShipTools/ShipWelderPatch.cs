@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using DePatch.BlocksDisable;
 using HarmonyLib;
+using Sandbox.Game;
+using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.World;
 using SpaceEngineers.Game.Entities.Blocks;
@@ -15,7 +17,8 @@ namespace DePatch.ShipTools
     {
         private static void Prefix(MyShipWelder __instance, HashSet<MySlimBlock> targets)
         {
-            if (!DePatchPlugin.Instance.Config.Enabled || __instance == null || !__instance.Enabled) return;
+            if (!DePatchPlugin.Instance.Config.Enabled || __instance == null) return;
+
             if (!__instance.CubeGrid.IsStatic &&
                 (__instance.CubeGrid.GridSizeEnum == MyCubeSize.Large ||
                  __instance.CubeGrid.GridSizeEnum == MyCubeSize.Small)
@@ -61,13 +64,32 @@ namespace DePatch.ShipTools
             var shipTool = shipTools.FirstOrDefault();
             if (shipTool == null) return;
             var welderMountAmount = MySession.Static.WelderSpeedMultiplier * shipTool.Speed;
-			var maxAllowedBoneMovement = MyShipWelder.WELDER_MAX_REPAIR_BONE_MOVEMENT_SPEED * 250f * 0.001f;
+            MyInventory inventory = __instance.GetInventory(0);
+
             foreach (var mySlimBlock in targets)
             {
-                mySlimBlock.IncreaseMountLevel(welderMountAmount,
-					__instance.OwnerId, __instance.GetInventoryBase(), 
-					maxAllowedBoneMovement, __instance.HelpOthers,
-					__instance.IDModule.ShareMode, false, false);
+                if (mySlimBlock.HasDeformation || mySlimBlock.MaxDeformation > 0.0001f || !mySlimBlock.IsFullIntegrity)
+                {
+                    float maxAllowedBoneMovement = MyShipWelder.WELDER_MAX_REPAIR_BONE_MOVEMENT_SPEED * 250f * 0.001f;
+
+                    mySlimBlock.MoveItemsToConstructionStockpile(inventory);
+                    mySlimBlock.MoveUnneededItemsFromConstructionStockpile(inventory);
+
+                    if (__instance.OwnerId != 0L)
+                    {
+                        _ = mySlimBlock.IncreaseMountLevel(welderMountAmount,
+                            __instance.OwnerId, inventory, maxAllowedBoneMovement,
+                            __instance.HelpOthers,
+                            __instance.IDModule.ShareMode, false, false);
+                    }
+                    else
+                    {
+                        _ = mySlimBlock.IncreaseMountLevel(welderMountAmount,
+                            0L, inventory, maxAllowedBoneMovement,
+                            __instance.HelpOthers,
+                            __instance.IDModule.ShareMode, false, false);
+                    }
+                }
             }
         }
 	}

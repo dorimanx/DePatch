@@ -20,7 +20,7 @@ namespace DePatch.ShipTools
             if (!DePatchPlugin.Instance.Config.Enabled || __instance == null) return;
 
             // if found will return false this why !PVE.CheckEntityInZone
-            if (!PVE.CheckEntityInZone(__instance.CubeGrid))
+            if (DePatchPlugin.Instance.Config.PveZoneEnabled && !PVE.CheckEntityInZone(__instance.CubeGrid))
             {
                 _ = targets.RemoveWhere(b => !__instance.GetUserRelationToOwner(b.BuiltBy).IsFriendly());
             }
