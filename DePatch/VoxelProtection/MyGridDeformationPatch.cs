@@ -59,8 +59,33 @@ namespace DePatch.VoxelProtection
             return groups;
         }
 
+        private static bool CheckAdminGrid(object target)
+        {
+            if ((target as IMySlimBlock) == null)
+                return false;
+
+            var mySlimBlock = target as IMySlimBlock;
+            if (mySlimBlock.CubeGrid == null)
+                return false;
+
+            List<IMySlimBlock> blocks = new List<IMySlimBlock>();
+
+            mySlimBlock.CubeGrid.GetBlocks(blocks, (x) => (x.FatBlock is IMyTerminalBlock) && x.FatBlock.BlockDefinition.SubtypeId.Contains("AdminGrid"));
+            return blocks.Count > 0;
+        }
+
         private static void HandleGridDamage(object target, ref MyDamageInformation damage)
         {
+            if (DePatchPlugin.Instance.Config.AdminGrid && (target as IMySlimBlock) != null)
+            {
+                if (CheckAdminGrid(target))
+                {
+                    damage.Amount = 0;
+                    damage.IsDeformation = false;
+                    return;
+                }
+            }
+
             if (DePatchPlugin.Instance.Config.ProtectGrid && DePatchPlugin.Instance.Config.Enabled)
             {
                 if (damage.Type == MyDamageType.Deformation || damage.Type == MyDamageType.Fall)

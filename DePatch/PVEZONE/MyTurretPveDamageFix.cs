@@ -17,7 +17,7 @@ namespace DePatch.PVEZONE
         private static readonly SteamIdCooldownKey LoopRequestID = new SteamIdCooldownKey(76000000000000001);
         private static readonly int LoopCooldown = 240 * 1000;
         private static bool ServerBoot = true;
-        public static bool ServerBootLoopStart = true;
+        private static bool ServerBootLoopStart = true;
 
         private static bool Prefix(MySessionComponentSafeZones __instance, MyEntity entity, MySafeZoneAction action, ulong user, ref bool __result)
         {
@@ -67,20 +67,22 @@ namespace DePatch.PVEZONE
                     {
                         if (ServerBoot)
                         {
+                            if (ServerBootLoopStart)
+                            {
+                                CooldownManager.StartCooldown(LoopRequestID, null, LoopCooldown);
+                                ServerBootLoopStart = false;
+                            }
+
                             // loop for 240 sec after boot to block weapons.
                             if (CooldownManager.CheckCooldown(LoopRequestID, null, out long remainingSecondsBoot))
                             {
-                                if (ServerBootLoopStart)
-                                {
-                                    CooldownManager.StartCooldown(LoopRequestID, null, LoopCooldown);
-                                    ServerBootLoopStart = false;
-                                }
-                                var LoopTimer = remainingSecondsBoot;
-                                // block weapons
-                                return false;
                             }
-                            else
+
+                            if (remainingSecondsBoot < 2)
                                 ServerBoot = false;
+
+                            // block weapons
+                            return false;
                         }
 
                         return PVE.CheckEntityInZone(entity, ref __result);

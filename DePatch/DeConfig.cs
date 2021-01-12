@@ -78,6 +78,7 @@ namespace DePatch
         private float _largeGridMaxSpeedPurge = 500f;
         private float _smallGridMaxSpeedPurge = 500f;
         private bool _cargoCleanup;
+        private bool _AdminGrid;
 
         public bool DamageThreading
         {
@@ -113,6 +114,12 @@ namespace DePatch
         {
             get => _protectGrid;
             set => SetValue(ref _protectGrid, value);
+        }
+
+        public bool AdminGrid
+        {
+            get => _AdminGrid;
+            set => SetValue(ref _AdminGrid, value);
         }
 
         public bool ProtectVoxels

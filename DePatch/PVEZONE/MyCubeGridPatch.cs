@@ -10,11 +10,11 @@ namespace DePatch.PVEZONE
     {
         private static readonly SteamIdCooldownKey BootRequestID = new SteamIdCooldownKey(76000000000000003);
         private static int LoopCooldown = 3;
-        private static readonly int BootCooldown = 90 * 1000;
-        public static bool ServerBoot = true;
-        public static bool ServerBootLoopStart = true;
+        private static readonly int BootCooldown = 180 * 1000;
+        private static bool ServerBoot = true;
+        private static bool ServerBootLoopStart = true;
 
-        private static bool Prefix(MyCubeGrid __instance)
+        private static void Prefix(MyCubeGrid __instance)
         {
             if (DePatchPlugin.Instance.Config.PveZoneEnabled && DePatchPlugin.Instance.Config.Enabled)
             {
@@ -43,21 +43,23 @@ namespace DePatch.PVEZONE
                         {
                             /// loop for 3 ticks till next grid add / remove
                             if (++LoopCooldown <= 3)
-                                return true;
+                                return;
                             LoopCooldown = 0;
                         }
                         else if (ServerBoot)
                         {
-                            // Allow fast grid add to dictonary on boot. for 90sec
+                            if (ServerBootLoopStart)
+                            {
+                                CooldownManager.StartCooldown(BootRequestID, null, BootCooldown);
+                                ServerBootLoopStart = false;
+                            }
+
+                            // Allow fast grid add to dictonary on boot. for 180sec
                             if (CooldownManager.CheckCooldown(BootRequestID, null, out long remainingSecondsBoot))
                             {
-                                if (ServerBootLoopStart)
-                                {
-                                    CooldownManager.StartCooldown(BootRequestID, null, BootCooldown);
-                                    ServerBootLoopStart = false;
-                                }
                             }
-                            else
+
+                            if (remainingSecondsBoot < 2)
                                 ServerBoot = false;
                         }
 
@@ -103,7 +105,6 @@ namespace DePatch.PVEZONE
                 {
                 }
             }
-            return true;
         }
     }
 }

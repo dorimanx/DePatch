@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using DePatch.CoolDown;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Character;
 using Sandbox.Game.Entities.Cube;
@@ -14,6 +15,11 @@ namespace DePatch.PVEZONE
     public static class DamageHandler
     {
         private static bool _init;
+
+        private static readonly SteamIdCooldownKey LoopRequestID = new SteamIdCooldownKey(76000000000000004);
+        private static readonly int LoopCooldown = 180 * 1000;
+        private static bool ServerBoot = true;
+        private static bool ServerBootLoopStart = true;
 
         public static void Init()
         {
@@ -35,7 +41,31 @@ namespace DePatch.PVEZONE
             var num1 = info.AttackerId;
             var mySlimBlock = target as MySlimBlock;
             long num2;
-            var num3 = 2f;
+            long num4 = 10L;
+            var num3 = 10f;
+
+            if (ServerBoot)
+            {
+                if (ServerBootLoopStart)
+                {
+                    CooldownManager.StartCooldown(LoopRequestID, null, LoopCooldown);
+                    ServerBootLoopStart = false;
+                }
+
+                // loop for 180 sec after boot to block weapons.
+                if (CooldownManager.CheckCooldown(LoopRequestID, null, out long remainingSecondsBoot))
+                {
+                }
+
+                if (remainingSecondsBoot < 2)
+                    ServerBoot = false;
+
+                // block weapons
+                info.Amount = 0f;
+                info.IsDeformation = false;
+
+                return;
+            }
 
             if (mySlimBlock == null)
             {
@@ -169,6 +199,9 @@ namespace DePatch.PVEZONE
                 if (AttackerEntity is MyShipToolBase myShipToolBase)
                     num1 = myShipToolBase.OwnerId;
 
+                if (AttackerEntity is MyThrust myThrust)
+                    num4 = myThrust.CubeGrid.BigOwners[0];
+
                 if (AttackerEntity is MyCharacter character && character != null)
                 {
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
@@ -265,6 +298,33 @@ namespace DePatch.PVEZONE
                 }
             }
 
+            if (num4 != 10L && info.Type == MyDamageType.Environment)
+            {
+                // burn no owner
+                if (num2 == 0L)
+                    return;
+
+                // Allow damage from NPC thrusters
+                if (MySession.Static.Players.IdentityIsNpc(num4) || MySession.Static.Players.IdentityIsNpc(num2))
+                    return;
+
+                // allow thruster damage in PVE zone. or there are sync issues.
+                var steamId1 = MySession.Static.Players.TryGetSteamId(num4);
+                var steamId2 = MySession.Static.Players.TryGetSteamId(num2);
+                var Thrusterfaction = MySession.Static.Factions.TryGetPlayerFaction(num4);
+                var gridFaction = MySession.Static.Factions.TryGetPlayerFaction(num2);
+
+                // burn owned blocks to prevent DySync
+                if ((steamId1 != 0L && steamId2 != 0L && (steamId1 == steamId2)) || (Thrusterfaction != null && gridFaction != null && (Thrusterfaction == gridFaction)))
+                    return;
+
+                // Prevent attack with thrusters as weapon in PVE, Nigate Damage with DySync.
+                info.Amount = 0f;
+                info.IsDeformation = false;
+
+                return;
+            }
+
             if (num1 == 0L)
             {
                 // grind no owner
@@ -274,9 +334,10 @@ namespace DePatch.PVEZONE
                 info.Amount = 0f;
                 info.IsDeformation = false;
 
+                // grid to grid ram on high speed, allow small amount of damage.
                 if (num3 == 1f)
                 {
-                    info.Amount = 0.5f;
+                    info.Amount = 0.3f;
                     info.IsDeformation = false;
                 }
             }
@@ -291,24 +352,32 @@ namespace DePatch.PVEZONE
                 if (num2 == 0L)
                     return;
 
+                // self damage
+                if (num2 == info.AttackerId)
+                    return;
+
+                // grid to grid ram on high speed, allow small amount of damage.
                 if (num3 == 1f)
                 {
-                    info.Amount = 0.5f;
+                    info.Amount = 0.3f;
                     info.IsDeformation = false;
                 }
 
+                // allow damage to and from NPC!
                 if ((num1 != 0L && MySession.Static.Players.IdentityIsNpc(num1)) || (num2 != 0L && MySession.Static.Players.IdentityIsNpc(num2)))
                     return;
 
+                // allow damage if owned grid or faction owner.
                 if ((steamId1 != 0L && steamId2 != 0L && (steamId1 == steamId2)) || (Playerfaction != null && gridFaction != null && (Playerfaction == gridFaction)))
                     return;
 
                 info.Amount = 0f;
                 info.IsDeformation = false;
 
+                // grid to grid ram on high speed, allow small amount of damage.
                 if (num3 == 1f)
                 {
-                    info.Amount = 0.5f;
+                    info.Amount = 0.3f;
                     info.IsDeformation = false;
                 }
             }
