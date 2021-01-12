@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using DePatch.CoolDown;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Character;
 using Sandbox.Game.Entities.Cube;
@@ -15,11 +14,6 @@ namespace DePatch.PVEZONE
     public static class DamageHandler
     {
         private static bool _init;
-
-        private static readonly SteamIdCooldownKey LoopRequestID = new SteamIdCooldownKey(76000000000000004);
-        private static readonly int LoopCooldown = 180 * 1000;
-        private static bool ServerBoot = true;
-        private static bool ServerBootLoopStart = true;
 
         public static void Init()
         {
@@ -43,29 +37,6 @@ namespace DePatch.PVEZONE
             long num2;
             long num4 = 10L;
             var num3 = 10f;
-
-            if (ServerBoot)
-            {
-                if (ServerBootLoopStart)
-                {
-                    CooldownManager.StartCooldown(LoopRequestID, null, LoopCooldown);
-                    ServerBootLoopStart = false;
-                }
-
-                // loop for 180 sec after boot to block weapons.
-                if (CooldownManager.CheckCooldown(LoopRequestID, null, out long remainingSecondsBoot))
-                {
-                }
-
-                if (remainingSecondsBoot < 2)
-                    ServerBoot = false;
-
-                // block weapons
-                info.Amount = 0f;
-                info.IsDeformation = false;
-
-                return;
-            }
 
             if (mySlimBlock == null)
             {
