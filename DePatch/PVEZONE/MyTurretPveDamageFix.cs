@@ -32,6 +32,9 @@ namespace DePatch.PVEZONE
                 case MyCubeGrid grid when action == MySafeZoneAction.Building:
                     {
                         var myPlayerID = MySession.Static.Players.TryGetIdentityId(user);
+                        if (myPlayerID == 0 || myPlayerID < 0)
+                            return true;
+
                         var myPlayerBuilding = MySession.Static.Players.GetOnlinePlayers().ToList().Find(b => b.Identity.IdentityId == myPlayerID);
 
                         if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
@@ -93,6 +96,9 @@ namespace DePatch.PVEZONE
 
             if (entity is MyCharacter character)
             {
+                if (character == null)
+                    return true;
+
                 var myPlayer = MySession.Static.Players.GetOnlinePlayers().ToList().Find(b => b.Identity.IdentityId == character.GetPlayerIdentityId());
                 if (myPlayer != null && DePatchPlugin.Instance.Config.PveZoneEnabled2)
                 {
