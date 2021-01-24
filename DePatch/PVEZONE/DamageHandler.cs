@@ -136,8 +136,11 @@ namespace DePatch.PVEZONE
                     num1 = myAutomaticRifleGun.OwnerIdentityId;
                 }
 
-                if (AttackerEntity is MyEngineerToolBase toolBase)
+                if (AttackerEntity is MyEngineerToolBase toolBase && toolBase != null)
                 {
+                    if (toolBase.OwnerIdentityId == 0)
+                        return;
+
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                     {
                         var zone1 = false;
@@ -175,6 +178,9 @@ namespace DePatch.PVEZONE
 
                 if (AttackerEntity is MyCharacter character && character != null)
                 {
+                    if (character.GetPlayerIdentityId() == 0)
+                        return;
+
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                     {
                         var zone1 = false;
