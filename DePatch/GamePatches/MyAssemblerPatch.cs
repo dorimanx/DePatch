@@ -1,6 +1,7 @@
 ﻿using DePatch.CoolDown;
 using HarmonyLib;
 using Sandbox.Game.Entities.Cube;
+using System.Threading.Tasks;
 using VRage.Game;
 
 namespace DePatch.GamePatches
@@ -9,7 +10,7 @@ namespace DePatch.GamePatches
     internal class MyAssemblerPatch
     {
         private static readonly SteamIdCooldownKey LoopRequestID = new SteamIdCooldownKey(76000000000000002);
-        private static readonly int LoopCooldown = 30 * 1000;
+        private static readonly int LoopCooldown = 40 * 1000;
 
         private static bool Prefix(MyAssembler __instance)
         {
@@ -57,7 +58,7 @@ namespace DePatch.GamePatches
                 }
                 CooldownManager.StartCooldown(LoopRequestID, null, LoopCooldown);
 
-                CargoCleanup.SearchAndDeleteItemStacks();
+                _ = Task.Run(() => CargoCleanup.SearchAndDeleteItemStacks());
             }
             return true;
         }

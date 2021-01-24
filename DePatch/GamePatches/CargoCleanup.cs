@@ -50,7 +50,8 @@ namespace DePatch.GamePatches
                         /* checking if we are below defined limit */
                         if (value < 0)
                         {
-                            inventory.RemoveItemsAt(j);
+                            inventory.RemoveItemsOfType(1, item.Content);
+                            inventory.UpdateItem(item.Content.GetId());
                             NeedRefresh = true;
                         }
 
@@ -76,7 +77,7 @@ namespace DePatch.GamePatches
                 if (block.CubeGrid.PlayerPresenceTier != MyUpdateTiersPlayerPresence.Normal)
                     return true;
 
-                if (block.FatBlock.GetInventory().ItemCount <= 300)
+                if (block.FatBlock.GetInventory().ItemCount <= 500)
                     return true;
 
                 if (!DictionaryUpdated)
@@ -94,13 +95,13 @@ namespace DePatch.GamePatches
                 try
                 {
                     FindAndCleanInventorys(block, CleanupDictionary);
+                    return true;
                 }
                 catch (Exception e)
                 {
                     Log.Error(e);
+                    return true;
                 }
-
-                return true;
             });
         }
     }
