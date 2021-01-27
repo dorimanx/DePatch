@@ -32,6 +32,9 @@ namespace DePatch.PVEZONE
 
         private static void ProcessDamage(object target, ref MyDamageInformation info)
         {
+            if (target == null)
+                return;
+
             var num1 = info.AttackerId;
             var mySlimBlock = target as MySlimBlock;
             long num2;
