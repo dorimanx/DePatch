@@ -207,10 +207,6 @@ namespace DePatch.VoxelProtection
                                             grids.SortNoAlloc((x, y) => x.GridSizeEnum.CompareTo(y.GridSizeEnum));
 
                                             MyMultiplayer.RaiseEvent(grids.First(), (MyCubeGrid x) => new Action(x.ConvertToStatic), default(EndpointId));
-                                            foreach (var player in MySession.Static.Players.GetOnlinePlayers())
-                                            {
-                                                MyMultiplayer.RaiseEvent(grids.First(), (MyCubeGrid x) => new Action(x.ConvertToStatic), new EndpointId(player.Id.SteamId));
-                                            }
 
                                             /* This part of code belong to LordTylus great plugin dev! FixShip after converting to static */
                                             var gridWithSubGrids = FindGridGroup(Grid.DisplayName);
