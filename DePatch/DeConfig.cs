@@ -79,6 +79,7 @@ namespace DePatch
         private float _smallGridMaxSpeedPurge = 500f;
         private bool _cargoCleanup;
         private bool _AdminGrid;
+        private bool _LogTracker;
 
         public bool DamageThreading
         {
@@ -485,6 +486,12 @@ namespace DePatch
         {
             get => _speedingModeSelector;
             set => SetValue(ref _speedingModeSelector, value);
+        }
+
+        public bool LogTracker
+        {
+            get => _LogTracker;
+            set => SetValue(ref _LogTracker, value);
         }
     }
 }

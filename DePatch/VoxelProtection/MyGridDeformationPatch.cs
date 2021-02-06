@@ -3,15 +3,21 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Sandbox;
 using Sandbox.Common.ObjectBuilders;
 using Sandbox.Engine.Multiplayer;
+using Sandbox.Game;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Blocks;
+using Sandbox.Game.Entities.Character;
 using Sandbox.Game.Entities.Cube;
+using Sandbox.Game.Entities.Planet;
 using Sandbox.Game.GameSystems;
+using Sandbox.Game.SessionComponents;
 using Sandbox.Game.Weapons;
 using Sandbox.Game.World;
 using Sandbox.ModAPI;
+using VRage;
 using VRage.Game;
 using VRage.Game.ModAPI;
 using VRage.Groups;
@@ -157,34 +163,23 @@ namespace DePatch.VoxelProtection
                                             elevation = double.PositiveInfinity;
                                         }
 
-                                        if (elevation < 150 && elevation != double.PositiveInfinity &&
+                                        if (elevation < 200 && elevation != double.PositiveInfinity &&
                                             Grid.GetFatBlockCount<MyMotorSuspension>() < 4 &&
                                             Grid.GetFatBlockCount<MyThrust>() >= 6)
                                         {
                                             if (damage.Amount != 0f)
                                                 damage.Amount = 0f;
 
-                                            /*
-                                            if (GridCube is MyObjectBuilder_LandingGear)
-                                            {
-                                                (GridCube as MyObjectBuilder_LandingGear).AttachedEntityId = null;
-                                                (GridCube as MyObjectBuilder_LandingGear).IsLocked = false;
-                                                (GridCube as MyObjectBuilder_LandingGear).LockMode = SpaceEngineers.Game.ModAPI.Ingame.LandingGearMode.Unlocked;
-                                                (GridCube as MyObjectBuilder_LandingGear).Enabled = true;
-                                            }
-                                            */
-
                                             GridPhysics?.ClearSpeed();
 
+                                            var pilots = new List<MyCharacter>();
                                             foreach (var a in Grid.GetFatBlocks<MyCockpit>())
                                             {
-                                                if (a != null)
+                                                if (a != null && a.Pilot != null)
+                                                {
+                                                    pilots.Add(a.Pilot);
                                                     a.RemovePilot();
-                                            }
-                                            foreach (var b in Grid.GetFatBlocks<MyCryoChamber>())
-                                            {
-                                                if (b != null)
-                                                    b.RemovePilot();
+                                                }
                                             }
 
                                             foreach (var projector in Grid.GetFatBlocks<MyProjectorBase>())
@@ -206,12 +201,15 @@ namespace DePatch.VoxelProtection
                                             grids.Reverse();
                                             grids.SortNoAlloc((x, y) => x.GridSizeEnum.CompareTo(y.GridSizeEnum));
 
-                                            MyMultiplayer.RaiseEvent(grids.First(), (MyCubeGrid x) => new Action(x.ConvertToStatic), default(EndpointId));
+                                            var biggestGrid = grids.First();
+                                            var oldPosition = biggestGrid.PositionComp.GetPosition();
+                                            MyMultiplayer.RaiseEvent(biggestGrid, (MyCubeGrid x) => new Action(x.ConvertToStatic), default(EndpointId));
 
                                             /* This part of code belong to LordTylus great plugin dev! FixShip after converting to static */
                                             var gridWithSubGrids = FindGridGroup(Grid.DisplayName);
                                             var objectBuilderList = new List<MyObjectBuilder_EntityBase>();
                                             var gridsList = new List<MyCubeGrid>();
+                                            var box = BoundingBox.CreateInvalid();
 
                                             foreach (var item in gridWithSubGrids)
                                             {
@@ -226,6 +224,7 @@ namespace DePatch.VoxelProtection
                                                     {
                                                         if (ob is MyObjectBuilder_CubeGrid gridBuilder)
                                                         {
+                                                            box.Include(gridBuilder.CalculateBoundingBox());
                                                             foreach (var cubeBlock in gridBuilder.CubeBlocks)
                                                             {
                                                                 if (cubeBlock is MyObjectBuilder_OxygenTank o2Tank)
@@ -246,108 +245,36 @@ namespace DePatch.VoxelProtection
                                                 entity.Close();
                                             }
 
-                                            var DisableThisForNow = true;
-                                            if (!DisableThisForNow)
+                                            Vector3D? vector3D3;
+                                            var boundingSphere = BoundingSphere.CreateFromBoundingBox(box);
+
+                                            var spawnInfo = new SpawnInfo
                                             {
-                                                /* This insane code belong to Dorimanx */
-                                                var PastePositionUpDown = (Vector3D.Up + Vector3D.Up + Vector3D.Up) * 30;
-                                                var PastePositioBackForward = (Vector3D.Backward + Vector3D.Backward + Vector3D.Backward) * 30;
-                                                var PastePositioRightLeft = (Vector3D.Right + Vector3D.Right + Vector3D.Right) * 30;
-                                                var MinElevation = 35;
+                                                CollisionRadius = boundingSphere.Radius,
+                                                Planet = closestPlanet,
+                                                PlanetDeployAltitude = boundingSphere.Radius * 1.3f
+                                            };
+                                            vector3D3 = MyRespawnComponentBase.FindPositionAbovePlanet(oldPosition,
+                                                ref spawnInfo, true, 5, 60, 70);
 
-                                                for (var i = 0; i < objectBuilderList.Count; i++)
-                                                {
-                                                    var ob = objectBuilderList[i];
-
-                                                    if (ob.PositionAndOrientation.HasValue)
-                                                    {
-                                                        var OriginalPosition = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
-                                                        var PasteTo = ob.PositionAndOrientation.GetValueOrDefault();
-
-                                                        if (elevation < MinElevation)
-                                                        {
-                                                            PasteTo.Position = OriginalPosition - PastePositionUpDown;
-                                                            ob.PositionAndOrientation = PasteTo;
-                                                            var NewPosition = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
-
-                                                            var closestSurfacePointGlobal = closestPlanet.GetClosestSurfacePointGlobal(ref NewPosition);
-                                                            double? elevation2 = Vector3D.Distance(closestSurfacePointGlobal, NewPosition);
-
-                                                            if (elevation2 < MinElevation)
-                                                            {
-                                                                PasteTo.Position = OriginalPosition;
-                                                                ob.PositionAndOrientation = PasteTo;
-
-                                                                PasteTo.Position = OriginalPosition + PastePositionUpDown;
-                                                                ob.PositionAndOrientation = PasteTo;
-                                                                var NewPosition2 = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
-
-                                                                var closestSurfacePointGlobal2 = closestPlanet.GetClosestSurfacePointGlobal(ref NewPosition2);
-                                                                double? elevation3 = Vector3D.Distance(closestSurfacePointGlobal2, NewPosition2);
-
-                                                                if (elevation3 < MinElevation)
-                                                                {
-                                                                    PasteTo.Position = OriginalPosition;
-                                                                    ob.PositionAndOrientation = PasteTo;
-
-                                                                    PasteTo.Position = OriginalPosition - PastePositioBackForward;
-                                                                    ob.PositionAndOrientation = PasteTo;
-                                                                    var NewPosition3 = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
-
-                                                                    var closestSurfacePointGlobal3 = closestPlanet.GetClosestSurfacePointGlobal(ref NewPosition3);
-                                                                    double? elevation4 = Vector3D.Distance(closestSurfacePointGlobal3, NewPosition3);
-
-                                                                    if (elevation4 < MinElevation)
-                                                                    {
-                                                                        PasteTo.Position = OriginalPosition;
-                                                                        ob.PositionAndOrientation = PasteTo;
-
-                                                                        PasteTo.Position = OriginalPosition + PastePositioBackForward;
-                                                                        ob.PositionAndOrientation = PasteTo;
-                                                                        var NewPosition4 = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
-
-                                                                        var closestSurfacePointGlobal4 = closestPlanet.GetClosestSurfacePointGlobal(ref NewPosition4);
-                                                                        double? elevation5 = Vector3D.Distance(closestSurfacePointGlobal4, NewPosition4);
-
-                                                                        if (elevation5 < MinElevation)
-                                                                        {
-                                                                            PasteTo.Position = OriginalPosition;
-                                                                            ob.PositionAndOrientation = PasteTo;
-
-                                                                            PasteTo.Position = OriginalPosition - PastePositioRightLeft;
-                                                                            ob.PositionAndOrientation = PasteTo;
-                                                                            var NewPosition5 = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
-
-                                                                            var closestSurfacePointGlobal5 = closestPlanet.GetClosestSurfacePointGlobal(ref NewPosition5);
-                                                                            double? elevation6 = Vector3D.Distance(closestSurfacePointGlobal5, NewPosition5);
-
-                                                                            if (elevation6 < MinElevation)
-                                                                            {
-                                                                                PasteTo.Position = OriginalPosition;
-                                                                                ob.PositionAndOrientation = PasteTo;
-
-                                                                                PasteTo.Position = OriginalPosition + PastePositioRightLeft;
-                                                                                ob.PositionAndOrientation = PasteTo;
-                                                                                var NewPosition6 = objectBuilderList[i].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
-
-                                                                                var closestSurfacePointGlobal6 = closestPlanet.GetClosestSurfacePointGlobal(ref NewPosition6);
-                                                                                double? elevation7 = Vector3D.Distance(closestSurfacePointGlobal6, NewPosition6);
-
-
-                                                                                if (elevation7 < MinElevation)
-                                                                                {
-                                                                                    PasteTo.Position = OriginalPosition;
-                                                                                    ob.PositionAndOrientation = PasteTo;
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
+                                            if (vector3D3 == default)
+                                            {
+                                                vector3D3 = oldPosition;
+                                                pilots.Select(b => b.GetIdentity().IdentityId).ForEach(b => MyVisualScriptLogicProvider.ShowNotification("Your grid will be stuck in voxel! Good digging xD", 15000, MyFontEnum.Red, b));
                                             }
+                                            var vector3D2 = oldPosition - closestPlanet.PositionComp.GetPosition();
+                                            vector3D2.Normalize();
+                                            var vector3D = Vector3D.CalculatePerpendicularVector(vector3D2);
+                                            var matrix = MatrixD.CreateWorld(vector3D3.Value, vector3D, vector3D2);
+                                            var vector3D4 = Vector3D.TransformNormal(boundingSphere.Center, matrix);
+                                            var position = vector3D3.Value - vector3D4;
+
+                                            var gridPos = objectBuilderList.First();
+                                            var pos = gridPos.PositionAndOrientation.GetValueOrDefault();
+                                            pos.Position = position;
+                                            gridPos.PositionAndOrientation = pos;
+                                            var newMatrix = gridPos.PositionAndOrientation.Value.GetMatrix() * FindRotationMatrix((MyObjectBuilder_CubeGrid)gridPos);
+                                            gridPos.PositionAndOrientation = new MyPositionAndOrientation(newMatrix);
 
                                             MyAPIGateway.Entities.RemapObjectBuilderCollection(objectBuilderList);
 
@@ -388,6 +315,60 @@ namespace DePatch.VoxelProtection
                     }
                 }
             }
+        }
+
+        private static MatrixD FindRotationMatrix(MyObjectBuilder_CubeGrid cubeGrid)
+        {
+            MatrixD matrixD = MatrixD.Identity;
+            List<MyObjectBuilder_Cockpit> list = (from blk in cubeGrid.CubeBlocks.OfType<MyObjectBuilder_Cockpit>()
+                                                  where !(blk is MyObjectBuilder_CryoChamber) && blk.SubtypeName.IndexOf("bathroom", StringComparison.InvariantCultureIgnoreCase) == -1
+                                                  select blk).ToList();
+            MyObjectBuilder_CubeBlock myObjectBuilder_CubeBlock = list.Find((MyObjectBuilder_Cockpit blk) => blk.IsMainCockpit) ?? list.FirstOrDefault();
+            if (myObjectBuilder_CubeBlock == null)
+            {
+                List<MyObjectBuilder_RemoteControl> list2 = cubeGrid.CubeBlocks.OfType<MyObjectBuilder_RemoteControl>().ToList();
+                myObjectBuilder_CubeBlock = (list2.Find((MyObjectBuilder_RemoteControl blk) => blk.IsMainCockpit) ?? list2.FirstOrDefault());
+            }
+            if (myObjectBuilder_CubeBlock == null)
+            {
+                myObjectBuilder_CubeBlock = cubeGrid.CubeBlocks.OfType<MyObjectBuilder_LandingGear>().FirstOrDefault();
+            }
+            if (myObjectBuilder_CubeBlock != null)
+            {
+                if (myObjectBuilder_CubeBlock.BlockOrientation.Up == Base6Directions.Direction.Right)
+                {
+                    matrixD *= MatrixD.CreateFromAxisAngle(Vector3D.Forward, MathHelper.ToRadians(-90f));
+                }
+                else
+                {
+                    if (myObjectBuilder_CubeBlock.BlockOrientation.Up == Base6Directions.Direction.Left)
+                    {
+                        matrixD *= MatrixD.CreateFromAxisAngle(Vector3D.Forward, MathHelper.ToRadians(90f));
+                    }
+                    else
+                    {
+                        if (myObjectBuilder_CubeBlock.BlockOrientation.Up == Base6Directions.Direction.Down)
+                        {
+                            matrixD *= MatrixD.CreateFromAxisAngle(Vector3D.Forward, MathHelper.ToRadians(180f));
+                        }
+                        else
+                        {
+                            if (myObjectBuilder_CubeBlock.BlockOrientation.Up == Base6Directions.Direction.Forward)
+                            {
+                                matrixD *= MatrixD.CreateFromAxisAngle(Vector3D.Left, MathHelper.ToRadians(-90f));
+                            }
+                            else
+                            {
+                                if (myObjectBuilder_CubeBlock.BlockOrientation.Up == Base6Directions.Direction.Backward)
+                                {
+                                    matrixD *= MatrixD.CreateFromAxisAngle(Vector3D.Left, MathHelper.ToRadians(90f));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return matrixD;
         }
     }
 }

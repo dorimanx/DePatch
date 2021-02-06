@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using DePatch.OptiDamage;
 using DePatch.PVEZONE;
@@ -59,6 +60,19 @@ namespace DePatch
             new Harmony("net.ltp.depatch").PatchAll();
 
             _sessionManager = Torch.Managers.GetManager<TorchSessionManager>();
+
+            // send server alive log to torch log every 100sec.
+            if (Instance.Config.LogTracker)
+            {
+                Task.Run(async () =>
+                {
+                    while (true)
+                    {
+                        Log.Info("Server Status: ALIVE");
+                        await Task.Delay(TimeSpan.FromMinutes(1.6));
+                    }
+                });
+            }
 
             Config.Mods.ForEach(delegate (ulong m)
             {
