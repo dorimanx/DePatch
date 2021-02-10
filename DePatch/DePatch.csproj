@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(SolutionDir)\Props\Plugin.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
@@ -46,27 +47,8 @@
     <Reference Include="ICSharpCode.Decompiler, Version=6.2.1.6137, Culture=neutral, PublicKeyToken=d4bfe873e7598c49, processorArchitecture=MSIL">
       <HintPath>..\packages\ICSharpCode.Decompiler.6.2.1.6137\lib\netstandard2.0\ICSharpCode.Decompiler.dll</HintPath>
     </Reference>
-    <Reference Include="NLog">
-      <HintPath>..\TorchBinaries\NLog.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="ProtoBuf.Net.Core">
-      <HintPath>..\GameBinaries\ProtoBuf.Net.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Sandbox.Common">
-      <HintPath>..\GameBinaries\Sandbox.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Sandbox.Game">
-      <HintPath>..\GameBinaries\Sandbox.Game.dll</HintPath>
-    </Reference>
-    <Reference Include="SpaceEngineers.Game">
-      <HintPath>..\GameBinaries\SpaceEngineers.Game.dll</HintPath>
-    </Reference>
-    <Reference Include="SpaceEngineers.ObjectBuilders, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\GameBinaries\SpaceEngineers.ObjectBuilders.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Collections.Immutable.1.5.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
@@ -82,31 +64,6 @@
     </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
-    <Reference Include="Torch">
-      <HintPath>..\TorchBinaries\Torch.dll</HintPath>
-    </Reference>
-    <Reference Include="Torch.API">
-      <HintPath>..\TorchBinaries\Torch.API.dll</HintPath>
-    </Reference>
-    <Reference Include="Torch.Server">
-      <HintPath>..\TorchBinaries\Torch.Server.exe</HintPath>
-    </Reference>
-    <Reference Include="VRage">
-      <HintPath>..\GameBinaries\VRage.dll</HintPath>
-    </Reference>
-    <Reference Include="VRage.Game">
-      <HintPath>..\GameBinaries\VRage.Game.dll</HintPath>
-    </Reference>
-    <Reference Include="VRage.Input, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\GameBinaries\VRage.Input.dll</HintPath>
-    </Reference>
-    <Reference Include="VRage.Library">
-      <HintPath>..\GameBinaries\VRage.Library.dll</HintPath>
-    </Reference>
-    <Reference Include="VRage.Math">
-      <HintPath>..\GameBinaries\VRage.Math.dll</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>

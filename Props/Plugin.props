@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project>
+    <ItemGroup>
+        <Reference Include="Sandbox.Common">
+            <HintPath>$(SolutionDir)\GameBinaries\Sandbox.Common.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Sandbox.Game">
+            <HintPath>$(SolutionDir)\GameBinaries\Sandbox.Game.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Sandbox.Graphics">
+            <HintPath>$(SolutionDir)\GameBinaries\Sandbox.Graphics.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="SpaceEngineers.Game">
+            <HintPath>$(SolutionDir)\GameBinaries\SpaceEngineers.Game.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="SpaceEngineers.ObjectBuilders">
+            <HintPath>$(SolutionDir)\GameBinaries\SpaceEngineers.ObjectBuilders.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="SpaceEngineers.ObjectBuilders.XmlSerializers">
+            <HintPath>$(SolutionDir)\GameBinaries\SpaceEngineers.ObjectBuilders.XmlSerializers.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Torch">
+            <HintPath>$(SolutionDir)\TorchBinaries\Torch.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Torch.API">
+            <HintPath>$(SolutionDir)\TorchBinaries\Torch.API.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Torch.Server">
+            <HintPath>$(SolutionDir)\TorchBinaries\Torch.Server.exe</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="VRage">
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="HavokWrapper">
+            <HintPath>$(SolutionDir)\GameBinaries\HavokWrapper.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="VRage.Audio">
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Audio.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="VRage.Dedicated">
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Dedicated.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="VRage.Game">
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Game.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="VRage.Game.XmlSerializers">
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Game.XmlSerializers.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="VRage.Input">
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Input.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="VRage.Library">
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Library.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="VRage.Math">
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Math.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="VRage.NativeWrapper">
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.NativeWrapper.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="VRage.Render">
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Render.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="VRage.Render11">
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Render11.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="VRage.Scripting">
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Scripting.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="ProtoBuf.Net.Core">
+            <HintPath>$(SolutionDir)\GameBinaries\ProtoBuf.Net.Core.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="NLog">
+            <HintPath>$(SolutionDir)\TorchBinaries\NLog.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+    	<Reference Include="PresentationFramework">
+	    <Private>False</Private>
+	</Reference>
+    	<Reference Include="PresentationCore">
+	    <Private>False</Private>
+	</Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="$(ProjectDir)\manifest.xml" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+    <Target Name="Zip" BeforeTargets="AfterBuild">
+        <MakeDir Directories="$(SolutionDir)\Build\" />
+        <ZipDirectory SourceDirectory="$(OutputPath)" DestinationFile="$(SolutionDir)\Build\$(MSBuildProjectName).zip" Overwrite="true" />
+        <Copy SourceFiles="$(SolutionDir)\Build\$(MSBuildProjectName).zip" DestinationFolder="$(SolutionDir)\TorchBinaries\Plugins\" SkipUnchangedFiles="true"/>
+    </Target>
+</Project>
