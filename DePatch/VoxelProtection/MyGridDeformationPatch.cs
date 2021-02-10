@@ -97,7 +97,7 @@ namespace DePatch.VoxelProtection
             if (!DePatchPlugin.Instance.Config.ProtectGrid || !DePatchPlugin.Instance.Config.Enabled) return;
 
             if (damage.Type != MyDamageType.Deformation && damage.Type != MyDamageType.Fall) return;
-            
+
             MyEntities.TryGetEntityById(damage.AttackerId, out var AttackerEntity, allowClosed: true);
 
             var GridBlock = target as IMySlimBlock;
@@ -110,7 +110,7 @@ namespace DePatch.VoxelProtection
                     DePatchPlugin.Instance.Config.MaxProtectedLargeGridSize) &&
                 (GridCube.GridSizeEnum != MyCubeSize.Small || Grid.BlocksCount >=
                     DePatchPlugin.Instance.Config.MaxProtectedSmallGridSize)) return;
-                    
+
             var speed = DePatchPlugin.Instance.Config.MinProtectSpeed;
             var LinearVelocity = GridPhysics.LinearVelocity;
             var AngularVelocity = GridPhysics.AngularVelocity;
@@ -129,7 +129,7 @@ namespace DePatch.VoxelProtection
                 if (Grid.BlocksCount <= DePatchPlugin.Instance.Config.MaxBlocksDoDamage ||
                     AttackerEntity is MyCubeBlock block &&
                     block.CubeGrid.BlocksCount <= DePatchPlugin.Instance.Config.MaxBlocksDoDamage) return;
-                
+
                 if (damage.IsDeformation) damage.IsDeformation = false;
                 if (damage.Amount > 0f) damage.Amount = 0f;
             }
@@ -241,11 +241,10 @@ namespace DePatch.VoxelProtection
 
                                 foreach (var grid in gridsList)
                                 {
-                                    IMyEntity entity = grid;
-                                    if (entity == null || entity.MarkedForClose || entity.Closed)
+                                    if (grid == null || ((IMyEntity)grid).MarkedForClose || ((IMyEntity)grid).Closed)
                                         continue;
 
-                                    entity.Close();
+                                    ((IMyEntity)grid).Close();
                                 }
 
                                 Vector3D? vector3D3;
@@ -255,35 +254,45 @@ namespace DePatch.VoxelProtection
                                 {
                                     CollisionRadius = boundingSphere.Radius,
                                     Planet = closestPlanet,
-                                    PlanetDeployAltitude = boundingSphere.Radius * 1.3f
+                                    PlanetDeployAltitude = boundingSphere.Radius * 1.2f
                                 };
                                 vector3D3 = MyRespawnComponentBase.FindPositionAbovePlanet(oldPosition,
-                                    ref spawnInfo, true, 5, 60, 70);
+                                    ref spawnInfo, true, 10, 50, 70);
 
                                 if (vector3D3 == default)
                                 {
                                     vector3D3 = oldPosition;
                                     pilots.Select(b => b.GetIdentity().IdentityId).ForEach(b => MyVisualScriptLogicProvider.ShowNotification("Your grid will be stuck in voxel! Good digging xD", 15000, MyFontEnum.Red, b));
+
+                                    MyAPIGateway.Entities.RemapObjectBuilderCollection(objectBuilderList);
+
+                                    foreach (var ob in objectBuilderList)
+                                    {
+                                        MyAPIGateway.Entities.CreateFromObjectBuilderParallel(ob, true, null);
+                                    }
                                 }
-                                var vector3D2 = oldPosition - closestPlanet.PositionComp.GetPosition();
-                                vector3D2.Normalize();
-                                var vector3D = Vector3D.CalculatePerpendicularVector(vector3D2);
-                                var matrix = MatrixD.CreateWorld(vector3D3.Value, vector3D, vector3D2);
-                                var vector3D4 = Vector3D.TransformNormal(boundingSphere.Center, matrix);
-                                var position = vector3D3.Value - vector3D4;
-
-                                var gridPos = objectBuilderList.First();
-                                var pos = gridPos.PositionAndOrientation.GetValueOrDefault();
-                                pos.Position = position;
-                                gridPos.PositionAndOrientation = pos;
-                                var newMatrix = gridPos.PositionAndOrientation.Value.GetMatrix() * FindRotationMatrix((MyObjectBuilder_CubeGrid)gridPos);
-                                gridPos.PositionAndOrientation = new MyPositionAndOrientation(newMatrix);
-
-                                MyAPIGateway.Entities.RemapObjectBuilderCollection(objectBuilderList);
-
-                                foreach (var ob in objectBuilderList)
+                                else
                                 {
-                                    _ = MyAPIGateway.Entities.CreateFromObjectBuilderParallel(ob, true, null);
+                                    var vector3D2 = oldPosition - closestPlanet.PositionComp.GetPosition();
+                                    vector3D2.Normalize();
+                                    var vector3D = Vector3D.CalculatePerpendicularVector(vector3D2);
+                                    var matrix = MatrixD.CreateWorld(vector3D3.Value, vector3D, vector3D2);
+                                    var vector3D4 = Vector3D.TransformNormal(boundingSphere.Center, matrix);
+                                    var position = vector3D3.Value - vector3D4;
+
+                                    var gridPos = objectBuilderList.First();
+                                    var pos = gridPos.PositionAndOrientation.GetValueOrDefault();
+                                    pos.Position = position;
+                                    gridPos.PositionAndOrientation = pos;
+                                    var newMatrix = gridPos.PositionAndOrientation.Value.GetMatrix() * FindRotationMatrix((MyObjectBuilder_CubeGrid)gridPos);
+                                    gridPos.PositionAndOrientation = new MyPositionAndOrientation(newMatrix);
+
+                                    MyAPIGateway.Entities.RemapObjectBuilderCollection(objectBuilderList);
+
+                                    foreach (var ob in objectBuilderList)
+                                    {
+                                        MyAPIGateway.Entities.CreateFromObjectBuilderParallel(ob, true, null);
+                                    }
                                 }
                             }
                         }
@@ -300,6 +309,11 @@ namespace DePatch.VoxelProtection
                     }
                     return;
                 }
+
+                // check if it's torpedo on high speed.
+                if (Grid.BlocksCount <= DePatchPlugin.Instance.Config.MaxBlocksDoDamage ||
+                        AttackerEntity is MyCubeBlock block &&
+                        block.CubeGrid.BlocksCount <= DePatchPlugin.Instance.Config.MaxBlocksDoDamage) return;
 
                 if (Grid.BlocksCount > DePatchPlugin.Instance.Config.MaxBlocksDoDamage)
                 { // by grid bump high speed
