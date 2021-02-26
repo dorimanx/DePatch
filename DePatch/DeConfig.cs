@@ -80,6 +80,7 @@ namespace DePatch
         private bool _cargoCleanup;
         private bool _AdminGrid;
         private bool _LogTracker;
+        private bool _ShieldsAntiHack;
 
         public bool DamageThreading
         {
@@ -492,6 +493,12 @@ namespace DePatch
         {
             get => _LogTracker;
             set => SetValue(ref _LogTracker, value);
+        }
+
+        public bool ShieldsAntiHack
+        {
+            get => _ShieldsAntiHack;
+            set => SetValue(ref _ShieldsAntiHack, value);
         }
     }
 }

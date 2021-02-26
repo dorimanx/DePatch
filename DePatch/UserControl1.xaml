@@ -708,6 +708,25 @@
                         Content="Exempt Players/Factions"
                         Click="EditFactions_OnClick" />
                     <Button Content="Save This Config" HorizontalAlignment="Left" Margin="257,52,0,0" VerticalAlignment="Top" Width="127" Height="37" Click="Button_Click_4" RenderTransformOrigin="0.529,0.486"/>
+                    <CheckBox
+                        Content="Enable Shields Check"
+                        HorizontalAlignment="Left"
+                        Margin="10,239,0,342"
+                        ToolTip="Check amount of shield blocks on grid and connected grids, and turn off grid if more than 8 detected"
+                        IsChecked="{Binding ShieldsAntiHack}"
+                        Width="139" />
+                    <Label
+                        Content="Extra Features for Prometheus Servers"
+                        HorizontalAlignment="Left"
+                        Margin="10,213,0,0"
+                        VerticalAlignment="Top" />
+                    <CheckBox
+                        Content="Enable Torch Log KeepAlive"
+                        HorizontalAlignment="Left"
+                        Margin="10,260,0,321"
+                        ToolTip="This will pupdate LOG every minute with Server Alive Log."
+                        IsChecked="{Binding LogTracker}"
+                        Width="172" />
                 </Grid>
             </TabItem>
         </TabControl>

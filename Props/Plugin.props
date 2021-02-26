@@ -110,6 +110,5 @@
     <Target Name="Zip" BeforeTargets="AfterBuild">
         <MakeDir Directories="$(SolutionDir)\Build\" />
         <ZipDirectory SourceDirectory="$(OutputPath)" DestinationFile="$(SolutionDir)\Build\$(MSBuildProjectName).zip" Overwrite="true" />
-        <Copy SourceFiles="$(SolutionDir)\Build\$(MSBuildProjectName).zip" DestinationFolder="$(SolutionDir)\TorchBinaries\Plugins\" SkipUnchangedFiles="true"/>
     </Target>
 </Project>

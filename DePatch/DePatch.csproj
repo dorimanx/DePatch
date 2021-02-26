@@ -95,6 +95,7 @@
     <Compile Include="PVEZONE\PVEGrid2.cs" />
     <Compile Include="ShipTools\DrillingMode.cs" />
     <Compile Include="ShipTools\DrillSettings.cs" />
+    <Compile Include="VoxelProtection\ReloadShip.cs" />
     <Compile Include="VoxelProtection\ExplosionPatch.cs" />
     <Compile Include="Microsoft\CodeAnalysis\EmbeddedAttribute.cs" />
     <Compile Include="GamePatches\MyBatteryFix.cs" />

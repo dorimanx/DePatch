@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 using Sandbox;
 using Sandbox.Common.ObjectBuilders;
 using Sandbox.Engine.Multiplayer;
@@ -11,14 +12,13 @@ using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Blocks;
 using Sandbox.Game.Entities.Character;
 using Sandbox.Game.Entities.Cube;
-using Sandbox.Game.Entities.Planet;
 using Sandbox.Game.GameSystems;
 using Sandbox.Game.SessionComponents;
 using Sandbox.Game.Weapons;
-using Sandbox.Game.World;
 using Sandbox.ModAPI;
 using VRage;
 using VRage.Game;
+using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.Groups;
 using VRage.ModAPI;
@@ -30,7 +30,26 @@ namespace DePatch.VoxelProtection
 {
     public class MyGridDeformationPatch
     {
+        private struct GridDamageCheck
+        {
+            public bool ApplyDamage;
+            public int Timer;
+
+            public GridDamageCheck(bool ShouldApplyDamage)
+            {
+                ApplyDamage = ShouldApplyDamage;
+                Timer = 0;
+            }
+
+            public void UpdateTimer()
+            {
+                Timer++;
+            }
+        }
+
         private static bool _init;
+        private static ConcurrentDictionary<long, GridDamageCheck> TorpedoDamageSystem = new ConcurrentDictionary<long, GridDamageCheck>();
+        private static Timer ItemTimer = new Timer(400.0);
 
         public static void Init()
         {
@@ -39,31 +58,22 @@ namespace DePatch.VoxelProtection
 
             if (!_init)
             {
+                ItemTimer.Elapsed += ItemTimer_Elapsed;
+                ItemTimer.Start();
                 MyAPIGateway.Session.DamageSystem.RegisterBeforeDamageHandler(1, HandleGridDamage);
                 _init = true;
             }
         }
 
-        public static ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> FindGridGroup(string gridname)
+        private static void ItemTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            var groups = new ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group>();
-            Parallel.ForEach(MyCubeGridGroups.Static.Physical.Groups, group =>
+            foreach (KeyValuePair<long, GridDamageCheck> item in TorpedoDamageSystem)
             {
-                foreach (var groupNodes in group.Nodes)
-                {
-                    var grid = groupNodes.NodeData;
+                if (item.Value.Timer > 2)
+                    TorpedoDamageSystem.Remove(item.Key);
 
-                    if (grid.Physics == null)
-                        continue;
-
-                    if (!grid.DisplayName.Equals(gridname) && grid.EntityId + "" != gridname)
-                        continue;
-
-                    groups.Add(group);
-                }
-            });
-
-            return groups;
+                item.Value.UpdateTimer();
+            }
         }
 
         private static bool CheckAdminGrid(object target)
@@ -81,6 +91,38 @@ namespace DePatch.VoxelProtection
             return blocks.Count > 0;
         }
 
+        private static void TorpedoHit(MyCubeGrid TargetGrid)
+        {
+            var GridBox = new MyOrientedBoundingBoxD(TargetGrid.PositionComp.LocalAABB, TargetGrid.WorldMatrix);
+            var Entities = new List<MyEntity>();
+            MyGamePruningStructure.GetAllEntitiesInOBB(ref GridBox, Entities);
+            var BiggestAttacker = Entities.OfType<MyCubeGrid>().Aggregate((MyCubeGrid Grid1, MyCubeGrid Grid2) => (Grid1.BlocksCount > Grid2.BlocksCount) ? Grid1 : Grid2);
+            if (BiggestAttacker != null && BiggestAttacker.EntityId != TargetGrid.EntityId)
+            {
+                bool ShouldApplyDamageA = false;
+                bool ShouldApplyDamageB = false;
+
+                if (TargetGrid.BlocksCount < DePatchPlugin.Instance.Config.MaxBlocksDoDamage)
+                {
+                    ShouldApplyDamageA = true;
+                }
+
+                if (BiggestAttacker.BlocksCount < DePatchPlugin.Instance.Config.MaxBlocksDoDamage)
+                {
+                    ShouldApplyDamageB = true;
+                }
+
+                if (!ShouldApplyDamageA && !ShouldApplyDamageB)
+                {
+                    TorpedoDamageSystem.TryAdd(TargetGrid.EntityId, new GridDamageCheck(ShouldApplyDamage: false));
+                }
+                else
+                {
+                    TorpedoDamageSystem.TryAdd(TargetGrid.EntityId, new GridDamageCheck(ShouldApplyDamage: true));
+                }
+            }
+        }
+
         private static void HandleGridDamage(object target, ref MyDamageInformation damage)
         {
             if (DePatchPlugin.Instance.Config.AdminGrid && target is IMySlimBlock)
@@ -96,20 +138,18 @@ namespace DePatch.VoxelProtection
             // if disabled, return
             if (!DePatchPlugin.Instance.Config.ProtectGrid || !DePatchPlugin.Instance.Config.Enabled) return;
 
-            if (damage.Type != MyDamageType.Deformation && damage.Type != MyDamageType.Fall) return;
+            if (damage.Type != MyDamageType.Deformation && damage.Type != MyDamageType.Fall && damage.Type != MyDamageType.Destruction) return;
 
             MyEntities.TryGetEntityById(damage.AttackerId, out var AttackerEntity, allowClosed: true);
 
-            var GridBlock = target as IMySlimBlock;
-            var GridPhysics = GridBlock?.CubeGrid.Physics;
+            if (!(target is MySlimBlock GridBlock)) return;
             var GridCube = GridBlock?.CubeGrid;
-            var Grid = (MyCubeGrid)GridCube;
+            var GridPhysics = GridBlock?.CubeGrid.Physics;
 
-            if (GridBlock == null || GridPhysics == null ||
-                (GridCube.GridSizeEnum != MyCubeSize.Large || Grid.BlocksCount >=
-                    DePatchPlugin.Instance.Config.MaxProtectedLargeGridSize) &&
-                (GridCube.GridSizeEnum != MyCubeSize.Small || Grid.BlocksCount >=
-                    DePatchPlugin.Instance.Config.MaxProtectedSmallGridSize)) return;
+            if (GridBlock == null || GridPhysics == null) return;
+
+            if (GridCube.GridSizeEnum == MyCubeSize.Large && GridCube.BlocksCount >= DePatchPlugin.Instance.Config.MaxProtectedLargeGridSize) return;
+            if (GridCube.GridSizeEnum == MyCubeSize.Small && GridCube.BlocksCount >= DePatchPlugin.Instance.Config.MaxProtectedSmallGridSize) return;
 
             var speed = DePatchPlugin.Instance.Config.MinProtectSpeed;
             var LinearVelocity = GridPhysics.LinearVelocity;
@@ -126,9 +166,10 @@ namespace DePatch.VoxelProtection
                     return;
                 }
 
-                if (Grid.BlocksCount <= DePatchPlugin.Instance.Config.MaxBlocksDoDamage ||
-                    AttackerEntity is MyCubeBlock block &&
-                    block.CubeGrid.BlocksCount <= DePatchPlugin.Instance.Config.MaxBlocksDoDamage) return;
+                TorpedoHit(GridCube);
+
+                if (TorpedoDamageSystem.ContainsKey(GridCube.EntityId) && TorpedoDamageSystem[GridCube.EntityId].ApplyDamage)
+                    return;
 
                 if (damage.IsDeformation) damage.IsDeformation = false;
                 if (damage.Amount > 0f) damage.Amount = 0f;
@@ -145,14 +186,14 @@ namespace DePatch.VoxelProtection
                             damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksVoxel;
                     }
 
-                    _ = MyGravityProviderSystem.CalculateNaturalGravityInPoint(Grid.PositionComp.GetPosition(), out var ingravitynow);
+                    _ = MyGravityProviderSystem.CalculateNaturalGravityInPoint(GridCube.PositionComp.GetPosition(), out var ingravitynow);
                     if (ingravitynow <= 20 && ingravitynow >= 0.2)
                     {
                         if (DePatchPlugin.Instance.Config.ConvertToStatic &&
-                            Grid.BlocksCount > DePatchPlugin.Instance.Config.MaxGridSizeToConvert &&
+                            GridCube.BlocksCount > DePatchPlugin.Instance.Config.MaxGridSizeToConvert &&
                             (LinearVelocity.Length() >= DePatchPlugin.Instance.Config.StaticConvertSpeed || AngularVelocity.Length() >= DePatchPlugin.Instance.Config.StaticConvertSpeed))
                         {
-                            var worldAABB = Grid.PositionComp.WorldAABB;
+                            var worldAABB = GridCube.PositionComp.WorldAABB;
                             var closestPlanet = MyGamePruningStructure.GetClosestPlanet(ref worldAABB);
                             var elevation = double.PositiveInfinity;
                             if (closestPlanet != null)
@@ -167,133 +208,45 @@ namespace DePatch.VoxelProtection
                             }
 
                             if (elevation < 200 && elevation != double.PositiveInfinity &&
-                                Grid.GetFatBlockCount<MyMotorSuspension>() < 4 &&
-                                Grid.GetFatBlockCount<MyThrust>() >= 6)
+                                GridCube.GetFatBlockCount<MyMotorSuspension>() < 4 &&
+                                GridCube.GetFatBlockCount<MyThrust>() >= 6)
                             {
                                 if (damage.Amount != 0f)
                                     damage.Amount = 0f;
 
                                 GridPhysics?.ClearSpeed();
 
-                                var pilots = new List<MyCharacter>();
-                                foreach (var a in Grid.GetFatBlocks<MyCockpit>())
+                                foreach (var a in GridCube.GetFatBlocks<MyCockpit>())
                                 {
                                     if (a != null && a.Pilot != null)
                                     {
-                                        pilots.Add(a.Pilot);
                                         a.RemovePilot();
                                     }
                                 }
 
-                                foreach (var projector in Grid.GetFatBlocks<MyProjectorBase>())
+                                foreach (var projector in GridCube.GetFatBlocks<MyProjectorBase>())
                                 {
                                     if (projector.ProjectedGrid == null) continue;
 
                                     projector.Enabled = false;
                                 }
 
-                                foreach (var drills in Grid.GetFatBlocks<MyShipDrill>())
+                                foreach (var drills in GridCube.GetFatBlocks<MyShipDrill>())
                                 {
                                     if (drills != null && drills.Enabled)
                                         drills.Enabled = false;
                                 }
 
                                 /* This part of code belong to Foogs great plugin dev! */
-                                var grids = MyCubeGridGroups.Static.GetGroups(GridLinkTypeEnum.Logical).GetGroupNodes(Grid);
+                                var grids = MyCubeGridGroups.Static.GetGroups(GridLinkTypeEnum.Logical).GetGroupNodes(GridCube);
                                 grids.SortNoAlloc((x, y) => x.BlocksCount.CompareTo(y.BlocksCount));
                                 grids.Reverse();
                                 grids.SortNoAlloc((x, y) => x.GridSizeEnum.CompareTo(y.GridSizeEnum));
 
-                                var biggestGrid = grids.First();
-                                var oldPosition = biggestGrid.PositionComp.GetPosition();
-                                MyMultiplayer.RaiseEvent(biggestGrid, (MyCubeGrid x) => new Action(x.ConvertToStatic), default(EndpointId));
+                                MyMultiplayer.RaiseEvent(grids.First(), (MyCubeGrid x) => new Action(x.ConvertToStatic), default(EndpointId));
 
                                 /* This part of code belong to LordTylus great plugin dev! FixShip after converting to static */
-                                var gridWithSubGrids = FindGridGroup(Grid.DisplayName);
-                                var objectBuilderList = new List<MyObjectBuilder_EntityBase>();
-                                var gridsList = new List<MyCubeGrid>();
-                                var box = BoundingBox.CreateInvalid();
-
-                                foreach (var item in gridWithSubGrids)
-                                {
-                                    foreach (var groupNodes in item.Nodes)
-                                    {
-                                        var grid = groupNodes.NodeData;
-                                        gridsList.Add(grid);
-
-                                        var ob = grid.GetObjectBuilder(true);
-
-                                        if (!objectBuilderList.Contains(ob))
-                                        {
-                                            if (ob is MyObjectBuilder_CubeGrid gridBuilder)
-                                            {
-                                                box.Include(gridBuilder.CalculateBoundingBox());
-                                                foreach (var cubeBlock in gridBuilder.CubeBlocks)
-                                                {
-                                                    if (cubeBlock is MyObjectBuilder_OxygenTank o2Tank)
-                                                        o2Tank.AutoRefill = false;
-                                                }
-                                            }
-                                            objectBuilderList.Add(ob);
-                                        }
-                                    }
-                                }
-
-                                foreach (var grid in gridsList)
-                                {
-                                    if (grid == null || ((IMyEntity)grid).MarkedForClose || ((IMyEntity)grid).Closed)
-                                        continue;
-
-                                    ((IMyEntity)grid).Close();
-                                }
-
-                                Vector3D? vector3D3;
-                                var boundingSphere = BoundingSphere.CreateFromBoundingBox(box);
-
-                                var spawnInfo = new SpawnInfo
-                                {
-                                    CollisionRadius = boundingSphere.Radius,
-                                    Planet = closestPlanet,
-                                    PlanetDeployAltitude = boundingSphere.Radius * 1.2f
-                                };
-                                vector3D3 = MyRespawnComponentBase.FindPositionAbovePlanet(oldPosition,
-                                    ref spawnInfo, true, 10, 50, 70);
-
-                                if (vector3D3 == default)
-                                {
-                                    vector3D3 = oldPosition;
-                                    pilots.Select(b => b.GetIdentity().IdentityId).ForEach(b => MyVisualScriptLogicProvider.ShowNotification("Your grid will be stuck in voxel! Good digging xD", 15000, MyFontEnum.Red, b));
-
-                                    MyAPIGateway.Entities.RemapObjectBuilderCollection(objectBuilderList);
-
-                                    foreach (var ob in objectBuilderList)
-                                    {
-                                        MyAPIGateway.Entities.CreateFromObjectBuilderParallel(ob, true, null);
-                                    }
-                                }
-                                else
-                                {
-                                    var vector3D2 = oldPosition - closestPlanet.PositionComp.GetPosition();
-                                    vector3D2.Normalize();
-                                    var vector3D = Vector3D.CalculatePerpendicularVector(vector3D2);
-                                    var matrix = MatrixD.CreateWorld(vector3D3.Value, vector3D, vector3D2);
-                                    var vector3D4 = Vector3D.TransformNormal(boundingSphere.Center, matrix);
-                                    var position = vector3D3.Value - vector3D4;
-
-                                    var gridPos = objectBuilderList.First();
-                                    var pos = gridPos.PositionAndOrientation.GetValueOrDefault();
-                                    pos.Position = position;
-                                    gridPos.PositionAndOrientation = pos;
-                                    var newMatrix = gridPos.PositionAndOrientation.Value.GetMatrix() * FindRotationMatrix((MyObjectBuilder_CubeGrid)gridPos);
-                                    gridPos.PositionAndOrientation = new MyPositionAndOrientation(newMatrix);
-
-                                    MyAPIGateway.Entities.RemapObjectBuilderCollection(objectBuilderList);
-
-                                    foreach (var ob in objectBuilderList)
-                                    {
-                                        MyAPIGateway.Entities.CreateFromObjectBuilderParallel(ob, true, null);
-                                    }
-                                }
+                                ReloadShip.FixShip(GridCube.DisplayName);
                             }
                         }
                         else
@@ -311,11 +264,12 @@ namespace DePatch.VoxelProtection
                 }
 
                 // check if it's torpedo on high speed.
-                if (Grid.BlocksCount <= DePatchPlugin.Instance.Config.MaxBlocksDoDamage ||
-                        AttackerEntity is MyCubeBlock block &&
-                        block.CubeGrid.BlocksCount <= DePatchPlugin.Instance.Config.MaxBlocksDoDamage) return;
+                TorpedoHit(GridCube);
 
-                if (Grid.BlocksCount > DePatchPlugin.Instance.Config.MaxBlocksDoDamage)
+                if (TorpedoDamageSystem.ContainsKey(GridCube.EntityId) && TorpedoDamageSystem[GridCube.EntityId].ApplyDamage)
+                    return;
+
+                if (GridCube.BlocksCount > DePatchPlugin.Instance.Config.MaxBlocksDoDamage)
                 { // by grid bump high speed
                     if (damage.IsDeformation) damage.IsDeformation = false;
 
@@ -329,60 +283,6 @@ namespace DePatch.VoxelProtection
                     }
                 }
             }
-        }
-
-        private static MatrixD FindRotationMatrix(MyObjectBuilder_CubeGrid cubeGrid)
-        {
-            MatrixD matrixD = MatrixD.Identity;
-            List<MyObjectBuilder_Cockpit> list = (from blk in cubeGrid.CubeBlocks.OfType<MyObjectBuilder_Cockpit>()
-                                                  where !(blk is MyObjectBuilder_CryoChamber) && blk.SubtypeName.IndexOf("bathroom", StringComparison.InvariantCultureIgnoreCase) == -1
-                                                  select blk).ToList();
-            MyObjectBuilder_CubeBlock myObjectBuilder_CubeBlock = list.Find((MyObjectBuilder_Cockpit blk) => blk.IsMainCockpit) ?? list.FirstOrDefault();
-            if (myObjectBuilder_CubeBlock == null)
-            {
-                List<MyObjectBuilder_RemoteControl> list2 = cubeGrid.CubeBlocks.OfType<MyObjectBuilder_RemoteControl>().ToList();
-                myObjectBuilder_CubeBlock = (list2.Find((MyObjectBuilder_RemoteControl blk) => blk.IsMainCockpit) ?? list2.FirstOrDefault());
-            }
-            if (myObjectBuilder_CubeBlock == null)
-            {
-                myObjectBuilder_CubeBlock = cubeGrid.CubeBlocks.OfType<MyObjectBuilder_LandingGear>().FirstOrDefault();
-            }
-            if (myObjectBuilder_CubeBlock != null)
-            {
-                if (myObjectBuilder_CubeBlock.BlockOrientation.Up == Base6Directions.Direction.Right)
-                {
-                    matrixD *= MatrixD.CreateFromAxisAngle(Vector3D.Forward, MathHelper.ToRadians(-90f));
-                }
-                else
-                {
-                    if (myObjectBuilder_CubeBlock.BlockOrientation.Up == Base6Directions.Direction.Left)
-                    {
-                        matrixD *= MatrixD.CreateFromAxisAngle(Vector3D.Forward, MathHelper.ToRadians(90f));
-                    }
-                    else
-                    {
-                        if (myObjectBuilder_CubeBlock.BlockOrientation.Up == Base6Directions.Direction.Down)
-                        {
-                            matrixD *= MatrixD.CreateFromAxisAngle(Vector3D.Forward, MathHelper.ToRadians(180f));
-                        }
-                        else
-                        {
-                            if (myObjectBuilder_CubeBlock.BlockOrientation.Up == Base6Directions.Direction.Forward)
-                            {
-                                matrixD *= MatrixD.CreateFromAxisAngle(Vector3D.Left, MathHelper.ToRadians(-90f));
-                            }
-                            else
-                            {
-                                if (myObjectBuilder_CubeBlock.BlockOrientation.Up == Base6Directions.Direction.Backward)
-                                {
-                                    matrixD *= MatrixD.CreateFromAxisAngle(Vector3D.Left, MathHelper.ToRadians(90f));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return matrixD;
         }
     }
 }
