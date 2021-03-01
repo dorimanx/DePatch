@@ -6,7 +6,7 @@ namespace DePatch.PVEZONE
     [HarmonyPatch(typeof(MyCubeGrid), "Init")]
     internal class MyNewGridPatch
     {
-        private static void Postfix(MyCubeGrid __instance)
+        internal static void Postfix(MyCubeGrid __instance)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.PveZoneEnabled) return;
 

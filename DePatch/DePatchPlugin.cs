@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using DePatch.Compatibility;
 using DePatch.OptiDamage;
 using DePatch.PVEZONE;
 using DePatch.ShipTools;
@@ -28,6 +29,8 @@ namespace DePatch
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
         public static DePatchPlugin Instance;
+
+        private Harmony _harmony = new Harmony("net.ltp.depatch");
 
         private TorchSessionManager _sessionManager;
 
@@ -56,8 +59,6 @@ namespace DePatch
             }
             if (!Config.Enabled)
                 return;
-
-            new Harmony("net.ltp.depatch").PatchAll();
 
             _sessionManager = Torch.Managers.GetManager<TorchSessionManager>();
 
@@ -88,13 +89,18 @@ namespace DePatch
 
         private void Torch_GameStateChanged(MySandboxGame game, TorchGameState newState)
         {
+            if (newState == TorchGameState.Loading)
+                _harmony.PatchAll();
             if (newState != TorchGameState.Loaded)
                 return;
 
             GameIsReady = true;
 
             if (Config.PveZoneEnabled)
+            {
                 PVE.Init(this);
+                FreezerPatch.ApplyPatch(_harmony, Torch);
+            }
 
             DrillSettings.InitDefinitions();
 
