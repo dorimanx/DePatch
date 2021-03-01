@@ -43,9 +43,12 @@ namespace DePatch.GamePatches
                     }
                 }
 
-                if (__instance.CubeGrid.IsStatic == false && __instance.CubeGrid.GridSizeEnum == MyCubeSize.Large &&
+                if (__instance != null && __instance.CubeGrid != null && __instance.CubeGrid.IsStatic == false && __instance.CubeGrid.GridSizeEnum == MyCubeSize.Large &&
                         DePatchPlugin.Instance.Config.ShieldsAntiHack)
                 {
+                    if (MySession.Static.Players.IdentityIsNpc(__instance.CubeGrid.BigOwners.FirstOrDefault()))
+                        return;
+
                     var ShieldsBlocks = __instance.CubeGrid.GridSystems.TerminalSystem.Blocks.OfType<MyRefinery>().Where(x => x.BlockDefinition.Id.SubtypeName.Contains(LargeSmallSheld));
 
                     if (ShieldsBlocks.Count() > 8)
@@ -64,9 +67,9 @@ namespace DePatch.GamePatches
 
                             foreach (var grid in gridGroups)
                             {
-                                if ((item is IMyPowerProducer || item is MyShipConnector || item is MyRefinery && item.BlockDefinition.Id.SubtypeName.Contains(LargeSmallSheld)) && item.Enabled)
+                                if (item is MyRefinery && item.BlockDefinition.Id.SubtypeName.Contains(LargeSmallSheld) && item.Enabled)
                                 {
-                                    item.Enabled = false;
+                                    item.Enabled = false;                                  
                                     AlertPlayer = true;
                                 }
 
@@ -87,7 +90,7 @@ namespace DePatch.GamePatches
                                 var controllingPlayer = MySession.Static.Players.GetControllingPlayer(__instance.CubeGrid);
                                 if (controllingPlayer != null)
                                 {
-                                    MyVisualScriptLogicProvider.ShowNotification("You cannot connect more than 8 shields!!! Grid and shields are turned OFF!\nБольше 8 щитов подключить нельзя !!! сетка и щиты выключены", 20000, MyFontEnum.Red, controllingPlayer.Identity.IdentityId);
+                                    MyVisualScriptLogicProvider.ShowNotification("You cannot connect more than 8 shields!!! Extra shields are turned OFF!\nБольше 8 щитов подключить нельзя !!! Дополнительные щиты выключены", 20000, MyFontEnum.Red, controllingPlayer.Identity.IdentityId);
                                 }
                                 else
                                 {
@@ -98,7 +101,7 @@ namespace DePatch.GamePatches
                                         if (dictionary.ContainsKey(item))
                                         {
                                             if (dictionary[item].Identity.IdentityId != 0)
-                                                MyVisualScriptLogicProvider.ShowNotification("You cannot connect more than 8 shields!!! Grid and shields are turned OFF!\nБольше 8 щитов подключить нельзя !!! сетка и щиты выключены", 20000, MyFontEnum.Red, dictionary[item].Identity.IdentityId);
+                                                MyVisualScriptLogicProvider.ShowNotification("You cannot connect more than 8 shields!!! Extra shields are turned OFF!\nБольше 8 щитов подключить нельзя !!! Дополнительные  щиты выключены", 20000, MyFontEnum.Red, dictionary[item].Identity.IdentityId);
                                         }
                                     }
                                 }
