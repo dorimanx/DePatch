@@ -201,6 +201,10 @@
                         Content="Clean Cargo Hacks" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,262,0,0"
 						ToolTip="This will clean extra bottles and tools from cargo if amount of things,&#xA;is above 300 every 25sec if player near by"
                         IsChecked="{Binding Path=CargoCleanup}"/>
+                    <CheckBox
+                        Content="Force Pistons Inertia Tensor" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,282,0,0"
+                        ToolTip="This will enable ShareInertiaTensor on each piston block in game to reduce SIM load."
+                        IsChecked="{Binding PistonInertiaTensor}"/>
                 </Grid>
             </TabItem>
             <TabItem

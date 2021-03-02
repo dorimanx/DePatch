@@ -81,6 +81,7 @@ namespace DePatch
         private bool _AdminGrid;
         private bool _LogTracker;
         private bool _ShieldsAntiHack;
+        private bool _PistonInertiaTensor;
 
         public bool DamageThreading
         {
@@ -499,6 +500,12 @@ namespace DePatch
         {
             get => _ShieldsAntiHack;
             set => SetValue(ref _ShieldsAntiHack, value);
+        }
+
+        public bool PistonInertiaTensor
+        {
+            get => _PistonInertiaTensor;
+            set => SetValue(ref _PistonInertiaTensor, value);
         }
     }
 }
