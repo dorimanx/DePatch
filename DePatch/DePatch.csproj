@@ -87,6 +87,7 @@
     <Compile Include="CoolDown\SteamIdCooldownKey.cs" />
     <Compile Include="CubeGridExtensions.cs" />
     <Compile Include="GamePatches\CargoCleanup.cs" />
+    <Compile Include="GamePatches\ModUpdatePatch.cs" />
     <Compile Include="GamePatches\MyAssemblerPatch.cs" />
     <Compile Include="GamePatches\MyEntityDuplicateFix.cs" />
     <Compile Include="GamePatches\MyPistonBase.cs" />
