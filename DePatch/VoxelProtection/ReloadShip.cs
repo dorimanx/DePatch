@@ -14,7 +14,7 @@ namespace DePatch.VoxelProtection
 {
     class ReloadShip
     {
-        private static ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> FindGridGroups(string gridName)
+        private static ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> FindGridGroups(long gridID)
         {
             ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = new ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group>();
             Parallel.ForEach(MyCubeGridGroups.Static.Physical.Groups, group =>
@@ -27,7 +27,7 @@ namespace DePatch.VoxelProtection
                         continue;
 
                     /* Gridname is wrong ignore */
-                    if (!grid.DisplayName.Equals(gridName))
+                    if (!grid.EntityId.Equals(gridID))
                         continue;
 
                     groups.Add(group);
@@ -71,7 +71,7 @@ namespace DePatch.VoxelProtection
                 MyCubeGrid grid = groupNodes.NodeData;
                 gridsList.Add(grid);
 
-                grid.Physics.LinearVelocity = Vector3.Zero;
+                grid.Physics.ClearSpeed();
 
                 MyObjectBuilder_EntityBase ob = grid.GetObjectBuilder(true);
 
@@ -83,8 +83,13 @@ namespace DePatch.VoxelProtection
                         {
                             if (cubeBlock is MyObjectBuilder_OxygenTank o2Tank)
                                 o2Tank.AutoRefill = false;
+                            if (cubeBlock is MyObjectBuilder_MotorStator MotorStator)
+                                MotorStator.RotorLock = true;
+                            if (cubeBlock is MyObjectBuilder_MotorAdvancedStator MotorAdvancedStator)
+                                MotorAdvancedStator.RotorLock = true;
                         }
                     }
+                    ob.PositionAndOrientation.Value.Orientation.Normalize();
                     objectBuilderList.Add(ob);
                 }
             }
@@ -117,9 +122,9 @@ namespace DePatch.VoxelProtection
             return FixGroup(group);
         }
 
-        public static bool FixShip(string gridName)
+        public static bool FixShip(long gridID)
         {
-            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = FindGridGroups(gridName);
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = FindGridGroups(gridID);
 
             return FixGroups(groups);
         }

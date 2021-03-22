@@ -246,7 +246,14 @@ namespace DePatch.VoxelProtection
                                 MyMultiplayer.RaiseEvent(grids.First(), (MyCubeGrid x) => new Action(x.ConvertToStatic), default(EndpointId));
 
                                 /* This part of code belong to LordTylus great plugin dev! FixShip after converting to static */
-                                ReloadShip.FixShip(GridCube.DisplayName);
+                                ReloadShip.FixShip(GridCube.EntityId);
+
+                                foreach (var ReloadedGrids in grids)
+                                {
+                                    if (ReloadedGrids.Physics == null)
+                                        continue;
+                                    ReloadedGrids.Physics?.ClearSpeed();
+                                }
                             }
                         }
                         else
