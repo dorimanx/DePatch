@@ -11,21 +11,22 @@ using VRageMath;
 
 namespace DePatch.OptiDamage
 {
-    [HarmonyPatch(typeof(MySession), "UpdateComponents")]
+    // not used in game so disable this.
+    //[HarmonyPatch(typeof(MySession), "UpdateComponents")]
     public class SessionPatch
     {
         public static Stopwatch Timer = new Stopwatch();
 
-        internal static bool Prefix()
+        internal static void Prefix()
         {
             if (!DePatchPlugin.Instance.Config.DamageThreading)
             {
-                return true;
+                return;
             }
             var onlinePlayers = MySession.Static.Players.GetOnlinePlayers();
             if (DamageNetwork.DamageQueue.Count == 0 || onlinePlayers.Count == 0 || Timer.ElapsedMilliseconds < 500)
             {
-                return true;
+                return;
             }
             foreach (var element in from b in DamageNetwork.DamageQueue.ToList()
                                                                                where b.Key != null && b.Value.Count > 0
@@ -40,7 +41,7 @@ namespace DePatch.OptiDamage
                 Task.WaitAll(tasks);
             }
             Timer.Restart();
-            return true;
+            return;
         }
     }
 }

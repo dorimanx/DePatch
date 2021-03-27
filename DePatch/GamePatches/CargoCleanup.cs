@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NLog;
@@ -51,7 +51,6 @@ namespace DePatch.GamePatches
                         if (value < 0)
                         {
                             inventory.RemoveItemsOfType(1, item.Content);
-                            inventory.UpdateItem(item.Content.GetId());
                             NeedRefresh = true;
                         }
 

@@ -177,7 +177,7 @@ namespace DePatch.PVEZONE
                     num1 = myShipToolBase.OwnerId;
 
                 if (AttackerEntity is MyThrust myThrust && myThrust.CubeGrid != null)
-                    num4 = myThrust.CubeGrid.BigOwners[0];
+                    num4 = (myThrust.CubeGrid.BigOwners.Count > 0) ? myThrust.CubeGrid.BigOwners[0] : 0L;
 
                 if (AttackerEntity is MyCharacter character && character != null)
                 {

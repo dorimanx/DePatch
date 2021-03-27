@@ -19,12 +19,14 @@ namespace DePatch.GamePatches
 
             try
             {
-                if (__instance != null && __instance.Enabled)
+                if (__instance != null && __instance.Enabled && __instance.IsFunctional)
                 {
                     if (__instance.IsSlave && DePatchPlugin.Instance.Config.DisableAssemblerCoop)
                     {
                         __instance.IsSlave = false;
-                        __instance.ClearQueue();
+
+                        if (!__instance.IsQueueEmpty)
+                            __instance.ClearQueue();
                     }
                     if (__instance.RepeatEnabled && DePatchPlugin.Instance.Config.DisableAssemblerLoop)
                     {
@@ -38,7 +40,9 @@ namespace DePatch.GamePatches
                             if (__instance.Enabled)
                             {
                                 __instance.Enabled = false;
-                                __instance.ClearQueue();
+                                
+                                if (!__instance.IsQueueEmpty)
+                                    __instance.ClearQueue();
                             }
                         }
                     }
