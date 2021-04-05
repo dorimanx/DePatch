@@ -31,7 +31,8 @@ namespace DePatch.GamePatches
                     if (__instance.RepeatEnabled && DePatchPlugin.Instance.Config.DisableAssemblerLoop)
                     {
                         __instance.RequestRepeatEnabled(false);
-                        __instance.ClearQueue();
+                         if (!__instance.IsQueueEmpty)
+                            __instance.ClearQueue();
                     }
                     if (DePatchPlugin.Instance.Config.DisableProductionOnShip)
                     {

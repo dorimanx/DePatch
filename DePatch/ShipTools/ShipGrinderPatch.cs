@@ -2,12 +2,16 @@
 using System.Linq;
 using DePatch.PVEZONE;
 using HarmonyLib;
+using Sandbox.Definitions;
+using Sandbox.Game;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.GameSystems;
+using Sandbox.Game.Multiplayer;
 using Sandbox.Game.Weapons;
 using Sandbox.Game.World;
 using VRage.Game;
+using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 
 namespace DePatch.ShipTools
@@ -15,6 +19,25 @@ namespace DePatch.ShipTools
     [HarmonyPatch(typeof(MyShipGrinder), "Activate")]
     internal class ShipGrinderPatch
     {
+        private static List<MyPhysicalInventoryItem> m_tmpItemList = new List<MyPhysicalInventoryItem>();
+        private static MyCubeGrid m_otherGrid;
+        private static void EmptyBlockInventories(MyCubeBlock block)
+        {
+            for (int i = 0; i < block.InventoryCount; i++)
+            {
+                MyInventory inventory = block.GetInventory(i);
+                if (!inventory.Empty())
+                {
+                    m_tmpItemList.Clear();
+                    m_tmpItemList.AddRange(inventory.GetItems());
+                    foreach (MyPhysicalInventoryItem myPhysicalInventoryItem in m_tmpItemList)
+                    {
+                        MyInventory.Transfer(inventory, block.GetInventory(0), myPhysicalInventoryItem.ItemId, -1, null, false);
+                    }
+                }
+            }
+        }
+
         private static void Prefix(MyShipGrinder __instance, HashSet<MySlimBlock> targets)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || __instance == null) return;
@@ -46,24 +69,54 @@ namespace DePatch.ShipTools
             var shipTool = shipTools.FirstOrDefault();
             if (shipTool == null) return;
             var grinderAmount = MySession.Static.GrinderSpeedMultiplier * shipTool.Speed;
+
+            m_otherGrid = null;
+            if (targets.Count > 0)
+            {
+                m_otherGrid = targets.FirstElement().CubeGrid;
+            }
+
             foreach (var mySlimBlock in targets)
             {
                 if (!mySlimBlock.CubeGrid.Immune)
                 {
-                    MyDamageInformation myDamageInformation = new MyDamageInformation(false, grinderAmount, MyDamageType.Grind, __instance.EntityId);
-                    if (mySlimBlock.UseDamageSystem)
+                    m_otherGrid = mySlimBlock.CubeGrid;
+                    if (m_otherGrid.Physics == null || !m_otherGrid.Physics.Enabled)
                     {
-                        MyDamageSystem.Static.RaiseBeforeDamageApplied(mySlimBlock, ref myDamageInformation);
                     }
-
-                    if (mySlimBlock.CubeGrid.Editable && myDamageInformation.Amount != 0)
+                    else
                     {
-                        mySlimBlock.DecreaseMountLevel(grinderAmount, __instance.GetInventoryBase(), false, __instance.OwnerId, false);
-                        mySlimBlock.MoveItemsFromConstructionStockpile(__instance.GetInventory(0), MyItemFlags.None);
-                    }
-                    if (mySlimBlock.UseDamageSystem && myDamageInformation.Amount != 0)
-                    {
-                        MyDamageSystem.Static.RaiseAfterDamageApplied(mySlimBlock, myDamageInformation);
+                        MyCubeBlockDefinition.PreloadConstructionModels(mySlimBlock.BlockDefinition);
+                        if (Sync.IsServer)
+                        {
+                            MyDamageInformation myDamageInformation = new MyDamageInformation(false, grinderAmount, MyDamageType.Grind, __instance.EntityId);
+                            if (mySlimBlock.UseDamageSystem)
+                            {
+                                MyDamageSystem.Static.RaiseBeforeDamageApplied(mySlimBlock, ref myDamageInformation);
+                            }
+                            if (mySlimBlock.CubeGrid.Editable && myDamageInformation.Amount != 0)
+                            {
+                                mySlimBlock.DecreaseMountLevel(grinderAmount, __instance.GetInventory(0), false, __instance.OwnerId, false);
+                                mySlimBlock.MoveItemsFromConstructionStockpile(__instance.GetInventory(0), MyItemFlags.None);
+                            }
+                            if (mySlimBlock.UseDamageSystem && myDamageInformation.Amount != 0)
+                            {
+                                MyDamageSystem.Static.RaiseAfterDamageApplied(mySlimBlock, myDamageInformation);
+                            }
+                            if (mySlimBlock.IsFullyDismounted)
+                            {
+                                if (mySlimBlock.FatBlock != null && mySlimBlock.FatBlock.HasInventory)
+                                {
+                                    EmptyBlockInventories(mySlimBlock.FatBlock);
+                                }
+                                if (mySlimBlock.UseDamageSystem)
+                                {
+                                    MyDamageSystem.Static.RaiseDestroyed(mySlimBlock, myDamageInformation);
+                                }
+                                mySlimBlock.SpawnConstructionStockpile();
+                                mySlimBlock.CubeGrid.RazeBlock(mySlimBlock.Min, 0UL);
+                            }
+                        }
                     }
                 }
             }
