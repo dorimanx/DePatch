@@ -27,64 +27,64 @@ namespace DePatch.PVEZONE
             if (!DePatchPlugin.Instance.Config.PveZoneEnabled)
                 return true;
 
-            switch (entity)
+            if (entity is MyCubeGrid grid)
             {
-                case MyCubeGrid grid when action == MySafeZoneAction.Building:
-                    {
-                        var myPlayerID = MySession.Static.Players.TryGetIdentityId(user);
-                        if (myPlayerID == 0 || myPlayerID < 0)
-                            return true;
-
-                        var myPlayerBuilding = MySession.Static.Players.GetOnlinePlayers().ToList().Find(b => b.Identity.IdentityId == myPlayerID);
-
-                        if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
+                switch (action)
+                {
+                    case MySafeZoneAction.Building:
                         {
-                            if (entity is MyWelder Welder)
+                            var myPlayerID = MySession.Static.Players.TryGetIdentityId(user);
+                            if (myPlayerID == 0 || myPlayerID < 0)
                                 return true;
 
-                            // if found will return false this why !PVE.CheckEntityInZone
-                            if (myPlayerBuilding != null && !PVE.CheckEntityInZone(myPlayerBuilding, ref __result))
+                            var myPlayerBuilding = MySession.Static.Players.GetOnlinePlayers().ToList().Find(b => b.Identity.IdentityId == myPlayerID);
+
+                            if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                             {
-                                if (grid.IsFriendlyPlayer(user))
-                                    return true;
+                                if (entity is MyWelder Welder) return true;
+
+                                // if found will return false this why !PVE.CheckEntityInZone
+                                if (myPlayerBuilding != null && !PVE.CheckEntityInZone(myPlayerBuilding, ref __result))
+                                {
+                                    if (grid.IsFriendlyPlayer(user)) return true;
+
+                                    return false;
+                                }
+                            }
+                            else if (myPlayerBuilding != null && PVE.PVESphere.Contains(myPlayerBuilding.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                            {
+                                if (entity is MyWelder Welder) return true;
+
+                                if (grid.IsFriendlyPlayer(user)) return true;
 
                                 return false;
                             }
+                            return true;
                         }
-                        else if (myPlayerBuilding != null && PVE.PVESphere.Contains(myPlayerBuilding.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                    case MySafeZoneAction.Shooting:
                         {
-                        	if (entity is MyWelder Welder) return true;
-
-                            if (grid.IsFriendlyPlayer(user)) return true;
-
-                            return false;
-                        }
-                        return true;
-                    }
-                case MyCubeGrid _ when action == MySafeZoneAction.Shooting:
-                    {
-                        if (ServerBoot)
-                        {
-                            if (ServerBootLoopStart)
+                            if (ServerBoot)
                             {
-                                CooldownManager.StartCooldown(LoopRequestID, null, LoopCooldown);
-                                ServerBootLoopStart = false;
+                                if (ServerBootLoopStart)
+                                {
+                                    CooldownManager.StartCooldown(LoopRequestID, null, LoopCooldown);
+                                    ServerBootLoopStart = false;
+                                }
+
+                                // loop for 240 sec after boot to block weapons.
+                                if (CooldownManager.CheckCooldown(LoopRequestID, null, out var remainingSecondsBoot))
+                                {
+                                }
+
+                                if (remainingSecondsBoot < 2)
+                                    ServerBoot = false;
+
+                                // block weapons
+                                return false;
                             }
-
-                            // loop for 240 sec after boot to block weapons.
-                            if (CooldownManager.CheckCooldown(LoopRequestID, null, out var remainingSecondsBoot))
-                            {
-                            }
-
-                            if (remainingSecondsBoot < 2)
-                                ServerBoot = false;
-
-                            // block weapons
-                            return false;
                         }
-
                         return PVE.CheckEntityInZone(entity, ref __result);
-                    }
+                }
             }
 
             if (action != MySafeZoneAction.Shooting) return true;

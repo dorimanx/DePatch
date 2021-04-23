@@ -244,7 +244,7 @@ namespace DePatch.VoxelProtection
                                 grids.Reverse();
                                 grids.SortNoAlloc((x, y) => x.GridSizeEnum.CompareTo(y.GridSizeEnum));
 
-                                MyMultiplayer.RaiseEvent(grids.First(), (MyCubeGrid x) => new Action(x.ConvertToStatic), default);
+                                MyMultiplayer.RaiseEvent(grids.First(), (MyCubeGrid x) => new Action(x.ConvertToStatic), MyEventContext.Current.Sender);
 
                                 /* This part of code belong to LordTylus great plugin dev! FixShip after converting to static */
                                 ReloadShip.FixShip(GridCube.EntityId);
