@@ -45,9 +45,8 @@ namespace DePatch.ShipTools
         private static bool Prefix(MyShipDrill __instance)
         {
             if (!DrillThread.IsAlive)
-            {
                 DrillThread.Start();
-            }
+
             if (DePatchPlugin.Instance.Config.DrillIgnoreSubtypes)
             {
                 if (DePatchPlugin.Instance.Config.ParallelDrill == DrillingMode.Parallel)
@@ -95,25 +94,18 @@ namespace DePatch.ShipTools
             InitSubBlocks.Invoke(drill, new object[0]);
 
             if (drill.Parent?.Physics == null)
-            {
                 return;
-            }
+
 
             m_drillFrameCountdown.SetValue(drill, (int)m_drillFrameCountdown.GetValue(drill) - 10);
             if ((int)m_drillFrameCountdown.GetValue(drill) > 0)
-            {
                 return;
-            }
 
             DrillSettings drillSettings = DrillSettings.drills.ToList().Find((DrillSettings b) => b.Subtype == drill.DefinitionId.SubtypeName);
             if (DePatchPlugin.Instance.Config.DrillIgnoreSubtypes)
-            {
                 m_drillFrameCountdown.SetValue(drill, (int)m_drillFrameCountdown.GetValue(drill) + DePatchPlugin.Instance.Config.DrillUpdateRate);
-            }
             else
-            {
                 m_drillFrameCountdown.SetValue(drill, (int)(float)((int)m_drillFrameCountdown.GetValue(drill) + drillSettings.TickRate));
-            }
 
             if (!drill.CanShoot(MyShootActionEnum.PrimaryAction, drill.OwnerId, out var _))
             {

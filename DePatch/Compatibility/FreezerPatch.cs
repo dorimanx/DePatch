@@ -13,7 +13,7 @@ namespace DePatch.Compatibility
     public static class FreezerPatch
     {
         private static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        
+
         public static void ApplyPatch(Harmony harmony, ITorchBase torch)
         {
             if (!torch.Managers.GetManager<PluginManager>().Plugins.TryGetValue(new Guid("3d875183-28f1-4ada-8ef6-b15f126988e2"), out var plugin))
@@ -27,10 +27,10 @@ namespace DePatch.Compatibility
         {
             if (__result < 1)
                 return;
-            
+
             dynamic frozenInfo = group;
-            var grids = (List<MyCubeGrid>) frozenInfo.Grids;
-            
+            var grids = (List<MyCubeGrid>)frozenInfo.Grids;
+
             grids.ForEach(MyNewGridPatch.Postfix);
         }
     }

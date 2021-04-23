@@ -47,22 +47,17 @@ namespace DePatch.PVEZONE
                             {
                                 if (grid.IsFriendlyPlayer(user))
                                     return true;
-                                else
-                                    return false;
+
+                                return false;
                             }
                         }
-                        else
+                        else if (myPlayerBuilding != null && PVE.PVESphere.Contains(myPlayerBuilding.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
                         {
-                            if (myPlayerBuilding != null && PVE.PVESphere.Contains(myPlayerBuilding.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                            {
-                                if (entity is MyWelder Welder)
-                                    return true;
+                        	if (entity is MyWelder Welder) return true;
 
-                                if (grid.IsFriendlyPlayer(user))
-                                    return true;
-                                else
-                                    return false;
-                            }
+                            if (grid.IsFriendlyPlayer(user)) return true;
+
+                            return false;
                         }
                         return true;
                     }
@@ -77,7 +72,7 @@ namespace DePatch.PVEZONE
                             }
 
                             // loop for 240 sec after boot to block weapons.
-                            if (CooldownManager.CheckCooldown(LoopRequestID, null, out long remainingSecondsBoot))
+                            if (CooldownManager.CheckCooldown(LoopRequestID, null, out var remainingSecondsBoot))
                             {
                             }
 
@@ -101,15 +96,12 @@ namespace DePatch.PVEZONE
 
                 var myPlayer = MySession.Static.Players.GetOnlinePlayers().ToList().Find(b => b.Identity.IdentityId == character.GetPlayerIdentityId());
                 if (myPlayer != null && DePatchPlugin.Instance.Config.PveZoneEnabled2)
-                {
                     // if found will return false
                     return PVE.CheckEntityInZone(myPlayer, ref __result);
-                }
 
                 if (myPlayer != null && PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
                     return false;
             }
-
             __result = false;
             return false;
         }

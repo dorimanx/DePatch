@@ -52,7 +52,8 @@ namespace DePatch.PVEZONE
                         if (PVESphere2.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
                             zone2 = true;
                     }
-                } catch
+                }
+                catch
                 {
                 }
             }

@@ -44,9 +44,8 @@ namespace DePatch.PVEZONE
             if (mySlimBlock == null)
             {
                 if (target is MyCharacter)
-                {
                     return;
-                }
+
                 num2 = 0L;
             }
             else
@@ -63,13 +62,12 @@ namespace DePatch.PVEZONE
                     if (zone1 && zone2)
                         return;
                 }
-                else
+                else if (!PVE.EntitiesInZone.Contains(mySlimBlock.CubeGrid.EntityId))
                 {
-                    if (!PVE.EntitiesInZone.Contains(mySlimBlock.CubeGrid.EntityId))
-                        return;
+                    return;
                 }
 
-                num2 = (mySlimBlock.CubeGrid.BigOwners.Count > 0) ? mySlimBlock.CubeGrid.BigOwners[0] : 0L;
+                num2 = ((mySlimBlock.CubeGrid.BigOwners.Count > 0) ? mySlimBlock.CubeGrid.BigOwners[0] : 0L);
             }
 
             /* Warhead Protection inside PVE Zones */
@@ -89,14 +87,11 @@ namespace DePatch.PVEZONE
                     return;
                 }
             }
-            else
+            else if (mySlimBlock != null && PVE.EntitiesInZone.Contains(mySlimBlock.CubeGrid.EntityId) && info.Type == MyDamageType.Explosion)
             {
-                if (mySlimBlock != null && PVE.EntitiesInZone.Contains(mySlimBlock.CubeGrid.EntityId) && info.Type == MyDamageType.Explosion)
-                {
-                    info.Amount = 0f;
-                    info.IsDeformation = false;
-                    return;
-                }
+                info.Amount = 0f;
+                info.IsDeformation = false;
+                return;
             }
 
             if (MyEntities.TryGetEntityById(info.AttackerId, out var AttackerEntity, allowClosed: true))
@@ -108,14 +103,10 @@ namespace DePatch.PVEZONE
                     return;
 
                 if (AttackerEntity is MyAngleGrinder myAngleGrinder)
-                {
                     num1 = myAngleGrinder.OwnerIdentityId;
-                }
 
                 if (AttackerEntity is MyHandDrill myHandDrill)
-                {
                     num1 = myHandDrill.OwnerIdentityId;
-                }
 
                 if (AttackerEntity is MyAutomaticRifleGun myAutomaticRifleGun)
                 {
@@ -123,18 +114,20 @@ namespace DePatch.PVEZONE
                     {
                         var zone1 = false;
                         var zone2 = false;
-                        if (PVE.PVESphere.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == myAutomaticRifleGun.OwnerIdentityId).Character.PositionComp.GetPosition()) != ContainmentType.Contains)
+                        if (PVE.PVESphere.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == myAutomaticRifleGun.OwnerIdentityId)
+                            .Character.PositionComp.GetPosition()) != ContainmentType.Contains)
                             zone1 = true;
-                        if (PVE.PVESphere2.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == myAutomaticRifleGun.OwnerIdentityId).Character.PositionComp.GetPosition()) != ContainmentType.Contains)
+                        if (PVE.PVESphere2.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == myAutomaticRifleGun.OwnerIdentityId)
+                            .Character.PositionComp.GetPosition()) != ContainmentType.Contains)
                             zone2 = true;
 
                         if (zone1 && zone2)
                             return;
                     }
-                    else
+                    else if (PVE.PVESphere.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == myAutomaticRifleGun.OwnerIdentityId)
+                        .Character.PositionComp.GetPosition()) != ContainmentType.Contains)
                     {
-                        if (PVE.PVESphere.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == myAutomaticRifleGun.OwnerIdentityId).Character.PositionComp.GetPosition()) != ContainmentType.Contains)
-                            return;
+                        return;
                     }
                     num1 = myAutomaticRifleGun.OwnerIdentityId;
                 }
@@ -148,18 +141,20 @@ namespace DePatch.PVEZONE
                     {
                         var zone1 = false;
                         var zone2 = false;
-                        if (PVE.PVESphere.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == toolBase.OwnerIdentityId).Character.PositionComp.GetPosition()) != ContainmentType.Contains)
+                        if (PVE.PVESphere.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == toolBase.OwnerIdentityId)
+                                .Character.PositionComp.GetPosition()) != ContainmentType.Contains)
                             zone1 = true;
-                        if (PVE.PVESphere2.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == toolBase.OwnerIdentityId).Character.PositionComp.GetPosition()) != ContainmentType.Contains)
+                        if (PVE.PVESphere2.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == toolBase.OwnerIdentityId)
+                                .Character.PositionComp.GetPosition()) != ContainmentType.Contains)
                             zone2 = true;
 
                         if (zone1 && zone2)
                             return;
                     }
-                    else
+                    else if (PVE.PVESphere.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == toolBase.OwnerIdentityId)
+                        .Character.PositionComp.GetPosition()) != ContainmentType.Contains)
                     {
-                        if (PVE.PVESphere.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == toolBase.OwnerIdentityId).Character.PositionComp.GetPosition()) != ContainmentType.Contains)
-                            return;
+                        return;
                     }
                     num1 = toolBase.OwnerIdentityId;
                 }
@@ -188,18 +183,20 @@ namespace DePatch.PVEZONE
                     {
                         var zone1 = false;
                         var zone2 = false;
-                        if (PVE.PVESphere.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == character.GetPlayerIdentityId()).Character.PositionComp.GetPosition()) != ContainmentType.Contains)
+                        if (PVE.PVESphere.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == character.GetPlayerIdentityId())
+                                .Character.PositionComp.GetPosition()) != ContainmentType.Contains)
                             zone1 = true;
-                        if (PVE.PVESphere2.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == character.GetPlayerIdentityId()).Character.PositionComp.GetPosition()) != ContainmentType.Contains)
+                        if (PVE.PVESphere2.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == character.GetPlayerIdentityId())
+                                .Character.PositionComp.GetPosition()) != ContainmentType.Contains)
                             zone2 = true;
 
                         if (zone1 && zone2)
                             return;
                     }
-                    else
+                    else if (PVE.PVESphere.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == character.GetPlayerIdentityId())
+                        .Character.PositionComp.GetPosition()) != ContainmentType.Contains)
                     {
-                        if (PVE.PVESphere.Contains(MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == character.GetPlayerIdentityId()).Character.PositionComp.GetPosition()) != ContainmentType.Contains)
-                            return;
+                        return;
                     }
                     num1 = character.GetPlayerIdentityId();
                 }
@@ -218,10 +215,9 @@ namespace DePatch.PVEZONE
                         if (zone1 && zone2)
                             return;
                     }
-                    else
+                    else if (!PVE.EntitiesInZone.Contains(myCubeGridZone.EntityId))
                     {
-                        if (!PVE.EntitiesInZone.Contains(myCubeGridZone.EntityId))
-                            return;
+                        return;
                     }
 
                     if (mySlimBlock != null && mySlimBlock.CubeGrid.Physics != null && (info.Type == MyDamageType.Fall || info.Type == MyDamageType.Deformation))
@@ -248,10 +244,9 @@ namespace DePatch.PVEZONE
                         if (zone1 && zone2)
                             return;
                     }
-                    else
+                    else if (!PVE.EntitiesInZone.Contains(myUserControllableGunZone.CubeGrid.EntityId))
                     {
-                        if (!PVE.EntitiesInZone.Contains(myUserControllableGunZone.CubeGrid.EntityId))
-                            return;
+                        return;
                     }
                 }
 
@@ -259,22 +254,21 @@ namespace DePatch.PVEZONE
                 {
                     var zone1 = false;
                     var zone2 = false;
-                    if ((AttackerEntity as MyLargeTurretBase) != null && !PVE.EntitiesInZone.Contains((AttackerEntity as MyLargeTurretBase).CubeGrid.EntityId) ||
-                        (AttackerEntity as MyWarhead) != null && !PVE.EntitiesInZone.Contains((AttackerEntity as MyWarhead).CubeGrid.EntityId))
+                    if ((AttackerEntity is MyLargeTurretBase && !PVE.EntitiesInZone.Contains((AttackerEntity as MyLargeTurretBase).CubeGrid.EntityId)) ||
+                        (AttackerEntity is MyWarhead && !PVE.EntitiesInZone.Contains((AttackerEntity as MyWarhead).CubeGrid.EntityId)))
                         zone1 = true;
 
-                    if ((AttackerEntity as MyLargeTurretBase) != null && !PVE.EntitiesInZone2.Contains((AttackerEntity as MyLargeTurretBase).CubeGrid.EntityId) ||
-                        (AttackerEntity as MyWarhead) != null && !PVE.EntitiesInZone2.Contains((AttackerEntity as MyWarhead).CubeGrid.EntityId))
+                    if ((AttackerEntity is MyLargeTurretBase && !PVE.EntitiesInZone2.Contains((AttackerEntity as MyLargeTurretBase).CubeGrid.EntityId)) ||
+                        (AttackerEntity is MyWarhead && !PVE.EntitiesInZone2.Contains((AttackerEntity as MyWarhead).CubeGrid.EntityId)))
                         zone2 = true;
 
                     if (zone1 && zone2)
                         return;
                 }
-                else
+                else if ((AttackerEntity is MyLargeTurretBase && !PVE.EntitiesInZone.Contains((AttackerEntity as MyLargeTurretBase).CubeGrid.EntityId)) ||
+                        (AttackerEntity is MyWarhead && !PVE.EntitiesInZone.Contains((AttackerEntity as MyWarhead).CubeGrid.EntityId)))
                 {
-                    if ((AttackerEntity as MyLargeTurretBase) != null && !PVE.EntitiesInZone.Contains((AttackerEntity as MyLargeTurretBase).CubeGrid.EntityId) ||
-                        (AttackerEntity as MyWarhead) != null && !PVE.EntitiesInZone.Contains((AttackerEntity as MyWarhead).CubeGrid.EntityId))
-                        return;
+                    return;
                 }
             }
 

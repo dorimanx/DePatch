@@ -69,7 +69,7 @@ namespace DePatch.GamePatches
                             {
                                 if (item is MyRefinery && item.BlockDefinition.Id.SubtypeName.Contains(LargeSmallSheld) && item.Enabled)
                                 {
-                                    item.Enabled = false;                                  
+                                    item.Enabled = false;
                                     AlertPlayer = true;
                                 }
 

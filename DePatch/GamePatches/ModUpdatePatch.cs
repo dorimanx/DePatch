@@ -4,7 +4,7 @@ using VRage.GameServices;
 namespace DePatch.GamePatches
 {
     [HarmonyPatch(typeof(MyWorkshopItem))]
-    [HarmonyPatch("IsUpToDate")] 
+    [HarmonyPatch("IsUpToDate")]
     class ModUpdatePatch
     {
         static void Postfix(MyWorkshopItem __instance, ref bool __result)

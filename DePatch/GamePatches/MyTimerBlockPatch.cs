@@ -37,9 +37,8 @@ namespace DePatch.GamePatches
         private static bool TrigMethod(MyTimerBlock __instance)
         {
             if (DePatchPlugin.Instance.Config.Enabled)
-            {
                 return !DePatchPlugin.Instance.Config.DisableTrigNow;
-            }
+
             return true;
         }
     }

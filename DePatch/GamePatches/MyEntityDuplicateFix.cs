@@ -10,8 +10,8 @@ namespace DePatch.GamePatches
     {
         private static readonly Action<MyEntity, long> EntityIdSetter = (e, value) =>
             AccessTools.Field(typeof(MyEntity), "m_entityId").SetValue(e, value);
-        
-        static bool Prefix(MyEntity __instance, ref long value)
+
+        private static bool Prefix(MyEntity __instance, ref long value)
         {
             var id = __instance.EntityId;
             if (id == 0L)

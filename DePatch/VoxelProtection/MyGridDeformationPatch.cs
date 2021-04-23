@@ -160,9 +160,10 @@ namespace DePatch.VoxelProtection
                 //by voxel or grid on low speed
                 if (AttackerEntity is MyVoxelBase)
                 {
-                    if (damage.IsDeformation) damage.IsDeformation = false;
-                    if (damage.Amount == 0f) return;
-                    damage.Amount = 0f;
+                    if (damage.IsDeformation)
+						damage.IsDeformation = false;
+                    if (damage.Amount != 0f)
+                    	damage.Amount = 0f;
                     return;
                 }
 
@@ -171,20 +172,20 @@ namespace DePatch.VoxelProtection
                 if (TorpedoDamageSystem.ContainsKey(GridCube.EntityId) && TorpedoDamageSystem[GridCube.EntityId].ApplyDamage)
                     return;
 
-                if (damage.IsDeformation) damage.IsDeformation = false;
-                if (damage.Amount > 0f) damage.Amount = 0f;
+                if (damage.IsDeformation)
+					damage.IsDeformation = false;
+                if (damage.Amount > 0f)
+					damage.Amount = 0f;
             }
             else
             {
                 if (AttackerEntity is MyVoxelBase)
                 { // by voxel on high speed
-                    if (damage.IsDeformation) damage.IsDeformation = false;
+                    if (damage.IsDeformation)
+						damage.IsDeformation = false;
 
-                    if (damage.Amount != 0f)
-                    {
-                        if (damage.Amount >= DePatchPlugin.Instance.Config.DamageToBlocksVoxel)
-                            damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksVoxel;
-                    }
+                    if (damage.Amount != 0f && damage.Amount >= DePatchPlugin.Instance.Config.DamageToBlocksVoxel)
+                    	damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksVoxel;
 
                     _ = MyGravityProviderSystem.CalculateNaturalGravityInPoint(GridCube.PositionComp.GetPosition(), out var ingravitynow);
                     if (ingravitynow <= 20 && ingravitynow >= 0.2)
@@ -243,7 +244,7 @@ namespace DePatch.VoxelProtection
                                 grids.Reverse();
                                 grids.SortNoAlloc((x, y) => x.GridSizeEnum.CompareTo(y.GridSizeEnum));
 
-                                MyMultiplayer.RaiseEvent(grids.First(), (MyCubeGrid x) => new Action(x.ConvertToStatic), default(EndpointId));
+                                MyMultiplayer.RaiseEvent(grids.First(), (MyCubeGrid x) => new Action(x.ConvertToStatic), default);
 
                                 /* This part of code belong to LordTylus great plugin dev! FixShip after converting to static */
                                 ReloadShip.FixShip(GridCube.EntityId);
@@ -259,13 +260,9 @@ namespace DePatch.VoxelProtection
                         else
                             GridPhysics?.ClearSpeed();
                     }
-                    else
+                    else if (damage.Amount != 0f && damage.Amount >= DePatchPlugin.Instance.Config.DamageToBlocksVoxel)
                     {
-                        if (damage.Amount != 0f)
-                        {
-                            if (damage.Amount >= DePatchPlugin.Instance.Config.DamageToBlocksVoxel)
-                                damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksVoxel;
-                        }
+                    	damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksVoxel;
                     }
                     return;
                 }
@@ -278,7 +275,8 @@ namespace DePatch.VoxelProtection
 
                 if (GridCube.BlocksCount > DePatchPlugin.Instance.Config.MaxBlocksDoDamage)
                 { // by grid bump high speed
-                    if (damage.IsDeformation) damage.IsDeformation = false;
+                    if (damage.IsDeformation)
+						damage.IsDeformation = false;
 
                     if (damage.Amount != 0f)
                     {

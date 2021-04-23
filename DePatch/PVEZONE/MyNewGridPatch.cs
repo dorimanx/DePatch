@@ -6,20 +6,14 @@ namespace DePatch.PVEZONE
     [HarmonyPatch(typeof(MyCubeGrid), "Init")]
     internal class MyNewGridPatch
     {
-        internal static void Postfix(MyCubeGrid __instance)
+		internal static void Postfix(MyCubeGrid __instance)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.PveZoneEnabled) return;
-
-            if (!DePatchPlugin.GameIsReady)
-                return;
-
-            if (__instance == null)
-                return;
+            if (!DePatchPlugin.GameIsReady) return;
+            if (__instance == null) return;
 
             if (!PVEGrid.Grids.ContainsKey(__instance))
-            {
                 PVEGrid.Grids.Add(__instance, new PVEGrid(__instance));
-            }
 
             var pVEGrid = PVEGrid.Grids[__instance];
             if (pVEGrid.InPVEZone())
@@ -31,9 +25,8 @@ namespace DePatch.PVEZONE
             if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
             {
                 if (!PVEGrid2.Grids2.ContainsKey(__instance))
-                {
                     PVEGrid2.Grids2.Add(__instance, new PVEGrid2(__instance));
-                }
+
                 var pVEGrid2 = PVEGrid2.Grids2[__instance];
                 if (pVEGrid2.InPVEZone2())
                 {

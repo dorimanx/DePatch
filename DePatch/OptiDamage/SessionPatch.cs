@@ -29,13 +29,13 @@ namespace DePatch.OptiDamage
                 return;
             }
             foreach (var element in from b in DamageNetwork.DamageQueue.ToList()
-                                                                               where b.Key != null && b.Value.Count > 0
-                                                                               select b)
+                                    where b.Key != null && b.Value.Count > 0
+                                    select b)
             {
                 var source = from b in onlinePlayers
-                                               where b != null && b.Controller != null && b.Controller.ControlledEntity != null && b.Controller.ControlledEntity.Entity != null
-                                               where Vector3D.DistanceSquared(b.Controller.ControlledEntity.Entity.PositionComp.GetPosition(), element.Key.PositionComp.GetPosition()) < Math.Pow(MySession.Static.Settings.SyncDistance, 2.0)
-                                               select b;
+                             where b != null && b.Controller != null && b.Controller.ControlledEntity != null && b.Controller.ControlledEntity.Entity != null
+                             where Vector3D.DistanceSquared(b.Controller.ControlledEntity.Entity.PositionComp.GetPosition(), element.Key.PositionComp.GetPosition()) < Math.Pow(MySession.Static.Settings.SyncDistance, 2.0)
+                             select b;
                 var contract = MyAPIGateway.Utilities.SerializeToBinary(new SyncGridDamageContract(element.Key.EntityId, element.Value.ToArray()));
                 Task[] tasks = source.Select((MyPlayer b) => Task.Factory.StartNew(() => MyAPIGateway.Multiplayer.SendMessageTo(64467, contract, b.Id.SteamId))).ToArray();
                 Task.WaitAll(tasks);

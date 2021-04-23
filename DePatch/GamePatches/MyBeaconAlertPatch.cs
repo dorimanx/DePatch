@@ -11,12 +11,7 @@ namespace DePatch.GamePatches
     [HarmonyPatch(typeof(MyEntityController), "RaiseControlledEntityChanged")]
     internal class MyBeaconAlertPatch
     {
-        public static readonly List<string> BadNames = new List<string>
-        {
-            "Small Grid",
-            "Static Grid",
-            "Large Grid"
-        };
+        public static readonly List<string> BadNames = new List<string> { "Small Grid", "Static Grid", "Large Grid" };
 
         private static bool IsBadName(string name)
         {
@@ -38,17 +33,15 @@ namespace DePatch.GamePatches
             {
                 new List<IMyBeacon>();
                 List<IMySlimBlock> list = new List<IMySlimBlock>();
-                if (__instance.ControlledEntity is IMyTerminalBlock myTerminalBlock)
+                IMyTerminalBlock myTerminalBlock = __instance.ControlledEntity as IMyTerminalBlock;
+                if (myTerminalBlock != null)
                 {
                     myTerminalBlock.CubeGrid.GetBlocks(list, null);
                     if (!list.Exists((IMySlimBlock x) => x.FatBlock != null && DePatchPlugin.Instance.Config.BeaconSubTypes.Contains(x.BlockDefinition.Id.SubtypeName)))
-                    {
                         text = text + "\n" + DePatchPlugin.Instance.Config.WithOutBeaconText;
-                    }
+
                     if (IsBadName(myTerminalBlock.CubeGrid.DisplayName))
-                    {
                         text = text + "\n" + DePatchPlugin.Instance.Config.WithDefaultNameText;
-                    }
                 }
                 if (text.Length > 0)
                 {

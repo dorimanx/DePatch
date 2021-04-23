@@ -41,10 +41,6 @@
     <Reference Include="HavokWrapper">
       <HintPath>..\GameBinaries\HavokWrapper.dll</HintPath>
     </Reference>
-    <Reference Include="HavokWrapper, Version=0.1.1.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\GameBinaries\HavokWrapper.dll</HintPath>
-    </Reference>
     <Reference Include="Humanizer, Version=2.2.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
       <HintPath>..\packages\Humanizer.Core.2.2.0\lib\netstandard1.0\Humanizer.dll</HintPath>
       <Private>False</Private>
@@ -91,6 +87,7 @@
     <Compile Include="GamePatches\MyAssemblerPatch.cs" />
     <Compile Include="GamePatches\MyEntityDuplicateFix.cs" />
     <Compile Include="GamePatches\MyPistonBase.cs" />
+    <Compile Include="GamePatches\MyPlayerIdFix.cs" />
     <Compile Include="GamePatches\MyProgramBlockSlow.cs" />
     <Compile Include="GamePatches\MyRefineryPatch.cs" />
     <Compile Include="OptiDamage\DamageContract.cs" />
@@ -104,7 +101,7 @@
     <Compile Include="ShipTools\DrillingMode.cs" />
     <Compile Include="ShipTools\DrillSettings.cs" />
     <Compile Include="VoxelProtection\ReloadShip.cs" />
-    <Compile Include="VoxelProtection\ExplosionPatch.cs" />
+    <Compile Include="VoxelProtection\VoxelExplosionPatch.cs" />
     <Compile Include="Microsoft\CodeAnalysis\EmbeddedAttribute.cs" />
     <Compile Include="GamePatches\MyBatteryFix.cs" />
     <Compile Include="GamePatches\MyBeaconAlertPatch.cs" />

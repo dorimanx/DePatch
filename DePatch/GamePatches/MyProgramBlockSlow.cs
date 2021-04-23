@@ -18,10 +18,13 @@ namespace DePatch.GamePatches
 
         static HashSet<MyStringHash> ignoredTimers = new HashSet<MyStringHash>();
 
-        public static void Init() {
-            var subs = DePatchPlugin.Instance.Config.SlowPbIgnored.Split(new[] {",", " "}, StringSplitOptions.None);
-            foreach (var x in subs) {
-                if (x.Length > 0) {
+        public static void Init()
+        {
+            var subs = DePatchPlugin.Instance.Config.SlowPbIgnored.Split(new[] { ",", " " }, StringSplitOptions.None);
+            foreach (var x in subs)
+            {
+                if (x.Length > 0)
+                {
                     DePatchPlugin.Log.Error("Added " + x + " to ignored PB's");
                     ignoredTimers.Add(MyStringHash.GetOrCompute(x));
                 }
@@ -63,7 +66,7 @@ namespace DePatch.GamePatches
                     }
                 }
 
-                if (!DePatchPlugin.Instance.Config.SlowPbEnabled || __instance.Enabled == false)
+                if (!DePatchPlugin.Instance.Config.SlowPbEnabled || !__instance.Enabled)
                     return true;
 
                 if (ignoredTimers.Contains(__instance.BlockDefinition.Id.SubtypeId))

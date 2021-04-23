@@ -31,20 +31,17 @@ namespace DePatch.GamePatches
                     if (__instance.RepeatEnabled && DePatchPlugin.Instance.Config.DisableAssemblerLoop)
                     {
                         __instance.RequestRepeatEnabled(false);
-                         if (!__instance.IsQueueEmpty)
+                        if (!__instance.IsQueueEmpty)
                             __instance.ClearQueue();
                     }
                     if (DePatchPlugin.Instance.Config.DisableProductionOnShip)
                     {
                         if (!__instance.CubeGrid.IsStatic && __instance.CubeGrid.GridSizeEnum == MyCubeSize.Large)
                         {
-                            if (__instance.Enabled)
-                            {
-                                __instance.Enabled = false;
-                                
-                                if (!__instance.IsQueueEmpty)
-                                    __instance.ClearQueue();
-                            }
+                            __instance.Enabled = false;
+
+                            if (!__instance.IsQueueEmpty)
+                                __instance.ClearQueue();
                         }
                     }
                 }
@@ -56,14 +53,16 @@ namespace DePatch.GamePatches
             if (DePatchPlugin.Instance.Config.CargoCleanup)
             {
                 /// loop for 30 sec till next grid add / remove
-                if (!CooldownManager.CheckCooldown(LoopRequestID, null, out long LoopremainingSeconds))
+                if (!CooldownManager.CheckCooldown(LoopRequestID, null, out var LoopremainingSeconds))
                 {
                     var LoopTimer = LoopremainingSeconds;
                     return true;
                 }
                 CooldownManager.StartCooldown(LoopRequestID, null, LoopCooldown);
-
-                _ = Task.Run(() => CargoCleanup.SearchAndDeleteItemStacks());
+                Task.Run(delegate
+                {
+                    CargoCleanup.SearchAndDeleteItemStacks();
+                });
             }
             return true;
         }

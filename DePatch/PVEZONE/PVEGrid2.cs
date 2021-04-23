@@ -25,9 +25,8 @@ namespace DePatch.PVEZONE
                     if (cubeGrid2 != null && cubeGrid2.BigOwners.Count >= 1)
                     {
                         if (cubeGrid2.DisplayName.Contains("Event Horizon at ") || cubeGrid2.DisplayName.Contains("Container MK-"))
-                        {
                             return;
-                        }
+
                         MyVisualScriptLogicProvider.ShowNotification(
                             DePatchPlugin.Instance.Config.PveMessageEntered2.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageEntered2, cubeGrid2.DisplayName) : DePatchPlugin.Instance.Config.PveMessageEntered2,
                             10000,
@@ -48,9 +47,8 @@ namespace DePatch.PVEZONE
                     if (cubeGrid2 != null && cubeGrid2.BigOwners.Count >= 1)
                     {
                         if (cubeGrid2.DisplayName.Contains("Event Horizon at ") || cubeGrid2.DisplayName.Contains("Container MK-"))
-                        {
                             return;
-                        }
+
                         MyVisualScriptLogicProvider.ShowNotification(
                             DePatchPlugin.Instance.Config.PveMessageLeft2.Contains("{0}") ? string.Format(DePatchPlugin.Instance.Config.PveMessageLeft2, cubeGrid2.DisplayName) : DePatchPlugin.Instance.Config.PveMessageLeft2,
                             10000,
@@ -70,9 +68,8 @@ namespace DePatch.PVEZONE
         {
             var controllingPlayer = MySession.Static.Players.GetControllingPlayer(grid);
             if (controllingPlayer != null)
-            {
                 return controllingPlayer;
-            }
+
             if (grid.BigOwners.Count < 1)
             {
                 var listsmall = grid.SmallOwners.ToList();
@@ -80,9 +77,7 @@ namespace DePatch.PVEZONE
                 foreach (var item in listsmall)
                 {
                     if (dictionarysmall.ContainsKey(item))
-                    {
                         return dictionarysmall[item];
-                    }
                 }
             }
             var list = grid.BigOwners.ToList();
@@ -91,9 +86,7 @@ namespace DePatch.PVEZONE
             foreach (var item in list)
             {
                 if (dictionary.ContainsKey(item))
-                {
                     return dictionary[item];
-                }
             }
             return null;
         }

@@ -21,14 +21,10 @@ namespace DePatch.PVEZONE
                 try
                 {
                     if (__instance != null && !PVEGrid.Grids.ContainsKey(__instance))
-                    {
                         PVEGrid.Grids.Add(__instance, new PVEGrid(__instance));
-                    }
 
                     if (__instance != null && DePatchPlugin.Instance.Config.PveZoneEnabled2 && !PVEGrid2.Grids2.ContainsKey(__instance))
-                    {
                         PVEGrid2.Grids2.Add(__instance, new PVEGrid2(__instance));
-                    }
 
                     if (__instance == null)
                     {
@@ -55,7 +51,7 @@ namespace DePatch.PVEZONE
                             }
 
                             // Allow fast grid add to dictonary on boot. for 180sec
-                            if (CooldownManager.CheckCooldown(BootRequestID, null, out long remainingSecondsBoot))
+                            if (CooldownManager.CheckCooldown(BootRequestID, null, out var remainingSecondsBoot))
                             {
                             }
 
