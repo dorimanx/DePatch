@@ -49,13 +49,6 @@ namespace DePatch.ShipTools
                 }
             }
 
-            // code part by SlimRadio to detect and skip Nanobot
-            var def = (MyShipWelderDefinition)__instance.BlockDefinition;
-            if (def.SensorRadius < 0.01f) //NanobotOptimiztion
-            {
-                return;
-            }
-
             if (!DePatchPlugin.Instance.Config.ShipToolsEnabled) return;
             var enumerable = ShipTool.shipTools.Where(t => t.Subtype == __instance.DefinitionId.SubtypeId.String);
             var shipTools = enumerable.ToList();

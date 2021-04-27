@@ -16,3 +16,5 @@ obj
 /GameBinaries
 /TorchBinaries
 zip/
+packages
+.vs/

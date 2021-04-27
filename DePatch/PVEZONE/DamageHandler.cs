@@ -110,6 +110,9 @@ namespace DePatch.PVEZONE
 
                 if (AttackerEntity is MyAutomaticRifleGun myAutomaticRifleGun)
                 {
+                    if (myAutomaticRifleGun.OwnerIdentityId == 0)
+                        return;
+
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                     {
                         var zone1 = false;
