@@ -62,19 +62,6 @@ namespace DePatch
 
             _sessionManager = Torch.Managers.GetManager<TorchSessionManager>();
 
-            // send server alive log to torch log every 100sec.
-            if (Instance.Config.LogTracker)
-            {
-                Task.Run(async () =>
-                {
-                    while (true)
-                    {
-                        Log.Info("Server Status: ALIVE");
-                        await Task.Delay(TimeSpan.FromMinutes(1.6));
-                    }
-                });
-            }
-
             Config.Mods.ForEach(delegate (ulong m)
             {
                 _sessionManager.AddOverrideMod(m);
@@ -111,6 +98,19 @@ namespace DePatch
 
             if (Config.DamageThreading)
                 SessionPatch.Timer.Start();
+
+            // send server alive log to torch log every 100sec.
+            if (Instance.Config.LogTracker)
+            {
+                Task.Run(async () =>
+                {
+                    while (true)
+                    {
+                        Log.Info("Server Status: ALIVE");
+                        await Task.Delay(TimeSpan.FromMinutes(1.6));
+                    }
+                });
+            }
         }
 
         private static void Static_OnSavingCheckpoint(MyObjectBuilder_Checkpoint obj)

@@ -28,6 +28,7 @@ namespace DePatch
         private string _redAlertText = "ВНИМАНИЕ!: эта сетка будет удалена при автоматической очистке! \n Чтобы избежать этого, исправьте следующее: \nWARNING: This grid will be deleted on automated cleanup! To avoid this, fix the following:";
         private string _withOutBeaconText = "  * На данном гриде не установлен блок маяка. Что бы его не удалило, установите МАЯК!.\nGrid does not have a beacon.  Build one to avoid deletion.\n";
         private string _withDefaultNameText = "  * Переименуйте Грид в панели инфо \"Наименование\"! В нем не должно быть содеражние имени \"Grid\" \nName your grid in the Control Panel Info Tab. It cannot have \"Grid\" in the name.\n";
+        
         private bool _pveZoneEnabled;
         private float _pveX;
         private float _pveY;
@@ -44,6 +45,7 @@ namespace DePatch
         private string _pveMessageEntered2 = "Your grid [{0}] entered to [PVE Zone 2]! All Weapons on grid cannot fire!";
         private string _pveMessageLeft2 = "Your grid [{0}] left from [PVE Zone 2]! All Weapons can fire now.";
 
+        private bool _AllowToShootNPCinZone;
         private int _drillUpdateRate = 90;
         private DrillingMode _parallelDrill;
         private SpeedingMode _speedingModeSelector;
@@ -436,6 +438,12 @@ namespace DePatch
         {
             get => _pveZoneRadius2;
             set => SetValue(ref _pveZoneRadius2, value);
+        }
+
+        public bool AllowToShootNPCinZone
+        {
+            get => _AllowToShootNPCinZone;
+            set => SetValue(ref _AllowToShootNPCinZone, value);
         }
 
         public bool EnableBlockDisabler

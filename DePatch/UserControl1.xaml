@@ -398,6 +398,17 @@
                             Width="457"
                             AcceptsReturn="True"
                             Text="{Binding PveMessageLeft2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <CheckBox
+                            Content="Allow Shooting NPC in All Zones"
+                            ToolTip="Allow to shoot NPC and back! Side Effect! all weapons will try to shoot enemy grid but without destroying blocks."
+                            HorizontalAlignment="Left" VerticalAlignment="Top" Margin="260,106,0,0"
+                            IsEnabled="{Binding PveZoneEnabled}"
+                            IsChecked="{Binding AllowToShootNPCinZone}" />
+                        <Label
+                            Content="Please read the info about NPC"
+                            HorizontalAlignment="Left"
+                            Margin="277,80,0,0"
+                            VerticalAlignment="Top" />
                     </Grid>
                 </Grid>
             </TabItem>

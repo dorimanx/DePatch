@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using Sandbox.Game.Entities;
 
 namespace DePatch.PVEZONE

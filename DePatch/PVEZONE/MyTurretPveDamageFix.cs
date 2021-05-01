@@ -82,28 +82,46 @@ namespace DePatch.PVEZONE
                                 // block weapons
                                 return false;
                             }
+
+                            // if found will return false
+                            if (!PVE.CheckEntityInZone(entity, ref __result))
+                            {
+                                if (DePatchPlugin.Instance.Config.AllowToShootNPCinZone)
+                                    return true;
+
+                                return false;
+                            }
+                            return true;
                         }
-                        return PVE.CheckEntityInZone(entity, ref __result);
                 }
             }
 
-            if (action != MySafeZoneAction.Shooting) return true;
+            if (action != MySafeZoneAction.Shooting)
+            {
+                __result = true;
+                return true;
+            }
 
             if (entity is MyCharacter character)
             {
                 if (character == null)
                     return true;
 
+                if (DePatchPlugin.Instance.Config.AllowToShootNPCinZone)
+                    return true;
+
                 var myPlayer = MySession.Static.Players.GetOnlinePlayers().ToList().Find(b => b.Identity.IdentityId == character.GetPlayerIdentityId());
+
+                // if found will return false
                 if (myPlayer != null && DePatchPlugin.Instance.Config.PveZoneEnabled2)
-                    // if found will return false
                     return PVE.CheckEntityInZone(myPlayer, ref __result);
 
                 if (myPlayer != null && PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
                     return false;
             }
-            __result = false;
-            return false;
+
+            __result = true;
+            return true;
         }
     }
 }

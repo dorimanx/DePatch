@@ -1,6 +1,9 @@
 ﻿using DePatch.CoolDown;
 using HarmonyLib;
+using NLog;
 using Sandbox.Game.Entities;
+using Sandbox.Game.World;
+using System;
 
 namespace DePatch.PVEZONE
 {
@@ -8,6 +11,8 @@ namespace DePatch.PVEZONE
 
     internal class MyCubeGridPatch
     {
+        public static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
         private static readonly SteamIdCooldownKey BootRequestID = new SteamIdCooldownKey(76000000000000003);
         private static int LoopCooldown = 3;
         private static readonly int BootCooldown = 180 * 1000;
@@ -20,6 +25,24 @@ namespace DePatch.PVEZONE
             {
                 try
                 {
+                    if (__instance != null)
+                    {
+                        var IsItNPC = (__instance.BigOwners.Count > 0) ? __instance.BigOwners[0] : 0L;
+                        var NPC_Grid = false;
+
+                        if (IsItNPC != 0L && MySession.Static.Players.IdentityIsNpc(IsItNPC))
+                            NPC_Grid = true;
+
+                        if (NPC_Grid && PVEGrid.Grids.ContainsKey(__instance))
+                            PVEGrid.Grids.Remove(__instance);
+
+                        if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && NPC_Grid && PVEGrid2.Grids2.ContainsKey(__instance))
+                            PVEGrid2.Grids2.Remove(__instance);
+
+                        if (NPC_Grid)
+                            return;
+                    }
+
                     if (__instance != null && !PVEGrid.Grids.ContainsKey(__instance))
                         PVEGrid.Grids.Add(__instance, new PVEGrid(__instance));
 
@@ -97,8 +120,9 @@ namespace DePatch.PVEZONE
                         }
                     }
                 }
-                catch
+                catch (Exception e)
                 {
+                    Log.Error(e);
                 }
             }
         }
