@@ -25,32 +25,21 @@ namespace DePatch
         public static bool PlayersNarby(IMyCubeBlock block, int radius)
         {
             if (block != null)
+            {
+                BoundingSphereD sphere = new BoundingSphereD(block.GetPosition(), radius);
+                List<IMyEntity> AllentitiesInsphere = MyAPIGateway.Entities.GetEntitiesInSphere(ref sphere);
+
                 try
                 {
-                    BoundingSphereD sphere = new BoundingSphereD(block.GetPosition(), radius);
-                    List<IMyEntity> AllentitiesInsphere = MyAPIGateway.Entities.GetEntitiesInSphere(ref sphere);
-                    IEnumerable<MyCharacter> enumerable()
-                    {
-                        foreach (var Player in AllentitiesInsphere.OfType<IMyCharacter>())
-                        {
-                            if (!Player.IsDead && Player.IsPlayer)
-                            {
-                                yield return Player as MyCharacter;
-                            }
-                        }
-                    }
+                    IEnumerable<MyCharacter> enumerable() => AllentitiesInsphere.OfType<IMyCharacter>().Where(Player => !Player.IsDead && Player.IsPlayer).Select(Player => Player as MyCharacter);
 
-                    IEnumerable<MyCharacter> characters = enumerable();
-                    if (characters.Any())
-                    {
-                        List<long> onlinePlayers = MyVisualScriptLogicProvider.GetOnlinePlayers();
-                        if (characters.Any((MyCharacter c) => onlinePlayers.Contains(c.GetPlayerIdentityId())))
-                            return true;
-                    }
+                    if (enumerable().Any() && enumerable().Any((MyCharacter c) => MyVisualScriptLogicProvider.GetOnlinePlayers().Contains(c.GetPlayerIdentityId())))
+                        return true;
                 }
                 catch
                 {
                 }
+            }
             return false;
         }
     }

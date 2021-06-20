@@ -744,14 +744,14 @@
                         IsChecked="{Binding LogTracker}"
                         Width="172" />
                     <CheckBox
-                        Content="Disable Build and Repair Area when no players in 1.5KM"
+                        Content="Disable Build and Repair Area when block is OFF"
                         HorizontalAlignment="Left"
                         Margin="10,281,0,300"
-                        ToolTip="This will disable block work area if player goes away for 1.5KM."
+                        ToolTip="This will disable block work area if block is off."
                         IsChecked="{Binding NanoBuildArea}"
-                        Width="292" />
+                        Width="282" />
                     <CheckBox
-                        Content="Disable Drill System Area when no players in 1.5KM"
+                        Content="Disable Drill System Area when no players in 1KM"
                         HorizontalAlignment="Left"
                         Margin="10,302,0,279"
                         ToolTip="This will disable block work area if player goes away for 1.5KM."
