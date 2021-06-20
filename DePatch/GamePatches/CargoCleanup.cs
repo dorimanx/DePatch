@@ -8,6 +8,8 @@ using VRage.Game;
 using VRage.Game.ModAPI;
 using VRage.ObjectBuilders;
 
+/* this code is obsolete, leaving it for reference.
+
 namespace DePatch.GamePatches
 {
     public static class CargoCleanup
@@ -22,44 +24,44 @@ namespace DePatch.GamePatches
 
         private static void FindAndCleanInventorys(MySlimBlock slimBlock, Dictionary<MyDefinitionId, int> amountDict)
         {
-            /* This part of code belong to LordTylus great plugin dev! */
+            // This part of code belong to LordTylus great plugin dev!
             var typeIdDict = new Dictionary<MyObjectBuilderType, int>();
             var NeedRefresh = false;
 
-            /* get the amounds per TypeId instead of definition */
+            // get the amounds per TypeId instead of definition
             foreach (var entry in amountDict)
                 typeIdDict.Add(entry.Key.TypeId, entry.Value);
 
-            /* all Inventories */
+            // all Inventories
             for (int i = 0; i < slimBlock.FatBlock.InventoryCount; i++)
             {
                 var inventory = slimBlock.FatBlock.GetInventory(i);
                 var itemsList = inventory.GetItems();
 
-                /* We loop through the items in reverse otherwise the we run out of bounds. */
+                // We loop through the items in reverse otherwise the we run out of bounds.
                 for (int j = itemsList.Count - 1; j >= 0; j--)
                 {
                     var item = itemsList[j];
                     var typeId = item.Content.TypeId;
 
-                    /* If that type is not in dictionary ignore. */
+                    // If that type is not in dictionary ignore.
                     if (typeIdDict.TryGetValue(typeId, out int value))
                     {
                         value--;
 
-                        /* checking if we are below defined limit */
+                        // checking if we are below defined limit
                         if (value < 0)
                         {
                             inventory.RemoveItemsOfType(1, item.Content);
                             NeedRefresh = true;
                         }
 
-                        /* writing reduced value back in dictionary */
+                        // writing reduced value back in dictionary
                         typeIdDict[itemsList[j].Content.TypeId] = value;
                     }
                 }
 
-                /* We probably (most likely) only need to refresh it once. after we are done fiddling around with it. */
+                // We probably (most likely) only need to refresh it once. after we are done fiddling around with it.
                 if (NeedRefresh)
                     inventory.Refresh();
             }
@@ -67,7 +69,7 @@ namespace DePatch.GamePatches
 
         public static void SearchAndDeleteItemStacks()
         {
-            /* This part of code belong to LordTylus great plugin dev! */
+            // This part of code belong to LordTylus great plugin dev!
             List<MySlimBlock> blocks = GetBlocksFromAllGrids((block) =>
             {
                 if (block.FatBlock == null || !block.FatBlock.HasInventory)
@@ -105,3 +107,4 @@ namespace DePatch.GamePatches
         }
     }
 }
+*/

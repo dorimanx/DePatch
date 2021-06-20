@@ -10,8 +10,6 @@ namespace DePatch
         {
             if (grid.BigOwners.Count < 1) return true;
 
-            var adminPlayerID = MySession.Static.IsUserAdmin(steamId);
-
             var playerID = MySession.Static.Players.TryGetIdentityId(steamId);
             var Playerfaction = MySession.Static.Factions.TryGetPlayerFaction(playerID);
 
@@ -19,9 +17,6 @@ namespace DePatch
             if (gridID == default) return true;
 
             var gridFaction = MySession.Static.Factions.TryGetPlayerFaction(gridID);
-
-            if (adminPlayerID)
-                return true;
 
             if (playerID == gridID)
                 return true;

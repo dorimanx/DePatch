@@ -83,6 +83,8 @@
     <Compile Include="CoolDown\SteamIdCooldownKey.cs" />
     <Compile Include="CubeGridExtensions.cs" />
     <Compile Include="GamePatches\CargoCleanup.cs" />
+    <Compile Include="BlocksDisable\AreaShow_DrillSystem.cs" />
+    <Compile Include="BlocksDisable\AreaShow_BuildAndRepairSystem.cs" />
     <Compile Include="GamePatches\ModUpdatePatch.cs" />
     <Compile Include="GamePatches\MyAssemblerPatch.cs" />
     <Compile Include="GamePatches\MyEntityDuplicateFix.cs" />
@@ -148,6 +150,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="manifest.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

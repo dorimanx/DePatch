@@ -27,9 +27,10 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition
-							Width="99*" />
+							Width="297*" />
                         <ColumnDefinition
-							Width="64*" />
+							Width="155*" />
+                        <ColumnDefinition Width="37*"/>
                     </Grid.ColumnDefinitions>
                     <Label
 						Content="Raycast Limit (m)"
@@ -151,7 +152,7 @@
                     <CheckBox
 						Content="Check For Updates"
 						HorizontalAlignment="Left"
-						Margin="10,348,0,0"
+						Margin="10,385,0,0"
 						VerticalAlignment="Top"
                         IsEnabled="False"
 						IsChecked="{Binding Path=CheckForUpdates}" />
@@ -188,19 +189,19 @@
                     <Label
 						Content="Experimental Options! for tests only"
 						HorizontalAlignment="Left"
-						Margin="10,302,0,0"
+						Margin="10,334,0,0"
 						VerticalAlignment="Top"
 						RenderTransformOrigin="0.55,1.808" Width="207" />
                     <CheckBox
 						Content="OptiDamage System"
 						HorizontalAlignment="Left"
-						Margin="10,328,0,0"
+						Margin="10,360,0,0"
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=DamageThreading}" Width="127" Height="20" RenderTransformOrigin="0.475,0.883" />
                     <CheckBox
-                        Content="Clean Cargo Hacks" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,262,0,0"
-						ToolTip="This will clean extra bottles and tools from cargo if amount of things,&#xA;is above 300 every 25sec if player near by"
-                        IsChecked="{Binding Path=CargoCleanup}"/>
+                        Content="Dont Lock LandingGear on Enemy Grid" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,262,0,0"
+						ToolTip="This will prevent enemy player grid from locking landinggear on other enemy player grid!&#xA;but will lock on NPC grids and back, also will lock in PVE zones."
+                        IsChecked="{Binding Path=NoEnemyPlayerLandingGearLocks}"/>
                     <CheckBox
                         Content="Force Pistons Inertia Tensor" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,282,0,0"
                         ToolTip="This will enable ShareInertiaTensor on each piston block in game to reduce SIM load."
@@ -742,6 +743,20 @@
                         ToolTip="This will pupdate LOG every minute with Server Alive Log."
                         IsChecked="{Binding LogTracker}"
                         Width="172" />
+                    <CheckBox
+                        Content="Disable Build and Repair Area when no players in 1.5KM"
+                        HorizontalAlignment="Left"
+                        Margin="10,281,0,300"
+                        ToolTip="This will disable block work area if player goes away for 1.5KM."
+                        IsChecked="{Binding NanoBuildArea}"
+                        Width="292" />
+                    <CheckBox
+                        Content="Disable Drill System Area when no players in 1.5KM"
+                        HorizontalAlignment="Left"
+                        Margin="10,302,0,279"
+                        ToolTip="This will disable block work area if player goes away for 1.5KM."
+                        IsChecked="{Binding NanoDrillArea}"
+                        Width="292" />
                 </Grid>
             </TabItem>
         </TabControl>

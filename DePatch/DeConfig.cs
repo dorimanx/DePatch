@@ -79,22 +79,18 @@ namespace DePatch
         private bool _enableGridMaxSpeedPurge;
         private float _largeGridMaxSpeedPurge = 500f;
         private float _smallGridMaxSpeedPurge = 500f;
-        private bool _cargoCleanup;
         private bool _AdminGrid;
         private bool _LogTracker;
         private bool _ShieldsAntiHack;
         private bool _PistonInertiaTensor;
+        private bool _NoEnemyPlayerLandingGearLocks;
+        private bool _NanoBuildArea;
+        private bool _NanoDrillArea;
 
         public bool DamageThreading
         {
             get => _damageThreading;
             set => SetValue(ref _damageThreading, value);
-        }
-
-        public bool CargoCleanup
-        {
-            get => _cargoCleanup;
-            set => SetValue(ref _cargoCleanup, value);
         }
 
         public long MaxProtectedLargeGridSize
@@ -514,6 +510,24 @@ namespace DePatch
         {
             get => _PistonInertiaTensor;
             set => SetValue(ref _PistonInertiaTensor, value);
+        }
+
+        public bool NoEnemyPlayerLandingGearLocks
+        {
+            get => _NoEnemyPlayerLandingGearLocks;
+            set => SetValue(ref _NoEnemyPlayerLandingGearLocks, value);
+        }
+
+        public bool NanoBuildArea
+        {
+            get => _NanoBuildArea;
+            set => SetValue(ref _NanoBuildArea, value);
+        }
+
+        public bool NanoDrillArea
+        {
+            get => _NanoDrillArea;
+            set => SetValue(ref _NanoDrillArea, value);
         }
     }
 }

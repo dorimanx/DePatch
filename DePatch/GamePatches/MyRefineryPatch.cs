@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using HarmonyLib;
+using Sandbox.Engine.Utils;
 using Sandbox.Game;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.World;
@@ -16,6 +17,9 @@ namespace DePatch.GamePatches
         {
             if (DePatchPlugin.Instance.Config.Enabled)
             {
+                if (MyFakes.FORCE_ADD_TRASH_REMOVAL_MENU)
+                    MyFakes.FORCE_ADD_TRASH_REMOVAL_MENU = false;
+
                 var blockSubType = __instance.BlockDefinition.Id.SubtypeName;
                 var LargeSmallSheld = "LargeShipSmallShieldGeneratorBase";
                 var LargeLargeShield = "LargeShipLargeShieldGeneratorBase";
