@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using DePatch.CoolDown;
 using HarmonyLib;
 using Sandbox.Game.Entities;
@@ -8,17 +10,18 @@ using Sandbox.Game.Entities.Character;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.Weapons;
 using Sandbox.Game.World;
-using SpaceEngineers.Game.Entities.Blocks;
+using Torch.Managers.PatchManager;
 using VRage.Game;
 using VRage.Game.Entity;
 using VRage.Game.ObjectBuilders.Components;
-using VRage.ModAPI;
 using VRageMath;
 
 namespace DePatch.PVEZONE
 {
-    [HarmonyPatch(typeof(MySessionComponentSafeZones), "IsActionAllowed", typeof(MyEntity), typeof(MySafeZoneAction), typeof(long), typeof(ulong))]
-    internal class MyTurretPveDamageFix
+    //[HarmonyPatch(typeof(MySessionComponentSafeZones), "IsActionAllowed", typeof(MyEntity), typeof(MySafeZoneAction), typeof(long), typeof(ulong))]
+    [PatchShim]
+
+    internal static class MyTurretPveDamageFix
     {
         private static readonly SteamIdCooldownKey LoopRequestID = new SteamIdCooldownKey(76000000000000001);
         private static readonly int LoopCooldown = 240 * 1000;
@@ -26,6 +29,16 @@ namespace DePatch.PVEZONE
         private static bool ServerBootLoopStart = true;
         private static MyCubeGrid LockingGrid;
         private static bool LockingGridHasOwner = false;
+
+        private static void Patch(PatchContext ctx) => ctx.GetPattern(typeof(MySessionComponentSafeZones).GetMethod("IsActionAllowed", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static, null,
+                new Type[4]
+                {
+                    typeof(MyEntity),
+                    typeof(MySafeZoneAction),
+                    typeof(long),
+                    typeof(ulong)
+                }, new ParameterModifier[0])).
+                Prefixes.Add(typeof(MyTurretPveDamageFix).GetMethod(nameof(IsActionAllowedPatch), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
 
         private static bool CheckAllowedToLock(MyCubeGrid Grid)
         {
@@ -58,7 +71,7 @@ namespace DePatch.PVEZONE
             return false;
         }
 
-        private static bool Prefix(MySessionComponentSafeZones __instance, MyEntity entity, MySafeZoneAction action, ulong user, ref bool __result)
+        private static bool IsActionAllowedPatch(MyEntity entity, MySafeZoneAction action, ulong user, ref bool __result)
         {
             if (!DePatchPlugin.Instance.Config.Enabled)
                 return true;

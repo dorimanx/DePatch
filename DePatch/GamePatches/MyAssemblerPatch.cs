@@ -1,21 +1,30 @@
 ﻿using DePatch.CoolDown;
 using HarmonyLib;
 using Sandbox.Game.Entities.Cube;
-using System.Threading.Tasks;
+using System.Reflection;
+using Torch.Managers.PatchManager;
 using VRage.Game;
 
 namespace DePatch.GamePatches
 {
-    [HarmonyPatch(typeof(MyAssembler), "UpdateBeforeSimulation100")]
-    internal class MyAssemblerPatch
+    //[HarmonyPatch(typeof(MyAssembler), "UpdateBeforeSimulation100")]
+    [PatchShim]
+
+    internal static class MyAssemblerPatch
     {
         //private static readonly SteamIdCooldownKey LoopRequestID = new SteamIdCooldownKey(76000000000000002);
         //private static readonly int LoopCooldown = 40 * 1000;
 
-        private static bool Prefix(MyAssembler __instance)
+        private static void Patch(PatchContext ctx)
+        {
+            ctx.GetPattern(typeof(MyAssembler).GetMethod("UpdateBeforeSimulation100", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+                Prefixes.Add(typeof(MyAssemblerPatch).GetMethod(nameof(UpdateBeforeSimulation100), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+        }
+
+        private static void UpdateBeforeSimulation100(MyAssembler __instance)
         {
             if (!DePatchPlugin.Instance.Config.Enabled)
-                return true;
+                return;
 
             try
             {
@@ -66,7 +75,6 @@ namespace DePatch.GamePatches
                 });
             }
             */
-            return true;
         }
     }
 }

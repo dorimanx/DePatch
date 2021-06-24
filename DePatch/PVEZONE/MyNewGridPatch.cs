@@ -1,12 +1,24 @@
 using HarmonyLib;
 using Sandbox.Game.Entities;
+using System;
+using System.Reflection;
+using Torch.Managers.PatchManager;
+using VRage.ObjectBuilders;
 
 namespace DePatch.PVEZONE
 {
-    [HarmonyPatch(typeof(MyCubeGrid), "Init")]
-    internal class MyNewGridPatch
+    //[HarmonyPatch(typeof(MyCubeGrid), "Init")]
+    [PatchShim]
+
+    internal static class MyNewGridPatch
     {
-		internal static void Postfix(MyCubeGrid __instance)
+        private static void Patch(PatchContext ctx) => ctx.GetPattern(typeof(MyCubeGrid).GetMethod("Init", BindingFlags.Instance | BindingFlags.Public, null, new Type[1]
+            {
+                typeof(MyObjectBuilder_EntityBase),
+            }, new ParameterModifier[0])).
+            Suffixes.Add(typeof(MyNewGridPatch).GetMethod(nameof(CubeGridInit), BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic));
+
+        internal static void CubeGridInit(MyCubeGrid __instance)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.PveZoneEnabled) return;
             if (!DePatchPlugin.GameIsReady) return;

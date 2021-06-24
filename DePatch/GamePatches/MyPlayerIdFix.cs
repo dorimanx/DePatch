@@ -1,18 +1,28 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using HarmonyLib;
 using NLog;
 using Sandbox.Game.World;
+using Torch.Managers.PatchManager;
 using VRage.Game;
 
 namespace DePatch.GamePatches
 {
-    [HarmonyPatch(typeof(MySession), "GetCheckpoint")]
-    internal class MyPlayerIdFix
+    //[HarmonyPatch(typeof(MySession), "GetCheckpoint")]
+    [PatchShim]
+
+    internal static class MyPlayerIdFix
     {
         private static readonly ILogger Log = LogManager.GetCurrentClassLogger();
 
-        private static void Postfix(MyObjectBuilder_Checkpoint __result)
+        private static void Patch(PatchContext ctx)
+        {
+            ctx.GetPattern(typeof(MySession).GetMethod("GetCheckpoint", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+                Suffixes.Add(typeof(MyPlayerIdFix).GetMethod(nameof(GetCheckpoint), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+        }
+
+        private static void GetCheckpoint(MyObjectBuilder_Checkpoint __result)
         {
             try
             {

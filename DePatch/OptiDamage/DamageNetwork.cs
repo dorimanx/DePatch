@@ -9,7 +9,7 @@ using VRage.Utils;
 
 namespace DePatch.OptiDamage
 {
-    [HarmonyPatch(typeof(MySlimBlock), "SendDamage")]
+    //[HarmonyPatch(typeof(MySlimBlock), "SendDamage")]  DISABLE THIS
     public class DamageNetwork
     {
         internal static Logger Log = LogManager.GetCurrentClassLogger();

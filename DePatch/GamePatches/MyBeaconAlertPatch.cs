@@ -1,17 +1,27 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 using HarmonyLib;
 using Sandbox.Game;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
 using Sandbox.ModAPI;
+using Torch.Managers.PatchManager;
 using VRage.Game.ModAPI;
 
 namespace DePatch.GamePatches
 {
-    [HarmonyPatch(typeof(MyEntityController), "RaiseControlledEntityChanged")]
-    internal class MyBeaconAlertPatch
+    //[HarmonyPatch(typeof(MyEntityController), "RaiseControlledEntityChanged")]
+    [PatchShim]
+
+    internal static class MyBeaconAlertPatch
     {
         public static readonly List<string> BadNames = new List<string> { "Small Grid", "Static Grid", "Large Grid" };
+
+        private static void Patch(PatchContext ctx)
+        {
+            ctx.GetPattern(typeof(MyEntityController).GetMethod("RaiseControlledEntityChanged", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+                Prefixes.Add(typeof(MyBeaconAlertPatch).GetMethod(nameof(RaiseControlledEntityChanged), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+        }
 
         private static bool IsBadName(string name)
         {
@@ -23,10 +33,10 @@ namespace DePatch.GamePatches
             return false;
         }
 
-        private static bool Prefix(MyEntityController __instance)
+        private static void RaiseControlledEntityChanged(MyEntityController __instance)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.BeaconAlert)
-                return true;
+                return;
 
             string text = "";
             if (__instance.ControlledEntity is MyCockpit)
@@ -49,7 +59,6 @@ namespace DePatch.GamePatches
                     MyVisualScriptLogicProvider.ShowNotification(text, 10000, "Green", __instance.Player.Identity.IdentityId);
                 }
             }
-            return true;
         }
     }
 }

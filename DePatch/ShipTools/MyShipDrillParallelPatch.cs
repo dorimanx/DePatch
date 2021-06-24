@@ -7,12 +7,21 @@ using HarmonyLib;
 using ParallelTasks;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Weapons;
+using Torch.Managers.PatchManager;
 
 namespace DePatch.ShipTools
 {
-    [HarmonyPatch(typeof(MyShipDrill), "UpdateBeforeSimulation10")]
-    internal class MyShipDrillParallelPatch
+    //[HarmonyPatch(typeof(MyShipDrill), "UpdateBeforeSimulation10")]
+    [PatchShim]
+
+    internal static class MyShipDrillParallelPatch
     {
+        private static void Patch(PatchContext ctx)
+        {
+            ctx.GetPattern(typeof(MyShipDrill).GetMethod("UpdateBeforeSimulation10", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+                Prefixes.Add(typeof(MyShipDrillParallelPatch).GetMethod(nameof(UpdateBeforeSimulation10), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+        }
+
         private static MethodInfo Receiver_IsPoweredChanged = typeof(MyShipDrill).GetMethod("Receiver_IsPoweredChanged", BindingFlags.Instance | BindingFlags.NonPublic) ?? throw new MissingMethodException("missing Receiver_IsPoweredChanged");
 
         private static PropertyInfo ShakeAmount = typeof(MyShipDrill).GetProperty("ShakeAmount");
@@ -42,7 +51,7 @@ namespace DePatch.ShipTools
             }
         }
 
-        private static bool Prefix(MyShipDrill __instance)
+        private static bool UpdateBeforeSimulation10(MyShipDrill __instance)
         {
             if (!DrillThread.IsAlive)
                 DrillThread.Start();

@@ -4,17 +4,25 @@ using System.Reflection;
 using HarmonyLib;
 using Sandbox.Game.Weapons;
 using Sandbox.Game.World;
+using Torch.Managers.PatchManager;
 using VRageMath;
 
 namespace DePatch.PVEZONE
 {
-    [HarmonyPatch(typeof(MyDrillBase), "TryDrillBlocks")]
-    internal class MyDrillDamageFix
+    //[HarmonyPatch(typeof(MyDrillBase), "TryDrillBlocks")]
+    [PatchShim]
+
+    internal static class MyDrillDamageFix
     {
         private static FieldInfo drillEntity = typeof(MyDrillBase).GetField("m_drillEntity", BindingFlags.Instance | BindingFlags.NonPublic) ?? throw new MissingFieldException("m_drillEntity is missing");
 
+        private static void Patch(PatchContext ctx)
+        {
+            ctx.GetPattern(typeof(MyDrillBase).GetMethod("TryDrillBlocks", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+                Prefixes.Add(typeof(MyDrillDamageFix).GetMethod(nameof(TryDrillBlocks), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+        }
 
-        private static bool Prefix(MyDrillBase __instance, ref bool __result)
+        private static bool TryDrillBlocks(MyDrillBase __instance, ref bool __result)
         {
             if (!DePatchPlugin.Instance.Config.Enabled)
                 return true;

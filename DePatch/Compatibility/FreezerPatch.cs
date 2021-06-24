@@ -31,7 +31,7 @@ namespace DePatch.Compatibility
             dynamic frozenInfo = group;
             var grids = (List<MyCubeGrid>)frozenInfo.Grids;
 
-            grids.ForEach(MyNewGridPatch.Postfix);
+            grids.ForEach(MyNewGridPatch.CubeGridInit);
         }
     }
 }

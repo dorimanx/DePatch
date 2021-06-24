@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using DePatch.PVEZONE;
 using HarmonyLib;
 using Sandbox.Definitions;
@@ -10,17 +11,27 @@ using Sandbox.Game.GameSystems;
 using Sandbox.Game.Multiplayer;
 using Sandbox.Game.Weapons;
 using Sandbox.Game.World;
+using Torch.Managers.PatchManager;
 using VRage.Game;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 
 namespace DePatch.ShipTools
 {
-    [HarmonyPatch(typeof(MyShipGrinder), "Activate")]
-    internal class ShipGrinderPatch
+    //[HarmonyPatch(typeof(MyShipGrinder), "Activate")]
+    [PatchShim]
+
+    internal static class ShipGrinderPatch
     {
         private static List<MyPhysicalInventoryItem> m_tmpItemList = new List<MyPhysicalInventoryItem>();
         private static MyCubeGrid m_otherGrid;
+
+        private static void Patch(PatchContext ctx)
+        {
+            ctx.GetPattern(typeof(MyShipGrinder).GetMethod("Activate", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+                Prefixes.Add(typeof(ShipGrinderPatch).GetMethod(nameof(Activate), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+        }
+
         private static void EmptyBlockInventories(MyCubeBlock block)
         {
             for (int i = 0; i < block.InventoryCount; i++)
@@ -38,7 +49,7 @@ namespace DePatch.ShipTools
             }
         }
 
-        private static void Prefix(MyShipGrinder __instance, HashSet<MySlimBlock> targets)
+        private static void Activate(MyShipGrinder __instance, HashSet<MySlimBlock> targets)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || __instance == null) return;
 

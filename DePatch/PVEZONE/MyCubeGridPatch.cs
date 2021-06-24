@@ -4,12 +4,15 @@ using NLog;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
 using System;
+using System.Reflection;
+using Torch.Managers.PatchManager;
 
 namespace DePatch.PVEZONE
 {
-    [HarmonyPatch(typeof(MyCubeGrid), "UpdateAfterSimulation100")]
+    //[HarmonyPatch(typeof(MyCubeGrid), "UpdateAfterSimulation100")]
+    [PatchShim]
 
-    internal class MyCubeGridPatch
+    internal static class MyCubeGridPatch
     {
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
@@ -19,7 +22,13 @@ namespace DePatch.PVEZONE
         private static bool ServerBoot = true;
         private static bool ServerBootLoopStart = true;
 
-        private static void Prefix(MyCubeGrid __instance)
+        private static void Patch(PatchContext ctx)
+        {
+            ctx.GetPattern(typeof(MyCubeGrid).GetMethod("UpdateAfterSimulation100", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+                Prefixes.Add(typeof(MyCubeGridPatch).GetMethod(nameof(UpdateAfterSimulation100), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+        }
+
+        private static void UpdateAfterSimulation100(MyCubeGrid __instance)
         {
             if (DePatchPlugin.Instance.Config.PveZoneEnabled && DePatchPlugin.Instance.Config.Enabled)
             {

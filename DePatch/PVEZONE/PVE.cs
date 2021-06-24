@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using NLog;
 using Sandbox.Game.Entities;
-using Sandbox.Game.Weapons;
 using Sandbox.Game.World;
 using VRage.Game.Entity;
 using VRageMath;

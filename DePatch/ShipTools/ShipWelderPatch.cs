@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using DePatch.BlocksDisable;
 using HarmonyLib;
 using Sandbox.Definitions;
@@ -10,17 +11,26 @@ using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.Multiplayer;
 using Sandbox.Game.World;
 using SpaceEngineers.Game.Entities.Blocks;
+using Torch.Managers.PatchManager;
 using VRage;
 using VRage.Game;
 
 namespace DePatch.ShipTools
 {
-    [HarmonyPatch(typeof(MyShipWelder), "Activate")]
-    internal class ShipWelderPatch
+    //[HarmonyPatch(typeof(MyShipWelder), "Activate")]
+    [PatchShim]
+
+    internal static class ShipWelderPatch
     {
         private static Dictionary<string, int> m_missingComponents;
 
-        private static void Prefix(MyShipWelder __instance, HashSet<MySlimBlock> targets)
+        private static void Patch(PatchContext ctx)
+        {
+            ctx.GetPattern(typeof(MyShipWelder).GetMethod("Activate", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+                Prefixes.Add(typeof(ShipWelderPatch).GetMethod(nameof(Activate), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+        }
+
+        private static void Activate(MyShipWelder __instance, HashSet<MySlimBlock> targets)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || __instance == null) return;
 

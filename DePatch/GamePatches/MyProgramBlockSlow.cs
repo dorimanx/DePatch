@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using DePatch.BlocksDisable;
 using HarmonyLib;
 using Sandbox.Game.Entities.Blocks;
 using Sandbox.Game.World;
 using Sandbox.ModAPI.Ingame;
+using Torch.Managers.PatchManager;
 using VRage.Utils;
 
 namespace DePatch.GamePatches
 {
-    [HarmonyPatch(typeof(MyProgrammableBlock), "Run")]
+    //[HarmonyPatch(typeof(MyProgrammableBlock), "Run")]
+    [PatchShim]
+
     public static class MyProgramBlockSlow
     {
         private static Dictionary<long, int> timers1 = new Dictionary<long, int>();
@@ -17,6 +21,12 @@ namespace DePatch.GamePatches
         private static Dictionary<long, int> timers100 = new Dictionary<long, int>();
 
         static HashSet<MyStringHash> ignoredTimers = new HashSet<MyStringHash>();
+
+        private static void Patch(PatchContext ctx)
+        {
+            ctx.GetPattern(typeof(MyProgrammableBlock).GetMethod("Run", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+                Prefixes.Add(typeof(MyProgramBlockSlow).GetMethod(nameof(Run), BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static));
+        }
 
         public static void Init()
         {
@@ -53,7 +63,7 @@ namespace DePatch.GamePatches
             }
         }
 
-        public static bool Prefix(MyProgrammableBlock __instance, UpdateType updateSource)
+        public static bool Run(MyProgrammableBlock __instance, UpdateType updateSource)
         {
             if (DePatchPlugin.Instance.Config.Enabled && __instance.Enabled)
             {

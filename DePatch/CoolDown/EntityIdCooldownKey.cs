@@ -4,7 +4,6 @@ namespace DePatch.CoolDown
 
     public class EntityIdCooldownKey : ICooldownKey
     {
-
         private long EntityId { get; }
 
         public EntityIdCooldownKey(long EntityId)

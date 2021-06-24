@@ -1,19 +1,29 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using HarmonyLib;
 using Sandbox.Engine.Utils;
 using Sandbox.Game;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.World;
 using Sandbox.ModAPI;
+using Torch.Managers.PatchManager;
 using VRage.Game;
 
 namespace DePatch.GamePatches
 {
-    [HarmonyPatch(typeof(MyRefinery), "DoUpdateTimerTick")]
-    internal class MyRefineryPatch
+    //[HarmonyPatch(typeof(MyRefinery), "DoUpdateTimerTick")]
+    [PatchShim]
+
+    internal static class MyRefineryPatch
     {
-        private static void Prefix(MyRefinery __instance)
+        private static void Patch(PatchContext ctx)
+        {
+            ctx.GetPattern(typeof(MyRefinery).GetMethod("DoUpdateTimerTick", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+                Prefixes.Add(typeof(MyRefineryPatch).GetMethod(nameof(DoUpdateTimerTick), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+        }
+
+        private static void DoUpdateTimerTick(MyRefinery __instance)
         {
             if (DePatchPlugin.Instance.Config.Enabled)
             {

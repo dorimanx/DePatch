@@ -3,7 +3,6 @@ namespace DePatch.CoolDown
 {
     public class SteamIdCooldownKey : ICooldownKey
     {
-
         private ulong SteamId { get; }
 
         public SteamIdCooldownKey(ulong SteamId)

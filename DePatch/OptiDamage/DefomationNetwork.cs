@@ -6,7 +6,7 @@ using VRage.Utils;
 
 namespace DePatch.OptiDamage
 {
-    [HarmonyPatch(typeof(MySlimBlock), "SendDamageBatch")]
+    //[HarmonyPatch(typeof(MySlimBlock), "SendDamageBatch")] DISABLE THIS
     public class DefomationNetwork
     {
         internal static bool Prefix(

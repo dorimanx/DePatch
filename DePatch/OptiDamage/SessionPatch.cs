@@ -11,8 +11,7 @@ using VRageMath;
 
 namespace DePatch.OptiDamage
 {
-    // not used in game so disable this.
-    //[HarmonyPatch(typeof(MySession), "UpdateComponents")]
+    //[HarmonyPatch(typeof(MySession), "UpdateComponents")] DISABLE THIS
     public class SessionPatch
     {
         public static Stopwatch Timer = new Stopwatch();

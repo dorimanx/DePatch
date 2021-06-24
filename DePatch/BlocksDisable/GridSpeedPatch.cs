@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using HarmonyLib;
 using NLog;
 using Sandbox.Game;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Blocks;
 using Sandbox.Game.World;
+using Torch.Managers.PatchManager;
 using VRage.Game;
 using VRage.Game.ModAPI;
 using VRageMath;
@@ -19,24 +21,32 @@ namespace DePatch.BlocksDisable
         ShowLogOnly
     }
 
-    [HarmonyPatch(typeof(MyCubeGrid), nameof(MyCubeGrid.UpdateAfterSimulation100))]
+    //[HarmonyPatch(typeof(MyCubeGrid), nameof(MyCubeGrid.UpdateAfterSimulation100))]
+    [PatchShim]
+
     public static class GridSpeedPatch
     {
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
         private static readonly HashSet<GridOverSpeed> OverSpeeds = new HashSet<GridOverSpeed>(new GridOverSpeed.GridOverSpeedComparer());
 
-        private static bool Prefix(MyCubeGrid __instance)
+        private static void Patch(PatchContext ctx)
         {
-            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.EnableGridMaxSpeedPurge) return true;
+            ctx.GetPattern(typeof(MyCubeGrid).GetMethod("UpdateAfterSimulation100", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+                Prefixes.Add(typeof(GridSpeedPatch).GetMethod(nameof(UpdateAfterSimulation100), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+        }
 
-            if (!(__instance?.GetBiggestGridInGroup() is MyCubeGrid topGrid) || topGrid.MarkedAsTrash || topGrid.MarkedForClose || topGrid.Immune || topGrid.Physics == null || topGrid.PlayerPresenceTier != MyUpdateTiersPlayerPresence.Normal) return true;
+        private static void UpdateAfterSimulation100(MyCubeGrid __instance)
+        {
+            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.EnableGridMaxSpeedPurge) return;
+
+            if (!(__instance?.GetBiggestGridInGroup() is MyCubeGrid topGrid) || topGrid.MarkedAsTrash || topGrid.MarkedForClose || topGrid.Immune || topGrid.Physics == null || topGrid.PlayerPresenceTier != MyUpdateTiersPlayerPresence.Normal) return;
 
             var purgeSpeed = __instance.GridSizeEnum == MyCubeSize.Large
                 ? DePatchPlugin.Instance.Config.LargeGridMaxSpeedPurge
                 : DePatchPlugin.Instance.Config.SmallGridMaxSpeedPurge;
 
-            if (topGrid.Physics.LinearVelocity.Length() < purgeSpeed && topGrid.Physics.AngularVelocity.Length() < purgeSpeed) return true;
+            if (topGrid.Physics.LinearVelocity.Length() < purgeSpeed && topGrid.Physics.AngularVelocity.Length() < purgeSpeed) return;
 
             var overSpeed = OverSpeeds.FirstOrDefault(b => b.Grid.Equals(topGrid));
 
@@ -49,12 +59,12 @@ namespace DePatch.BlocksDisable
             overSpeed.WarningsCount++;
 
             if (overSpeed.WarningsCount < 5)
-				return true;
+				return;
 
             var player = MySession.Static.Players.GetControllingPlayer(topGrid);
             Log.Warn($"{topGrid.GridSizeEnum} grid with name '{topGrid.DisplayNameText}' controlled by '{player?.DisplayName}'({player?.Id.SteamId}) trying fly above max speed!");
             if (DePatchPlugin.Instance.Config.SpeedingModeSelector == SpeedingMode.ShowLogOnly)
-				return true;
+				return;
 
             if (DePatchPlugin.Instance.Config.SpeedingModeSelector == SpeedingMode.StopGrid)
             {
@@ -82,7 +92,6 @@ namespace DePatch.BlocksDisable
                 }
                 topGrid.Close();
             }
-            return true;
         }
     }
 }
