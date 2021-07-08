@@ -167,10 +167,10 @@ namespace DePatch.VoxelProtection
                     return;
                 }
 
-                TorpedoHit(GridCube);
+                //TorpedoHit(GridCube);
 
-                if (TorpedoDamageSystem.ContainsKey(GridCube.EntityId) && TorpedoDamageSystem[GridCube.EntityId].ApplyDamage)
-                    return;
+                //if (TorpedoDamageSystem.ContainsKey(GridCube.EntityId) && TorpedoDamageSystem[GridCube.EntityId].ApplyDamage)
+                    //return;
 
                 if (damage.IsDeformation)
 					damage.IsDeformation = false;
@@ -268,10 +268,10 @@ namespace DePatch.VoxelProtection
                 }
 
                 // check if it's torpedo on high speed.
-                TorpedoHit(GridCube);
+                //TorpedoHit(GridCube);
 
-                if (TorpedoDamageSystem.ContainsKey(GridCube.EntityId) && TorpedoDamageSystem[GridCube.EntityId].ApplyDamage)
-                    return;
+                //if (TorpedoDamageSystem.ContainsKey(GridCube.EntityId) && TorpedoDamageSystem[GridCube.EntityId].ApplyDamage)
+                    //return;
 
                 if (GridCube.BlocksCount > DePatchPlugin.Instance.Config.MaxBlocksDoDamage)
                 { // by grid bump high speed
