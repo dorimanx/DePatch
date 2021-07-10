@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -15,6 +16,9 @@ namespace DePatch.GamePatches
     internal static class MyPlayerIdFix
     {
         private static readonly ILogger Log = LogManager.GetCurrentClassLogger();
+        private readonly static int SaveClientsCooldown = 120; //seconds
+        private readonly static long TimerId = 123456789;
+        public static readonly Dictionary<long, DateTime> cooldowns = new Dictionary<long, DateTime>();
 
         private static void Patch(PatchContext ctx)
         {
@@ -26,6 +30,20 @@ namespace DePatch.GamePatches
         {
             try
             {
+                if (cooldowns.ContainsKey(TimerId))
+                {
+                    var time = cooldowns[TimerId];
+                    var neededTime = time.AddSeconds(SaveClientsCooldown);
+                    if (neededTime > DateTime.Now)
+                    {
+                        // dont save new clients.
+                        return;
+                    }
+                    cooldowns.Remove(TimerId);
+                }
+                if (!cooldowns.ContainsKey(TimerId))
+                    cooldowns.Add(TimerId, DateTime.Now);
+
                 int count = 0;
                 __result.AllPlayersData.Dictionary = __result.AllPlayersData.Dictionary.Select(delegate (KeyValuePair<MyObjectBuilder_Checkpoint.PlayerId, MyObjectBuilder_Player> b)
                 {
