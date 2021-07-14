@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using HarmonyLib;
 using Sandbox.Engine.Utils;
 using Sandbox.Game;
 using Sandbox.Game.Entities.Cube;
@@ -12,7 +11,6 @@ using VRage.Game;
 
 namespace DePatch.GamePatches
 {
-    //[HarmonyPatch(typeof(MyRefinery), "DoUpdateTimerTick")]
     [PatchShim]
 
     internal static class MyRefineryPatch

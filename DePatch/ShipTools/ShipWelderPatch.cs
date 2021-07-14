@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using DePatch.BlocksDisable;
-using HarmonyLib;
 using Sandbox.Definitions;
 using Sandbox.Game;
 using Sandbox.Game.Entities;
@@ -17,7 +16,6 @@ using VRage.Game;
 
 namespace DePatch.ShipTools
 {
-    //[HarmonyPatch(typeof(MyShipWelder), "Activate")]
     [PatchShim]
 
     internal static class ShipWelderPatch

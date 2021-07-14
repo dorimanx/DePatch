@@ -150,13 +150,6 @@
 						VerticalAlignment="Top"
 						Width="190" Grid.ColumnSpan="2" />
                     <CheckBox
-						Content="Check For Updates"
-						HorizontalAlignment="Left"
-						Margin="10,385,0,0"
-						VerticalAlignment="Top"
-                        IsEnabled="False"
-						IsChecked="{Binding Path=CheckForUpdates}" />
-                    <CheckBox
 						Content="Disable Assembler Queue Loop"
 						HorizontalAlignment="Left"
                         Margin="10,183,0,0"
@@ -186,18 +179,6 @@
                         Margin="253,171,0,0"
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=SlowPBEnabled}" Grid.ColumnSpan="2" />
-                    <Label
-						Content="Experimental Options! for tests only"
-						HorizontalAlignment="Left"
-						Margin="10,334,0,0"
-						VerticalAlignment="Top"
-						RenderTransformOrigin="0.55,1.808" Width="207" />
-                    <CheckBox
-						Content="OptiDamage System"
-						HorizontalAlignment="Left"
-						Margin="10,360,0,0"
-						VerticalAlignment="Top"
-						IsChecked="{Binding Path=DamageThreading}" Width="127" Height="20" RenderTransformOrigin="0.475,0.883" />
                     <CheckBox
                         Content="Dont Lock LandingGear on Enemy Grid" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,262,0,0"
 						ToolTip="This will prevent enemy player grid from locking landinggear on other enemy player grid!&#xA;but will lock on NPC grids and back, also will lock in PVE zones."
@@ -507,11 +488,6 @@
 						Margin="10,80,332,500"
 						IsChecked="{Binding Path=DrillDisableRightClick}"
 						IsEnabled="{Binding Path=DrillIgnoreSubtypes}" />
-                    <CheckBox
-						Content="Stone Dump Right Click"
-						Margin="157,80,180,500"
-                        IsEnabled="False"
-						IsChecked="{Binding Path=DrillStoneDumpRightClick}" />
                     <CheckBox
 						Name="IgnoreDrillSubtypes"
 						Content="Ignore Subtypes"

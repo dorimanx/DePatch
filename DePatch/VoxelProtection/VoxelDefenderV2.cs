@@ -5,7 +5,6 @@ using Torch.Managers.PatchManager;
 
 namespace DePatch.VoxelProtection
 {
-    //[HarmonyPatch(typeof(MyCubeGrid), "PerformCutouts")]
     [PatchShim]
 
     internal static class VoxelDefenderV2

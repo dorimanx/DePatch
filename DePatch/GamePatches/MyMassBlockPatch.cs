@@ -1,5 +1,4 @@
-﻿using HarmonyLib;
-using Sandbox.Definitions;
+﻿using Sandbox.Definitions;
 using Sandbox.Game.Entities;
 using SpaceEngineers.Game.Entities.Blocks;
 using System;
@@ -9,7 +8,6 @@ using VRage.Game;
 
 namespace DePatch.GamePatches
 {
-    //[HarmonyPatch(typeof(MyVirtualMass), "Init")]
     [PatchShim]
 
     internal static class MyMassBlockPatch

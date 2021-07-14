@@ -46,11 +46,10 @@ namespace DePatch
         private string _pveMessageLeft2 = "Your grid [{0}] left from [PVE Zone 2]! All Weapons can fire now.";
 
         private bool _AllowToShootNPCinZone;
-        private int _drillUpdateRate = 90;
+        private int _drillUpdateRate = 150;
         private DrillingMode _parallelDrill;
         private SpeedingMode _speedingModeSelector;
         private bool _drillDisableRightClick;
-        private bool _drillStoneDumpRightClick;
         private bool _drillIgnoreSubtypes = true;
         private List<string> _DrillsSettings = new List<string>();
         private bool _protectVoxels;
@@ -205,12 +204,6 @@ namespace DePatch
         {
             get => !_drillIgnoreSubtypes;
             set => SetValue(ref _drillIgnoreSubtypes, !value);
-        }
-
-        public bool DrillStoneDumpRightClick
-        {
-            get => _drillStoneDumpRightClick;
-            set => SetValue(ref _drillStoneDumpRightClick, value);
         }
 
         public bool DrillDisableRightClick

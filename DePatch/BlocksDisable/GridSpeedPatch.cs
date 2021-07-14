@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using HarmonyLib;
 using NLog;
 using Sandbox.Game;
 using Sandbox.Game.Entities;
@@ -21,7 +20,6 @@ namespace DePatch.BlocksDisable
         ShowLogOnly
     }
 
-    //[HarmonyPatch(typeof(MyCubeGrid), nameof(MyCubeGrid.UpdateAfterSimulation100))]
     [PatchShim]
 
     public static class GridSpeedPatch

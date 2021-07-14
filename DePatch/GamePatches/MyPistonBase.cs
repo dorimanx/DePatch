@@ -1,5 +1,4 @@
-﻿using HarmonyLib;
-using Sandbox.Game.Entities.Blocks;
+﻿using Sandbox.Game.Entities.Blocks;
 using Sandbox.ModAPI.Ingame;
 using Sandbox.ModAPI.Interfaces;
 using System.Reflection;
@@ -7,7 +6,6 @@ using Torch.Managers.PatchManager;
 
 namespace DePatch.GamePatches
 {
-    //[HarmonyPatch(typeof(MyPistonBase), "UpdateBeforeSimulation10")]
     [PatchShim]
 
     public static class MyPistonShareInertiaTensor

@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using DePatch.PVEZONE;
-using HarmonyLib;
 using Sandbox.Definitions;
 using Sandbox.Game;
 using Sandbox.Game.Entities;
@@ -18,7 +17,6 @@ using VRage.Game.ModAPI;
 
 namespace DePatch.ShipTools
 {
-    //[HarmonyPatch(typeof(MyShipGrinder), "Activate")]
     [PatchShim]
 
     internal static class ShipGrinderPatch

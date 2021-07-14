@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using DePatch.BlocksDisable;
-using HarmonyLib;
 using Sandbox.Game.Entities.Blocks;
 using Sandbox.Game.World;
 using Sandbox.ModAPI.Ingame;
@@ -11,7 +10,6 @@ using VRage.Utils;
 
 namespace DePatch.GamePatches
 {
-    //[HarmonyPatch(typeof(MyProgrammableBlock), "Run")]
     [PatchShim]
 
     public static class MyProgramBlockSlow

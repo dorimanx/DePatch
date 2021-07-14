@@ -1,5 +1,4 @@
 ﻿using DePatch.CoolDown;
-using HarmonyLib;
 using Sandbox.Game.Entities.Cube;
 using System.Reflection;
 using Torch.Managers.PatchManager;
@@ -7,7 +6,6 @@ using VRage.Game;
 
 namespace DePatch.GamePatches
 {
-    //[HarmonyPatch(typeof(MyAssembler), "UpdateBeforeSimulation100")]
     [PatchShim]
 
     internal static class MyAssemblerPatch

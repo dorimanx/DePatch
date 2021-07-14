@@ -1,13 +1,11 @@
 ﻿using Sandbox.Game.Entities.Cube;
 using System;
 using Sandbox.Game.World;
-using HarmonyLib;
 using System.Reflection;
 using Torch.Managers.PatchManager;
 
 namespace DePatch.BlocksDisable
 {
-    //[HarmonyPatch(typeof(MyFunctionalBlock), nameof(MyFunctionalBlock.UpdateAfterSimulation100))]
     [PatchShim]
     public static class BlockDisable
     {

@@ -1,5 +1,4 @@
-﻿using HarmonyLib;
-using Sandbox.Game.Entities.Cube;
+﻿using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.Weapons;
 using Sandbox.ModAPI.Interfaces;
 using System.Reflection;
@@ -7,7 +6,6 @@ using Torch.Managers.PatchManager;
 
 namespace DePatch.BlocksDisable
 {
-    //[HarmonyPatch(typeof(MyShipDrill), "UpdateAfterSimulation100")]
     [PatchShim]
     internal static class AreaShow_DrillSystem
     {

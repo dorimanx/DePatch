@@ -115,9 +115,9 @@ namespace DePatch
 
         private static void Static_OnSavingCheckpoint(MyObjectBuilder_Checkpoint obj)
         {
-            new Thread((ThreadStart)delegate
+           new Thread((ThreadStart)delegate
            {
-               lock (MyShipDrillParallelPatch.pendingDrillers)
+               lock (MyShipDrillPatch.pendingDrillers)
                {
                    Thread.Sleep(5000);
                }

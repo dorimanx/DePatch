@@ -1,5 +1,4 @@
-﻿using HarmonyLib;
-using Sandbox.Game.Entities;
+﻿using Sandbox.Game.Entities;
 using System;
 using System.Reflection;
 using Torch.Managers.PatchManager;
@@ -7,7 +6,6 @@ using VRage.Game;
 
 namespace DePatch.GamePatches
 {
-    //[HarmonyPatch(typeof(MyCameraBlock), "Init")]
     [PatchShim]
 
     internal static class MyCameraBlockPatch

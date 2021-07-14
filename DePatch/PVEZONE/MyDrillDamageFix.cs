@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using HarmonyLib;
 using Sandbox.Game.Weapons;
 using Sandbox.Game.World;
 using Torch.Managers.PatchManager;
@@ -9,7 +8,6 @@ using VRageMath;
 
 namespace DePatch.PVEZONE
 {
-    //[HarmonyPatch(typeof(MyDrillBase), "TryDrillBlocks")]
     [PatchShim]
 
     internal static class MyDrillDamageFix

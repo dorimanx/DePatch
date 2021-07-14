@@ -112,8 +112,7 @@
     <Compile Include="VoxelProtection\MyGridDeformationPatch.cs" />
     <Compile Include="GamePatches\MyMassBlockPatch.cs" />
     <Compile Include="PVEZONE\MyNewGridPatch.cs" />
-    <Compile Include="ShipTools\MyShipDrillParallelPatch.cs" />
-    <Compile Include="ShipTools\MyShipDrillStonePatch.cs" />
+    <Compile Include="ShipTools\MyShipDrillPatch.cs" />
     <Compile Include="GamePatches\MySpaceBallPatch.cs" />
     <Compile Include="GamePatches\MyTimerBlockPatch.cs" />
     <Compile Include="PVEZONE\MyTurretPveDamageFix.cs" />

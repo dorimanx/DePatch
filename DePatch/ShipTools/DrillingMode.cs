@@ -2,8 +2,6 @@
 {
     public enum DrillingMode
     {
-        Keen,
-        Parallel,
-        Threading
+        Keen
     }
 }

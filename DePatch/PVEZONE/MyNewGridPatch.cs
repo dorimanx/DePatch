@@ -1,4 +1,3 @@
-using HarmonyLib;
 using Sandbox.Game.Entities;
 using System;
 using System.Reflection;
@@ -7,7 +6,6 @@ using VRage.ObjectBuilders;
 
 namespace DePatch.PVEZONE
 {
-    //[HarmonyPatch(typeof(MyCubeGrid), "Init")]
     [PatchShim]
 
     internal static class MyNewGridPatch

@@ -1,5 +1,4 @@
 ﻿using DePatch.CoolDown;
-using HarmonyLib;
 using NLog;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
@@ -9,7 +8,6 @@ using Torch.Managers.PatchManager;
 
 namespace DePatch.PVEZONE
 {
-    //[HarmonyPatch(typeof(MyCubeGrid), "UpdateAfterSimulation100")]
     [PatchShim]
 
     internal static class MyCubeGridPatch

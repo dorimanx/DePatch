@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using HarmonyLib;
 using Sandbox.Game;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
@@ -10,7 +9,6 @@ using VRage.Game.ModAPI;
 
 namespace DePatch.GamePatches
 {
-    //[HarmonyPatch(typeof(MyEntityController), "RaiseControlledEntityChanged")]
     [PatchShim]
 
     internal static class MyBeaconAlertPatch
