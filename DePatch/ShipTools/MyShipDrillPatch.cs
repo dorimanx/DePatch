@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Weapons;
 using Torch.Managers.PatchManager;
@@ -31,23 +29,6 @@ namespace DePatch.ShipTools
 
         private static MethodInfo InitSubBlocks = typeof(MyCubeBlock).GetMethod("InitSubBlocks", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        public static Thread DrillThread = new Thread(DrillThreadLoop);
-
-        public static List<MyShipDrill> pendingDrillers = new List<MyShipDrill>();
-
-        private static void DrillThreadLoop()
-        {
-            while (true)
-            {
-                foreach (MyShipDrill PendingDrill in pendingDrillers)
-                {
-                    AsyncUpdate(PendingDrill);
-                }
-                pendingDrillers.Clear();
-                Thread.Sleep(166);
-            }
-        }
-
         private static bool UpdateBeforeSimulation10(MyShipDrill __instance)
         {
             if (DePatchPlugin.Instance.Config.ParallelDrill != DrillingMode.Keen)
@@ -55,9 +36,6 @@ namespace DePatch.ShipTools
 
             if (__instance.BlockDefinition.Id.SubtypeName.Contains("NanobotDrillSystem"))
                 return true;
-
-            if (!DrillThread.IsAlive)
-                DrillThread.Start();
 
             AsyncUpdate(__instance);
 

@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using DePatch.Compatibility;
@@ -13,14 +12,13 @@ using DePatch.VoxelProtection;
 using HarmonyLib;
 using NLog;
 using Sandbox;
-using Sandbox.Game.World;
+using Sandbox.ModAPI;
 using Torch;
 using Torch.API;
 using Torch.API.Managers;
 using Torch.API.Plugins;
 using Torch.Server.Managers;
 using Torch.Session;
-using VRage.Game;
 
 namespace DePatch
 {
@@ -94,8 +92,6 @@ namespace DePatch
             if (Instance.Config.ProtectGrid)
                 MyGridDeformationPatch.Init();
 
-            MySession.Static.OnSavingCheckpoint += Static_OnSavingCheckpoint;
-
             if (Config.DamageThreading)
                 SessionPatch.Timer.Start();
 
@@ -111,17 +107,6 @@ namespace DePatch
                     }
                 });
             }
-        }
-
-        private static void Static_OnSavingCheckpoint(MyObjectBuilder_Checkpoint obj)
-        {
-           new Thread((ThreadStart)delegate
-           {
-               lock (MyShipDrillPatch.pendingDrillers)
-               {
-                   Thread.Sleep(5000);
-               }
-           }).Start();
         }
 
         public void LoadConfig()

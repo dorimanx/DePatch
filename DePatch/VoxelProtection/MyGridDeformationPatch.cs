@@ -2,28 +2,18 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Timers;
-using Sandbox;
-using Sandbox.Common.ObjectBuilders;
 using Sandbox.Engine.Multiplayer;
-using Sandbox.Game;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Blocks;
-using Sandbox.Game.Entities.Character;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.GameSystems;
-using Sandbox.Game.SessionComponents;
 using Sandbox.Game.Weapons;
 using Sandbox.ModAPI;
-using VRage;
 using VRage.Game;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
-using VRage.Groups;
-using VRage.ModAPI;
 using VRage.Network;
-using VRage.ObjectBuilders;
 using VRageMath;
 
 namespace DePatch.VoxelProtection
@@ -60,8 +50,11 @@ namespace DePatch.VoxelProtection
             {
                 ItemTimer.Elapsed += ItemTimer_Elapsed;
                 ItemTimer.Start();
-                MyAPIGateway.Session.DamageSystem.RegisterBeforeDamageHandler(1, HandleGridDamage);
+
                 _init = true;
+
+                if (MyAPIGateway.Session != null)
+                    MyAPIGateway.Session.DamageSystem.RegisterBeforeDamageHandler(1, HandleGridDamage);
             }
         }
 

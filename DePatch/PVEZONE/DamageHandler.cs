@@ -27,7 +27,9 @@ namespace DePatch.PVEZONE
                 return;
 
             _init = true;
-            MyAPIGateway.Session.DamageSystem.RegisterBeforeDamageHandler(0, ProcessDamage);
+
+            if (MyAPIGateway.Session != null)
+                MyAPIGateway.Session.DamageSystem.RegisterBeforeDamageHandler(0, ProcessDamage);
         }
 
         private static void ProcessDamage(object target, ref MyDamageInformation info)
