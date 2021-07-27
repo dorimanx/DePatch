@@ -21,12 +21,11 @@ namespace DePatch.PVEZONE
 
     internal static class MyTurretPveDamageFix
     {
-        private static readonly SteamIdCooldownKey LoopRequestID = new SteamIdCooldownKey(76000000000000001);
-        private static readonly int LoopCooldown = 240 * 1000;
+        private static readonly SteamIdCooldownKey LoopOnBootRequestID = new SteamIdCooldownKey(76000000000000001);
         private static bool ServerBoot = true;
-        private static bool ServerBootLoopStart = true;
         private static MyCubeGrid LockingGrid;
         private static bool LockingGridHasOwner = false;
+        public static bool BootTickStarted = false;
 
         private static void Patch(PatchContext ctx) => ctx.GetPattern(typeof(MySessionComponentSafeZones).GetMethod("IsActionAllowed", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static, null,
                 new Type[4]
@@ -328,28 +327,32 @@ namespace DePatch.PVEZONE
                         }
                     case MySafeZoneAction.Shooting:
                         {
+                            if (DePatchPlugin.Instance.Config.DelayShootingOnBoot)
+                            {
+                                if (ServerBoot)
+                                {
+                                    // start is in assembler update 100, if no asseblers in world then skip here.
+                                    if (!BootTickStarted)
+                                        goto skipweaponblock;
+
+                                    // loop for X sec after boot to block weapons.
+                                    _ = CooldownManager.CheckCooldown(LoopOnBootRequestID, null, out var remainingSecondsBoot);
+
+                                    if (remainingSecondsBoot < 3)
+                                        ServerBoot = false;
+
+                                    if (entity is MyShipDrill || entity is MyShipToolBase)
+                                        return true;
+
+                                    // block weapons
+                                    return false;
+                                }
+                            }
+
+                            skipweaponblock:
+
                             if (!DePatchPlugin.Instance.Config.PveZoneEnabled)
                                 return true;
-
-                            if (ServerBoot)
-                            {
-                                if (ServerBootLoopStart)
-                                {
-                                    CooldownManager.StartCooldown(LoopRequestID, null, LoopCooldown);
-                                    ServerBootLoopStart = false;
-                                }
-
-                                // loop for 240 sec after boot to block weapons.
-                                if (CooldownManager.CheckCooldown(LoopRequestID, null, out var remainingSecondsBoot))
-                                {
-                                }
-
-                                if (remainingSecondsBoot < 2)
-                                    ServerBoot = false;
-
-                                // block weapons
-                                return false;
-                            }
 
                             // if found will return false
                             if (!PVE.CheckEntityInZone(entity, ref __result))

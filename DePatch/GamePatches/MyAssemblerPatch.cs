@@ -1,4 +1,5 @@
 ﻿using DePatch.CoolDown;
+using DePatch.PVEZONE;
 using Sandbox.Game.Entities.Cube;
 using System.Reflection;
 using Torch.Managers.PatchManager;
@@ -10,8 +11,8 @@ namespace DePatch.GamePatches
 
     internal static class MyAssemblerPatch
     {
-        //private static readonly SteamIdCooldownKey LoopRequestID = new SteamIdCooldownKey(76000000000000002);
-        //private static readonly int LoopCooldown = 40 * 1000;
+        private static readonly SteamIdCooldownKey LoopOnBootRequestID = new SteamIdCooldownKey(76000000000000001);
+        private static bool ServerBootLoopStart = true;
 
         private static void Patch(PatchContext ctx)
         {
@@ -23,6 +24,17 @@ namespace DePatch.GamePatches
         {
             if (!DePatchPlugin.Instance.Config.Enabled)
                 return;
+
+            if (ServerBootLoopStart && DePatchPlugin.Instance.Config.DelayShootingOnBoot)
+            {
+                if (DePatchPlugin.Instance.Config.DelayShootingOnBootTime <= 0)
+                    DePatchPlugin.Instance.Config.DelayShootingOnBootTime = 1;
+
+                int LoopCooldown = DePatchPlugin.Instance.Config.DelayShootingOnBootTime * 1000;
+                CooldownManager.StartCooldown(LoopOnBootRequestID, null, LoopCooldown);
+                ServerBootLoopStart = false;
+                MyTurretPveDamageFix.BootTickStarted = true;
+            }
 
             try
             {

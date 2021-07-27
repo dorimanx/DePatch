@@ -46,6 +46,8 @@ namespace DePatch
         private string _pveMessageLeft2 = "Your grid [{0}] left from [PVE Zone 2]! All Weapons can fire now.";
 
         private bool _AllowToShootNPCinZone;
+        private bool _DelayShootingOnBoot = true;
+        private int _DelayShootingOnBootTime = 300;
         private int _drillUpdateRate = 150;
         private DrillingMode _parallelDrill;
         private SpeedingMode _speedingModeSelector;
@@ -264,6 +266,18 @@ namespace DePatch
         {
             get => _pveZoneRadius;
             set => SetValue(ref _pveZoneRadius, value);
+        }
+
+        public bool DelayShootingOnBoot
+        {
+            get => _DelayShootingOnBoot;
+            set => SetValue(ref _DelayShootingOnBoot, value);
+        }
+
+        public int DelayShootingOnBootTime
+        {
+            get => _DelayShootingOnBootTime;
+            set => SetValue(ref _DelayShootingOnBootTime, value);
         }
 
         public float RaycastLimit
