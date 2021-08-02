@@ -31,18 +31,21 @@ namespace DePatch.ShipTools
 
         private static bool UpdateBeforeSimulation10(MyShipDrill __instance)
         {
+            if (!DePatchPlugin.Instance.Config.DrillTools)
+                return true;
+
             if (DePatchPlugin.Instance.Config.ParallelDrill != DrillingMode.Keen)
                 DePatchPlugin.Instance.Config.ParallelDrill = DrillingMode.Keen;
 
             if (__instance.BlockDefinition.Id.SubtypeName.Contains("NanobotDrillSystem"))
                 return true;
 
-            AsyncUpdate(__instance);
+            DrillUpdate(__instance);
 
             return false;
         }
 
-        private static void AsyncUpdate(MyShipDrill drill)
+        private static void DrillUpdate(MyShipDrill drill)
         {
             Receiver_IsPoweredChanged.Invoke(drill, new object[0]);
             InitSubBlocks.Invoke(drill, new object[0]);

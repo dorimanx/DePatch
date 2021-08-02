@@ -55,8 +55,9 @@ namespace DePatch.GamePatches
                     }
                 }
 
-                if (__instance != null && __instance.CubeGrid != null && __instance.CubeGrid.IsStatic == false && __instance.CubeGrid.GridSizeEnum == MyCubeSize.Large &&
-                        DePatchPlugin.Instance.Config.ShieldsAntiHack)
+                if (__instance != null && __instance.CubeGrid != null && __instance.CubeGrid.IsStatic == false
+                                                                      && __instance.CubeGrid.GridSizeEnum == MyCubeSize.Large
+                                                                      && DePatchPlugin.Instance.Config.ShieldsAntiHack)
                 {
                     if (MySession.Static.Players.IdentityIsNpc(__instance.CubeGrid.BigOwners.FirstOrDefault()))
                         return;
@@ -85,6 +86,7 @@ namespace DePatch.GamePatches
                                     AlertPlayer = true;
                                 }
 
+                                /* // no longer needed shield off shield points 0
                                 if (item is IMyUpgradeModule && item.Enabled)
                                 {
                                     if (item.BlockDefinition.Id.SubtypeName.Contains("ShieldCapacitor") || item.BlockDefinition.Id.SubtypeName.Contains("ShieldFluxCoil"))
@@ -93,6 +95,7 @@ namespace DePatch.GamePatches
                                         AlertPlayer = true;
                                     }
                                 }
+                                */
                             }
                         }
                         if (MySession.Static.Players.GetOnlinePlayers().Count() > 0)

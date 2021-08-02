@@ -48,6 +48,7 @@ namespace DePatch
         private bool _AllowToShootNPCinZone;
         private bool _DelayShootingOnBoot = true;
         private int _DelayShootingOnBootTime = 300;
+        private bool _DrillTools = true;
         private int _drillUpdateRate = 150;
         private DrillingMode _parallelDrill;
         private SpeedingMode _speedingModeSelector;
@@ -194,6 +195,12 @@ namespace DePatch
         {
             get => _disableNanoBotsOnShip;
             set => SetValue(ref _disableNanoBotsOnShip, value);
+        }
+
+        public bool DrillTools
+        {
+            get => _DrillTools;
+            set => SetValue(ref _DrillTools, value);
         }
 
         public List<string> DrillsSettings

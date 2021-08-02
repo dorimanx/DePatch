@@ -476,43 +476,47 @@
 					Background="#FFE5E5E5">
                     <Label
 						Content="Drill Update Rate (ticks)"
-						Margin="10,10,337,561" />
+						Margin="10,41,337,530" />
                     <TextBox
 						Height="23"
 						TextWrapping="Wrap"
 						Width="120"
-						Margin="10,41,359,533"
+						Margin="10,72,359,502"
 						Text="{Binding Path=DrillUpdateRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"
 						IsEnabled="{Binding Path=DrillIgnoreSubtypes}" />
                     <ComboBox
 						Name="DrillModeCombobox"
 						HorizontalAlignment="Left"
-						Margin="157,41,0,0"
+						Margin="157,72,0,0"
 						VerticalAlignment="Top"
 						Width="120"
 						IsEnabled="{Binding Path=DrillIgnoreSubtypes}" />
                     <Label
 						Content="Drill Mode"
 						HorizontalAlignment="Left"
-						Margin="157,10,0,0"
+						Margin="157,41,0,0"
 						VerticalAlignment="Top" />
                     <CheckBox
 						Content="Disable Right Click"
-						Margin="10,80,332,500"
+						Margin="10,113,332,467"
 						IsChecked="{Binding Path=DrillDisableRightClick}"
 						IsEnabled="{Binding Path=DrillIgnoreSubtypes}" />
                     <CheckBox
 						Name="IgnoreDrillSubtypes"
 						Content="Ignore Subtypes"
 						HorizontalAlignment="Left"
-						Margin="10,102,0,0"
+						Margin="10,135,0,0"
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=DrillIgnoreSubtypes}" />
                     <Button
 						Name="EditDrillSubtypes"
 						Content="Edit Subtypes"
-						Margin="10,122,371,452"
+						Margin="10,155,371,419"
 						Click="Button_Click_3" />
+                    <CheckBox
+                        Content="Enable setting drills update tick"
+                        Margin="10,19,287,561"
+                        IsChecked="{Binding DrillTools}" />
                 </Grid>
             </TabItem>
             <TabItem
