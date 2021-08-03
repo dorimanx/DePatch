@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -94,19 +94,6 @@ namespace DePatch
 
             if (Config.DamageThreading)
                 SessionPatch.Timer.Start();
-
-            // send server alive log to torch log every 100sec.
-            if (Instance.Config.LogTracker)
-            {
-                Task.Run(async () =>
-                {
-                    while (true)
-                    {
-                        Log.Info("Server Status: ALIVE");
-                        await Task.Delay(TimeSpan.FromMinutes(1.6));
-                    }
-                });
-            }
         }
 
         public void LoadConfig()
