@@ -85,6 +85,7 @@
     <Compile Include="GamePatches\CargoCleanup.cs" />
     <Compile Include="BlocksDisable\AreaShow_DrillSystem.cs" />
     <Compile Include="BlocksDisable\AreaShow_BuildAndRepairSystem.cs" />
+    <Compile Include="GamePatches\ValidationFailedClass.cs" />
     <Compile Include="GamePatches\ServerAliveLog.cs" />
     <Compile Include="GamePatches\ModUpdatePatch.cs" />
     <Compile Include="GamePatches\MyAssemblerPatch.cs" />

@@ -184,9 +184,9 @@
 						ToolTip="This will prevent enemy player grid from locking landinggear on other enemy player grid!&#xA;but will lock on NPC grids and back, also will lock in PVE zones."
                         IsChecked="{Binding Path=NoEnemyPlayerLandingGearLocks}"/>
                     <CheckBox
-                        Content="Force Pistons Inertia Tensor" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,282,0,0"
+                        Content="Force Pistons Inertia Tensor" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="11,285,0,0"
                         ToolTip="This will enable ShareInertiaTensor on each piston block in game to reduce SIM load."
-                        IsChecked="{Binding PistonInertiaTensor}"/>
+                        IsChecked="{Binding PistonInertiaTensor}" />
                     <CheckBox
                         Content="Block shooting on server boot for X sec" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,365,0,0"
                         ToolTip="This will disable shooting globaly after server boot for X seconds. need at lease 1 assembler in world"
@@ -200,6 +200,10 @@
                         VerticalAlignment="Top"
                         Width="44"
                         Text="{Binding DelayShootingOnBootTime, Mode=TwoWay, StringFormat=D}" RenderTransformOrigin="-0.564,5.077" />
+                    <CheckBox
+                        Content="Delay KEEN Debug Spam" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="11,305,0,0"
+                        ToolTip="This will reduce spam in Keen Debug log for ValidationFailed action, will print this debug once in 2 minutes on each player"
+                        IsChecked="{Binding ValidationFailedSuspend}" />
                 </Grid>
             </TabItem>
             <TabItem

@@ -88,6 +88,7 @@ namespace DePatch
         private bool _NoEnemyPlayerLandingGearLocks;
         private bool _NanoBuildArea;
         private bool _NanoDrillArea;
+        private bool _ValidationFailedSuspend = true;
 
         public bool DamageThreading
         {
@@ -542,6 +543,12 @@ namespace DePatch
         {
             get => _NanoDrillArea;
             set => SetValue(ref _NanoDrillArea, value);
+        }
+
+        public bool ValidationFailedSuspend
+        {
+            get => _ValidationFailedSuspend;
+            set => SetValue(ref _ValidationFailedSuspend, value);
         }
     }
 }

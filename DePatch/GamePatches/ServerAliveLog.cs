@@ -13,6 +13,7 @@ namespace DePatch.GamePatches
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
         private static readonly SteamIdCooldownKey LoopAliveLogRequestID = new SteamIdCooldownKey(76000000000000010);
         private static bool LoopAliveLogStart = true;
+        private static int TickLog = 1;
 
         private static void Patch(PatchContext ctx)
         {
@@ -22,24 +23,27 @@ namespace DePatch.GamePatches
 
         private static void UpdateLOG()
         {
-            // send server alive log to torch log every 90sec.
+            // send server alive log to torch log every 90sec +10 max.
             if (DePatchPlugin.Instance.Config.LogTracker)
             {
-                if (LoopAliveLogStart)
+                if (++TickLog > 10)
                 {
-                    int LoopCooldown = 90 * 1000;
-                    CooldownManager.StartCooldown(LoopAliveLogRequestID, null, LoopCooldown);
-                    LoopAliveLogStart = false;
-                    Log.Info("Server Status: ALIVE");
-                }
+                    if (LoopAliveLogStart)
+                    {
+                        int LoopCooldown = 90 * 1000;
+                        CooldownManager.StartCooldown(LoopAliveLogRequestID, null, LoopCooldown);
+                        LoopAliveLogStart = false;
+                    }
 
-                // loop for 90 sec and print new update to log.
-                _ = CooldownManager.CheckCooldown(LoopAliveLogRequestID, null, out var remainingSecondsToNextLog);
+                    // loop for 90 sec and print new update to log.
+                    _ = CooldownManager.CheckCooldown(LoopAliveLogRequestID, null, out var remainingSecondsToNextLog);
 
-                if (remainingSecondsToNextLog < 2)
-                {
-                    Log.Info("Server Status: ALIVE");
-                    LoopAliveLogStart = true;
+                    if (remainingSecondsToNextLog < 2)
+                    {
+                        Log.Info("Server Status: ALIVE");
+                        LoopAliveLogStart = true;
+                    }
+                    TickLog = 1;
                 }
             }
         }
