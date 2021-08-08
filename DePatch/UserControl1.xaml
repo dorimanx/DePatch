@@ -204,6 +204,10 @@
                         Content="Delay KEEN Debug Spam" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="11,305,0,0"
                         ToolTip="This will reduce spam in Keen Debug log for ValidationFailed action, will print this debug once in 2 minutes on each player"
                         IsChecked="{Binding ValidationFailedSuspend}" />
+                    <CheckBox
+                        Content="Temp Fix for server crashes" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="11,325,0,0"
+                        ToolTip="This will tap to KEEN function for UpdateAfterSimulation100 and check for NULL something that we are missing now."
+                        IsChecked="{Binding UpdateAfterSimulation100FIX}" />
                 </Grid>
             </TabItem>
             <TabItem

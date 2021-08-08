@@ -89,6 +89,7 @@ namespace DePatch
         private bool _NanoBuildArea;
         private bool _NanoDrillArea;
         private bool _ValidationFailedSuspend = true;
+        private bool _UpdateAfterSimulation100FIX = true;
 
         public bool DamageThreading
         {
@@ -549,6 +550,12 @@ namespace DePatch
         {
             get => _ValidationFailedSuspend;
             set => SetValue(ref _ValidationFailedSuspend, value);
+        }
+
+        public bool UpdateAfterSimulation100FIX
+        {
+            get => _UpdateAfterSimulation100FIX;
+            set => SetValue(ref _UpdateAfterSimulation100FIX, value);
         }
     }
 }
