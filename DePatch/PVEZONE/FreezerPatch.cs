@@ -8,7 +8,7 @@ using Torch.API;
 using Torch.API.Managers;
 using Torch.Managers;
 
-namespace DePatch.Compatibility
+namespace DePatch.PVEZONE
 {
     public static class FreezerPatch
     {

@@ -75,12 +75,10 @@
     <Compile Include="BlocksDisable\GridOverSpeed.cs" />
     <Compile Include="BlocksDisable\PlayersUtility.cs" />
     <Compile Include="BlocksDisable\GridSpeedPatch.cs" />
-    <Compile Include="Compatibility\FreezerPatch.cs" />
+    <Compile Include="PVEZONE\FreezerPatch.cs" />
     <Compile Include="CoolDown\CooldownManager.cs" />
     <Compile Include="CoolDown\CurrentCooldown.cs" />
-    <Compile Include="CoolDown\EntityIdCooldownKey.cs" />
-    <Compile Include="CoolDown\ICooldownKey.cs" />
-    <Compile Include="CoolDown\SteamIdCooldownKey.cs" />
+    <Compile Include="CoolDown\CooldownKey.cs" />
     <Compile Include="CubeGridExtensions.cs" />
     <Compile Include="GamePatches\CargoCleanup.cs" />
     <Compile Include="BlocksDisable\AreaShow_DrillSystem.cs" />
@@ -118,7 +116,7 @@
     <Compile Include="ShipTools\MyShipDrillPatch.cs" />
     <Compile Include="GamePatches\MySpaceBallPatch.cs" />
     <Compile Include="GamePatches\MyTimerBlockPatch.cs" />
-    <Compile Include="PVEZONE\MyTurretPveDamageFix.cs" />
+    <Compile Include="PVEZONE\MyPVESafeZoneAction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PVEZONE\PVE.cs" />
     <Compile Include="PVEZONE\PVEGrid.cs" />
@@ -155,5 +153,6 @@
   <ItemGroup>
     <Content Include="manifest.xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

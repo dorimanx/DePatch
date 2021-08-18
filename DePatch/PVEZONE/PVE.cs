@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NLog;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
@@ -22,61 +23,93 @@ namespace DePatch.PVEZONE
             if (!DePatchPlugin.Instance.Config.Enabled)
                 return;
 
-            Log.Info("Initing PVE ZONE...");
             PVESphere = new BoundingSphereD(new Vector3D(plugin.Config.PveX, plugin.Config.PveY, plugin.Config.PveZ), plugin.Config.PveZoneRadius);
             PVESphere2 = new BoundingSphereD(new Vector3D(plugin.Config.PveX2, plugin.Config.PveY2, plugin.Config.PveZ2), plugin.Config.PveZoneRadius2);
             DamageHandler.Init();
-            Log.Info("Complete!");
+            Log.Info("Initing PVE ZONE... Complete!");
         }
 
         public static bool CheckEntityInZone(object obj, ref bool __result)
         {
             var zone1 = false;
             var zone2 = false;
+            __result = false;
+
+            if (!DePatchPlugin.Instance.Config.PveZoneEnabled)
+                return __result;
 
             if (obj is MyPlayer myPlayer)
             {
                 if (myPlayer == null)
-                {
-                    __result = false;
-                    return false;
-                }
+                    return __result;
 
-                try
+                if (myPlayer != default)
                 {
-                    if (myPlayer != default)
+                    try
                     {
                         if (PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
                             zone1 = true;
-                        if (PVESphere2.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && PVESphere2.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
                             zone2 = true;
                     }
-                }
-                catch
-                {
+                    catch
+                    {
+                        // FALSE. not in PVE zones.
+                        return __result;
+                    }
+
+                    if (zone1 || zone2)
+                    {
+                        __result = true;
+                        return __result;
+                    }
+
+                    // FALSE. not in PVE zones.
+                    return __result;
                 }
             }
             else if (obj is MyEntity entity)
             {
-                if (DePatchPlugin.Instance.Config.PveZoneEnabled && EntitiesInZone.Contains(entity.EntityId))
+                if (EntitiesInZone.Contains(entity.EntityId))
                     zone1 = true;
                 if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && EntitiesInZone2.Contains(entity.EntityId))
                     zone2 = true;
 
-                if (!zone1 && !zone2) return true;
-                __result = false;
-                return false;
+                if (zone1 || zone2)
+                {
+                    __result = true;
+                    return __result;
+                }
+
+                // FALSE. not in PVE zones.
+                return __result;
             }
 
-            if (!zone1 && !zone2) return true;
-            __result = false;
-            return false;
+            // FALSE. not in PVE zones.
+            return __result;
         }
 
         public static bool CheckEntityInZone(MyCubeGrid grid)
         {
-            var res = false;
+            bool res = false;
             return CheckEntityInZone(grid, ref res);
+        }
+
+        internal static MyPlayer FindOnlineOwner(MyCubeGrid grid)
+        {
+            var controllingPlayer = MySession.Static.Players.GetControllingPlayer(grid);
+            if (controllingPlayer != null)
+                return controllingPlayer;
+
+            var dictionary = MySession.Static.Players.GetOnlinePlayers().ToDictionary((MyPlayer b) => b.Identity.IdentityId);
+
+            if (grid.BigOwners.Count() > 0)
+            {
+                var owner = grid.BigOwners.FirstOrDefault();
+                if (dictionary.ContainsKey(owner))
+                    return dictionary[owner];
+            }
+            return null;
         }
     }
 }

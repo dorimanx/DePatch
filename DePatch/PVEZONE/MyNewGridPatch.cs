@@ -19,8 +19,7 @@ namespace DePatch.PVEZONE
         internal static void CubeGridInit(MyCubeGrid __instance)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.PveZoneEnabled) return;
-            if (!DePatchPlugin.GameIsReady) return;
-            if (__instance == null) return;
+            if (!DePatchPlugin.GameIsReady || __instance == null) return;
 
             if (!PVEGrid.Grids.ContainsKey(__instance))
                 PVEGrid.Grids.Add(__instance, new PVEGrid(__instance));
@@ -28,8 +27,11 @@ namespace DePatch.PVEZONE
             var pVEGrid = PVEGrid.Grids[__instance];
             if (pVEGrid.InPVEZone())
             {
-                PVE.EntitiesInZone.Add(__instance.EntityId);
-                pVEGrid.OnGridEntered();
+                if (!PVE.EntitiesInZone.Contains(__instance.EntityId))
+                {
+                    PVE.EntitiesInZone.Add(__instance.EntityId);
+                    pVEGrid.OnGridEntered();
+                }
             }
 
             if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
@@ -40,8 +42,11 @@ namespace DePatch.PVEZONE
                 var pVEGrid2 = PVEGrid2.Grids2[__instance];
                 if (pVEGrid2.InPVEZone2())
                 {
-                    PVE.EntitiesInZone2.Add(__instance.EntityId);
-                    pVEGrid2.OnGridEntered2();
+                    if (!PVE.EntitiesInZone2.Contains(__instance.EntityId))
+                    {
+                        PVE.EntitiesInZone2.Add(__instance.EntityId);
+                        pVEGrid2.OnGridEntered2();
+                    }
                 }
             }
         }

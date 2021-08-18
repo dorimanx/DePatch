@@ -2,6 +2,11 @@
 
 namespace DePatch.CoolDown
 {
+    public interface ICooldownKey
+    {
+        /* Marker Interface */
+    }
+
     public class CooldownManager
     {
         private static readonly Dictionary<ICooldownKey, CurrentCooldown> cooldownMap = new Dictionary<ICooldownKey, CurrentCooldown>();

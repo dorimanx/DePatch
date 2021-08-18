@@ -11,7 +11,6 @@ namespace DePatch.GamePatches
     public static class ServerAliveLog
     {
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
-        private static readonly SteamIdCooldownKey LoopAliveLogRequestID = new SteamIdCooldownKey(76000000000000010);
         private static bool LoopAliveLogStart = true;
         private static int TickLog = 1;
 
@@ -31,12 +30,12 @@ namespace DePatch.GamePatches
                     if (LoopAliveLogStart)
                     {
                         int LoopCooldown = 90 * 1000;
-                        CooldownManager.StartCooldown(LoopAliveLogRequestID, null, LoopCooldown);
+                        CooldownManager.StartCooldown(SteamIdCooldownKey.LoopAliveLogRequestID, null, LoopCooldown);
                         LoopAliveLogStart = false;
                     }
 
                     // loop for 90 sec and print new update to log.
-                    _ = CooldownManager.CheckCooldown(LoopAliveLogRequestID, null, out var remainingSecondsToNextLog);
+                    _ = CooldownManager.CheckCooldown(SteamIdCooldownKey.LoopAliveLogRequestID, null, out var remainingSecondsToNextLog);
 
                     if (remainingSecondsToNextLog < 2)
                     {

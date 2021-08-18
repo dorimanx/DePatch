@@ -11,7 +11,6 @@ namespace DePatch.GamePatches
 
     internal static class MyAssemblerPatch
     {
-        private static readonly SteamIdCooldownKey LoopOnBootRequestID = new SteamIdCooldownKey(76000000000000001);
         private static bool ServerBootLoopStart = true;
 
         private static void Patch(PatchContext ctx)
@@ -31,9 +30,9 @@ namespace DePatch.GamePatches
                     DePatchPlugin.Instance.Config.DelayShootingOnBootTime = 1;
 
                 int LoopCooldown = DePatchPlugin.Instance.Config.DelayShootingOnBootTime * 1000;
-                CooldownManager.StartCooldown(LoopOnBootRequestID, null, LoopCooldown);
+                CooldownManager.StartCooldown(SteamIdCooldownKey.LoopOnBootRequestID, null, LoopCooldown);
                 ServerBootLoopStart = false;
-                MyTurretPveDamageFix.BootTickStarted = true;
+                MyPVESafeZoneAction.BootTickStarted = true;
             }
 
             try

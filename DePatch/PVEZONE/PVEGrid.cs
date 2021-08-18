@@ -19,10 +19,10 @@ namespace DePatch.PVEZONE
         {
             if (MySession.Static.Players.GetOnlinePlayers().Count() > 0)
             {
-                var GridOwnedByPlayer = FindOnlineOwner(cubeGrid);
-                if (GridOwnedByPlayer != null)
+                if (cubeGrid != null && cubeGrid.BigOwners.Count > 0)
                 {
-                    if (cubeGrid != null && cubeGrid.BigOwners.Count >= 1)
+                    var GridOwnedByPlayer = PVE.FindOnlineOwner(cubeGrid);
+                    if (GridOwnedByPlayer != null)
                     {
                         if (cubeGrid.DisplayName.Contains("Event Horizon at ") || cubeGrid.DisplayName.Contains("Container MK-"))
                             return;
@@ -41,10 +41,10 @@ namespace DePatch.PVEZONE
         {
             if (MySession.Static.Players.GetOnlinePlayers().Count() > 0)
             {
-                var GridOwnedByPlayer = FindOnlineOwner(cubeGrid);
-                if (GridOwnedByPlayer != null)
+                if (cubeGrid != null && cubeGrid.BigOwners.Count > 0)
                 {
-                    if (cubeGrid != null && cubeGrid.BigOwners.Count >= 1)
+                    var GridOwnedByPlayer = PVE.FindOnlineOwner(cubeGrid);
+                    if (GridOwnedByPlayer != null)
                     {
                         if (cubeGrid.DisplayName.Contains("Event Horizon at ") || cubeGrid.DisplayName.Contains("Container MK-"))
                             return;
@@ -62,33 +62,6 @@ namespace DePatch.PVEZONE
         public bool InPVEZone()
         {
             return PVE.PVESphere.Contains(cubeGrid.PositionComp.GetPosition()) == ContainmentType.Contains;
-        }
-
-        private static MyPlayer FindOnlineOwner(MyCubeGrid grid)
-        {
-            var controllingPlayer = MySession.Static.Players.GetControllingPlayer(grid);
-            if (controllingPlayer != null)
-                return controllingPlayer;
-
-            if (grid.BigOwners.Count < 1)
-            {
-                var listsmall = grid.SmallOwners.ToList();
-                var dictionarysmall = MySession.Static.Players.GetOnlinePlayers().ToDictionary((MyPlayer b) => b.Identity.IdentityId);
-                foreach (var item in listsmall)
-                {
-                    if (dictionarysmall.ContainsKey(item))
-                        return dictionarysmall[item];
-                }
-            }
-            var list = grid.BigOwners.ToList();
-            list.AddList(grid.SmallOwners);
-            var dictionary = MySession.Static.Players.GetOnlinePlayers().ToDictionary((MyPlayer b) => b.Identity.IdentityId);
-            foreach (var item in list)
-            {
-                if (dictionary.ContainsKey(item))
-                    return dictionary[item];
-            }
-            return null;
         }
     }
 }
