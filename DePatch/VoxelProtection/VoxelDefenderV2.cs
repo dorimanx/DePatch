@@ -1,5 +1,4 @@
-﻿using HarmonyLib;
-using Sandbox.Game.Entities;
+﻿using Sandbox.Game.Entities;
 using System.Reflection;
 using Torch.Managers.PatchManager;
 
@@ -19,7 +18,10 @@ namespace DePatch.VoxelProtection
         {
             if (!DePatchPlugin.Instance.Config.Enabled)
                 return true;
-            return !DePatchPlugin.Instance.Config.ProtectVoxels;
+            if (DePatchPlugin.Instance.Config.ProtectVoxels)
+                return false;
+
+            return true;
         }
     }
 }

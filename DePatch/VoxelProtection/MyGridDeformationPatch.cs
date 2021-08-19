@@ -118,6 +118,9 @@ namespace DePatch.VoxelProtection
 
         private static void HandleGridDamage(object target, ref MyDamageInformation damage)
         {
+            if (!DePatchPlugin.Instance.Config.Enabled)
+                return;
+
             if (DePatchPlugin.Instance.Config.AdminGrid && target is IMySlimBlock)
             {
                 if (CheckAdminGrid(target))
@@ -129,63 +132,57 @@ namespace DePatch.VoxelProtection
             }
 
             // if disabled, return
-            if (!DePatchPlugin.Instance.Config.ProtectGrid || !DePatchPlugin.Instance.Config.Enabled) return;
+            if (!DePatchPlugin.Instance.Config.ProtectGrid) return;
 
             if (damage.Type != MyDamageType.Deformation && damage.Type != MyDamageType.Fall && damage.Type != MyDamageType.Destruction) return;
 
-            MyEntities.TryGetEntityById(damage.AttackerId, out var AttackerEntity, allowClosed: true);
-
             if (!(target is MySlimBlock GridBlock)) return;
+
+            if (damage.Amount == 0)
+                return;
+
             var GridCube = GridBlock?.CubeGrid;
             var GridPhysics = GridBlock?.CubeGrid.Physics;
 
             if (GridBlock == null || GridPhysics == null) return;
 
-            if (GridCube.GridSizeEnum == MyCubeSize.Large && GridCube.BlocksCount >= DePatchPlugin.Instance.Config.MaxProtectedLargeGridSize) return;
-            if (GridCube.GridSizeEnum == MyCubeSize.Small && GridCube.BlocksCount >= DePatchPlugin.Instance.Config.MaxProtectedSmallGridSize) return;
+            if (GridCube.GridSizeEnum == MyCubeSize.Large && GridCube.BlocksCount > DePatchPlugin.Instance.Config.MaxProtectedLargeGridSize) return;
+            if (GridCube.GridSizeEnum == MyCubeSize.Small && GridCube.BlocksCount > DePatchPlugin.Instance.Config.MaxProtectedSmallGridSize) return;
 
-            var speed = DePatchPlugin.Instance.Config.MinProtectSpeed;
-            var LinearVelocity = GridPhysics.LinearVelocity;
-            var AngularVelocity = GridPhysics.AngularVelocity;
 
-            if (LinearVelocity.Length() < speed && AngularVelocity.Length() < speed)
+            _ = MyEntities.TryGetEntityById(damage.AttackerId, out var AttackerEntity, allowClosed: true);
+            if (AttackerEntity == null)
+                return;
+
+            if (GridPhysics.LinearVelocity.Length() < DePatchPlugin.Instance.Config.MinProtectSpeed && GridPhysics.AngularVelocity.Length() < DePatchPlugin.Instance.Config.MinProtectSpeed)
             {
                 //by voxel or grid on low speed
-                if (AttackerEntity is MyVoxelBase)
+                if (AttackerEntity is MyVoxelBase || AttackerEntity is MyVoxelMap)
                 {
-                    if (damage.IsDeformation)
-						damage.IsDeformation = false;
-                    if (damage.Amount != 0f)
-                    	damage.Amount = 0f;
+                    damage.Amount = 0f;
                     return;
                 }
-
-                //TorpedoHit(GridCube);
-
-                //if (TorpedoDamageSystem.ContainsKey(GridCube.EntityId) && TorpedoDamageSystem[GridCube.EntityId].ApplyDamage)
-                    //return;
-
-                if (damage.IsDeformation)
-					damage.IsDeformation = false;
-                if (damage.Amount > 0f)
-					damage.Amount = 0f;
+                damage.IsDeformation = false;
             }
             else
             {
-                if (AttackerEntity is MyVoxelBase)
+                if (AttackerEntity is MyVoxelBase || AttackerEntity is MyVoxelMap)
                 { // by voxel on high speed
-                    if (damage.IsDeformation)
-						damage.IsDeformation = false;
+                    damage.IsDeformation = false;
 
-                    if (damage.Amount != 0f && damage.Amount >= DePatchPlugin.Instance.Config.DamageToBlocksVoxel)
-                    	damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksVoxel;
+                    if (DePatchPlugin.Instance.Config.DamageToBlocksVoxel < 0)
+                        DePatchPlugin.Instance.Config.DamageToBlocksVoxel = 0.1f;
+
+                    if (damage.Amount > DePatchPlugin.Instance.Config.DamageToBlocksVoxel)
+                        damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksVoxel;
 
                     _ = MyGravityProviderSystem.CalculateNaturalGravityInPoint(GridCube.PositionComp.GetPosition(), out var ingravitynow);
                     if (ingravitynow <= 20 && ingravitynow >= 0.2)
                     {
                         if (DePatchPlugin.Instance.Config.ConvertToStatic &&
-                            GridCube.BlocksCount > DePatchPlugin.Instance.Config.MaxGridSizeToConvert &&
-                            (LinearVelocity.Length() >= DePatchPlugin.Instance.Config.StaticConvertSpeed || AngularVelocity.Length() >= DePatchPlugin.Instance.Config.StaticConvertSpeed))
+                             GridCube.BlocksCount > DePatchPlugin.Instance.Config.MaxGridSizeToConvert &&
+                            (GridPhysics.LinearVelocity.Length() > DePatchPlugin.Instance.Config.StaticConvertSpeed ||
+                             GridPhysics.AngularVelocity.Length() > DePatchPlugin.Instance.Config.StaticConvertSpeed))
                         {
                             var worldAABB = GridCube.PositionComp.WorldAABB;
                             var closestPlanet = MyGamePruningStructure.GetClosestPlanet(ref worldAABB);
@@ -196,33 +193,30 @@ namespace DePatch.VoxelProtection
                                 var closestSurfacePointGlobal = closestPlanet.GetClosestSurfacePointGlobal(ref centerOfMassWorld);
                                 elevation = Vector3D.Distance(closestSurfacePointGlobal, centerOfMassWorld);
                             }
-                            else
-                            {
-                                elevation = double.PositiveInfinity;
-                            }
 
-                            if (elevation < 200 && elevation != double.PositiveInfinity &&
+                            if (elevation < 250 && elevation != double.PositiveInfinity &&
                                 GridCube.GetFatBlockCount<MyMotorSuspension>() < 4 &&
                                 GridCube.GetFatBlockCount<MyThrust>() >= 6)
                             {
-                                if (damage.Amount != 0f)
-                                    damage.Amount = 0f;
+                                damage.Amount = 0f;
 
                                 GridPhysics?.ClearSpeed();
 
-                                foreach (var a in GridCube.GetFatBlocks<MyCockpit>())
+                                foreach (var Cockpit in GridCube.GetFatBlocks<MyCockpit>())
                                 {
-                                    if (a != null && a.Pilot != null)
-                                    {
-                                        a.RemovePilot();
-                                    }
+                                    if (Cockpit != null && Cockpit.Pilot != null)
+                                        Cockpit.RemovePilot();
+                                }
+                                foreach (var Cryo in GridCube.GetFatBlocks<MyCryoChamber>())
+                                {
+                                    if (Cryo != null && Cryo.Pilot != null)
+                                        Cryo.RemovePilot();
                                 }
 
                                 foreach (var projector in GridCube.GetFatBlocks<MyProjectorBase>())
                                 {
-                                    if (projector.ProjectedGrid == null) continue;
-
-                                    projector.Enabled = false;
+                                    if (projector != null && projector.ProjectedGrid != null)
+                                        projector.Enabled = false;
                                 }
 
                                 foreach (var drills in GridCube.GetFatBlocks<MyShipDrill>())
@@ -250,35 +244,19 @@ namespace DePatch.VoxelProtection
                                 }
                             }
                         }
-                        else
-                            GridPhysics?.ClearSpeed();
-                    }
-                    else if (damage.Amount != 0f && damage.Amount >= DePatchPlugin.Instance.Config.DamageToBlocksVoxel)
-                    {
-                    	damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksVoxel;
                     }
                     return;
                 }
 
-                // check if it's torpedo on high speed.
-                //TorpedoHit(GridCube);
-
-                //if (TorpedoDamageSystem.ContainsKey(GridCube.EntityId) && TorpedoDamageSystem[GridCube.EntityId].ApplyDamage)
-                    //return;
-
                 if (GridCube.BlocksCount > DePatchPlugin.Instance.Config.MaxBlocksDoDamage)
                 { // by grid bump high speed
-                    if (damage.IsDeformation)
-						damage.IsDeformation = false;
+                    damage.IsDeformation = false;
 
-                    if (damage.Amount != 0f)
-                    {
-                        if (DePatchPlugin.Instance.Config.DamageToBlocksRamming == 0f)
-                            DePatchPlugin.Instance.Config.DamageToBlocksRamming = 0.5f;
+                    if (DePatchPlugin.Instance.Config.DamageToBlocksRamming <= 0f)
+                        DePatchPlugin.Instance.Config.DamageToBlocksRamming = 0.5f;
 
-                        if (damage.Amount >= DePatchPlugin.Instance.Config.DamageToBlocksRamming)
-                            damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksRamming;
-                    }
+                    if (damage.Amount > DePatchPlugin.Instance.Config.DamageToBlocksRamming)
+                        damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksRamming;
                 }
             }
         }

@@ -11,14 +11,14 @@ namespace DePatch.GamePatches
 {
 	[PatchShim]
 
-	public static class ValidationFailedClass
+	public static class KEENValidationFailedFix
 	{
 		public static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
 		private static void Patch(PatchContext ctx)
 		{
 			ctx.GetPattern(typeof(MyMultiplayerServerBase).GetMethod("ValidationFailed", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
-				Prefixes.Add(typeof(ValidationFailedClass).GetMethod(nameof(ValidationFailedLOG), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+				Prefixes.Add(typeof(KEENValidationFailedFix).GetMethod(nameof(ValidationFailedLOG), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
 			Log.Info("Patched ValidationFailed Spam Log");
 		}
 

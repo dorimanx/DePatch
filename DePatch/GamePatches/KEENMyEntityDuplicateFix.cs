@@ -6,7 +6,7 @@ using VRage.Game.Entity;
 namespace DePatch.GamePatches
 {
     [HarmonyPatch(typeof(MyEntity), "EntityId", MethodType.Setter)]
-    internal class MyEntityDuplicateFix
+    internal class KEENMyEntityDuplicateFix
     {
         private static readonly Action<MyEntity, long> EntityIdSetter = (e, value) =>
             AccessTools.Field(typeof(MyEntity), "m_entityId").SetValue(e, value);

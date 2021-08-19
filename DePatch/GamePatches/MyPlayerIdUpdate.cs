@@ -11,7 +11,7 @@ namespace DePatch.GamePatches
 {
     [PatchShim]
 
-    internal static class MyPlayerIdFix
+    internal static class MyPlayerIdUpdate
     {
         private static readonly ILogger Log = LogManager.GetCurrentClassLogger();
         public static readonly Dictionary<long, DateTime> cooldowns = new Dictionary<long, DateTime>();
@@ -19,7 +19,7 @@ namespace DePatch.GamePatches
         private static void Patch(PatchContext ctx)
         {
             ctx.GetPattern(typeof(MySession).GetMethod("GetCheckpoint", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
-                Suffixes.Add(typeof(MyPlayerIdFix).GetMethod(nameof(GetCheckpointPostfix), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+                Suffixes.Add(typeof(MyPlayerIdUpdate).GetMethod(nameof(GetCheckpointPostfix), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
         }
 
         private static void GetCheckpointPostfix(MyObjectBuilder_Checkpoint __result)

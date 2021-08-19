@@ -1,12 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using DePatch.CoolDown;
+using DePatch.PVEZONE;
 using NLog;
 using Sandbox.Game;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Blocks;
 using Sandbox.Game.World;
-using Torch.Managers.PatchManager;
 using VRage.Game;
 using VRage.Game.ModAPI;
 using VRageMath;
@@ -20,47 +18,33 @@ namespace DePatch.BlocksDisable
         ShowLogOnly
     }
 
-    [PatchShim]
-
     public static class GridSpeedPatch
     {
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-        private static readonly HashSet<GridOverSpeed> OverSpeeds = new HashSet<GridOverSpeed>(new GridOverSpeed.GridOverSpeedComparer());
-
-        private static void Patch(PatchContext ctx)
+        public static void GridOverSpeedCheck(MyCubeGrid __instance)
         {
-            ctx.GetPattern(typeof(MyCubeGrid).GetMethod("UpdateAfterSimulation100", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
-                Prefixes.Add(typeof(GridSpeedPatch).GetMethod(nameof(UpdateAfterSimulation100), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
-        }
-
-        private static void UpdateAfterSimulation100(MyCubeGrid __instance)
-        {
-            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.EnableGridMaxSpeedPurge) return;
-
             if (!(__instance?.GetBiggestGridInGroup() is MyCubeGrid topGrid) || topGrid.MarkedAsTrash || topGrid.MarkedForClose || topGrid.Immune || topGrid.Physics == null || topGrid.PlayerPresenceTier != MyUpdateTiersPlayerPresence.Normal) return;
 
             var purgeSpeed = __instance.GridSizeEnum == MyCubeSize.Large
                 ? DePatchPlugin.Instance.Config.LargeGridMaxSpeedPurge
                 : DePatchPlugin.Instance.Config.SmallGridMaxSpeedPurge;
 
-            if (topGrid.Physics.LinearVelocity.Length() < purgeSpeed && topGrid.Physics.AngularVelocity.Length() < purgeSpeed) return;
+            if (topGrid.Physics.LinearVelocity.Length() < purgeSpeed && topGrid.Physics.AngularVelocity.Length() < purgeSpeed)
+                return;
 
-            var overSpeed = OverSpeeds.FirstOrDefault(b => b.Grid.Equals(topGrid));
+            int ActionCooldown = 2 * 1000;
+            EntityIdCooldownKey OverSpeedGridKey = new EntityIdCooldownKey(topGrid.EntityId);
 
-            if (overSpeed == default(GridOverSpeed))
-            {
-                overSpeed = new GridOverSpeed(topGrid);
-                OverSpeeds.Add(overSpeed);
-            }
+            _ = CooldownManager.CheckCooldown(OverSpeedGridKey, null, out var remainingSecondsToAction);
 
-            overSpeed.WarningsCount++;
+            if (remainingSecondsToAction != 0)
+                return;
 
-            if (overSpeed.WarningsCount < 5)
-				return;
+            CooldownManager.StartCooldown(OverSpeedGridKey, null, ActionCooldown);
 
             var player = MySession.Static.Players.GetControllingPlayer(topGrid);
-            Log.Warn($"{topGrid.GridSizeEnum} grid with name '{topGrid.DisplayNameText}' controlled by '{player?.DisplayName}'({player?.Id.SteamId}) trying fly above max speed!");
+            Log.Warn($"{topGrid.GridSizeEnum} grid with name '{topGrid.DisplayName}' controlled by '{player?.DisplayName}'({player?.Id.SteamId}) trying to fly above max speed!");
             if (DePatchPlugin.Instance.Config.SpeedingModeSelector == SpeedingMode.ShowLogOnly)
 				return;
 
@@ -68,17 +52,19 @@ namespace DePatch.BlocksDisable
             {
                 if (player != null)
                 {
-                    MyVisualScriptLogicProvider.ShowNotification("You tried fly above max speed and has been stopped!", 20000, MyFontEnum.Red, player.Identity.IdentityId);
-                    MyVisualScriptLogicProvider.SendChatMessageColored("You tried fly above max speed and has been stopped!", Color.Red, "AntiCheat", player.Identity.IdentityId, MyFontEnum.Blue);
+                    MyVisualScriptLogicProvider.ShowNotification("You have tried to fly above max speed! Grid was stopped!", 10000, MyFontEnum.Red, player.Identity.IdentityId);
+                    MyVisualScriptLogicProvider.SendChatMessageColored("You have tried to fly above max speed! Grid was stopped!", Color.Red, "AntiCheat", player.Identity.IdentityId, MyFontEnum.Blue);
                 }
                 topGrid.Physics.ClearSpeed();
+                topGrid.Physics.LinearVelocity = Vector3.Zero;
+                topGrid.Physics.AngularVelocity = Vector3.Zero;
             }
             else
             {
                 if (player != null)
                 {
-                    MyVisualScriptLogicProvider.ShowNotification("You tried fly above max speed and has been deleted!", 20000, MyFontEnum.Red, player.Identity.IdentityId);
-                    MyVisualScriptLogicProvider.SendChatMessageColored("You tried fly above max speed and has been deleted!", Color.Red, "AntiCheat", player.Identity.IdentityId, MyFontEnum.Blue);
+                    MyVisualScriptLogicProvider.ShowNotification("You have tried to fly above max speed! Grid was DELETED!", 30000, MyFontEnum.Red, player.Identity.IdentityId);
+                    MyVisualScriptLogicProvider.SendChatMessageColored("You have tried to fly above max speed! Grid was DELETED!", Color.Red, "AntiCheat", player.Identity.IdentityId, MyFontEnum.Blue);
                     foreach (var a in topGrid.GetFatBlocks<MyCockpit>())
                     {
                     	a?.RemovePilot();
@@ -88,6 +74,17 @@ namespace DePatch.BlocksDisable
                     	b?.RemovePilot();
                     }
                 }
+
+                if (DePatchPlugin.Instance.Config.PveZoneEnabled)
+                {
+                    if (PVE.EntitiesInZone.Contains(topGrid.EntityId))
+                        PVE.EntitiesInZone.Remove(topGrid.EntityId);
+
+                    if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && PVE.EntitiesInZone2.Contains(topGrid.EntityId))
+                        PVE.EntitiesInZone2.Remove(topGrid.EntityId);
+                }
+
+                // Delete the overspeeding grid.
                 topGrid.Close();
             }
         }

@@ -72,25 +72,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlocksDisable\BlockDisable.cs" />
-    <Compile Include="BlocksDisable\GridOverSpeed.cs" />
     <Compile Include="BlocksDisable\PlayersUtility.cs" />
     <Compile Include="BlocksDisable\GridSpeedPatch.cs" />
+    <Compile Include="GamePatches\KEEN_CrashFixes.cs" />
     <Compile Include="PVEZONE\FreezerPatch.cs" />
     <Compile Include="CoolDown\CooldownManager.cs" />
     <Compile Include="CoolDown\CurrentCooldown.cs" />
     <Compile Include="CoolDown\CooldownKey.cs" />
     <Compile Include="CubeGridExtensions.cs" />
-    <Compile Include="GamePatches\CargoCleanup.cs" />
+    <Compile Include="GamePatches\ZCargoCleanup.cs" />
     <Compile Include="BlocksDisable\AreaShow_DrillSystem.cs" />
     <Compile Include="BlocksDisable\AreaShow_BuildAndRepairSystem.cs" />
-    <Compile Include="GamePatches\UpdateAfterSimulation100Fix.cs" />
-    <Compile Include="GamePatches\ValidationFailedClass.cs" />
+    <Compile Include="GamePatches\KEENValidationFailedFix.cs" />
     <Compile Include="GamePatches\ServerAliveLog.cs" />
-    <Compile Include="GamePatches\ModUpdatePatch.cs" />
+    <Compile Include="GamePatches\KEENModUpdateFix.cs" />
     <Compile Include="GamePatches\MyAssemblerPatch.cs" />
-    <Compile Include="GamePatches\MyEntityDuplicateFix.cs" />
+    <Compile Include="GamePatches\KEENMyEntityDuplicateFix.cs" />
     <Compile Include="GamePatches\MyPistonBase.cs" />
-    <Compile Include="GamePatches\MyPlayerIdFix.cs" />
+    <Compile Include="GamePatches\MyPlayerIdUpdate.cs" />
     <Compile Include="GamePatches\MyProgramBlockSlow.cs" />
     <Compile Include="GamePatches\MyRefineryPatch.cs" />
     <Compile Include="OptiDamage\DamageContract.cs" />
@@ -105,7 +104,7 @@
     <Compile Include="ShipTools\DrillSettings.cs" />
     <Compile Include="VoxelProtection\ReloadShip.cs" />
     <Compile Include="VoxelProtection\VoxelExplosionPatch.cs" />
-    <Compile Include="GamePatches\MyBatteryFix.cs" />
+    <Compile Include="GamePatches\KEENMyBatteryFix.cs" />
     <Compile Include="GamePatches\MyBeaconAlertPatch.cs" />
     <Compile Include="GamePatches\MyCameraBlockPatch.cs" />
     <Compile Include="PVEZONE\MyCubeGridPatch.cs" />

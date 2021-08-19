@@ -5,7 +5,7 @@ namespace DePatch.GamePatches
 {
     [HarmonyPatch(typeof(MyWorkshopItem))]
     [HarmonyPatch("IsUpToDate")]
-    class ModUpdatePatch
+    class KEENModUpdateFix
     {
         static void Postfix(MyWorkshopItem __instance, ref bool __result)
         {

@@ -26,7 +26,7 @@ namespace DePatch.CoolDown
 
     public class EntityIdCooldownKey : ICooldownKey
     {
-        public static readonly EntityIdCooldownKey SOMEVALUEHERE = new EntityIdCooldownKey(125446691099827825);
+        public static readonly EntityIdCooldownKey OverSpeedGridKey = new EntityIdCooldownKey(125446691099827825);
                 
         private long EntityId { get; }
 
