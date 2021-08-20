@@ -159,9 +159,11 @@ namespace DePatch.VoxelProtection
                 //by voxel or grid on low speed
                 if (AttackerEntity is MyVoxelBase || AttackerEntity is MyVoxelMap)
                 {
+                    damage.IsDeformation = false;
                     damage.Amount = 0f;
                     return;
                 }
+                damage.Amount = 0.08f;
                 damage.IsDeformation = false;
             }
             else
