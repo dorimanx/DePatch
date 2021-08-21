@@ -552,7 +552,7 @@
 						Margin="198,21,0,0"
 						VerticalAlignment="Top" />
                     <Label
-						Content="Above Velocity Damage&#xD;&#xA;From Voxels (set 0 to 5 max)"
+						Content="Above Velocity Damage %&#xD;&#xA;From Voxels (set 0.00 to 1 max)"
 						HorizontalAlignment="Left"
 						Margin="198,47,0,0"
 						VerticalAlignment="Top" />
@@ -567,7 +567,7 @@
                         IsEnabled="{Binding Path=ProtectGrid}"
 						Text="{Binding Path=DamageToBlocksVoxel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
                     <Label
-						Content="Above Velocity Damage&#xA;From Ramming (set 0.1 to 5 max)"
+						Content="Above Velocity Damage %&#xA;From Ramming (set 0.01 to 1 max)"
 						HorizontalAlignment="Left"
 						Margin="198,84,0,0"
 						VerticalAlignment="Top" Height="51" />
@@ -611,21 +611,6 @@
 						HorizontalAlignment="Left"
 						Margin="10,225,0,0"
 						VerticalAlignment="Top" />
-                    <Label
-						Content="Torpedos Max Grid Size L/S"
-						HorizontalAlignment="Left"
-						Margin="10,197,0,0"
-						VerticalAlignment="Top" />
-                    <TextBox
-						HorizontalAlignment="Left"
-						Height="23"
-						Margin="198,197,0,0"
-						TextWrapping="Wrap"
-						VerticalAlignment="Top"
-						Width="100"
-                        ToolTip="Max Blocks in grid to disable protection, so it's can do damage when ramming other grid."
-                        IsEnabled="{Binding Path=ProtectGrid}"
-						Text="{Binding Path=MaxBlocksDoDamage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBox
 						HorizontalAlignment="Left"
 						Height="23"

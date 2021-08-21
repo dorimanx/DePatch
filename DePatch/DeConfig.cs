@@ -60,15 +60,13 @@ namespace DePatch
         private bool _protectGrid;
         private float _minProtectSpeed = 40f;
         private float _staticConvertSpeed = 70f;
-        private long _maxProtectedSmallGridSize = 10000L;
-        private long _maxProtectedLargeGridSize = 10000L;
-        private long _maxGridSizeToConvert = 500L;
-        private float _damageToBlocksVoxel = 0.2f;
-        private float _damageToBlocksRamming = 0.5f;
-        private long _maxBlocksDoDamage = 50L;
+        private int _maxProtectedSmallGridSize = 10000;
+        private int _maxProtectedLargeGridSize = 10000;
+        private int _maxGridSizeToConvert = 500;
+        private float _damageToBlocksVoxel = 0.00f;
+        private float _damageToBlocksRamming = 0.05f;
         private bool _convertToStatic;
         private bool _damageThreading;
-        private decimal _gridCollisionAverage;
         private bool _slowPbUpdateEnable;
         private int _slowPbUpdate1 = 2;
         private int _slowPbUpdate10 = 4;
@@ -97,13 +95,13 @@ namespace DePatch
             set => SetValue(ref _damageThreading, value);
         }
 
-        public long MaxProtectedLargeGridSize
+        public int MaxProtectedLargeGridSize
         {
             get => _maxProtectedLargeGridSize;
             set => SetValue(ref _maxProtectedLargeGridSize, value);
         }
 
-        public long MaxProtectedSmallGridSize
+        public int MaxProtectedSmallGridSize
         {
             get => _maxProtectedSmallGridSize;
             set => SetValue(ref _maxProtectedSmallGridSize, value);
@@ -151,19 +149,13 @@ namespace DePatch
             set => SetValue(ref _damageToBlocksRamming, value);
         }
 
-        public long MaxBlocksDoDamage
-        {
-            get => _maxBlocksDoDamage;
-            set => SetValue(ref _maxBlocksDoDamage, value);
-        }
-
         public bool ConvertToStatic
         {
             get => _convertToStatic;
             set => SetValue(ref _convertToStatic, value);
         }
 
-        public long MaxGridSizeToConvert
+        public int MaxGridSizeToConvert
         {
             get => _maxGridSizeToConvert;
             set => SetValue(ref _maxGridSizeToConvert, value);
@@ -371,13 +363,6 @@ namespace DePatch
         {
             get => _checkForUpdates;
             set => SetValue(ref _checkForUpdates, value);
-        }
-
-        [XmlIgnore]
-        public decimal GridCollisionAverage
-        {
-            get => _gridCollisionAverage;
-            set => SetValue(ref _gridCollisionAverage, value);
         }
 
         public bool SlowPbEnabled

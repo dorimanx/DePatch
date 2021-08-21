@@ -93,6 +93,7 @@ namespace DePatch.GamePatches
     public static class KEENUpdateAfterSimulation100Fix
     {
         private static FieldInfo m_entitiesForUpdate100;
+        private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
         private static void Patch(PatchContext ctx)
         {
@@ -114,7 +115,17 @@ namespace DePatch.GamePatches
                         continue;
 
                     if (!myEntity.MarkedForClose && (myEntity.Flags & EntityFlags.NeedsUpdate100) != (EntityFlags)0 && myEntity.InScene)
-                        myEntity.UpdateAfterSimulation100();
+                    {
+                        try
+                        {
+                            myEntity.UpdateAfterSimulation100();
+                        } 
+                        catch (Exception ex)
+                        {
+                            Log.Error(ex, "Error during UpdateAfterSimulation100 entity update! Crash Avoided");
+                            continue;
+                        }
+                    }
                 }
                 return false;
             }
