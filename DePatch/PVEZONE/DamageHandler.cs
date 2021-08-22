@@ -37,6 +37,7 @@ namespace DePatch.PVEZONE
             if (target == null)
                 return;
 
+            // if no damage detected, then just mone on.
             if (info.Amount == 0)
             {
                 info.IsDeformation = false;
@@ -274,12 +275,15 @@ namespace DePatch.PVEZONE
                 // grid to grid ram on high speed, allow small amount of damage.
                 if (RammingGrid)
                 {
-                    if (info.Amount > 0.3f)
-                        info.Amount = 0.2f;
                     info.IsDeformation = false;
+                    if (info.Amount > 0.3f)
+                        info.Amount = 0.01f;
+                    if (mySlimBlock != null && mySlimBlock.CubeGrid.IsStatic)
+                        info.Amount = 0f;
                 }
                 else
                 {
+                    // low speed no damage at all.
                     info.Amount = 0f;
                     info.IsDeformation = false;
                 }
@@ -306,12 +310,15 @@ namespace DePatch.PVEZONE
                 // grid to grid ramming on high speed, allow small amount of damage.
                 if (RammingGrid)
                 {
-                    if (info.Amount > 0.3f)
-                        info.Amount = 0.2f;
                     info.IsDeformation = false;
+                    if (info.Amount > 0.3f)
+                        info.Amount = 0.01f;
+                    if (mySlimBlock != null && mySlimBlock.CubeGrid.IsStatic)
+                        info.Amount = 0f;
                 }
                 else
                 {
+                    // low speed no damage at all.
                     info.Amount = 0f;
                     info.IsDeformation = false;
                 }

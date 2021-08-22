@@ -94,10 +94,13 @@ namespace DePatch.VoxelProtection
                 // detected grid on low speed.
                 damage.IsDeformation = false;
 
+                // getting info that damage should be 0! PVE or shield protection, then just move on.
+                if (damage.Amount == 0f)
+                    return;
+
                 // no damage from voxels.
                 if (AttackerEntity is MyVoxelBase || AttackerEntity is MyVoxelMap)
                 {
-                    damage.IsDeformation = false;
                     damage.Amount = 0f;
                     return;
                 }
@@ -105,22 +108,20 @@ namespace DePatch.VoxelProtection
                 // bump to other grid on low speed, prevent stuck in other blocks
                 if (AttackerEntity is MyCubeBlock || AttackerEntity is MyCubeGrid)
                 {
-                    damage.IsDeformation = false;
                     if (GridCube.IsStatic)
                         damage.Amount = 0f;
                     else
-                        damage.Amount = 0.02f;
+                        damage.Amount = 0.01f;
                     return;
                 }
 
                 if ((AttackerEntity is MyLargeTurretBase || AttackerEntity is MyUserControllableGun) && damage.Type == MyDamageType.Deformation)
                     return;
 
-                if (damage.AttackerId == 0L && damage.Amount == 0f && damage.Type == MyDamageType.Deformation)
+                if (damage.AttackerId == 0L && damage.Type == MyDamageType.Deformation)
                     return;
 
                 // fully ignore damage if attacker is unknown.
-                damage.IsDeformation = false;
                 damage.Amount = 0f;
             }
             else
@@ -129,14 +130,14 @@ namespace DePatch.VoxelProtection
                 { // by voxel on high speed
                     damage.IsDeformation = false;
 
-                    if (DePatchPlugin.Instance.Config.DamageToBlocksVoxel < 0 || DePatchPlugin.Instance.Config.DamageToBlocksVoxel > 1f)
-                        DePatchPlugin.Instance.Config.DamageToBlocksVoxel = 0.05f;
+                    if (DePatchPlugin.Instance.Config.DamageToBlocksVoxel < 0f || DePatchPlugin.Instance.Config.DamageToBlocksVoxel > 1f)
+                        DePatchPlugin.Instance.Config.DamageToBlocksVoxel = 0.00f;
 
-                    if (damage.Amount != 0f && damage.Amount > DePatchPlugin.Instance.Config.DamageToBlocksVoxel)
+                    if (damage.Amount > DePatchPlugin.Instance.Config.DamageToBlocksVoxel)
                         damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksVoxel;
 
                     _ = MyGravityProviderSystem.CalculateNaturalGravityInPoint(GridCube.PositionComp.GetPosition(), out var ingravitynow);
-                    if (ingravitynow <= 20 && ingravitynow >= 0.2)
+                    if (ingravitynow <= 20f && ingravitynow >= 0.2f)
                     {
                         if (DePatchPlugin.Instance.Config.ConvertToStatic &&
                              GridCube.BlocksCount > DePatchPlugin.Instance.Config.MaxGridSizeToConvert &&
@@ -157,8 +158,7 @@ namespace DePatch.VoxelProtection
                                 GridCube.GetFatBlockCount<MyMotorSuspension>() < 4 &&
                                 GridCube.GetFatBlockCount<MyThrust>() >= 6)
                             {
-                                if (damage.Amount != 0f)
-                                    damage.Amount = 0f;
+                                damage.Amount = 0f;
 
                                 GridPhysics?.ClearSpeed();
 
@@ -208,22 +208,12 @@ namespace DePatch.VoxelProtection
                     return;
                 }
 
-                if (damage.Amount == 0f && GridCube.IsStatic)
-                    damage.Amount = 0f;
+                // reduce LAG by removing need for deformation culculations.
+                damage.IsDeformation = false;
 
-                if ((AttackerEntity is MyLargeTurretBase || AttackerEntity is MyUserControllableGun) && damage.Type == MyDamageType.Deformation)
+                // getting info that damage should be 0! PVE or shield protection, then just move on.
+                if (damage.Amount == 0f)
                     return;
-
-                if (damage.AttackerId == 0L && damage.Amount == 0f && damage.Type == MyDamageType.Deformation)
-                    return;
-
-                // if damage is 0 then we are in PVE Zone. prevent blocks stuck in others grids and SAVE will fail.
-                if (damage.Amount == 0)
-                {
-                    damage.IsDeformation = false;
-                    damage.Amount = 0.01f;
-                    return;
-                }
 
                 if (DePatchPlugin.Instance.Config.DamageToBlocksRamming <= 0f || DePatchPlugin.Instance.Config.DamageToBlocksRamming > 1f)
                     DePatchPlugin.Instance.Config.DamageToBlocksRamming = 0.05f;
@@ -231,7 +221,6 @@ namespace DePatch.VoxelProtection
                 // bump to other grid on high speed, prevent stuck in other blocks
                 if (AttackerEntity is MyCubeBlock || AttackerEntity is MyCubeGrid)
                 {
-                    damage.IsDeformation = false;
                     if (damage.Amount > DePatchPlugin.Instance.Config.DamageToBlocksRamming)
                         damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksRamming;
                     if (GridCube.IsStatic)
@@ -239,12 +228,6 @@ namespace DePatch.VoxelProtection
 
                     return;
                 }
-
-                // any other unknown damage set low damage.
-                if (GridCube.IsStatic)
-                    damage.Amount = 0f;
-                else
-                    damage.Amount = 0.02f;
             }
         }
     }
