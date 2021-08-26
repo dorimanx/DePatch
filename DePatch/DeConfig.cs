@@ -47,7 +47,7 @@ namespace DePatch
 
         private bool _AllowToShootNPCinZone;
         private bool _DelayShootingOnBoot = true;
-        private int _DelayShootingOnBootTime = 300;
+        private int _DelayShootingOnBootTime = 240;
         private bool _DrillTools = true;
         private int _drillUpdateRate = 150;
         private DrillingMode _parallelDrill;

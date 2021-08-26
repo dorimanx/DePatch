@@ -1,6 +1,4 @@
-﻿using DePatch.CoolDown;
-using DePatch.PVEZONE;
-using Sandbox.Game.Entities.Cube;
+﻿using Sandbox.Game.Entities.Cube;
 using System.Reflection;
 using Torch.Managers.PatchManager;
 using VRage.Game;
@@ -11,8 +9,6 @@ namespace DePatch.GamePatches
 
     internal static class MyAssemblerPatch
     {
-        private static bool ServerBootLoopStart = true;
-
         private static void Patch(PatchContext ctx)
         {
             ctx.GetPattern(typeof(MyAssembler).GetMethod("UpdateBeforeSimulation100", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
@@ -23,17 +19,6 @@ namespace DePatch.GamePatches
         {
             if (!DePatchPlugin.Instance.Config.Enabled)
                 return;
-
-            if (ServerBootLoopStart && DePatchPlugin.Instance.Config.DelayShootingOnBoot)
-            {
-                if (DePatchPlugin.Instance.Config.DelayShootingOnBootTime <= 0)
-                    DePatchPlugin.Instance.Config.DelayShootingOnBootTime = 1;
-
-                int LoopCooldown = DePatchPlugin.Instance.Config.DelayShootingOnBootTime * 1000;
-                CooldownManager.StartCooldown(SteamIdCooldownKey.LoopOnBootRequestID, null, LoopCooldown);
-                ServerBootLoopStart = false;
-                MyPVESafeZoneAction.BootTickStarted = true;
-            }
 
             try
             {

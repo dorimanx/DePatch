@@ -7,6 +7,7 @@ using VRage.Game.Entity;
 
 namespace DePatch.KEEN_BUG_FIXES
 {
+    /* // Should be Fixed NOW.
     [PatchShim]
     public static class KEEN_AntennaCrashFix
     {
@@ -30,4 +31,5 @@ namespace DePatch.KEEN_BUG_FIXES
             return true;
         }
     }
+    */
 }

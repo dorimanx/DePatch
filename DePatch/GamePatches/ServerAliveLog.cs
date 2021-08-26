@@ -3,6 +3,7 @@ using Torch.Managers.PatchManager;
 using Sandbox.Game.World;
 using System.Reflection;
 using DePatch.CoolDown;
+using DePatch.PVEZONE;
 
 namespace DePatch.GamePatches
 {
@@ -13,6 +14,7 @@ namespace DePatch.GamePatches
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
         private static bool LoopAliveLogStart = true;
         private static int TickLog = 1;
+        private static bool ServerBootLoopStart = true;
 
         private static void Patch(PatchContext ctx)
         {
@@ -22,6 +24,29 @@ namespace DePatch.GamePatches
 
         private static void UpdateLOG()
         {
+            if (DePatchPlugin.Instance.Config.DelayShootingOnBoot)
+            {
+                if (ServerBootLoopStart)
+                {
+                    if (DePatchPlugin.Instance.Config.DelayShootingOnBootTime <= 0)
+                        DePatchPlugin.Instance.Config.DelayShootingOnBootTime = 1;
+
+                    int LoopCooldown = DePatchPlugin.Instance.Config.DelayShootingOnBootTime * 1000;
+                    CooldownManager.StartCooldown(SteamIdCooldownKey.LoopOnBootRequestID, null, LoopCooldown);
+                    ServerBootLoopStart = false;
+                    MyPVESafeZoneAction.BootTickStarted = true;
+                }
+
+                if (MyPVESafeZoneAction.BootTickStarted)
+                {
+                    // loop for X sec after boot to block weapons.
+                    _ = CooldownManager.CheckCooldown(SteamIdCooldownKey.LoopOnBootRequestID, null, out var remainingSecondsBoot);
+
+                    if (remainingSecondsBoot < 3)
+                        MyPVESafeZoneAction.BootTickStarted = false;
+                }
+            }
+
             // send server alive log to torch log every 90sec +10 max.
             if (DePatchPlugin.Instance.Config.LogTracker)
             {

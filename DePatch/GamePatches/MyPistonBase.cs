@@ -20,12 +20,19 @@ namespace DePatch.GamePatches
         {
             if (__instance is IMyPistonBase piston && DePatchPlugin.Instance.Config.PistonInertiaTensor)
             {
-                if (piston == null || !DePatchPlugin.GameIsReady)
+                if (piston == null || !DePatchPlugin.GameIsReady || piston.Closed || !piston.IsFunctional)
                     return;
 
-                var tensor = piston.GetValueBool("ShareInertiaTensor");
-                if (tensor == false)
-                    piston.SetValueBool("ShareInertiaTensor", true);
+                try
+                {
+                    var tensor = piston.GetValueBool("ShareInertiaTensor");
+                    if (tensor == false)
+                        piston.SetValueBool("ShareInertiaTensor", true);
+                }
+                catch
+                {
+                    // just ignore.
+                }
             }
         }
     }

@@ -40,6 +40,7 @@
     </Reference>
     <Reference Include="HavokWrapper">
       <HintPath>..\GameBinaries\HavokWrapper.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Humanizer, Version=2.2.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
       <HintPath>..\packages\Humanizer.Core.2.2.0\lib\netstandard1.0\Humanizer.dll</HintPath>
@@ -60,8 +61,7 @@
     </Reference>
     <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
@@ -76,7 +76,6 @@
     <Compile Include="BlocksDisable\GridSpeedPatch.cs" />
     <Compile Include="KEEN_BUG_FIXES\KEEN_UpdateAfterSimulation100Fix.cs" />
     <Compile Include="KEEN_BUG_FIXES\KEEN_ParallelCrashFix.cs" />
-    <Compile Include="KEEN_BUG_FIXES\KEEN_RenderLocalFix.cs" />
     <Compile Include="KEEN_BUG_FIXES\KEEN_AntennaCrashFix.cs" />
     <Compile Include="PVEZONE\FreezerPatch.cs" />
     <Compile Include="CoolDown\CooldownManager.cs" />

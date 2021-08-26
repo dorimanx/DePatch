@@ -24,7 +24,7 @@ namespace DePatch.PVEZONE
         private static bool ServerBoot = true;
         private static MyCubeGrid LockingGrid;
         private static bool LockingGridHasOwner = false;
-        public static bool BootTickStarted = false;
+        public static bool BootTickStarted = true;
 
         private static void Patch(PatchContext ctx) => ctx.GetPattern(typeof(MySessionComponentSafeZones).GetMethod("IsActionAllowed", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static, null,
                 new Type[4]
@@ -315,27 +315,12 @@ namespace DePatch.PVEZONE
                         {
                             if (DePatchPlugin.Instance.Config.DelayShootingOnBoot)
                             {
-                                if (ServerBoot)
+                                if (BootTickStarted)
                                 {
-                                    // start is in assembler update 100, if no asseblers in world then skip here.
-                                    if (!BootTickStarted)
-                                        goto skipweaponblock;
-
-                                    // loop for X sec after boot to block weapons.
-                                    _ = CooldownManager.CheckCooldown(SteamIdCooldownKey.LoopOnBootRequestID, null, out var remainingSecondsBoot);
-
-                                    if (remainingSecondsBoot < 3)
-                                        ServerBoot = false;
-
-                                    if (entity is MyShipDrill || entity is MyShipToolBase)
-                                        return true;
-
                                     // block weapons
                                     return false;
                                 }
                             }
-
-                        skipweaponblock:
 
                             if (!DePatchPlugin.Instance.Config.PveZoneEnabled)
                                 return true;

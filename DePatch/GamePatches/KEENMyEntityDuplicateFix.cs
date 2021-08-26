@@ -18,14 +18,18 @@ namespace DePatch.GamePatches
             {
                 if (value == 0L) return false;
                 EntityIdSetter(__instance, value);
+
+                // here we check for duplicate ID and if found removing to avoid crash.
                 if (MyEntityIdentifier.ExistsById(value))
                     MyEntityIdentifier.RemoveEntity(value);
+
                 MyEntityIdentifier.AddEntityWithId(__instance);
                 return false;
             }
+
             if (value == 0L)
             {
-                EntityIdSetter(__instance, 0);
+                EntityIdSetter(__instance, 0L);
                 MyEntityIdentifier.RemoveEntity(id);
                 return false;
             }
