@@ -1,9 +1,10 @@
-﻿using NLog;
-using Torch.Managers.PatchManager;
+﻿using Torch.Managers.PatchManager;
 using Sandbox.Game.World;
 using System.Reflection;
 using DePatch.CoolDown;
 using DePatch.PVEZONE;
+using VRage.Utils;
+using System;
 
 namespace DePatch.GamePatches
 {
@@ -11,8 +12,6 @@ namespace DePatch.GamePatches
 
     public static class ServerAliveLog
     {
-        public static readonly Logger Log = LogManager.GetCurrentClassLogger();
-        private static bool LoopAliveLogStart = true;
         private static int TickLog = 1;
         private static bool ServerBootLoopStart = true;
 
@@ -42,30 +41,27 @@ namespace DePatch.GamePatches
                     // loop for X sec after boot to block weapons.
                     _ = CooldownManager.CheckCooldown(SteamIdCooldownKey.LoopOnBootRequestID, null, out var remainingSecondsBoot);
 
-                    if (remainingSecondsBoot < 3)
+                    if (remainingSecondsBoot < 1)
                         MyPVESafeZoneAction.BootTickStarted = false;
                 }
             }
 
-            // send server alive log to torch log every 90sec +10 max.
+            // send server alive log to torch log every 30sec.
             if (DePatchPlugin.Instance.Config.LogTracker)
             {
-                if (++TickLog > 10)
+                if (++TickLog > 60)
                 {
-                    if (LoopAliveLogStart)
-                    {
-                        int LoopCooldown = 90 * 1000;
-                        CooldownManager.StartCooldown(SteamIdCooldownKey.LoopAliveLogRequestID, null, LoopCooldown);
-                        LoopAliveLogStart = false;
-                    }
-
-                    // loop for 90 sec and print new update to log.
+                    // loop for 30 sec and print new update to KEEN log and Torch console.
                     _ = CooldownManager.CheckCooldown(SteamIdCooldownKey.LoopAliveLogRequestID, null, out var remainingSecondsToNextLog);
 
-                    if (remainingSecondsToNextLog < 2)
+                    if (remainingSecondsToNextLog < 1)
                     {
-                        Log.Info("Server Status: ALIVE");
-                        LoopAliveLogStart = true;
+                        // arm new timer.
+                        int LoopCooldown = 30 * 1000;
+                        CooldownManager.StartCooldown(SteamIdCooldownKey.LoopAliveLogRequestID, null, LoopCooldown);
+
+                        // write to keen log.
+                        MyLog.Default.Log(MyLogSeverity.Info, "Server Status: ALIVE", Array.Empty<object>());
                     }
                     TickLog = 1;
                 }

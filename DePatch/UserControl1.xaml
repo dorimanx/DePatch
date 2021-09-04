@@ -723,10 +723,10 @@
                         Margin="10,213,0,0"
                         VerticalAlignment="Top" />
                     <CheckBox
-                        Content="Enable Torch Log KeepAlive"
+                        Content="Enable Keen Log KeepAlive"
                         HorizontalAlignment="Left"
                         Margin="10,260,0,321"
-                        ToolTip="This will pupdate LOG every minute with Server Alive Log."
+                        ToolTip="This will pupdate Keen LOG every 30sec with Server Alive Log."
                         IsChecked="{Binding LogTracker}"
                         Width="172" />
                     <CheckBox

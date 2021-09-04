@@ -2,6 +2,7 @@
 using Sandbox.Game.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Torch.Managers.PatchManager;
 using VRage.Collections;
@@ -29,13 +30,14 @@ namespace DePatch.KEEN_BUG_FIXES
             if (DePatchPlugin.Instance.Config.UpdateAfterSimulation100FIX)
             {
                 var My_entitiesForUpdate100 = (MyDistributedUpdater<List<MyEntity>, MyEntity>)m_entitiesForUpdate100.GetValue(__instance);
+                // checking for Null here saving us from crash,
+                if (My_entitiesForUpdate100 == null || My_entitiesForUpdate100.Count() == 0)
+                    return false;
 
                 foreach (MyEntity myEntity in My_entitiesForUpdate100)
                 {
-                    if (myEntity == null)
-                        continue;
-
-                    if (!myEntity.MarkedForClose && (myEntity.Flags & EntityFlags.NeedsUpdate100) != (EntityFlags)0 && myEntity.InScene)
+                    // checking for Null here saving us from crash,
+                    if (myEntity != null && !myEntity.MarkedForClose && (myEntity.Flags & EntityFlags.NeedsUpdate100) != (EntityFlags)0 && myEntity.InScene)
                     {
                         try
                         {
@@ -43,6 +45,7 @@ namespace DePatch.KEEN_BUG_FIXES
                         }
                         catch (Exception ex)
                         {
+                            // We have few hits on this! and crash was avoided!.
                             Log.Error(ex, "Error during UpdateAfterSimulation100 entity update! Crash Avoided");
                             continue;
                         }

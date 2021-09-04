@@ -1,6 +1,5 @@
 ﻿using NLog;
 using Sandbox.Game.Entities;
-using System;
 using System.Reflection;
 using Torch.Managers.PatchManager;
 
@@ -22,20 +21,11 @@ namespace DePatch.KEEN_BUG_FIXES
         {
             if (DePatchPlugin.Instance.Config.UpdateAfterSimulation100FIX)
             {
-                if (entity == null)
+                // checking for null here saves us from crash.
+                if (entity == null || entity.MarkedForClose || (entity.UpdateFlags & MyParallelUpdateFlags.EACH_FRAME_PARALLEL) == MyParallelUpdateFlags.NONE || !entity.InScene)
                     return false;
 
-                if (entity.MarkedForClose || (entity.UpdateFlags & MyParallelUpdateFlags.EACH_FRAME_PARALLEL) == MyParallelUpdateFlags.NONE || !entity.InScene)
-                    return false;
-
-                try
-                {
-                    entity.UpdateAfterSimulationParallel();
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "Error during parallel entity update! Crash Avoided");
-                }
+                entity.UpdateAfterSimulationParallel();
                 return false;
             }
             return true;

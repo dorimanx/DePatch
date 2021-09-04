@@ -21,7 +21,6 @@ namespace DePatch.PVEZONE
 
     internal static class MyPVESafeZoneAction
     {
-        private static bool ServerBoot = true;
         private static MyCubeGrid LockingGrid;
         private static bool LockingGridHasOwner = false;
         public static bool BootTickStarted = true;

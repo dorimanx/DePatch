@@ -3,7 +3,7 @@ using HarmonyLib;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI.Ingame;
 
-namespace DePatch.GamePatches
+namespace DePatch.KEEN_BUG_FIXES
 {
     [HarmonyPatch(typeof(MyBatteryBlock))]
     [HarmonyPatch("ChargeMode", MethodType.Setter)]

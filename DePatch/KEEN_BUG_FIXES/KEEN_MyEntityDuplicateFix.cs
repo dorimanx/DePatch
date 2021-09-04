@@ -3,13 +3,12 @@ using HarmonyLib;
 using VRage;
 using VRage.Game.Entity;
 
-namespace DePatch.GamePatches
+namespace DePatch.KEEN_BUG_FIXES
 {
     [HarmonyPatch(typeof(MyEntity), "EntityId", MethodType.Setter)]
-    internal class KEENMyEntityDuplicateFix
+    internal class KEEN_MyEntityDuplicateFix
     {
-        private static readonly Action<MyEntity, long> EntityIdSetter = (e, value) =>
-            AccessTools.Field(typeof(MyEntity), "m_entityId").SetValue(e, value);
+        private static readonly Action<MyEntity, long> EntityIdSetter = (e, value) => AccessTools.Field(typeof(MyEntity), "m_entityId").SetValue(e, value);
 
         private static bool Prefix(MyEntity __instance, ref long value)
         {

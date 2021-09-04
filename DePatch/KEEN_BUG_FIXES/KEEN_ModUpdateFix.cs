@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using VRage.GameServices;
 
-namespace DePatch.GamePatches
+namespace DePatch.KEEN_BUG_FIXES
 {
     [HarmonyPatch(typeof(MyWorkshopItem))]
     [HarmonyPatch("IsUpToDate")]

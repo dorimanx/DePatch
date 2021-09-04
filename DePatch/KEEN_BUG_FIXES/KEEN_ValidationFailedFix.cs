@@ -1,5 +1,4 @@
 ﻿using DePatch.CoolDown;
-using NLog;
 using Sandbox.Engine.Multiplayer;
 using Sandbox.Game.World;
 using System;
@@ -7,19 +6,16 @@ using System.Reflection;
 using Torch.Managers.PatchManager;
 using VRage.Utils;
 
-namespace DePatch.GamePatches
+namespace DePatch.KEEN_BUG_FIXES
 {
 	[PatchShim]
 
-	public static class KEENValidationFailedFix
+	public static class KEEN_ValidationFailedFix
 	{
-		public static readonly Logger Log = LogManager.GetCurrentClassLogger();
-
 		private static void Patch(PatchContext ctx)
 		{
 			ctx.GetPattern(typeof(MyMultiplayerServerBase).GetMethod("ValidationFailed", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
-				Prefixes.Add(typeof(KEENValidationFailedFix).GetMethod(nameof(ValidationFailedLOG), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
-			Log.Info("Patched ValidationFailed Spam Log");
+				Prefixes.Add(typeof(KEEN_ValidationFailedFix).GetMethod(nameof(ValidationFailedLOG), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
 		}
 
 		private static bool ValidationFailedLOG(ulong clientId, bool kick = true, string additionalInfo = null, bool stackTrace = true)
@@ -37,14 +33,12 @@ namespace DePatch.GamePatches
 
 					string msg = MySession.Static.Players.TryGetIdentityNameFromSteamId(clientId) + (kick ? " was trying to cheat!" : "'s action was blocked.");
 					MyLog.Default.WriteLine(msg);
+
 					if (additionalInfo != null)
-					{
 						MyLog.Default.WriteLine(additionalInfo);
-					}
+
 					if (stackTrace)
-					{
 						MyLog.Default.WriteLine(Environment.StackTrace);
-					}
 				}
 				return false;
 			}
