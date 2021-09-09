@@ -29,27 +29,27 @@ namespace DePatch.KEEN_BUG_FIXES
         {
             if (DePatchPlugin.Instance.Config.UpdateAfterSimulation100FIX)
             {
-                var My_entitiesForUpdate100 = (MyDistributedUpdater<List<MyEntity>, MyEntity>)m_entitiesForUpdate100.GetValue(__instance);
-                // checking for Null here saving us from crash,
-                if (My_entitiesForUpdate100 == null || My_entitiesForUpdate100.Count() == 0)
+                if (__instance == null)
                     return false;
 
-                foreach (MyEntity myEntity in My_entitiesForUpdate100)
+                try
                 {
+                    var My_entitiesForUpdate100 = (MyDistributedUpdater<List<MyEntity>, MyEntity>)m_entitiesForUpdate100.GetValue(__instance);
                     // checking for Null here saving us from crash,
-                    if (myEntity != null && !myEntity.MarkedForClose && (myEntity.Flags & EntityFlags.NeedsUpdate100) != (EntityFlags)0 && myEntity.InScene)
+                    if (My_entitiesForUpdate100 == null)
+                        return false;
+
+                    foreach (MyEntity myEntity in My_entitiesForUpdate100)
                     {
-                        try
-                        {
+                        // checking for Null here saving us from crash,
+                        if (myEntity != null && !myEntity.MarkedForClose && (myEntity.Flags & EntityFlags.NeedsUpdate100) != (EntityFlags)0 && myEntity.InScene)
                             myEntity.UpdateAfterSimulation100();
-                        }
-                        catch (Exception ex)
-                        {
-                            // We have few hits on this! and crash was avoided!.
-                            Log.Error(ex, "Error during UpdateAfterSimulation100 entity update! Crash Avoided");
-                            continue;
-                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    // We have few hits on this! and crash was avoided!.
+                    Log.Error(ex, "Error during UpdateAfterSimulation100 entity update! Crash Avoided");
                 }
                 return false;
             }
