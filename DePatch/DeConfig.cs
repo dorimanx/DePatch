@@ -88,6 +88,7 @@ namespace DePatch
         private bool _NanoDrillArea;
         private bool _ValidationFailedSuspend = true;
         private bool _UpdateAfterSimulation100FIX = true;
+        private bool _DenyPlacingBlocksOnEnemyGrid;
 
         public bool DamageThreading
         {
@@ -541,6 +542,12 @@ namespace DePatch
         {
             get => _UpdateAfterSimulation100FIX;
             set => SetValue(ref _UpdateAfterSimulation100FIX, value);
+        }
+
+        public bool DenyPlacingBlocksOnEnemyGrid
+        {
+            get => _DenyPlacingBlocksOnEnemyGrid;
+            set => SetValue(ref _DenyPlacingBlocksOnEnemyGrid, value);
         }
     }
 }

@@ -7,8 +7,10 @@ using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Blocks;
 using Sandbox.Game.Entities.Character;
 using Sandbox.Game.Entities.Cube;
+using Sandbox.Game.Multiplayer;
 using Sandbox.Game.Weapons;
 using Sandbox.Game.World;
+using Torch;
 using Torch.Managers.PatchManager;
 using VRage.Game;
 using VRage.Game.Entity;
@@ -292,21 +294,40 @@ namespace DePatch.PVEZONE
                         }
                     case MySafeZoneAction.Building:
                         {
-                            if (!DePatchPlugin.Instance.Config.PveZoneEnabled || user == 0UL || entity is MyWelder Welder || MySession.Static.IsUserAdmin(user))
-                                return true;
-
-                            var myPlayerID = MySession.Static.Players.TryGetIdentityId(user);
-                            if (myPlayerID < 1)
-                                return true;
-
-                            var myPlayerBuilding = MySession.Static.Players.GetOnlinePlayers().ToList().Find(b => b.Identity.IdentityId == myPlayerID);
-
-                            if (myPlayerBuilding != null && PVE.CheckEntityInZone(myPlayerBuilding, ref IsInPVEZone))
+                            if (DePatchPlugin.Instance.Config.PveZoneEnabled || DePatchPlugin.Instance.Config.DenyPlacingBlocksOnEnemyGrid)
                             {
-                                if (grid != null && grid.IsFriendlyPlayer(user))
+                                if (grid == null || user == 0UL || entity is MyWelder Welder || MySession.Static.IsUserAdmin(user))
                                     return true;
 
-                                return false;
+                                if (DePatchPlugin.Instance.Config.DenyPlacingBlocksOnEnemyGrid)
+                                {
+                                    // allow to place blocks if grid has no owner.
+                                    if (grid.BigOwners.Count < 1)
+                                        return true;
+
+                                    // allow to place if grid is owned by NPC
+                                    if (MySession.Static.Players.IdentityIsNpc(grid.BigOwners.FirstOrDefault()))
+                                        return true;
+
+                                    // allow to place if grid owned by same player or his faction member.
+                                    if (grid.IsFriendlyPlayer(user))
+                                        return true;
+
+                                    // deny placing.
+                                    return false;
+                                }
+
+                                var myPlayer = Sync.Players.TryGetPlayerBySteamId(user);
+                                if (myPlayer == null)
+                                    return true;
+
+                                if (PVE.CheckEntityInZone(myPlayer, ref IsInPVEZone))
+                                {
+                                    if (grid.IsFriendlyPlayer(user))
+                                        return true;
+
+                                    return false;
+                                }
                             }
                             return true;
                         }

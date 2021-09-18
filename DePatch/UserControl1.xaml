@@ -662,20 +662,23 @@
                         IsEnabled="{Binding Path=ProtectGrid}"
                         IsChecked="{Binding ConvertToStatic}" Height="17" Width="135" />
                     <TextBox
-                        HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="63" Margin="217,135,0,0" RenderTransformOrigin="0.494,0.514"
+                        HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="63" Margin="217,168,0,0" RenderTransformOrigin="0.494,0.514"
 						ToolTip="When Grid hit planet voxels and Grid speed is equal or above set speed,&#xA;it's will be converted if it's not Rover"
                         IsEnabled="{Binding Path=ProtectGrid}"
                         Text="{Binding Path=StaticConvertSpeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <TextBox
-                        HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="63" Margin="217,163,0,0" RenderTransformOrigin="0.465,0.443"
+                        HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="63" Margin="217,194,0,0" RenderTransformOrigin="0.465,0.443"
  						ToolTip="If grid size is larger than set amount of blocks,&#xA;it's will be converted to static if it's not rover and above max impact speed"
                         IsEnabled="{Binding Path=ProtectGrid}"
                         Text="{Binding Path=MaxGridSizeToConvert, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Label Content="Min Grid Speed before Convert" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,135,0,0"/>
-                    <Label Content="Convert Grid with Above Max Blocks" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,158,0,0"/>
+                    <Label Content="Min Grid Speed before Convert" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,168,0,0"/>
+                    <Label Content="Convert Grid with Above Max Blocks" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,194,0,0"/>
                     <CheckBox Content="AdminBlock Support" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,112,0,0"
-                              ToolTip="When checked, and grid has block with subtype AdminGrid then no damage to this grid."
-                              IsChecked="{Binding AdminGrid}"/>
+                        ToolTip="When checked, and grid has block with subtype AdminGrid then no damage to this grid."
+                        IsChecked="{Binding AdminGrid}"/>
+                    <CheckBox Content="Deny Build Blocks on Enemy Grid" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,132,0,0"
+                        ToolTip="When checked, Plugin will DENY placing new blocks on Enemy Grid NOT including NPC, only Admin or Faction member can place."
+                        IsChecked="{Binding DenyPlacingBlocksOnEnemyGrid}"/>
                 </Grid>
             </TabItem>
             <TabItem
