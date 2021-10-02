@@ -210,7 +210,7 @@
                         IsChecked="{Binding UpdateAfterSimulation100FIX}" />
                     <CheckBox
                         Content="Fix No owner Exploits" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,342,0,0"
-                        ToolTip="This will tap to KEEN functions for adding toolbar items to not owned blocks and top access to enemy grid."
+                        ToolTip="This will tap to KEEN functions for adding toolbar items to not owned blocks and stop access to enemy grid."
                         IsChecked="{Binding FixExploits}" />
                 </Grid>
             </TabItem>
