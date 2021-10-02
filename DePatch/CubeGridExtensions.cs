@@ -23,7 +23,7 @@ namespace DePatch
 
             if (Playerfaction != null && gridFaction != null)
             {
-                if (Playerfaction == gridFaction)
+                if (Playerfaction.FactionId == gridFaction.FactionId)
                     return true;
             }
 
