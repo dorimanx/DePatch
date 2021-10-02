@@ -55,7 +55,7 @@
 						Name="TimerDelayTextBox"
 						HorizontalAlignment="Left"
 						Height="23"
-						Margin="10,95,0,0"
+						Margin="10,90,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
 						Width="110"
@@ -184,11 +184,11 @@
 						ToolTip="This will prevent enemy player grid from locking landinggear on other enemy player grid!&#xA;but will lock on NPC grids and back, also will lock in PVE zones."
                         IsChecked="{Binding Path=NoEnemyPlayerLandingGearLocks}"/>
                     <CheckBox
-                        Content="Force Pistons Inertia Tensor" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="11,285,0,0"
+                        Content="Force Pistons Inertia Tensor" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,282,0,0"
                         ToolTip="This will enable ShareInertiaTensor on each piston block in game to reduce SIM load."
                         IsChecked="{Binding PistonInertiaTensor}" />
                     <CheckBox
-                        Content="Block shooting on server boot for X sec" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,365,0,0"
+                        Content="Block shooting on server boot for X sec" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,362,0,0"
                         ToolTip="This will disable shooting globaly after server boot for X seconds. need at lease 1 assembler in world"
                         IsChecked="{Binding DelayShootingOnBoot}" />
                     <TextBox
@@ -201,13 +201,17 @@
                         Width="44"
                         Text="{Binding DelayShootingOnBootTime, Mode=TwoWay, StringFormat=D}" RenderTransformOrigin="-0.564,5.077" />
                     <CheckBox
-                        Content="Delay KEEN Debug Spam" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="11,305,0,0"
+                        Content="Delay KEEN Debug Spam" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,302,0,0"
                         ToolTip="This will reduce spam in Keen Debug log for ValidationFailed action, will print this debug once in 2 minutes on each player"
                         IsChecked="{Binding ValidationFailedSuspend}" />
                     <CheckBox
-                        Content="Fix server crashes" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="11,325,0,0"
+                        Content="Fix server crashes" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,322,0,0"
                         ToolTip="This will tap to KEEN functions for UpdateAfterSimulation and check for NULLs and prevent server crash."
                         IsChecked="{Binding UpdateAfterSimulation100FIX}" />
+                    <CheckBox
+                        Content="Fix No owner Exploits" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,342,0,0"
+                        ToolTip="This will tap to KEEN functions for adding toolbar items to not owned blocks and top access to enemy grid."
+                        IsChecked="{Binding FixExploits}" />
                 </Grid>
             </TabItem>
             <TabItem

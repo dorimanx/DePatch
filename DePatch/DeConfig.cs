@@ -89,6 +89,7 @@ namespace DePatch
         private bool _ValidationFailedSuspend = true;
         private bool _UpdateAfterSimulation100FIX = true;
         private bool _DenyPlacingBlocksOnEnemyGrid;
+        private bool _FixExploits = true;
 
         public bool DamageThreading
         {
@@ -548,6 +549,12 @@ namespace DePatch
         {
             get => _DenyPlacingBlocksOnEnemyGrid;
             set => SetValue(ref _DenyPlacingBlocksOnEnemyGrid, value);
+        }
+
+        public bool FixExploits
+        {
+            get => _FixExploits;
+            set => SetValue(ref _FixExploits, value);
         }
     }
 }
