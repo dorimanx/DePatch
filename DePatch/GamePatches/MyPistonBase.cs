@@ -12,7 +12,7 @@ namespace DePatch.GamePatches
     {
         private static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyPistonBase).GetMethod("UpdateBeforeSimulation10", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+            ctx.GetPattern(typeof(MyPistonBase).GetMethod("UpdateBeforeSimulation10", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
                 Suffixes.Add(typeof(MyPistonShareInertiaTensor).GetMethod(nameof(UpdateBeforeSimulation10), BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static));
         }
 

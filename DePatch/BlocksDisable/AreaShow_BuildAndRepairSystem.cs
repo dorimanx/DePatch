@@ -15,7 +15,7 @@ namespace DePatch.BlocksDisable
 
         private static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyShipToolBase).GetMethod("UpdateAfterSimulation10", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+            ctx.GetPattern(typeof(MyShipToolBase).GetMethod("UpdateAfterSimulation10", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
                 Suffixes.Add(typeof(AreaShow_BuildAndRepairSystem).GetMethod(nameof(UpdateAfterSimulation10), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
         }
 

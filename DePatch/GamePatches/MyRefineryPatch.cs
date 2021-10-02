@@ -17,7 +17,7 @@ namespace DePatch.GamePatches
     {
         private static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyRefinery).GetMethod("DoUpdateTimerTick", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+            ctx.GetPattern(typeof(MyRefinery).GetMethod("DoUpdateTimerTick", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
                 Prefixes.Add(typeof(MyRefineryPatch).GetMethod(nameof(DoUpdateTimerTick), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
         }
 

@@ -12,7 +12,7 @@ namespace DePatch.KEEN_BUG_FIXES
 
         public static void Patch(PatchContext ctx)
         {
-            MethodInfo _target = typeof(MyParallelEntityUpdateOrchestrator).GetMethod("ParallelUpdateHandlerAfterSimulation", BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            MethodInfo _target = typeof(MyParallelEntityUpdateOrchestrator).GetMethod("ParallelUpdateHandlerAfterSimulation", BindingFlags.Instance | BindingFlags.NonPublic);
             MethodInfo _patch = typeof(KEEN_ParallelCrashFix).GetMethod(nameof(ParallelUpdateHandlerAfterSimulationFIX), BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
             ctx.GetPattern(_target).Prefixes.Add(_patch);
         }

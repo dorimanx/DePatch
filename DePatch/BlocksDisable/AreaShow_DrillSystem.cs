@@ -13,7 +13,7 @@ namespace DePatch.BlocksDisable
 
         private static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyShipDrill).GetMethod("UpdateAfterSimulation100", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+            ctx.GetPattern(typeof(MyShipDrill).GetMethod("UpdateAfterSimulation100", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
                 Suffixes.Add(typeof(AreaShow_DrillSystem).GetMethod(nameof(UpdateAfterSimulation100), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
         }
 

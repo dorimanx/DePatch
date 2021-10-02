@@ -17,7 +17,7 @@ namespace DePatch.GamePatches
 
         private static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyEntityController).GetMethod("RaiseControlledEntityChanged", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+            ctx.GetPattern(typeof(MyEntityController).GetMethod("RaiseControlledEntityChanged", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
                 Prefixes.Add(typeof(MyBeaconAlertPatch).GetMethod(nameof(RaiseControlledEntityChanged), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
         }
 

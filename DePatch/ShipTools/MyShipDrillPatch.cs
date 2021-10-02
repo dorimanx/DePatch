@@ -13,7 +13,7 @@ namespace DePatch.ShipTools
     {
         private static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyShipDrill).GetMethod("UpdateBeforeSimulation10", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+            ctx.GetPattern(typeof(MyShipDrill).GetMethod("UpdateBeforeSimulation10", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
                 Prefixes.Add(typeof(MyShipDrillPatch).GetMethod(nameof(UpdateBeforeSimulation10), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
         }
 

@@ -11,7 +11,7 @@ namespace DePatch.GamePatches
     {
         private static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyAssembler).GetMethod("UpdateBeforeSimulation100", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+            ctx.GetPattern(typeof(MyAssembler).GetMethod("UpdateBeforeSimulation100", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
                 Prefixes.Add(typeof(MyAssemblerPatch).GetMethod(nameof(UpdateBeforeSimulation100), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
         }
 

@@ -10,7 +10,7 @@ namespace DePatch.VoxelProtection
     {
         private static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyCubeGrid).GetMethod("PerformCutouts", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+            ctx.GetPattern(typeof(MyCubeGrid).GetMethod("PerformCutouts", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
                 Prefixes.Add(typeof(VoxelDefenderV2).GetMethod(nameof(PerformCutouts), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
         }
 

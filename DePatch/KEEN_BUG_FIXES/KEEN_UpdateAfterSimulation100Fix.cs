@@ -2,7 +2,6 @@
 using Sandbox.Game.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Torch.Managers.PatchManager;
 using VRage.Collections;
@@ -21,7 +20,7 @@ namespace DePatch.KEEN_BUG_FIXES
         {
             m_entitiesForUpdate100 = typeof(MyParallelEntityUpdateOrchestrator).GetField("m_entitiesForUpdate100", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            ctx.GetPattern(typeof(MyParallelEntityUpdateOrchestrator).GetMethod("UpdateAfterSimulation100", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+            ctx.GetPattern(typeof(MyParallelEntityUpdateOrchestrator).GetMethod("UpdateAfterSimulation100", BindingFlags.Instance | BindingFlags.NonPublic)).
                 Prefixes.Add(typeof(KEEN_UpdateAfterSimulation100Fix).GetMethod(nameof(UpdateAfterSimulation100Dpatch), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
         }
 

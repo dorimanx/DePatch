@@ -13,7 +13,7 @@ namespace DePatch.BlocksDisable
 
         private static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyFunctionalBlock).GetMethod("UpdateAfterSimulation100", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+            ctx.GetPattern(typeof(MyFunctionalBlock).GetMethod("UpdateAfterSimulation100", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
                 Prefixes.Add(typeof(BlockDisable).GetMethod(nameof(UpdateAfterSimulation100), BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static));
         }
 

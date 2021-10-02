@@ -27,7 +27,7 @@ namespace DePatch.PVEZONE
         private static bool LockingGridHasOwner = false;
         public static bool BootTickStarted = true;
 
-        private static void Patch(PatchContext ctx) => ctx.GetPattern(typeof(MySessionComponentSafeZones).GetMethod("IsActionAllowed", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static, null,
+        private static void Patch(PatchContext ctx) => ctx.GetPattern(typeof(MySessionComponentSafeZones).GetMethod("IsActionAllowed", BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance, null,
                 new Type[4]
                 {
                     typeof(MyEntity),

@@ -12,7 +12,7 @@ namespace DePatch.GamePatches
 
     internal static class MyMassBlockPatch
     {
-        private static void Patch(PatchContext ctx) => ctx.GetPattern(typeof(MyVirtualMass).GetMethod("Init", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static, null, new Type[2]
+        private static void Patch(PatchContext ctx) => ctx.GetPattern(typeof(MyVirtualMass).GetMethod("Init", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[2]
             {
                 typeof(MyObjectBuilder_CubeBlock),
                 typeof(MyCubeGrid)

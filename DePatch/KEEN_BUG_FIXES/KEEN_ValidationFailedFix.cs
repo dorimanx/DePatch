@@ -14,7 +14,7 @@ namespace DePatch.KEEN_BUG_FIXES
 	{
 		private static void Patch(PatchContext ctx)
 		{
-			ctx.GetPattern(typeof(MyMultiplayerServerBase).GetMethod("ValidationFailed", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+			ctx.GetPattern(typeof(MyMultiplayerServerBase).GetMethod("ValidationFailed", BindingFlags.Instance | BindingFlags.Public)).
 				Prefixes.Add(typeof(KEEN_ValidationFailedFix).GetMethod(nameof(ValidationFailedLOG), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
 		}
 

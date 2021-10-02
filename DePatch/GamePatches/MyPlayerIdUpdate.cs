@@ -18,7 +18,7 @@ namespace DePatch.GamePatches
 
         private static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MySession).GetMethod("GetCheckpoint", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+            ctx.GetPattern(typeof(MySession).GetMethod("GetCheckpoint", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
                 Suffixes.Add(typeof(MyPlayerIdUpdate).GetMethod(nameof(GetCheckpointPostfix), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
         }
 

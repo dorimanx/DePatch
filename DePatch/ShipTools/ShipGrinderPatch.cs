@@ -26,7 +26,7 @@ namespace DePatch.ShipTools
 
         private static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyShipGrinder).GetMethod("Activate", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+            ctx.GetPattern(typeof(MyShipGrinder).GetMethod("Activate", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
                 Prefixes.Add(typeof(ShipGrinderPatch).GetMethod(nameof(Activate), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
         }
 

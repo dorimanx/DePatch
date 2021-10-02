@@ -9,8 +9,8 @@ namespace DePatch.VoxelProtection
     {
         public static void Patch(PatchContext ctx)
         {
-            MethodInfo _target = typeof(MyExplosionInfo).GetMethod("get_AffectVoxels", BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-            MethodInfo _patch = typeof(VoxelExplosionPatch).GetMethod("AffectVoxelsPatch", BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
+            MethodInfo _target = typeof(MyExplosionInfo).GetMethod("get_AffectVoxels", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            MethodInfo _patch = typeof(VoxelExplosionPatch).GetMethod(nameof(AffectVoxelsPatch), BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic);
             ctx.GetPattern(_target).Prefixes.Add(_patch);
         }
 

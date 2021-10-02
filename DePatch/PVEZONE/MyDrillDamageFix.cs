@@ -16,7 +16,7 @@ namespace DePatch.PVEZONE
 
         private static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyDrillBase).GetMethod("TryDrillBlocks", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+            ctx.GetPattern(typeof(MyDrillBase).GetMethod("TryDrillBlocks", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
                 Prefixes.Add(typeof(MyDrillDamageFix).GetMethod(nameof(TryDrillBlocks), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
         }
 

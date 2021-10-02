@@ -8,7 +8,6 @@ using VRage.Game;
 using VRage.Groups;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
-using VRageMath;
 
 namespace DePatch.VoxelProtection
 {

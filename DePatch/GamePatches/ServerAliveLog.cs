@@ -17,7 +17,7 @@ namespace DePatch.GamePatches
 
         private static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MySession).GetMethod("UpdateComponents", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)).
+            ctx.GetPattern(typeof(MySession).GetMethod("UpdateComponents", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
                 Suffixes.Add(typeof(ServerAliveLog).GetMethod(nameof(UpdateLOG), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
         }
 
