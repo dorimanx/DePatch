@@ -4,10 +4,12 @@ using Sandbox.ModAPI;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using VRage;
 using VRage.Game;
 using VRage.Groups;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
+using VRageMath;
 
 namespace DePatch.VoxelProtection
 {
@@ -103,9 +105,28 @@ namespace DePatch.VoxelProtection
 
             MyAPIGateway.Entities.RemapObjectBuilderCollection(objectBuilderList);
 
+            var MainGridOrgPosition = objectBuilderList[0].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
+            var NewPositionShift = (Vector3D.Forward * 6) + (Vector3D.Up * 9);
+            var MainGridNewPos = MainGridOrgPosition + NewPositionShift;
+
             for (int i = 0; i < objectBuilderList.Count; i++)
             {
-                MyAPIGateway.Entities.CreateFromObjectBuilderParallel(objectBuilderList[i], true);
+                var InspectedGrid = (MyObjectBuilder_CubeGrid)objectBuilderList[i];
+
+                if (i == 0)
+                {
+                    var mainGridPos = InspectedGrid.PositionAndOrientation.GetValueOrDefault();
+                    mainGridPos.Position = MainGridNewPos;
+                    InspectedGrid.PositionAndOrientation = mainGridPos;
+                }
+                else
+                {
+                    var AttachedGridPos = InspectedGrid.PositionAndOrientation.GetValueOrDefault();
+                    AttachedGridPos.Position = AttachedGridPos.Position + MainGridNewPos - MainGridOrgPosition;
+                    InspectedGrid.PositionAndOrientation = AttachedGridPos;
+                }
+
+                _ = MyAPIGateway.Entities.CreateFromObjectBuilderParallel(InspectedGrid, addToScene: true);
             }
 
             return true;
@@ -127,6 +148,5 @@ namespace DePatch.VoxelProtection
 
             return FixGroups(groups);
         }
-
     }
 }

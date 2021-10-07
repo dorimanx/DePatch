@@ -73,7 +73,7 @@ namespace DePatch.BlocksDisable
             if (MySession.Static.Factions.GetPlayerFaction(owner) == null)
                 return false;
 
-			if (MySession.Static.Factions.GetPlayerFaction(owner).IsEveryoneNpc() || ExemptPlayerOrFaction(MySession.Static.Factions.GetPlayerFaction(owner).FactionId))
+            if (MySession.Static.Factions.GetPlayerFaction(owner).IsEveryoneNpc() || ExemptPlayerOrFaction(MySession.Static.Factions.GetPlayerFaction(owner).FactionId))
                 return true;
 
             if (DePatchPlugin.Instance.Config.AllowFactions)

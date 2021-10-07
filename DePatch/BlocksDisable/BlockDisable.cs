@@ -37,7 +37,7 @@ namespace DePatch.BlocksDisable
                     else
                     {
                         if (!MySession.Static.Players.IsPlayerOnline(__instance.OwnerId) && PlayersUtility.KeepBlockOff(__instance))
-                                __instance.Enabled = false;
+                            __instance.Enabled = false;
                     }
                 }
             }

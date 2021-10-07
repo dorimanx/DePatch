@@ -46,7 +46,7 @@ namespace DePatch.BlocksDisable
             var player = MySession.Static.Players.GetControllingPlayer(topGrid);
             Log.Warn($"{topGrid.GridSizeEnum} grid with name '{topGrid.DisplayName}' controlled by '{player?.DisplayName}'({player?.Id.SteamId}) trying to fly above max speed!");
             if (DePatchPlugin.Instance.Config.SpeedingModeSelector == SpeedingMode.ShowLogOnly)
-				return;
+                return;
 
             if (DePatchPlugin.Instance.Config.SpeedingModeSelector == SpeedingMode.StopGrid)
             {
@@ -67,11 +67,11 @@ namespace DePatch.BlocksDisable
                     MyVisualScriptLogicProvider.SendChatMessageColored("You have tried to fly above max speed! Grid was DELETED!", Color.Red, "AntiCheat", player.Identity.IdentityId, MyFontEnum.Blue);
                     foreach (var a in topGrid.GetFatBlocks<MyCockpit>())
                     {
-                    	a?.RemovePilot();
+                        a?.RemovePilot();
                     }
                     foreach (var b in topGrid.GetFatBlocks<MyCryoChamber>())
                     {
-                    	b?.RemovePilot();
+                        b?.RemovePilot();
                     }
                 }
 

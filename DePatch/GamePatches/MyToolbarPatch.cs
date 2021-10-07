@@ -21,7 +21,7 @@ namespace DePatch.GamePatches
         private static FieldInfo m_items;
         public static FieldInfo Block { get; private set; }
         public static readonly Type MyToolbarItemTerminalBlockClass = Type.GetType("Sandbox.Game.Screens.Helpers.MyToolbarItemTerminalBlock, Sandbox.Game");
- 
+
         internal static readonly MethodInfo MyToolbarSetItemAtIndexInternal = typeof(MyToolbar).GetMethod("SetItemAtIndexInternal", BindingFlags.Instance | BindingFlags.NonPublic) ?? throw new Exception("Failed to find patch method");
         internal static readonly MethodInfo SendToolbarItemPatch = typeof(MyToolbarPatch).GetMethod(nameof(SetItemAtIndexInternalPatch), BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("Failed to find patch method");
 

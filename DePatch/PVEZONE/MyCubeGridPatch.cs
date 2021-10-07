@@ -120,7 +120,7 @@ namespace DePatch.PVEZONE
                 }
             }
 
-            exit:
+        exit:
 
             // check grid overspeed.
             if (DePatchPlugin.Instance.Config.EnableGridMaxSpeedPurge)
