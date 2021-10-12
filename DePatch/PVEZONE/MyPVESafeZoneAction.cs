@@ -26,6 +26,7 @@ namespace DePatch.PVEZONE
         private static MyCubeGrid LockingGrid;
         private static bool LockingGridHasOwner = false;
         public static bool BootTickStarted = true;
+        private static bool ServerBootLoopStart = true;
 
         private static void Patch(PatchContext ctx) => ctx.GetPattern(typeof(MySessionComponentSafeZones).GetMethod("IsActionAllowed", BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance, null,
                 new Type[4]
@@ -66,6 +67,32 @@ namespace DePatch.PVEZONE
                 }
             }
             return false;
+        }
+
+        public static void UpdateBoot()
+        {
+            if (DePatchPlugin.Instance.Config.DelayShootingOnBoot)
+            {
+                if (ServerBootLoopStart)
+                {
+                    if (DePatchPlugin.Instance.Config.DelayShootingOnBootTime <= 0)
+                        DePatchPlugin.Instance.Config.DelayShootingOnBootTime = 1;
+
+                    int LoopCooldown = DePatchPlugin.Instance.Config.DelayShootingOnBootTime * 1000;
+                    CooldownManager.StartCooldown(SteamIdCooldownKey.LoopOnBootRequestID, null, LoopCooldown);
+                    ServerBootLoopStart = false;
+                    BootTickStarted = true;
+                }
+
+                if (BootTickStarted)
+                {
+                    // loop for X sec after boot to block weapons.
+                    _ = CooldownManager.CheckCooldown(SteamIdCooldownKey.LoopOnBootRequestID, null, out var remainingSecondsBoot);
+
+                    if (remainingSecondsBoot < 1)
+                        BootTickStarted = false;
+                }
+            }
         }
 
         private static bool IsActionAllowedPatch(MyEntity entity, MySafeZoneAction action, ulong user, ref bool __result)

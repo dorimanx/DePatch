@@ -212,6 +212,10 @@
                         Content="Fix No owner Exploits" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,342,0,0"
                         ToolTip="This will tap to KEEN functions for adding toolbar items to not owned blocks and stop access to enemy grid."
                         IsChecked="{Binding FixExploits}" />
+                    <CheckBox
+                        Content="Gas Tanks Optimization" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,382,0,0"
+                        ToolTip="This will delay crazy update of each gas tank in world and save server CPU and Client CPU load."
+                        IsChecked="{Binding GasTanksOptimization}" />
                 </Grid>
             </TabItem>
             <TabItem

@@ -49,7 +49,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-
     <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Collections.Immutable.1.5.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
@@ -75,6 +74,7 @@
     <Compile Include="BlocksDisable\BlockDisable.cs" />
     <Compile Include="BlocksDisable\PlayersUtility.cs" />
     <Compile Include="BlocksDisable\GridSpeedPatch.cs" />
+    <Compile Include="GamePatches\MyGasTankPatch.cs" />
     <Compile Include="GamePatches\MyToolbarPatch.cs" />
     <Compile Include="GamePatches\MyConveyorSorterPatch.cs" />
     <Compile Include="KEEN_BUG_FIXES\KEEN_UpdateAfterSimulation10Fix.cs" />

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows.Controls;
+using DePatch.GamePatches;
 using DePatch.OptiDamage;
 using DePatch.PVEZONE;
 using DePatch.ShipTools;
@@ -25,7 +26,7 @@ namespace DePatch
 
         public static DePatchPlugin Instance;
 
-        private Harmony _harmony = new Harmony("net.ltp.depatch");
+        private readonly Harmony _harmony = new Harmony("Dori.DePatchPlugin");
 
         private TorchSessionManager _sessionManager;
 
@@ -91,6 +92,14 @@ namespace DePatch
 
             if (Config.DamageThreading)
                 SessionPatch.Timer.Start();
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            MyGasTankPatch.UpdateTanks();
+            ServerAliveLog.UpdateLOG();
+            MyPVESafeZoneAction.UpdateBoot();
         }
 
         public void LoadConfig()
