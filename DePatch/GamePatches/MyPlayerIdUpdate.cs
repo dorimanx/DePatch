@@ -31,44 +31,52 @@ namespace DePatch.GamePatches
 
             try
             {
-                int count = 0;
-                __result.AllPlayersData.Dictionary = __result.AllPlayersData.Dictionary.Select(delegate (KeyValuePair<MyObjectBuilder_Checkpoint.PlayerId, MyObjectBuilder_Player> b)
+                lock (__result)
                 {
-                    MyObjectBuilder_Checkpoint.PlayerId key = b.Key;
-                    KeyValuePair<MyObjectBuilder_Checkpoint.PlayerId, MyObjectBuilder_Player> result;
-                    if (key.ClientId > 0UL)
-                        result = b;
-                    else
+                    int count = 0;
+
+                    __result.AllPlayersData.Dictionary = __result.AllPlayersData.Dictionary.Select(delegate (KeyValuePair<MyObjectBuilder_Checkpoint.PlayerId, MyObjectBuilder_Player> b)
                     {
-                        key.ClientId = b.Key.GetClientId();
-                        count++;
-                        result = new KeyValuePair<MyObjectBuilder_Checkpoint.PlayerId, MyObjectBuilder_Player>(key, b.Value);
-                    }
-                    return result;
-                }).ToDictionary((KeyValuePair<MyObjectBuilder_Checkpoint.PlayerId, MyObjectBuilder_Player> b) => b.Key,
-                                (KeyValuePair<MyObjectBuilder_Checkpoint.PlayerId, MyObjectBuilder_Player> b) => b.Value);
-                if (count > 0)
-                {
-                    var TimerId = 123456789;
-
-                    if (cooldowns.ContainsKey(TimerId))
+                        MyObjectBuilder_Checkpoint.PlayerId key = b.Key;
+                        KeyValuePair<MyObjectBuilder_Checkpoint.PlayerId, MyObjectBuilder_Player> result;
+                        if (key.ClientId != 0UL)
+                            result = b;
+                        else
+                        {
+                            var PlayerSteamID = key.GetClientId();
+                            if (PlayerSteamID > 0)
+                            {
+                                key.ClientId = PlayerSteamID;
+                                count++;
+                            }
+                            result = new KeyValuePair<MyObjectBuilder_Checkpoint.PlayerId, MyObjectBuilder_Player>(key, b.Value);
+                        }
+                        return result;
+                    }).ToDictionary((KeyValuePair<MyObjectBuilder_Checkpoint.PlayerId, MyObjectBuilder_Player> b) => b.Key,
+                                    (KeyValuePair<MyObjectBuilder_Checkpoint.PlayerId, MyObjectBuilder_Player> b) => b.Value);
+                    if (count > 0)
                     {
-                        var time = cooldowns[TimerId];
-                        var neededTime = time.AddSeconds(5);
-                        if (neededTime > DateTime.Now)
-                            return; // dont spam log for many new clients.
+                        var TimerId = 123456789;
 
-                        cooldowns.Remove(TimerId);
+                        if (cooldowns.ContainsKey(TimerId))
+                        {
+                            var time = cooldowns[TimerId];
+                            var neededTime = time.AddSeconds(5);
+                            if (neededTime > DateTime.Now)
+                                return; // dont spam log for many new clients.
+
+                            cooldowns.Remove(TimerId);
+                        }
+                        if (!cooldowns.ContainsKey(TimerId))
+                            cooldowns.Add(TimerId, DateTime.Now);
+
+                        if (__result.Clients != null)
+                            Log.Info($"Forced saving Client ids of {count} players on player join");
+                        else
+                            Log.Info($"Forced saving Client ids of {count} players to World Save");
                     }
-                    if (!cooldowns.ContainsKey(TimerId))
-                        cooldowns.Add(TimerId, DateTime.Now);
-
-                    if (__result.Clients != null)
-                        Log.Info($"Forced saving Client ids of {count} players on player join");
-                    else
-                        Log.Info($"Forced saving Client ids of {count} players to World Save");
+                    return;
                 }
-                return;
             }
             catch
             {

@@ -74,6 +74,7 @@
     <Compile Include="BlocksDisable\BlockDisable.cs" />
     <Compile Include="BlocksDisable\PlayersUtility.cs" />
     <Compile Include="BlocksDisable\GridSpeedPatch.cs" />
+    <Compile Include="GamePatches\MyProductionBlockPatch.cs" />
     <Compile Include="GamePatches\MyGasTankPatch.cs" />
     <Compile Include="GamePatches\MyToolbarPatch.cs" />
     <Compile Include="GamePatches\MyConveyorSorterPatch.cs" />
