@@ -10,13 +10,11 @@ using VRage.Game;
 
 namespace DePatch.GamePatches
 {
-    [PatchShim]
-
     internal static class MyPlayerIdUpdate
     {
         private static readonly ILogger Log = LogManager.GetCurrentClassLogger();
 
-        private static void Patch(PatchContext ctx)
+        public static void Patch(PatchContext ctx)
         {
             ctx.GetPattern(typeof(MySession).GetMethod("GetCheckpoint", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
                 Suffixes.Add(typeof(MyPlayerIdUpdate).GetMethod(nameof(GetCheckpointPostfix), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
@@ -24,7 +22,7 @@ namespace DePatch.GamePatches
 
         private static void GetCheckpointPostfix(ref MyObjectBuilder_Checkpoint __result, ref bool isClientRequest)
         {
-            if (!DePatchPlugin.Instance.Config.Enabled)
+            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.PlayersIdUpdate)
                 return;
 
             if (__result is null || __result.AllPlayersData is null || __result.AllPlayersData.Dictionary is null || __result.AllPlayersData.Dictionary.Count == 0)

@@ -41,24 +41,24 @@
 						Name="RaycastLimitTextBox"
 						HorizontalAlignment="Left"
 						Height="23"
-						Margin="10,36,0,0"
+						Margin="126,13,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
-						Width="110"
+						Width="70"
 						Text="{Binding Path=RaycastLimit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
                     <Label
 						Content="Timer min delay (s)"
 						HorizontalAlignment="Left"
-						Margin="10,64,0,0"
+						Margin="10,41,0,0"
 						VerticalAlignment="Top" />
                     <TextBox
 						Name="TimerDelayTextBox"
 						HorizontalAlignment="Left"
 						Height="23"
-						Margin="10,90,0,0"
+						Margin="126,44,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
-						Width="110"
+						Width="70"
 						Text="{Binding Path=TimerMinDelay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
                     <Label
 						Content="UpdateAfterSimulation"
@@ -68,7 +68,7 @@
                     <TextBox
 						Name="SlowSimulationUpdate1"
 						HorizontalAlignment="Left"
-						Height="26"
+						Height="23"
 						Margin="112,186,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
@@ -82,7 +82,7 @@
                     <TextBox
 						Name="SlowSimulationUpdate10"
 						HorizontalAlignment="Left"
-						Height="26"
+						Height="23"
 						Margin="112,217,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
@@ -96,7 +96,7 @@
                     <TextBox
 						Name="SlowSimulationUpdate100"
 						HorizontalAlignment="Left"
-						Height="26"
+						Height="23"
 						Margin="112,248,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
@@ -110,7 +110,7 @@
                     <TextBox
 						Name="IgnorePBSubTypesHere"
 						HorizontalAlignment="Left"
-						Height="46"
+						Height="39"
 						Margin="253,300,0,0"
 						TextWrapping="Wrap"
 						VerticalAlignment="Top"
@@ -119,19 +119,19 @@
                     <CheckBox
 						Content="Remove Artificial Mass"
 						HorizontalAlignment="Left"
-						Margin="10,123,0,0"
+						Margin="10,72,0,0"
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=RemoveMass}" />
                     <CheckBox
 						Content="Beacon Alert"
 						HorizontalAlignment="Left"
-						Margin="10,143,0,0"
+						Margin="10,92,0,0"
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=BeaconAlert}" />
                     <CheckBox
 						Content="Disable Timer Trigger Now"
 						HorizontalAlignment="Left"
-						Margin="10,163,0,0"
+						Margin="10,112,0,0"
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=DisableTrigNow}" />
                     <Label
@@ -152,25 +152,25 @@
                     <CheckBox
 						Content="Disable Assembler Queue Loop"
 						HorizontalAlignment="Left"
-                        Margin="10,183,0,0"
+                        Margin="10,132,0,0"
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=DisableAssemblerLoop}" />
                     <CheckBox
 						Content="Disable Assembler Cooperative"
 						HorizontalAlignment="Left"
-                        Margin="10,203,0,0"
+                        Margin="10,152,0,0"
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=DisableAssemblerCoop}" RenderTransformOrigin="0.507,-0.503" />
                     <CheckBox
 						Content="Disable Production Blocks On Ships"
 						HorizontalAlignment="Left"
-                        Margin="10,223,0,0"
+                        Margin="10,172,0,0"
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=DisableProductionOnShip}" />
                     <CheckBox
 						Content="Disable Nanobots On Ships"
 						HorizontalAlignment="Left"
-                        Margin="10,243,0,0"
+                        Margin="10,192,0,0"
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=DisableNanoBotsOnShip}" />
                     <CheckBox
@@ -180,42 +180,46 @@
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=SlowPBEnabled}" Grid.ColumnSpan="2" />
                     <CheckBox
-                        Content="Dont Lock LandingGear on Enemy Grid" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,262,0,0"
+                        Content="Dont Lock LandingGear on Enemy Grid" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,212,0,0"
 						ToolTip="This will prevent enemy player grid from locking landinggear on other enemy player grid!&#xA;but will lock on NPC grids and back, also will lock in PVE zones."
                         IsChecked="{Binding Path=NoEnemyPlayerLandingGearLocks}"/>
                     <CheckBox
-                        Content="Force Pistons Inertia Tensor" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,282,0,0"
+                        Content="Force Pistons Inertia Tensor" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,232,0,0"
                         ToolTip="This will enable ShareInertiaTensor on each piston block in game to reduce SIM load."
                         IsChecked="{Binding PistonInertiaTensor}" />
                     <CheckBox
-                        Content="Block shooting on server boot for X sec" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,362,0,0"
+                        Content="Block shooting on server boot for X sec" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,352,0,0"
                         ToolTip="This will disable shooting globaly after server boot for X seconds. need at lease 1 assembler in world"
                         IsChecked="{Binding DelayShootingOnBoot}" />
                     <TextBox
                         x:Name="DelayShootingOnBootTime"
                         HorizontalAlignment="Left"
-                        Height="26"
-                        Margin="253,354,0,0"
+                        Height="23"
+                        Margin="253,344,0,0"
                         TextWrapping="Wrap"
                         VerticalAlignment="Top"
                         Width="44"
                         Text="{Binding DelayShootingOnBootTime, Mode=TwoWay, StringFormat=D}" RenderTransformOrigin="-0.564,5.077" />
                     <CheckBox
-                        Content="Delay KEEN Debug Spam" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,302,0,0"
+                        Content="Delay KEEN Debug Spam" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,252,0,0"
                         ToolTip="This will reduce spam in Keen Debug log for ValidationFailed action, will print this debug once in 2 minutes on each player"
                         IsChecked="{Binding ValidationFailedSuspend}" />
                     <CheckBox
-                        Content="Fix server crashes" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,322,0,0"
+                        Content="Fix server crashes" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,272,0,0"
                         ToolTip="This will tap to KEEN functions for UpdateAfterSimulation and check for NULLs and prevent server crash."
                         IsChecked="{Binding UpdateAfterSimulation100FIX}" />
                     <CheckBox
-                        Content="Fix No owner Exploits" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,342,0,0"
+                        Content="Fix No owner Exploits" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,292,0,0"
                         ToolTip="This will tap to KEEN functions for adding toolbar items to not owned blocks and stop access to enemy grid."
                         IsChecked="{Binding FixExploits}" />
                     <CheckBox
-                        Content="Gas Tanks Optimization" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,382,0,0"
+                        Content="Gas Tanks Optimization" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,312,0,0"
                         ToolTip="This will delay crazy update of each gas tank in world and save server CPU and Client CPU load."
                         IsChecked="{Binding GasTanksOptimization}" />
+                    <CheckBox
+                        Content="ClientID Update on Save" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,332,0,0"
+                        ToolTip="This will allow saving steamid to client id field for each player, during save, this can lead to silent crash on world save, use it on your own RISK."
+                        IsChecked="{Binding PlayersIdUpdate}" />
                 </Grid>
             </TabItem>
             <TabItem

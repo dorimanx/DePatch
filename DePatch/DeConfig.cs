@@ -91,6 +91,7 @@ namespace DePatch
         private bool _DenyPlacingBlocksOnEnemyGrid;
         private bool _FixExploits = true;
         private bool _GasTanksOptimization = true;
+        private bool _PlayersIdUpdate = false;
 
         public bool DamageThreading
         {
@@ -562,6 +563,12 @@ namespace DePatch
         {
             get => _GasTanksOptimization;
             set => SetValue(ref _GasTanksOptimization, value);
+        }
+
+        public bool PlayersIdUpdate
+        {
+            get => _PlayersIdUpdate;
+            set => SetValue(ref _PlayersIdUpdate, value);
         }
     }
 }

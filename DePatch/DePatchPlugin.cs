@@ -15,6 +15,7 @@ using Torch;
 using Torch.API;
 using Torch.API.Managers;
 using Torch.API.Plugins;
+using Torch.Managers.PatchManager;
 using Torch.Server.Managers;
 using Torch.Session;
 
@@ -79,6 +80,12 @@ namespace DePatch
 
             GameIsReady = true;
 
+            var patchManager = Torch.Managers.GetManager<PatchManager>();
+            var context = patchManager.AcquireContext();
+
+            if (Config.PlayersIdUpdate)
+                MyPlayerIdUpdate.Patch(context);
+
             if (Config.PveZoneEnabled)
             {
                 PVE.Init(this);
@@ -92,6 +99,8 @@ namespace DePatch
 
             if (Config.DamageThreading)
                 SessionPatch.Timer.Start();
+
+            patchManager.Commit();
         }
 
         public override void Update()
