@@ -10,9 +10,7 @@ namespace DePatch.KEEN_BUG_FIXES
         static void Postfix(MyWorkshopItem __instance, ref bool __result)
         {
             if (__instance.TimeUpdated > __instance.LocalTimeUpdated)
-            {
                 __result = false;
-            }
         }
     }
 }

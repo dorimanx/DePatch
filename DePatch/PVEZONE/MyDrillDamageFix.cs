@@ -22,10 +22,7 @@ namespace DePatch.PVEZONE
 
         private static bool TryDrillBlocks(MyDrillBase __instance, ref bool __result)
         {
-            if (!DePatchPlugin.Instance.Config.Enabled)
-                return true;
-
-            if (!DePatchPlugin.Instance.Config.PveZoneEnabled)
+            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.PveZoneEnabled)
                 return true;
 
             if (drillEntity.GetValue(__instance) is MyHandDrill handDrill)

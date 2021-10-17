@@ -26,6 +26,9 @@ namespace DePatch.KEEN_BUG_FIXES
 
         private static bool UpdateAfterSimulation10Dpatch(MyParallelEntityUpdateOrchestrator __instance)
         {
+            if (!DePatchPlugin.Instance.Config.Enabled)
+                return true;
+
             if (DePatchPlugin.Instance.Config.UpdateAfterSimulation100FIX)
             {
                 if (__instance == null)

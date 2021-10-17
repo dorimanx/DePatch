@@ -18,9 +18,9 @@ namespace DePatch.PVEZONE
 
         internal static void CubeGridInit(MyCubeGrid __instance)
         {
-            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.PveZoneEnabled) return;
-            if (!DePatchPlugin.GameIsReady || __instance == null) return;
-
+            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.PveZoneEnabled || !DePatchPlugin.GameIsReady || __instance == null)
+                return;
+ 
             if (!PVEGrid.Grids.ContainsKey(__instance))
                 PVEGrid.Grids.Add(__instance, new PVEGrid(__instance));
 

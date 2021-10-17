@@ -18,6 +18,9 @@ namespace DePatch.GamePatches
 
         public static void UpdateBeforeSimulation10(MyPistonBase __instance)
         {
+            if (!DePatchPlugin.Instance.Config.Enabled)
+                return;
+
             if (__instance is IMyPistonBase piston && DePatchPlugin.Instance.Config.PistonInertiaTensor)
             {
                 if (piston == null || !DePatchPlugin.GameIsReady || piston.Closed || !piston.IsFunctional)

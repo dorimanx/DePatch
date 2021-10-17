@@ -10,6 +10,9 @@ namespace DePatch.GamePatches
 
         public static void UpdateLOG()
         {
+            if (!DePatchPlugin.Instance.Config.Enabled)
+                return;
+
             // send server alive log to torch log every 30sec.
             if (DePatchPlugin.Instance.Config.LogTracker)
             {

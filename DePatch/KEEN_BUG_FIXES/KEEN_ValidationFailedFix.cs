@@ -20,6 +20,9 @@ namespace DePatch.KEEN_BUG_FIXES
 
         private static bool ValidationFailedLOG(ulong clientId, bool kick = true, string additionalInfo = null, bool stackTrace = true)
         {
+            if (!DePatchPlugin.Instance.Config.Enabled)
+                return true;
+
             if (DePatchPlugin.Instance.Config.ValidationFailedSuspend)
             {
                 int LoopCooldown = 120 * 1000; // 120 sec

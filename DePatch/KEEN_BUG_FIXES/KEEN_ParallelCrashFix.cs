@@ -19,6 +19,9 @@ namespace DePatch.KEEN_BUG_FIXES
 
         private static bool ParallelUpdateHandlerAfterSimulationFIX(IMyParallelUpdateable entity)
         {
+            if (!DePatchPlugin.Instance.Config.Enabled)
+                return true;
+
             if (DePatchPlugin.Instance.Config.UpdateAfterSimulation100FIX)
             {
                 // checking for null here saves us from crash.

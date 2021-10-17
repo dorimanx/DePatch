@@ -16,7 +16,7 @@ namespace DePatch.VoxelProtection
 
         private static bool AffectVoxelsPatch(MyExplosionInfo __instance, ref bool __result)
         {
-            if (!DePatchPlugin.Instance.Config.StopExplosion)
+            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.StopExplosion)
                 return true;
 
             __result = (!DePatchPlugin.Instance.Config.StopExplosion && (__instance.ExplosionFlags & MyExplosionFlags.AFFECT_VOXELS) == MyExplosionFlags.AFFECT_VOXELS);

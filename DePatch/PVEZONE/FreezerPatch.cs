@@ -25,6 +25,9 @@ namespace DePatch.PVEZONE
 
         private static void Postfix(int __result, object group)
         {
+            if (!DePatchPlugin.Instance.Config.Enabled)
+                return;
+
             if (__result < 1)
                 return;
 

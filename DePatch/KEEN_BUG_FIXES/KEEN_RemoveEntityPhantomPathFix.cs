@@ -18,6 +18,9 @@ namespace DePatch.KEEN_BUG_FIXES
 
         private static bool RemoveEntityPhantomPath(HkRigidBody body, IMyEntity entity)
         {
+            if (!DePatchPlugin.Instance.Config.Enabled)
+                return true;
+
             if (DePatchPlugin.Instance.Config.UpdateAfterSimulation100FIX)
             {
                 // checking for null here saves us from crash.

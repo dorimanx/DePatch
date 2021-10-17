@@ -23,10 +23,7 @@ namespace DePatch.PVEZONE
 
         private static void UpdateAfterSimulation100(MyCubeGrid __instance)
         {
-            if (!DePatchPlugin.Instance.Config.Enabled)
-                return;
-
-            if (__instance == null)
+            if (!DePatchPlugin.Instance.Config.Enabled || __instance == null)
                 return;
 
             if (DePatchPlugin.Instance.Config.PveZoneEnabled)

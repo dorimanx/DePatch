@@ -31,7 +31,7 @@ namespace DePatch.ShipTools
 
         private static bool UpdateBeforeSimulation10(MyShipDrill __instance)
         {
-            if (!DePatchPlugin.Instance.Config.DrillTools)
+            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.DrillTools)
                 return true;
 
             if (DePatchPlugin.Instance.Config.ParallelDrill != DrillingMode.Keen)

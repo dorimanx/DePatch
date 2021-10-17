@@ -18,6 +18,7 @@ namespace DePatch.VoxelProtection
         {
             if (!DePatchPlugin.Instance.Config.Enabled)
                 return true;
+
             if (DePatchPlugin.Instance.Config.ProtectVoxels)
                 return false;
 
