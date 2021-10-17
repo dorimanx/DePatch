@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using DePatch.CoolDown;
 using NLog;
 using Sandbox.Game.World;
 using Torch.Managers.PatchManager;
@@ -14,7 +15,6 @@ namespace DePatch.GamePatches
     internal static class MyPlayerIdUpdate
     {
         private static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        public static readonly Dictionary<long, DateTime> cooldowns = new Dictionary<long, DateTime>();
 
         private static void Patch(PatchContext ctx)
         {
@@ -22,69 +22,73 @@ namespace DePatch.GamePatches
                 Suffixes.Add(typeof(MyPlayerIdUpdate).GetMethod(nameof(GetCheckpointPostfix), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
         }
 
-        private static void GetCheckpointPostfix(ref MyObjectBuilder_Checkpoint __result)
+        private static void GetCheckpointPostfix(ref MyObjectBuilder_Checkpoint __result, ref bool isClientRequest)
         {
-            if (__result is null || __result.AllPlayersData is null || __result.AllPlayersData.Dictionary is null || __result.AllPlayersData.Dictionary.Count is 0)
+            if (!DePatchPlugin.Instance.Config.Enabled)
                 return;
 
-            var originalresult = __result;
+            if (__result is null || __result.AllPlayersData is null || __result.AllPlayersData.Dictionary is null || __result.AllPlayersData.Dictionary.Count == 0)
+                return;
 
-            try
+            // if function called on player join, skip this work. it's needed only for world save.
+            if (isClientRequest)
+                return;
+
+            int count = 0;
+            var NewDictionary = new Dictionary<MyObjectBuilder_Checkpoint.PlayerId, MyObjectBuilder_Player>();
+            var idents = MySession.Static.Players.GetAllIdentities().ToList();
+            var AllIdentities = new HashSet<long>();
+            var cutoff = DateTime.Now - TimeSpan.FromDays(7);
+
+            foreach (var identity in idents)
             {
-                lock (__result)
+                if (identity == null || MySession.Static.Players.IdentityIsNpc(identity.IdentityId))
+                    continue;
+
+                if (identity.LastLoginTime < cutoff)
+                    AllIdentities.Add(identity.IdentityId);
+            }
+
+            foreach (var Dictionary in __result.AllPlayersData.Dictionary)
+            {
+                if (Dictionary.Value == null)
+                    continue;
+
+                if (AllIdentities.Contains(Dictionary.Value.IdentityId))
+                    NewDictionary.Add(Dictionary.Key, Dictionary.Value);
+            }
+
+            foreach (var DictionaryItem in NewDictionary)
+            {
+                var PlayerSteamID = MySession.Static?.Players.TryGetSteamId(DictionaryItem.Value.IdentityId);
+
+                if (PlayerSteamID != null && PlayerSteamID > 0)
                 {
-                    int count = 0;
+                    var key = DictionaryItem.Key;
+                    key.ClientId = (ulong)PlayerSteamID;
 
-                    __result.AllPlayersData.Dictionary = __result.AllPlayersData.Dictionary.Select(delegate (KeyValuePair<MyObjectBuilder_Checkpoint.PlayerId, MyObjectBuilder_Player> b)
-                    {
-                        MyObjectBuilder_Checkpoint.PlayerId key = b.Key;
-                        KeyValuePair<MyObjectBuilder_Checkpoint.PlayerId, MyObjectBuilder_Player> result;
-                        if (key.ClientId != 0UL)
-                            result = b;
-                        else
-                        {
-                            var PlayerSteamID = key.GetClientId();
-                            if (PlayerSteamID > 0)
-                            {
-                                key.ClientId = PlayerSteamID;
-                                count++;
-                            }
-                            result = new KeyValuePair<MyObjectBuilder_Checkpoint.PlayerId, MyObjectBuilder_Player>(key, b.Value);
-                        }
-                        return result;
-                    }).ToDictionary((KeyValuePair<MyObjectBuilder_Checkpoint.PlayerId, MyObjectBuilder_Player> b) => b.Key,
-                                    (KeyValuePair<MyObjectBuilder_Checkpoint.PlayerId, MyObjectBuilder_Player> b) => b.Value);
-                    if (count > 0)
-                    {
-                        var TimerId = 123456789;
+                    __result.AllPlayersData.Dictionary.Remove(DictionaryItem.Key);
+                    __result.AllPlayersData.Dictionary.Add(key, DictionaryItem.Value);
 
-                        if (cooldowns.ContainsKey(TimerId))
-                        {
-                            var time = cooldowns[TimerId];
-                            var neededTime = time.AddSeconds(5);
-                            if (neededTime > DateTime.Now)
-                                return; // dont spam log for many new clients.
-
-                            cooldowns.Remove(TimerId);
-                        }
-                        if (!cooldowns.ContainsKey(TimerId))
-                            cooldowns.Add(TimerId, DateTime.Now);
-
-                        if (__result.Clients != null)
-                            Log.Info($"Forced saving Client ids of {count} players on player join");
-                        else
-                            Log.Info($"Forced saving Client ids of {count} players to World Save");
-                    }
-                    return;
+                    count++;
                 }
             }
-            catch
-            {
-                Log.Info($"There was error in MyPlayerIdUpdate code, report to Dorimanx");
-            }
 
-            // in case something went horribly wrong, restore original data.
-            __result = originalresult;
+            NewDictionary.Clear();
+
+            if (count > 0)
+            {
+                _ = CooldownManager.CheckCooldown(SteamIdCooldownKey.LoopPlayerIdsSaveRequestID, null, out var remainingSecondsToNextLog);
+
+                if (remainingSecondsToNextLog < 1)
+                {
+                    // arm new timer.
+                    int LoopCooldown = 10 * 1000;
+                    CooldownManager.StartCooldown(SteamIdCooldownKey.LoopPlayerIdsSaveRequestID, null, LoopCooldown);
+
+                    Log.Info($"Forced saving Client ids of {count} players to World Save");
+                }
+            }
         }
     }
 }
