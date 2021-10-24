@@ -7,7 +7,7 @@ namespace DePatch.KEEN_BUG_FIXES
 {
     [HarmonyPatch(typeof(MyBatteryBlock))]
     [HarmonyPatch("ChargeMode", MethodType.Setter)]
-    internal class KEENMyBatteryFix
+    internal class KEEN_MyBatteryFix
     {
         private static bool Prefix(MyBatteryBlock __instance, ref ChargeMode value)
         {

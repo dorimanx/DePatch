@@ -5,7 +5,7 @@ namespace DePatch.KEEN_BUG_FIXES
 {
     [HarmonyPatch(typeof(MyWorkshopItem))]
     [HarmonyPatch("IsUpToDate")]
-    class KEENModUpdateFix
+    class KEEN_ModUpdateFix
     {
         static void Postfix(MyWorkshopItem __instance, ref bool __result)
         {

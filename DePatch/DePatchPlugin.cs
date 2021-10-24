@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Controls;
 using DePatch.GamePatches;
+using DePatch.KEEN_BUG_FIXES;
 using DePatch.OptiDamage;
 using DePatch.PVEZONE;
 using DePatch.ShipTools;
@@ -63,6 +64,7 @@ namespace DePatch
             {
                 _sessionManager.AddOverrideMod(m);
             });
+
             if (Config.DamageThreading)
                 _sessionManager.AddOverrideMod(2274830517UL);
 
@@ -74,7 +76,11 @@ namespace DePatch
         private void Torch_GameStateChanged(MySandboxGame game, TorchGameState newState)
         {
             if (newState == TorchGameState.Loading)
+            {
                 _harmony.PatchAll();
+                KEEN_MyTurretTargetFlagsFix.PatchMyTurretTarget();
+            }
+
             if (newState != TorchGameState.Loaded)
                 return;
 

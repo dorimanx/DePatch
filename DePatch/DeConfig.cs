@@ -92,6 +92,7 @@ namespace DePatch
         private bool _FixExploits = true;
         private bool _GasTanksOptimization = true;
         private bool _PlayersIdUpdate = false;
+        private bool _TurretsAimFix = false;
 
         public bool DamageThreading
         {
@@ -569,6 +570,12 @@ namespace DePatch
         {
             get => _PlayersIdUpdate;
             set => SetValue(ref _PlayersIdUpdate, value);
+        }
+
+        public bool TurretsAimFix
+        {
+            get => _TurretsAimFix;
+            set => SetValue(ref _TurretsAimFix, value);
         }
     }
 }
