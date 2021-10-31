@@ -33,15 +33,12 @@ namespace DePatch.GamePatches
             ctx.GetPattern(MyToolbarSetItemAtIndexInternal).Suffixes.Add(SendToolbarItemPatch);
         }
 
-        private static void SetItemAtIndexInternalPatch(MyToolbar __instance, int i, MyToolbarItem item, ref bool initialization, bool gamepad = false)
+        private static void SetItemAtIndexInternalPatch(MyToolbar __instance, ref int i, ref MyToolbarItem item, ref bool initialization, bool gamepad = false)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.FixExploits)
                 return;
 
-            if (initialization)
-                return;
-
-            if (__instance is null || item is null || __instance.ToolbarType == MyToolbarType.Character)
+            if (initialization || __instance is null || item is null || __instance.ToolbarType == MyToolbarType.Character)
                 return;
 
             // deny adding toolbar item if ToolBar Block is owned by nobody = 0L but do allow if toolbar item block is also owned by 0L or shared with all.
@@ -51,11 +48,16 @@ namespace DePatch.GamePatches
                 {
                     // item can change from MyToolbarItemTerminalBlock to MyTooMyToolbarItemTerminalGroup
                     var IsItGroup = item.GetObjectBuilder();
+                    var steamId = MyEventContext.Current.Sender.Value;
+                    var requesterPlayer = Sync.Players.TryGetPlayerBySteamId(steamId);
 
                     if (IsItGroup != null && IsItGroup.TypeId.ToString() != "MyObjectBuilder_ToolbarItemTerminalGroup")
                     {
                         var ItemBlock = (MyTerminalBlock)Block.GetValue(item);
                         if (ItemBlock != null && ItemBlock.IDModule != null && (ItemBlock.IDModule.Owner == 0 || ItemBlock.IDModule.ShareMode == MyOwnershipShareModeEnum.All))
+                            return;
+
+                        if (ItemBlock != null && requesterPlayer != null && ItemBlock.OwnerId == requesterPlayer.Identity.IdentityId)
                             return;
                     }
 
@@ -67,13 +69,8 @@ namespace DePatch.GamePatches
                         if (__instance.GetControllerPlayerID() != 0L)
                             MyVisualScriptLogicProvider.ClearToolbarSlot(i, __instance.GetControllerPlayerID());
                         else
-                        {
-                            var steamId = MyEventContext.Current.Sender.Value;
-                            var requesterPlayer = Sync.Players.TryGetPlayerBySteamId(steamId);
-
                             if (requesterPlayer != null)
                                 MyVisualScriptLogicProvider.ClearToolbarSlot(i, requesterPlayer.Identity.IdentityId);
-                        }
                     }
                 }
                 catch (Exception ex)
