@@ -19,7 +19,7 @@ namespace DePatch.GamePatches
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
         private static FieldInfo m_items;
-        public static FieldInfo Block { get; private set; }
+        public static FieldInfo TerminalBlock { get; private set; }
         public static readonly Type MyToolbarItemTerminalBlockClass = Type.GetType("Sandbox.Game.Screens.Helpers.MyToolbarItemTerminalBlock, Sandbox.Game");
 
         internal static readonly MethodInfo MyToolbarSetItemAtIndexInternal = typeof(MyToolbar).GetMethod("SetItemAtIndexInternal", BindingFlags.Instance | BindingFlags.NonPublic) ?? throw new Exception("Failed to find patch method");
@@ -28,7 +28,7 @@ namespace DePatch.GamePatches
         public static void Patch(PatchContext ctx)
         {
             m_items = typeof(MyToolbar).GetField("m_items", BindingFlags.NonPublic | BindingFlags.Instance);
-            Block = MyToolbarItemTerminalBlockClass.GetField("m_block", BindingFlags.Instance | BindingFlags.NonPublic);
+            TerminalBlock = MyToolbarItemTerminalBlockClass.GetField("m_block", BindingFlags.Instance | BindingFlags.NonPublic);
 
             ctx.GetPattern(MyToolbarSetItemAtIndexInternal).Suffixes.Add(SendToolbarItemPatch);
         }
@@ -53,12 +53,14 @@ namespace DePatch.GamePatches
 
                     if (IsItGroup != null && IsItGroup.TypeId.ToString() != "MyObjectBuilder_ToolbarItemTerminalGroup")
                     {
-                        var ItemBlock = (MyTerminalBlock)Block.GetValue(item);
-                        if (ItemBlock != null && ItemBlock.IDModule != null && (ItemBlock.IDModule.Owner == 0 || ItemBlock.IDModule.ShareMode == MyOwnershipShareModeEnum.All))
-                            return;
+                        if (!(item is MyToolbarItemWeapon) && TerminalBlock.GetValue(item) is MyTerminalBlock TerminalItemBlock)
+                        {
+                            if (TerminalItemBlock != null && TerminalItemBlock.IDModule != null && (TerminalItemBlock.IDModule.Owner == 0 || TerminalItemBlock.IDModule.ShareMode == MyOwnershipShareModeEnum.All))
+                                return;
 
-                        if (ItemBlock != null && requesterPlayer != null && ItemBlock.OwnerId == requesterPlayer.Identity.IdentityId)
-                            return;
+                            if (TerminalItemBlock != null && requesterPlayer != null && TerminalItemBlock.OwnerId == requesterPlayer.Identity.IdentityId)
+                                return;
+                        }
                     }
 
                     if (((MyToolbarItem[])m_items.GetValue(__instance))[i] != null)

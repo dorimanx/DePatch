@@ -21,7 +21,7 @@ namespace DePatch.GamePatches
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
         private static FieldInfo m_items;
 
-        public static FieldInfo Block { get; private set; }
+        public static FieldInfo TerminalBlock { get; private set; }
         public static readonly Type MyToolbarItemTerminalBlockClass = Type.GetType("Sandbox.Game.Screens.Helpers.MyToolbarItemTerminalBlock, Sandbox.Game");
 
         internal static readonly MethodInfo ChangeOwner = typeof(MyCubeBlock).GetMethod("ChangeOwner", BindingFlags.Instance | BindingFlags.Public) ?? throw new Exception("Failed to find patch method");
@@ -30,7 +30,7 @@ namespace DePatch.GamePatches
         public static void Patch(PatchContext ctx)
         {
             m_items = typeof(MyToolbar).GetField("m_items", BindingFlags.NonPublic | BindingFlags.Instance);
-            Block = MyToolbarItemTerminalBlockClass.GetField("m_block", BindingFlags.Instance | BindingFlags.NonPublic);
+            TerminalBlock = MyToolbarItemTerminalBlockClass.GetField("m_block", BindingFlags.Instance | BindingFlags.NonPublic);
 
             ctx.GetPattern(ChangeOwner).Suffixes.Add(ChangeOwnerPatchTarget);
         }
@@ -48,184 +48,197 @@ namespace DePatch.GamePatches
                 var steamId = MyEventContext.Current.Sender.Value;
                 var requesterPlayer = Sync.Players.TryGetPlayerBySteamId(steamId);
 
-                switch (__instance)
+                try
                 {
-                    case MyButtonPanel ButtonPanelBlock:
-                        {
-                            for (int j = ButtonPanelBlock.Toolbar.ItemCount - 1; j >= 0; j--)
+                    switch (__instance)
+                    {
+                        case MyButtonPanel ButtonPanelBlock:
                             {
-                                if (((MyToolbarItem[])m_items.GetValue(ButtonPanelBlock.Toolbar))[j] != null)
+                                for (int j = ButtonPanelBlock.Toolbar.ItemCount - 1; j >= 0; j--)
                                 {
-                                    var ToolbarBlock = ((MyToolbarItem[])m_items.GetValue(ButtonPanelBlock.Toolbar))[j];
-                                    var IsItGroup = ToolbarBlock.GetObjectBuilder();
-
-                                    if (IsItGroup != null && IsItGroup.TypeId.ToString() != "MyObjectBuilder_ToolbarItemTerminalGroup")
+                                    if (((MyToolbarItem[])m_items.GetValue(ButtonPanelBlock.Toolbar))[j] != null)
                                     {
-                                        var ItemBlock = (MyTerminalBlock)Block.GetValue(ToolbarBlock);
-                                        if (ItemBlock != null && ItemBlock.IDModule != null && (ItemBlock.IDModule.Owner == 0 || ItemBlock.IDModule.ShareMode == MyOwnershipShareModeEnum.All))
-                                            continue;
+                                        var ToolbarBlock = ((MyToolbarItem[])m_items.GetValue(ButtonPanelBlock.Toolbar))[j];
+                                        var IsItGroup = ToolbarBlock.GetObjectBuilder();
 
-                                        if (ItemBlock != null && requesterPlayer != null && ItemBlock.OwnerId == requesterPlayer.Identity.IdentityId)
-                                            continue;
-                                    }
+                                        if (IsItGroup != null && IsItGroup.TypeId.ToString() != "MyObjectBuilder_ToolbarItemTerminalGroup")
+                                        {
+                                            if (!(ToolbarBlock is MyToolbarItemWeapon) && TerminalBlock.GetValue(ToolbarBlock) is MyTerminalBlock TerminalItemBlock)
+                                            {
+                                                if (TerminalItemBlock != null && TerminalItemBlock.IDModule != null && (TerminalItemBlock.IDModule.Owner == 0 || TerminalItemBlock.IDModule.ShareMode == MyOwnershipShareModeEnum.All))
+                                                    continue;
 
-                                    ButtonPanelBlock.Toolbar.SetItemAtIndex(j, null, false);
-                                    ButtonPanelBlock.Toolbar.SetItemAtIndex(j, null, true);
+                                                if (TerminalItemBlock != null && requesterPlayer != null && TerminalItemBlock.OwnerId == requesterPlayer.Identity.IdentityId)
+                                                    continue;
+                                            }
+                                        }
 
-                                    if (requesterPlayer != null)
-                                        MyVisualScriptLogicProvider.ClearToolbarSlot(j, requesterPlayer.Identity.IdentityId);
-                                }
-                            }
-                            break;
-                        }
-                    case MyTimerBlock TimerBlock:
-                        {
-                            for (int j = TimerBlock.Toolbar.ItemCount - 1; j >= 0; j--)
-                            {
-                                if (((MyToolbarItem[])m_items.GetValue(TimerBlock.Toolbar))[j] != null)
-                                {
-                                    var ToolbarBlock = ((MyToolbarItem[])m_items.GetValue(TimerBlock.Toolbar))[j];
-                                    var IsItGroup = ToolbarBlock.GetObjectBuilder();
+                                        ButtonPanelBlock.Toolbar.SetItemAtIndex(j, null, false);
+                                        ButtonPanelBlock.Toolbar.SetItemAtIndex(j, null, true);
 
-                                    if (IsItGroup != null && IsItGroup.TypeId.ToString() != "MyObjectBuilder_ToolbarItemTerminalGroup")
-                                    {
-                                        var ItemBlock = (MyTerminalBlock)Block.GetValue(ToolbarBlock);
-                                        if (ItemBlock != null && ItemBlock.IDModule != null && (ItemBlock.IDModule.Owner == 0 || ItemBlock.IDModule.ShareMode == MyOwnershipShareModeEnum.All))
-                                            continue;
-
-                                        if (ItemBlock != null && requesterPlayer != null && ItemBlock.OwnerId == requesterPlayer.Identity.IdentityId)
-                                            continue;
-                                    }
-
-                                    TimerBlock.Toolbar.SetItemAtIndex(j, null, false);
-                                    TimerBlock.Toolbar.SetItemAtIndex(j, null, true);
-
-                                    if (requesterPlayer != null)
-                                        MyVisualScriptLogicProvider.ClearToolbarSlot(j, requesterPlayer.Identity.IdentityId);
-                                }
-                            }
-                            break;
-                        }
-                    case MySensorBlock SensorBlock:
-                        {
-                            for (int j = SensorBlock.Toolbar.ItemCount - 1; j >= 0; j--)
-                            {
-                                if (((MyToolbarItem[])m_items.GetValue(SensorBlock.Toolbar))[j] != null)
-                                {
-                                    var ToolbarBlock = ((MyToolbarItem[])m_items.GetValue(SensorBlock.Toolbar))[j];
-                                    var IsItGroup = ToolbarBlock.GetObjectBuilder();
-
-                                    if (IsItGroup != null && IsItGroup.TypeId.ToString() != "MyObjectBuilder_ToolbarItemTerminalGroup")
-                                    {
-                                        var ItemBlock = (MyTerminalBlock)Block.GetValue(ToolbarBlock);
-                                        if (ItemBlock != null && ItemBlock.IDModule != null && (ItemBlock.IDModule.Owner == 0 || ItemBlock.IDModule.ShareMode == MyOwnershipShareModeEnum.All))
-                                            continue;
-
-                                        if (ItemBlock != null && requesterPlayer != null && ItemBlock.OwnerId == requesterPlayer.Identity.IdentityId)
-                                            continue;
-                                    }
-
-                                    SensorBlock.Toolbar.SetItemAtIndex(j, null, false);
-                                    SensorBlock.Toolbar.SetItemAtIndex(j, null, true);
-
-                                    if (requesterPlayer != null)
-                                        MyVisualScriptLogicProvider.ClearToolbarSlot(j, requesterPlayer.Identity.IdentityId);
-                                }
-                            }
-                            break;
-                        }
-                    case MyTargetDummyBlock TargetDummyBlock:
-                        {
-                            for (int j = TargetDummyBlock.Toolbar.ItemCount - 1; j >= 0; j--)
-                            {
-                                if (((MyToolbarItem[])m_items.GetValue(TargetDummyBlock.Toolbar))[j] != null)
-                                {
-                                    var ToolbarBlock = ((MyToolbarItem[])m_items.GetValue(TargetDummyBlock.Toolbar))[j];
-                                    var IsItGroup = ToolbarBlock.GetObjectBuilder();
-
-                                    if (IsItGroup != null && IsItGroup.TypeId.ToString() != "MyObjectBuilder_ToolbarItemTerminalGroup")
-                                    {
-                                        var ItemBlock = (MyTerminalBlock)Block.GetValue(ToolbarBlock);
-                                        if (ItemBlock != null && ItemBlock.IDModule != null && (ItemBlock.IDModule.Owner == 0 || ItemBlock.IDModule.ShareMode == MyOwnershipShareModeEnum.All))
-                                            continue;
-
-                                        if (ItemBlock != null && requesterPlayer != null && ItemBlock.OwnerId == requesterPlayer.Identity.IdentityId)
-                                            continue;
-                                    }
-
-                                    TargetDummyBlock.Toolbar.SetItemAtIndex(j, null, false);
-                                    TargetDummyBlock.Toolbar.SetItemAtIndex(j, null, true);
-
-                                    if (requesterPlayer != null)
-                                        MyVisualScriptLogicProvider.ClearToolbarSlot(j, requesterPlayer.Identity.IdentityId);
-                                }
-                            }
-                            break;
-                        }
-                    case MyRemoteControl RemoteControl:
-                        {
-                            for (int j = RemoteControl.Toolbar.ItemCount - 1; j >= 0; j--)
-                            {
-                                if (((MyToolbarItem[])m_items.GetValue(RemoteControl.Toolbar))[j] != null)
-                                {
-                                    var ToolbarBlock = ((MyToolbarItem[])m_items.GetValue(RemoteControl.Toolbar))[j];
-                                    var IsItGroup = ToolbarBlock.GetObjectBuilder();
-
-                                    if (IsItGroup != null && IsItGroup.TypeId.ToString() != "MyObjectBuilder_ToolbarItemTerminalGroup")
-                                    {
-                                        var ItemBlock = (MyTerminalBlock)Block.GetValue(ToolbarBlock);
-                                        if (ItemBlock != null && ItemBlock.IDModule != null && (ItemBlock.IDModule.Owner == 0 || ItemBlock.IDModule.ShareMode == MyOwnershipShareModeEnum.All))
-                                            continue;
-
-                                        if (ItemBlock != null && requesterPlayer != null && ItemBlock.OwnerId == requesterPlayer.Identity.IdentityId)
-                                            continue;
-                                    }
-
-                                    RemoteControl.Toolbar.SetItemAtIndex(j, null, false);
-                                    RemoteControl.Toolbar.SetItemAtIndex(j, null, true);
-
-                                    if (RemoteControl.Toolbar.GetControllerPlayerID() != 0L)
-                                        MyVisualScriptLogicProvider.ClearToolbarSlot(j, RemoteControl.Toolbar.GetControllerPlayerID());
-                                    else
-                                        if (requesterPlayer != null)
-                                        MyVisualScriptLogicProvider.ClearToolbarSlot(j, requesterPlayer.Identity.IdentityId);
-                                }
-                            }
-                            break;
-                        }
-                    case MyShipController ShipController:
-                        {
-                            for (int j = ShipController.Toolbar.ItemCount - 1; j >= 0; j--)
-                            {
-                                if (((MyToolbarItem[])m_items.GetValue(ShipController.Toolbar))[j] != null)
-                                {
-                                    var ToolbarBlock = ((MyToolbarItem[])m_items.GetValue(ShipController.Toolbar))[j];
-                                    var IsItGroup = ToolbarBlock.GetObjectBuilder();
-
-                                    if (IsItGroup != null && IsItGroup.TypeId.ToString() != "MyObjectBuilder_ToolbarItemTerminalGroup")
-                                    {
-                                        var ItemBlock = (MyTerminalBlock)Block.GetValue(ToolbarBlock);
-                                        if (ItemBlock != null && ItemBlock.IDModule != null && (ItemBlock.IDModule.Owner == 0 || ItemBlock.IDModule.ShareMode == MyOwnershipShareModeEnum.All))
-                                            continue;
-
-                                        if (ItemBlock != null && requesterPlayer != null && ItemBlock.OwnerId == requesterPlayer.Identity.IdentityId)
-                                            continue;
-                                    }
-
-                                    ShipController.Toolbar.SetItemAtIndex(j, null, false);
-                                    ShipController.Toolbar.SetItemAtIndex(j, null, true);
-
-                                    if (ShipController.Toolbar.GetControllerPlayerID() != 0L)
-                                        MyVisualScriptLogicProvider.ClearToolbarSlot(j, ShipController.Toolbar.GetControllerPlayerID());
-                                    else
                                         if (requesterPlayer != null)
                                             MyVisualScriptLogicProvider.ClearToolbarSlot(j, requesterPlayer.Identity.IdentityId);
+                                    }
                                 }
+                                break;
                             }
+                        case MyTimerBlock TimerBlock:
+                            {
+                                for (int j = TimerBlock.Toolbar.ItemCount - 1; j >= 0; j--)
+                                {
+                                    if (((MyToolbarItem[])m_items.GetValue(TimerBlock.Toolbar))[j] != null)
+                                    {
+                                        var ToolbarBlock = ((MyToolbarItem[])m_items.GetValue(TimerBlock.Toolbar))[j];
+                                        var IsItGroup = ToolbarBlock.GetObjectBuilder();
+
+                                        if (IsItGroup != null && IsItGroup.TypeId.ToString() != "MyObjectBuilder_ToolbarItemTerminalGroup")
+                                        {
+                                            if (!(ToolbarBlock is MyToolbarItemWeapon) && TerminalBlock.GetValue(ToolbarBlock) is MyTerminalBlock TerminalItemBlock)
+                                            {
+                                                if (TerminalItemBlock != null && TerminalItemBlock.IDModule != null && (TerminalItemBlock.IDModule.Owner == 0 || TerminalItemBlock.IDModule.ShareMode == MyOwnershipShareModeEnum.All))
+                                                    continue;
+
+                                                if (TerminalItemBlock != null && requesterPlayer != null && TerminalItemBlock.OwnerId == requesterPlayer.Identity.IdentityId)
+                                                    continue;
+                                            }
+                                        }
+
+                                        TimerBlock.Toolbar.SetItemAtIndex(j, null, false);
+                                        TimerBlock.Toolbar.SetItemAtIndex(j, null, true);
+
+                                        if (requesterPlayer != null)
+                                            MyVisualScriptLogicProvider.ClearToolbarSlot(j, requesterPlayer.Identity.IdentityId);
+                                    }
+                                }
+                                break;
+                            }
+                        case MySensorBlock SensorBlock:
+                            {
+                                for (int j = SensorBlock.Toolbar.ItemCount - 1; j >= 0; j--)
+                                {
+                                    if (((MyToolbarItem[])m_items.GetValue(SensorBlock.Toolbar))[j] != null)
+                                    {
+                                        var ToolbarBlock = ((MyToolbarItem[])m_items.GetValue(SensorBlock.Toolbar))[j];
+                                        var IsItGroup = ToolbarBlock.GetObjectBuilder();
+
+                                        if (IsItGroup != null && IsItGroup.TypeId.ToString() != "MyObjectBuilder_ToolbarItemTerminalGroup")
+                                        {
+                                            if (!(ToolbarBlock is MyToolbarItemWeapon) && TerminalBlock.GetValue(ToolbarBlock) is MyTerminalBlock TerminalItemBlock)
+                                            {
+                                                if (TerminalItemBlock != null && TerminalItemBlock.IDModule != null && (TerminalItemBlock.IDModule.Owner == 0 || TerminalItemBlock.IDModule.ShareMode == MyOwnershipShareModeEnum.All))
+                                                    continue;
+
+                                                if (TerminalItemBlock != null && requesterPlayer != null && TerminalItemBlock.OwnerId == requesterPlayer.Identity.IdentityId)
+                                                    continue;
+                                            }
+                                        }
+
+                                        SensorBlock.Toolbar.SetItemAtIndex(j, null, false);
+                                        SensorBlock.Toolbar.SetItemAtIndex(j, null, true);
+                                    }
+                                }
+                                break;
+                            }
+                        case MyTargetDummyBlock TargetDummyBlock:
+                            {
+                                for (int j = TargetDummyBlock.Toolbar.ItemCount - 1; j >= 0; j--)
+                                {
+                                    if (((MyToolbarItem[])m_items.GetValue(TargetDummyBlock.Toolbar))[j] != null)
+                                    {
+                                        var ToolbarBlock = ((MyToolbarItem[])m_items.GetValue(TargetDummyBlock.Toolbar))[j];
+                                        var IsItGroup = ToolbarBlock.GetObjectBuilder();
+
+                                        if (IsItGroup != null && IsItGroup.TypeId.ToString() != "MyObjectBuilder_ToolbarItemTerminalGroup")
+                                        {
+                                            if (!(ToolbarBlock is MyToolbarItemWeapon) && TerminalBlock.GetValue(ToolbarBlock) is MyTerminalBlock TerminalItemBlock)
+                                            {
+                                                if (TerminalItemBlock != null && TerminalItemBlock.IDModule != null && (TerminalItemBlock.IDModule.Owner == 0 || TerminalItemBlock.IDModule.ShareMode == MyOwnershipShareModeEnum.All))
+                                                    continue;
+
+                                                if (TerminalItemBlock != null && requesterPlayer != null && TerminalItemBlock.OwnerId == requesterPlayer.Identity.IdentityId)
+                                                    continue;
+                                            }
+                                        }
+
+                                        TargetDummyBlock.Toolbar.SetItemAtIndex(j, null, false);
+                                        TargetDummyBlock.Toolbar.SetItemAtIndex(j, null, true);
+                                    }
+                                }
+                                break;
+                            }
+                        case MyRemoteControl RemoteControl:
+                            {
+                                for (int j = RemoteControl.Toolbar.ItemCount - 1; j >= 0; j--)
+                                {
+                                    if (((MyToolbarItem[])m_items.GetValue(RemoteControl.Toolbar))[j] != null)
+                                    {
+                                        var ToolbarBlock = ((MyToolbarItem[])m_items.GetValue(RemoteControl.Toolbar))[j];
+                                        var IsItGroup = ToolbarBlock.GetObjectBuilder();
+
+                                        if (IsItGroup != null && IsItGroup.TypeId.ToString() != "MyObjectBuilder_ToolbarItemTerminalGroup")
+                                        {
+                                            if (!(ToolbarBlock is MyToolbarItemWeapon) && TerminalBlock.GetValue(ToolbarBlock) is MyTerminalBlock TerminalItemBlock)
+                                            {
+                                                if (TerminalItemBlock != null && TerminalItemBlock.IDModule != null && (TerminalItemBlock.IDModule.Owner == 0 || TerminalItemBlock.IDModule.ShareMode == MyOwnershipShareModeEnum.All))
+                                                    continue;
+
+                                                if (TerminalItemBlock != null && requesterPlayer != null && TerminalItemBlock.OwnerId == requesterPlayer.Identity.IdentityId)
+                                                    continue;
+                                            }
+                                        }
+
+                                        RemoteControl.Toolbar.SetItemAtIndex(j, null, false);
+                                        RemoteControl.Toolbar.SetItemAtIndex(j, null, true);
+
+                                        if (RemoteControl.Toolbar.GetControllerPlayerID() != 0L)
+                                            MyVisualScriptLogicProvider.ClearToolbarSlot(j, RemoteControl.Toolbar.GetControllerPlayerID());
+                                        else
+                                            if (requesterPlayer != null)
+                                            MyVisualScriptLogicProvider.ClearToolbarSlot(j, requesterPlayer.Identity.IdentityId);
+                                    }
+                                }
+                                break;
+                            }
+                        case MyShipController ShipController:
+                            {
+                                for (int j = ShipController.Toolbar.ItemCount - 1; j >= 0; j--)
+                                {
+                                    if (((MyToolbarItem[])m_items.GetValue(ShipController.Toolbar))[j] != null)
+                                    {
+                                        var ToolbarBlock = ((MyToolbarItem[])m_items.GetValue(ShipController.Toolbar))[j];
+                                        var IsItGroup = ToolbarBlock.GetObjectBuilder();
+
+                                        if (IsItGroup != null && IsItGroup.TypeId.ToString() != "MyObjectBuilder_ToolbarItemTerminalGroup")
+                                        {
+                                            if (!(ToolbarBlock is MyToolbarItemWeapon) && TerminalBlock.GetValue(ToolbarBlock) is MyTerminalBlock TerminalItemBlock)
+                                            {
+                                                if (TerminalItemBlock != null && TerminalItemBlock.IDModule != null && (TerminalItemBlock.IDModule.Owner == 0 || TerminalItemBlock.IDModule.ShareMode == MyOwnershipShareModeEnum.All))
+                                                    continue;
+
+                                                if (TerminalItemBlock != null && requesterPlayer != null && TerminalItemBlock.OwnerId == requesterPlayer.Identity.IdentityId)
+                                                    continue;
+                                            }
+                                        }
+
+                                        ShipController.Toolbar.SetItemAtIndex(j, null, false);
+                                        ShipController.Toolbar.SetItemAtIndex(j, null, true);
+
+                                        if (ShipController.Toolbar.GetControllerPlayerID() != 0L)
+                                            MyVisualScriptLogicProvider.ClearToolbarSlot(j, ShipController.Toolbar.GetControllerPlayerID());
+                                        else
+                                            if (requesterPlayer != null)
+                                            MyVisualScriptLogicProvider.ClearToolbarSlot(j, requesterPlayer.Identity.IdentityId);
+                                    }
+                                }
+                                break;
+                            }
+                        default:
                             break;
-                        }
-                    default:
-                        break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Error during ChangeOwnerPatch For ToolBars! Crash Avoided");
                 }
             }
         }
