@@ -1,6 +1,7 @@
 ﻿using Sandbox.Game;
 using Sandbox.Game.Entities.Character;
 using Sandbox.ModAPI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -41,6 +42,14 @@ namespace DePatch
                 }
             }
             return false;
+        }
+
+        internal static object InvokeInstanceMethod(Type type, object instance, string methodName, Object[] args)
+        {
+            BindingFlags bindFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+                                     | BindingFlags.Static;
+            var method = type.GetMethod(methodName, bindFlags);
+            return method.Invoke(instance, args);
         }
     }
 }
