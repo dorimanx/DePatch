@@ -11,6 +11,9 @@ namespace DePatch.KEEN_BUG_FIXES
     {
         private static bool Prefix(MyBatteryBlock __instance, ref ChargeMode value)
         {
+            if (!DePatchPlugin.Instance.Config.Enabled)
+                return true;
+
             if (Enum.IsDefined(typeof(ChargeMode), value))
                 return true;
 
