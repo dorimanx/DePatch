@@ -79,12 +79,10 @@
     <Compile Include="GamePatches\MyGasTankPatch.cs" />
     <Compile Include="GamePatches\MyToolbarPatch.cs" />
     <Compile Include="GamePatches\MyConveyorSorterPatch.cs" />
+    <Compile Include="KEEN_BUG_FIXES\KEEN_UpdateSimulationFixes.cs" />
     <Compile Include="KEEN_BUG_FIXES\KEEN_ColorChangeExploitFix.cs" />
     <Compile Include="KEEN_BUG_FIXES\KEEN_MyTurretTargetFlagsFix.cs" />
-    <Compile Include="KEEN_BUG_FIXES\KEEN_UpdateAfterSimulation10Fix.cs" />
     <Compile Include="KEEN_BUG_FIXES\KEEN_RemoveEntityPhantomPathFix.cs" />
-    <Compile Include="KEEN_BUG_FIXES\KEEN_UpdateAfterSimulation100Fix.cs" />
-    <Compile Include="KEEN_BUG_FIXES\KEEN_ParallelCrashFix.cs" />
     <Compile Include="PVEZONE\FreezerPatch.cs" />
     <Compile Include="CoolDown\CooldownManager.cs" />
     <Compile Include="CoolDown\CurrentCooldown.cs" />

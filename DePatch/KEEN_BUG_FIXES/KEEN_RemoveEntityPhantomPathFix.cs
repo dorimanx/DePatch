@@ -36,7 +36,7 @@ namespace DePatch.KEEN_BUG_FIXES
             if (!DePatchPlugin.Instance.Config.Enabled || MySandboxGame.Static.SimulationFrameCounter < 1000)
                 return true;
 
-            if (DePatchPlugin.Instance.Config.UpdateAfterSimulation100FIX)
+            if (DePatchPlugin.Instance.Config.RemoveEntityPhantomFIX)
             {
                 if (__instance is null || body is null || entity is null)
                     return false;

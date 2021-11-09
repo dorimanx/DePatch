@@ -12,7 +12,7 @@ namespace DePatch.KEEN_BUG_FIXES
 
         private static bool Prefix(MyEntity __instance, ref long value)
         {
-            if (!DePatchPlugin.Instance.Config.Enabled)
+            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.MyEntityDuplicateFix)
                 return true;
 
             var id = __instance.EntityId;

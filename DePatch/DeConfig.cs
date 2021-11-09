@@ -87,7 +87,12 @@ namespace DePatch
         private bool _NanoBuildArea;
         private bool _NanoDrillArea;
         private bool _ValidationFailedSuspend = true;
+        private bool _UpdateAfterSimulation10FIX = true;
         private bool _UpdateAfterSimulation100FIX = true;
+        private bool _UpdateBeforeSimulation100FIX = true;
+        private bool _ParallelUpdateHandlerAfterSimulationFIX = true;
+        private bool _RemoveEntityPhantomFIX = true;
+        private bool _MyEntityDuplicateFix = true;
         private bool _DenyPlacingBlocksOnEnemyGrid;
         private bool _FixExploits = true;
         private bool _GasTanksOptimization = true;
@@ -542,10 +547,40 @@ namespace DePatch
             set => SetValue(ref _ValidationFailedSuspend, value);
         }
 
+        public bool UpdateAfterSimulation10FIX
+        {
+            get => _UpdateAfterSimulation10FIX;
+            set => SetValue(ref _UpdateAfterSimulation10FIX, value);
+        }
+
         public bool UpdateAfterSimulation100FIX
         {
             get => _UpdateAfterSimulation100FIX;
             set => SetValue(ref _UpdateAfterSimulation100FIX, value);
+        }
+
+        public bool UpdateBeforeSimulation100FIX
+        {
+            get => _UpdateBeforeSimulation100FIX;
+            set => SetValue(ref _UpdateBeforeSimulation100FIX, value);
+        }
+
+        public bool ParallelUpdateHandlerAfterSimulationFIX
+        {
+            get => _ParallelUpdateHandlerAfterSimulationFIX;
+            set => SetValue(ref _ParallelUpdateHandlerAfterSimulationFIX, value);
+        }
+
+        public bool RemoveEntityPhantomFIX
+        {
+            get => _RemoveEntityPhantomFIX;
+            set => SetValue(ref _RemoveEntityPhantomFIX, value);
+        }
+
+        public bool MyEntityDuplicateFix
+        {
+            get => _MyEntityDuplicateFix;
+            set => SetValue(ref _MyEntityDuplicateFix, value);
         }
 
         public bool DenyPlacingBlocksOnEnemyGrid

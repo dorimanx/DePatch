@@ -60,62 +60,6 @@
 						VerticalAlignment="Top"
 						Width="70"
 						Text="{Binding Path=TimerMinDelay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
-                    <Label
-						Content="UpdateAfterSimulation"
-						HorizontalAlignment="Left"
-						Margin="253,186,0,0"
-						VerticalAlignment="Top" Grid.ColumnSpan="2" RenderTransformOrigin="0.481,1.923" />
-                    <TextBox
-						Name="SlowSimulationUpdate1"
-						HorizontalAlignment="Left"
-						Height="23"
-						Margin="112,186,0,0"
-						TextWrapping="Wrap"
-						VerticalAlignment="Top"
-						Width="39"
-						Text="{Binding Path=SlowPBUpdate1, Mode=TwoWay, StringFormat=D}" RenderTransformOrigin="0.529,0.385" Grid.Column="1" />
-                    <Label
-						Content="UpdateAfterSimulation10"
-						HorizontalAlignment="Left"
-						Margin="253,217,0,0"
-						VerticalAlignment="Top" Grid.ColumnSpan="2" />
-                    <TextBox
-						Name="SlowSimulationUpdate10"
-						HorizontalAlignment="Left"
-						Height="23"
-						Margin="112,217,0,0"
-						TextWrapping="Wrap"
-						VerticalAlignment="Top"
-						Width="39"
-						Text="{Binding Path=SlowPBUpdate10, Mode=TwoWay, StringFormat=D}" RenderTransformOrigin="-0.045,-0.077" Grid.Column="1" />
-                    <Label
-						Content="UpdateAfterSimulation100"
-						HorizontalAlignment="Left"
-						Margin="253,248,0,0"
-						VerticalAlignment="Top" Grid.ColumnSpan="2" />
-                    <TextBox
-						Name="SlowSimulationUpdate100"
-						HorizontalAlignment="Left"
-						Height="23"
-						Margin="112,248,0,0"
-						TextWrapping="Wrap"
-						VerticalAlignment="Top"
-						Width="39"
-						Text="{Binding Path=SlowPBUpdate100, Mode=TwoWay, StringFormat=D}" RenderTransformOrigin="0.559,0.615" Grid.Column="1" />
-                    <Label
-						Content="Ignored PB SubTypes with ;"
-						HorizontalAlignment="Left"
-						Margin="253,274,0,0"
-						VerticalAlignment="Top" Grid.ColumnSpan="2" RenderTransformOrigin="0.479,0.692" />
-                    <TextBox
-						Name="IgnorePBSubTypesHere"
-						HorizontalAlignment="Left"
-						Height="39"
-						Margin="253,300,0,0"
-						TextWrapping="Wrap"
-						VerticalAlignment="Top"
-						Width="194"
-                        Text="{Binding Path=SlowPBIgnored, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" RenderTransformOrigin="0.559,0.615" Grid.ColumnSpan="2" />
                     <CheckBox
 						Content="Remove Artificial Mass"
 						HorizontalAlignment="Left"
@@ -174,12 +118,6 @@
 						VerticalAlignment="Top"
 						IsChecked="{Binding Path=DisableNanoBotsOnShip}" />
                     <CheckBox
-						Content="Enable Program Block SlowDown"
-						HorizontalAlignment="Left"
-                        Margin="253,171,0,0"
-						VerticalAlignment="Top"
-						IsChecked="{Binding Path=SlowPBEnabled}" Grid.ColumnSpan="2" />
-                    <CheckBox
                         Content="Dont Lock LandingGear on Enemy Grid" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,212,0,0"
 						ToolTip="This will prevent enemy player grid from locking landinggear on other enemy player grid!&#xA;but will lock on NPC grids and back, also will lock in PVE zones."
                         IsChecked="{Binding Path=NoEnemyPlayerLandingGearLocks}"/>
@@ -205,25 +143,45 @@
                         ToolTip="This will reduce spam in Keen Debug log for ValidationFailed action, will print this debug once in 2 minutes on each player"
                         IsChecked="{Binding ValidationFailedSuspend}" />
                     <CheckBox
-                        Content="Fix server crashes" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,272,0,0"
-                        ToolTip="This will tap to KEEN functions for UpdateAfterSimulation and check for NULLs and prevent server crash."
-                        IsChecked="{Binding UpdateAfterSimulation100FIX}" />
-                    <CheckBox
-                        Content="Fix No owner Exploits" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,292,0,0"
+                        Content="Fix No owner Exploits" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,272,0,0"
                         ToolTip="This will tap to KEEN functions for adding toolbar items to not owned blocks and stop access to enemy grid."
                         IsChecked="{Binding FixExploits}" />
                     <CheckBox
-                        Content="Gas Tanks Optimization" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,312,0,0"
+                        Content="Gas Tanks Optimization" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,292,0,0"
                         ToolTip="This will delay crazy update of each gas tank in world and save server CPU and Client CPU load."
                         IsChecked="{Binding GasTanksOptimization}" />
                     <CheckBox
-                        Content="ClientID Update on Save" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,332,0,0"
+                        Content="ClientID Update on Save (experemental)" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,312,0,0"
                         ToolTip="This will allow saving steamid to client id field for each player, during save, this can lead to silent crash on world save, use it on your own RISK."
                         IsChecked="{Binding PlayersIdUpdate}" />
                     <CheckBox
-                        Content="Fix Turrets Target Selectors" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,372,0,0"
+                        Content="Fix Turrets Target Selectors" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,332,0,0"
                         ToolTip="This will allow setting turrets to shoot at different targets, it's bugged right now.."
                         IsChecked="{Binding TurretsAimFix}" />
+                    <CheckBox
+                        Content="Fix UpdateAfterSimulation100" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,192,0,0"
+                        ToolTip="This will tap to KEEN function for UpdateAfterSimulation100 and check for NULLs and prevent server crash."
+                        IsChecked="{Binding UpdateAfterSimulation100FIX}" Grid.ColumnSpan="2" />
+                    <CheckBox
+                        Content="Fix UpdateAfterSimulation10" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,172,0,0"
+                        ToolTip="This will tap to KEEN function for UpdateAfterSimulation10 and check for NULLs and prevent server crash."
+                        IsChecked="{Binding UpdateAfterSimulation10FIX}" Grid.ColumnSpan="2" />
+                    <CheckBox
+                        Content="Fix UpdateBeforeSimulation100" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,212,0,0"
+                        ToolTip="This will tap to KEEN function for UpdateBeforeSimulation100 and check for NULLs and prevent server crash."
+                        IsChecked="{Binding UpdateBeforeSimulation100FIX}" Grid.ColumnSpan="2" />
+                    <CheckBox
+                        Content="Fix ParallelUpdateHandlerAfterSimulation" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,232,-8,0"
+                        ToolTip="This will tap to KEEN function for ParallelUpdateHandlerAfterSimulation and check for NULLs and prevent server crash."
+                        IsChecked="{Binding ParallelUpdateHandlerAfterSimulationFIX}" Width="244" Grid.ColumnSpan="3" />
+                    <CheckBox
+                        Content="Fix RemoveEntityPhantom" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,252,0,0"
+                        ToolTip="This will tap to KEEN function for RemoveEntityPhantom and check for Bugs and prevent server crash."
+                        IsChecked="{Binding RemoveEntityPhantomFIX}" Width="164" Grid.ColumnSpan="2" />
+                    <CheckBox
+                        Content="Fix MyEntity Duplicates" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,272,0,0"
+                        ToolTip="This will tap to KEEN function for MyEntity Set and check for duplicate Entity ID and prevent server crash."
+                        IsChecked="{Binding MyEntityDuplicateFix}" Width="153" Grid.ColumnSpan="2" />
                 </Grid>
             </TabItem>
             <TabItem
@@ -700,68 +658,134 @@
             <TabItem
 				Header="BlocksDisabler">
                 <Grid
-					Background="#FFE5E5E5">
+					Background="#FFE5E5E5" Margin="0,-12,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="22*"/>
+                        <ColumnDefinition Width="467*"/>
+                    </Grid.ColumnDefinitions>
                     <Label
 						Content="This Code is Shitty! but we love it!"
 						HorizontalAlignment="Left"
-						Margin="228,17,0,0"
-						VerticalAlignment="Top" />
+						Margin="206,17,0,0"
+						VerticalAlignment="Top" Grid.Column="1" />
                     <CheckBox
                         Content="Enable Block Disabler"
                         HorizontalAlignment="Left"
                         Margin="10,23,0,558"
                         IsChecked="{Binding Path=EnableBlockDisabler}"
-                        Width="139" />
+                        Width="139" Grid.ColumnSpan="2" />
                     <CheckBox
                         Content="Faction Member Ovveride"
                         HorizontalAlignment="Left"
                         Margin="10,44,0,537"
                         IsChecked="{Binding Path=AllowFactions}"
-                        Width="162" />
+                        Width="162" Grid.ColumnSpan="2" />
                     <Button
                         Grid.Column="0"
                         Margin="10,138,298,415"
                         Content="Edit Disabled Blocks"
-                        Click="EditBlocks_OnClick" />
+                        Click="EditBlocks_OnClick" Grid.ColumnSpan="2" />
                     <Button
                         Grid.Column="0"
                         Margin="10,75,298,477"
                         Content="Exempt Players/Factions"
-                        Click="EditFactions_OnClick" />
-                    <Button Content="Save This Config" HorizontalAlignment="Left" Margin="257,52,0,0" VerticalAlignment="Top" Width="127" Height="37" Click="Button_Click_4" RenderTransformOrigin="0.529,0.486"/>
+                        Click="EditFactions_OnClick" Grid.ColumnSpan="2" />
+                    <Button Content="Save This Config" HorizontalAlignment="Left" Margin="235,52,0,0" VerticalAlignment="Top" Width="127" Height="37" Click="Button_Click_4" RenderTransformOrigin="0.529,0.486" Grid.Column="1"/>
                     <CheckBox
                         Content="Enable Shields Check"
                         HorizontalAlignment="Left"
                         Margin="10,239,0,342"
                         ToolTip="Check amount of shield blocks on grid and connected grids, and turn off grid if more than 8 detected"
                         IsChecked="{Binding ShieldsAntiHack}"
-                        Width="139" />
+                        Width="139" Grid.ColumnSpan="2" />
                     <Label
                         Content="Extra Features for Prometheus Servers"
                         HorizontalAlignment="Left"
                         Margin="10,213,0,0"
-                        VerticalAlignment="Top" />
+                        VerticalAlignment="Top" Grid.ColumnSpan="2" />
                     <CheckBox
                         Content="Enable Keen Log KeepAlive"
                         HorizontalAlignment="Left"
                         Margin="10,260,0,321"
                         ToolTip="This will pupdate Keen LOG every 30sec with Server Alive Log."
                         IsChecked="{Binding LogTracker}"
-                        Width="172" />
+                        Width="172" Grid.ColumnSpan="2" />
                     <CheckBox
                         Content="Disable Build and Repair Area when block is OFF"
                         HorizontalAlignment="Left"
                         Margin="10,281,0,300"
                         ToolTip="This will disable block work area if block is off."
                         IsChecked="{Binding NanoBuildArea}"
-                        Width="282" />
+                        Width="282" Grid.ColumnSpan="2" />
                     <CheckBox
                         Content="Disable Drill System Area when no players in 1KM"
                         HorizontalAlignment="Left"
                         Margin="10,302,0,279"
                         ToolTip="This will disable block work area if player goes away for 1.5KM."
                         IsChecked="{Binding NanoDrillArea}"
-                        Width="292" />
+                        Width="292" Grid.ColumnSpan="2" />
+                    <CheckBox
+                        Content="Enable Program Block SlowDown"
+                        HorizontalAlignment="Left"
+                        Margin="235,105,0,0"
+                        VerticalAlignment="Top"
+                        IsChecked="{Binding SlowPBEnabled}" Grid.Column="1" />
+                    <Label
+                        Content="UpdateAfterSimulation"
+                        HorizontalAlignment="Left"
+                        Margin="235,125,0,0"
+                        VerticalAlignment="Top" RenderTransformOrigin="0.481,1.923" Grid.Column="1" />
+                    <TextBox
+                        x:Name="SlowSimulationUpdate1"
+                        HorizontalAlignment="Left"
+                        Height="23"
+                        Margin="391,128,0,0"
+                        TextWrapping="Wrap"
+                        VerticalAlignment="Top"
+                        Width="39"
+                        Text="{Binding SlowPBUpdate1, Mode=TwoWay, StringFormat=D}" RenderTransformOrigin="0.529,0.385" Grid.Column="1" />
+                    <Label
+                        Content="UpdateAfterSimulation10"
+                        HorizontalAlignment="Left"
+                        Margin="235,151,0,0"
+                        VerticalAlignment="Top" Grid.Column="1" />
+                    <TextBox
+                        x:Name="SlowSimulationUpdate10"
+                        HorizontalAlignment="Left"
+                        Height="23"
+                        Margin="391,154,0,0"
+                        TextWrapping="Wrap"
+                        VerticalAlignment="Top"
+                        Width="39"
+                        Text="{Binding SlowPBUpdate10, Mode=TwoWay, StringFormat=D}" RenderTransformOrigin="-0.045,-0.077" Grid.Column="1" />
+                    <Label
+                        Content="UpdateAfterSimulation100"
+                        HorizontalAlignment="Left"
+                        Margin="236,177,0,0"
+                        VerticalAlignment="Top" Grid.Column="1" />
+                    <TextBox
+                        x:Name="SlowSimulationUpdate100"
+                        HorizontalAlignment="Left"
+                        Height="23"
+                        Margin="391,182,0,0"
+                        TextWrapping="Wrap"
+                        VerticalAlignment="Top"
+                        Width="39"
+                        Text="{Binding SlowPBUpdate100, Mode=TwoWay, StringFormat=D}" RenderTransformOrigin="0.559,0.615" Grid.Column="1" />
+                    <Label
+                        Content="Ignored PB SubTypes with ;"
+                        HorizontalAlignment="Left"
+                        Margin="235,203,0,0"
+                        VerticalAlignment="Top" RenderTransformOrigin="0.479,0.692" Grid.Column="1" />
+                    <TextBox
+                        x:Name="IgnorePBSubTypesHere"
+                        HorizontalAlignment="Left"
+                        Height="39"
+                        Margin="236,229,0,0"
+                        TextWrapping="Wrap"
+                        VerticalAlignment="Top"
+                        Width="194"
+                        Text="{Binding SlowPBIgnored, Mode=TwoWay, StringFormat=N2, UpdateSourceTrigger=PropertyChanged}" RenderTransformOrigin="0.559,0.615" Grid.Column="1" />
                 </Grid>
             </TabItem>
         </TabControl>
