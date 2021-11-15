@@ -25,6 +25,10 @@
             <HintPath>$(SolutionDir)\GameBinaries\SpaceEngineers.ObjectBuilders.XmlSerializers.dll</HintPath>
             <Private>False</Private>
         </Reference>
+    	<Reference Include="HavokWrapper">
+      	    <HintPath>$(SolutionDir)\GameBinaries\HavokWrapper.dll</HintPath>
+      	    <Private>False</Private>
+    	</Reference>
         <Reference Include="Torch">
             <HintPath>$(SolutionDir)\TorchBinaries\Torch.dll</HintPath>
             <Private>False</Private>
