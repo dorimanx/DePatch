@@ -182,6 +182,10 @@
                         Content="Fix MyEntity Duplicates" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,272,0,0"
                         ToolTip="This will tap to KEEN function for MyEntity Set and check for duplicate Entity ID and prevent server crash."
                         IsChecked="{Binding MyEntityDuplicateFix}" Width="153" Grid.ColumnSpan="2" />
+                    <CheckBox
+                        Content="Fix MySession UpdateComponents" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,292,0,0"
+                        ToolTip="This will tap to KEEN function for UpdateComponents and check for Null bugs and prevent server crash."
+                        IsChecked="{Binding UpdateComponentsFix}" Width="209" Grid.ColumnSpan="3" />
                 </Grid>
             </TabItem>
             <TabItem

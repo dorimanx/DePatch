@@ -91,6 +91,7 @@ namespace DePatch
         private bool _UpdateAfterSimulation100FIX = true;
         private bool _UpdateBeforeSimulation100FIX = true;
         private bool _ParallelUpdateHandlerAfterSimulationFIX = true;
+        private bool _UpdateComponentsFix = false;
         private bool _RemoveEntityPhantomFIX = true;
         private bool _MyEntityDuplicateFix = true;
         private bool _DenyPlacingBlocksOnEnemyGrid;
@@ -581,6 +582,12 @@ namespace DePatch
         {
             get => _MyEntityDuplicateFix;
             set => SetValue(ref _MyEntityDuplicateFix, value);
+        }
+
+        public bool UpdateComponentsFix
+        {
+            get => _UpdateComponentsFix;
+            set => SetValue(ref _UpdateComponentsFix, value);
         }
 
         public bool DenyPlacingBlocksOnEnemyGrid

@@ -27,11 +27,11 @@ namespace DePatch.KEEN_BUG_FIXES
         public static void Patch(PatchContext ctx)
         {
             MethodInfo _target = typeof(MySafeZone).GetMethod("RemoveEntityPhantom", BindingFlags.Instance | BindingFlags.NonPublic);
-            MethodInfo _patch = typeof(KEEN_RemoveEntityPhantomPathFix).GetMethod(nameof(RemoveEntityPhantomPath), BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
+            MethodInfo _patch = typeof(KEEN_RemoveEntityPhantomPathFix).GetMethod(nameof(RemoveEntityPhantom), BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
             ctx.GetPattern(_target).Prefixes.Add(_patch);
         }
 
-        private static bool RemoveEntityPhantomPath(MySafeZone __instance, HkRigidBody body, IMyEntity entity)
+        private static bool RemoveEntityPhantom(MySafeZone __instance, HkRigidBody body, IMyEntity entity)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || MySandboxGame.Static.SimulationFrameCounter < 1000)
                 return true;

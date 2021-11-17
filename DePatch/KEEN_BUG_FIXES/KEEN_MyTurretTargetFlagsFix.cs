@@ -17,7 +17,7 @@ namespace DePatch.KEEN_BUG_FIXES
             .GetMethod("IsValid", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
         private static readonly MethodInfo prefix = typeof(KEEN_MyTurretTargetFlagsFix)
-            .GetMethod(nameof(MethodIsValidPatched), BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic);
+            .GetMethod(nameof(MethodIsValid), BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic);
 
         public static void PatchMyTurretTarget()
         {
@@ -27,7 +27,7 @@ namespace DePatch.KEEN_BUG_FIXES
             _ = _harmony.Patch(original, new HarmonyMethod(prefix));
         }
 
-        private static bool MethodIsValidPatched(MyTurretTargetFlags value, ref bool __result)
+        private static bool MethodIsValid(MyTurretTargetFlags value, ref bool __result)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.TurretsAimFix)
                 return true;

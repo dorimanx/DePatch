@@ -60,6 +60,7 @@
     <Compile Include="GamePatches\MyGasTankPatch.cs" />
     <Compile Include="GamePatches\MyToolbarPatch.cs" />
     <Compile Include="GamePatches\MyConveyorSorterPatch.cs" />
+    <Compile Include="KEEN_BUG_FIXES\KEEN_UpdateComponentsFix.cs" />
     <Compile Include="KEEN_BUG_FIXES\KEEN_UpdateSimulationFixes.cs" />
     <Compile Include="KEEN_BUG_FIXES\KEEN_ColorChangeExploitFix.cs" />
     <Compile Include="KEEN_BUG_FIXES\KEEN_MyTurretTargetFlagsFix.cs" />

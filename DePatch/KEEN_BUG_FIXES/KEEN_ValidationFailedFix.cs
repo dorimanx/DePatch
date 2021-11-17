@@ -15,10 +15,10 @@ namespace DePatch.KEEN_BUG_FIXES
         private static void Patch(PatchContext ctx)
         {
             ctx.GetPattern(typeof(MyMultiplayerServerBase).GetMethod("ValidationFailed", BindingFlags.Instance | BindingFlags.Public)).
-                Prefixes.Add(typeof(KEEN_ValidationFailedFix).GetMethod(nameof(ValidationFailedLOG), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+                Prefixes.Add(typeof(KEEN_ValidationFailedFix).GetMethod(nameof(ValidationFailed), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
         }
 
-        private static bool ValidationFailedLOG(ulong clientId, bool kick = true, string additionalInfo = null, bool stackTrace = true)
+        private static bool ValidationFailed(ulong clientId, bool kick = true, string additionalInfo = null, bool stackTrace = true)
         {
             if (!DePatchPlugin.Instance.Config.Enabled)
                 return true;

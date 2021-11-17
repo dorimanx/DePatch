@@ -75,19 +75,33 @@ namespace DePatch
 
         private void Torch_GameStateChanged(MySandboxGame game, TorchGameState newState)
         {
+            if (!Config.Enabled)
+                return;
+
+            var patchManager = Torch.Managers.GetManager<PatchManager>();
+            var context = patchManager.AcquireContext();
+
             if (newState == TorchGameState.Loading)
             {
                 _harmony.PatchAll();
                 KEEN_MyTurretTargetFlagsFix.PatchMyTurretTarget();
+
+                if (Config.UpdateAfterSimulation10FIX
+                    || Config.UpdateAfterSimulation100FIX
+                    || Config.UpdateBeforeSimulation100FIX
+                    || Config.ParallelUpdateHandlerAfterSimulationFIX)
+                {
+                    KEEN_UpdateSimulationFixes.Patch(context);
+                }
+
+                if (Config.UpdateComponentsFix)
+                    KEEN_UpdateComponentsFix.Patch(context);
             }
 
             if (newState != TorchGameState.Loaded)
                 return;
 
             GameIsReady = true;
-
-            var patchManager = Torch.Managers.GetManager<PatchManager>();
-            var context = patchManager.AcquireContext();
 
             if (Config.PlayersIdUpdate)
                 MyPlayerIdUpdate.Patch(context);
@@ -100,7 +114,7 @@ namespace DePatch
 
             DrillSettings.InitDefinitions();
 
-            if (Instance.Config.ProtectGrid)
+            if (Config.ProtectGrid)
                 MyGridDeformationPatch.Init();
 
             if (Config.DamageThreading)
