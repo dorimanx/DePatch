@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using DePatch.CoolDown;
 using NLog;
 using Sandbox.Game.World;
@@ -16,8 +15,7 @@ namespace DePatch.GamePatches
 
         public static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MySession).GetMethod("GetCheckpoint", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
-                Suffixes.Add(typeof(MyPlayerIdUpdate).GetMethod(nameof(GetCheckpointPostfix), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+            ctx.Suffix(typeof(MySession), "GetCheckpoint", typeof(MyPlayerIdUpdate), "GetCheckpointPostfix");
         }
 
         private static void GetCheckpointPostfix(ref MyObjectBuilder_Checkpoint __result, ref bool isClientRequest)

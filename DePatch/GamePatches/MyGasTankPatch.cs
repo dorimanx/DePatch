@@ -1,4 +1,4 @@
-﻿using NLog;
+using NLog;
 using ParallelTasks;
 using Sandbox;
 using Sandbox.Engine.Multiplayer;
@@ -23,9 +23,8 @@ namespace DePatch.GamePatches
 
         private static ulong LastFrameCounter = 0;
 
-        internal readonly static MethodInfo OnFilledRatioCallback = typeof(MyGasTank).GetMethod("OnFilledRatioCallback", BindingFlags.Instance | BindingFlags.NonPublic);
-        internal readonly static MethodInfo ChangeFilledRatio = typeof(MyGasTank).GetMethod("ChangeFilledRatio", BindingFlags.Instance | BindingFlags.NonPublic);
-        internal readonly static MethodInfo ChangeFillRatioAmount = typeof(MyGasTank).GetMethod("ChangeFillRatioAmount", BindingFlags.Instance | BindingFlags.Public);
+        internal readonly static MethodInfo OnFilledRatioCallback = typeof(MyGasTank).easyMethod("OnFilledRatioCallback");
+        internal readonly static MethodInfo ChangeFilledRatio = typeof(MyGasTank).easyMethod("ChangeFilledRatio");
 
         private static Action<double> FilledCallback(MyGasTank x) => (Action<double>)OnFilledRatioCallback.CreateDelegate(typeof(Action<double>), x);
         public static ConcurrentDictionary<int, Tuple<MyGasTank, double>> TanksToUpdate = new ConcurrentDictionary<int, Tuple<MyGasTank, double>>();
@@ -35,8 +34,7 @@ namespace DePatch.GamePatches
             ctx.GetPattern(OnFilledRatioCallback).
                 Prefixes.Add(typeof(MyGasTankPatch).GetMethod(nameof(OnFilledRatioCallbackPatch), BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance));
 
-            ctx.GetPattern(ChangeFillRatioAmount).
-                Prefixes.Add(typeof(MyGasTankPatch).GetMethod(nameof(ChangeFillRatioAmountPatch), BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance));
+            ctx.Prefix(typeof(MyGasTank), "ChangeFillRatioAmount", typeof(MyGasTankPatch), "ChangeFillRatioAmountPatch");
         }
 
         public static bool ChangeFillRatioAmountPatch(MyGasTank __instance, double newFilledRatio)

@@ -18,10 +18,8 @@ namespace DePatch.KEEN_BUG_FIXES
 
         public static void Patch(PatchContext ctx)
         {
-            m_sessionComponentsForUpdate = typeof(MySession).GetField("m_sessionComponentsForUpdate", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            ctx.GetPattern(typeof(MySession).GetMethod("UpdateComponents", BindingFlags.Instance | BindingFlags.Public)).
-                Prefixes.Add(typeof(KEEN_UpdateComponentsFix).GetMethod(nameof(UpdateComponents), BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public));
+            m_sessionComponentsForUpdate = typeof(MySession).easyField("m_sessionComponentsForUpdate");
+            ctx.Prefix(typeof(MySession), typeof(KEEN_UpdateComponentsFix), "UpdateComponents");
         }
 
         public static bool UpdateComponents(MySession __instance)

@@ -2,7 +2,6 @@
 using Sandbox.Game.Weapons;
 using Sandbox.ModAPI.Interfaces;
 using SpaceEngineers.Game.Entities.Blocks;
-using System.Reflection;
 using Torch.Managers.PatchManager;
 
 namespace DePatch.BlocksDisable
@@ -13,10 +12,9 @@ namespace DePatch.BlocksDisable
     {
         private static readonly string WelderProperty = "BuildAndRepair.ShowArea";
 
-        private static void Patch(PatchContext ctx)
+        public static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyShipToolBase).GetMethod("UpdateAfterSimulation10", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
-                Suffixes.Add(typeof(AreaShow_BuildAndRepairSystem).GetMethod(nameof(UpdateAfterSimulation10), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+            ctx.Suffix(typeof(MyShipToolBase), typeof(AreaShow_BuildAndRepairSystem), "UpdateAfterSimulation10");
         }
 
         private static void UpdateAfterSimulation10(MyTerminalBlock __instance)

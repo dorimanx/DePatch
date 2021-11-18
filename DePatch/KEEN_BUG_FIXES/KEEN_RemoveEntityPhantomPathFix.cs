@@ -22,13 +22,12 @@ namespace DePatch.KEEN_BUG_FIXES
 
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-        public static MethodInfo entity_OnClose = typeof(MySafeZone).GetMethod("entity_OnClose", BindingFlags.Instance | BindingFlags.NonPublic);
+        public static MethodInfo entity_OnClose;
 
         public static void Patch(PatchContext ctx)
         {
-            MethodInfo _target = typeof(MySafeZone).GetMethod("RemoveEntityPhantom", BindingFlags.Instance | BindingFlags.NonPublic);
-            MethodInfo _patch = typeof(KEEN_RemoveEntityPhantomPathFix).GetMethod(nameof(RemoveEntityPhantom), BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
-            ctx.GetPattern(_target).Prefixes.Add(_patch);
+            entity_OnClose = typeof(MySafeZone).easyMethod("entity_OnClose");
+            ctx.Prefix(typeof(MySafeZone), typeof(KEEN_RemoveEntityPhantomPathFix), "RemoveEntityPhantom");
         }
 
         private static bool RemoveEntityPhantom(MySafeZone __instance, HkRigidBody body, IMyEntity entity)

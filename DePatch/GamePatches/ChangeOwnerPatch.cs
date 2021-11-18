@@ -24,15 +24,12 @@ namespace DePatch.GamePatches
         public static FieldInfo TerminalBlock { get; private set; }
         public static readonly Type MyToolbarItemTerminalBlockClass = Type.GetType("Sandbox.Game.Screens.Helpers.MyToolbarItemTerminalBlock, Sandbox.Game");
 
-        internal static readonly MethodInfo ChangeOwner = typeof(MyCubeBlock).GetMethod("ChangeOwner", BindingFlags.Instance | BindingFlags.Public) ?? throw new Exception("Failed to find patch method");
-        internal static readonly MethodInfo ChangeOwnerPatchTarget = typeof(ChangeOwnerPatch).GetMethod(nameof(ChangeOwnerPatchSuffix), BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("Failed to find patch method");
-
         public static void Patch(PatchContext ctx)
         {
-            m_items = typeof(MyToolbar).GetField("m_items", BindingFlags.NonPublic | BindingFlags.Instance);
-            TerminalBlock = MyToolbarItemTerminalBlockClass.GetField("m_block", BindingFlags.Instance | BindingFlags.NonPublic);
+            m_items = typeof(MyToolbar).easyField("m_items");
+            TerminalBlock = MyToolbarItemTerminalBlockClass.easyField("m_block");
 
-            ctx.GetPattern(ChangeOwner).Suffixes.Add(ChangeOwnerPatchTarget);
+            ctx.Suffix(typeof(MyCubeBlock), "ChangeOwner", typeof(ChangeOwnerPatch), "ChangeOwnerPatchSuffix");
         }
 
         private static void ChangeOwnerPatchSuffix(MyCubeBlock __instance, ref long owner, MyOwnershipShareModeEnum shareMode)

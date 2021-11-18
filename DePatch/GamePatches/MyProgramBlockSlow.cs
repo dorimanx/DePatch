@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using DePatch.BlocksDisable;
 using Sandbox.Game.Entities.Blocks;
 using Sandbox.Game.World;
@@ -20,10 +19,9 @@ namespace DePatch.GamePatches
 
         static HashSet<MyStringHash> ignoredTimers = new HashSet<MyStringHash>();
 
-        private static void Patch(PatchContext ctx)
+        public static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyProgrammableBlock).GetMethod("Run", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
-                Prefixes.Add(typeof(MyProgramBlockSlow).GetMethod(nameof(Run), BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static));
+            ctx.Prefix(typeof(MyProgrammableBlock), typeof(MyProgramBlockSlow), "Run");
         }
 
         public static void Init()

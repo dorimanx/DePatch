@@ -2,7 +2,6 @@
 using Sandbox.Engine.Multiplayer;
 using Sandbox.Game.World;
 using System;
-using System.Reflection;
 using Torch.Managers.PatchManager;
 using VRage.Utils;
 
@@ -12,10 +11,9 @@ namespace DePatch.KEEN_BUG_FIXES
 
     public static class KEEN_ValidationFailedFix
     {
-        private static void Patch(PatchContext ctx)
+        public static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyMultiplayerServerBase).GetMethod("ValidationFailed", BindingFlags.Instance | BindingFlags.Public)).
-                Prefixes.Add(typeof(KEEN_ValidationFailedFix).GetMethod(nameof(ValidationFailed), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+            ctx.Prefix(typeof(MyMultiplayerServerBase), typeof(KEEN_ValidationFailedFix), "ValidationFailed");
         }
 
         private static bool ValidationFailed(ulong clientId, bool kick = true, string additionalInfo = null, bool stackTrace = true)

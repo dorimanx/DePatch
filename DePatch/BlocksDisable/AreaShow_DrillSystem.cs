@@ -1,7 +1,6 @@
 ﻿using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.Weapons;
 using Sandbox.ModAPI.Interfaces;
-using System.Reflection;
 using Torch.Managers.PatchManager;
 
 namespace DePatch.BlocksDisable
@@ -11,10 +10,9 @@ namespace DePatch.BlocksDisable
     {
         private static readonly string DrillProperty = "Drill.ShowArea";
 
-        private static void Patch(PatchContext ctx)
+        public static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyShipDrill).GetMethod("UpdateAfterSimulation100", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
-                Suffixes.Add(typeof(AreaShow_DrillSystem).GetMethod(nameof(UpdateAfterSimulation100), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+            ctx.Suffix(typeof(MyShipDrill), typeof(AreaShow_DrillSystem), "UpdateAfterSimulation100");
         }
 
         private static void UpdateAfterSimulation100(MyTerminalBlock __instance)

@@ -21,25 +21,21 @@ namespace DePatch.KEEN_BUG_FIXES
             if (DePatchPlugin.Instance.Config.UpdateAfterSimulation10FIX || DePatchPlugin.Instance.Config.UpdateAfterSimulation100FIX
                                                                          || DePatchPlugin.Instance.Config.UpdateBeforeSimulation100FIX)
             {
-                m_entitiesForUpdate10 = typeof(MyParallelEntityUpdateOrchestrator).GetField("m_entitiesForUpdate10", BindingFlags.NonPublic | BindingFlags.Instance);
-                m_entitiesForUpdate100 = typeof(MyParallelEntityUpdateOrchestrator).GetField("m_entitiesForUpdate100", BindingFlags.NonPublic | BindingFlags.Instance);
+                m_entitiesForUpdate10 = typeof(MyParallelEntityUpdateOrchestrator).easyField("m_entitiesForUpdate10");
+                m_entitiesForUpdate100 = typeof(MyParallelEntityUpdateOrchestrator).easyField("m_entitiesForUpdate100");
 
                 if (DePatchPlugin.Instance.Config.UpdateAfterSimulation10FIX)
-                    ctx.GetPattern(typeof(MyParallelEntityUpdateOrchestrator).GetMethod("UpdateAfterSimulation10", BindingFlags.Instance | BindingFlags.NonPublic)).
-                        Prefixes.Add(typeof(KEEN_UpdateSimulationFixes).GetMethod(nameof(UpdateAfterSimulation10), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+                    ctx.Prefix(typeof(MyParallelEntityUpdateOrchestrator), typeof(KEEN_UpdateSimulationFixes), "UpdateAfterSimulation10");
 
                 if (DePatchPlugin.Instance.Config.UpdateAfterSimulation100FIX)
-                    ctx.GetPattern(typeof(MyParallelEntityUpdateOrchestrator).GetMethod("UpdateAfterSimulation100", BindingFlags.Instance | BindingFlags.NonPublic)).
-                        Prefixes.Add(typeof(KEEN_UpdateSimulationFixes).GetMethod(nameof(UpdateAfterSimulation100), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+                    ctx.Prefix(typeof(MyParallelEntityUpdateOrchestrator), typeof(KEEN_UpdateSimulationFixes), "UpdateAfterSimulation100");
 
                 if (DePatchPlugin.Instance.Config.UpdateBeforeSimulation100FIX)
-                    ctx.GetPattern(typeof(MyParallelEntityUpdateOrchestrator).GetMethod("UpdateBeforeSimulation100", BindingFlags.Instance | BindingFlags.NonPublic)).
-                        Prefixes.Add(typeof(KEEN_UpdateSimulationFixes).GetMethod(nameof(UpdateBeforeSimulation100), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+                    ctx.Prefix(typeof(MyParallelEntityUpdateOrchestrator), typeof(KEEN_UpdateSimulationFixes), "UpdateBeforeSimulation100");
             }
 
             if (DePatchPlugin.Instance.Config.ParallelUpdateHandlerAfterSimulationFIX)
-                ctx.GetPattern(typeof(MyParallelEntityUpdateOrchestrator).GetMethod("ParallelUpdateHandlerAfterSimulation", BindingFlags.Instance | BindingFlags.NonPublic)).
-                    Prefixes.Add(typeof(KEEN_UpdateSimulationFixes).GetMethod(nameof(ParallelUpdateHandlerAfterSimulation), BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic));
+                ctx.Prefix(typeof(MyParallelEntityUpdateOrchestrator), typeof(KEEN_UpdateSimulationFixes), "ParallelUpdateHandlerAfterSimulation");
         }
 
         private static bool UpdateAfterSimulation10(MyParallelEntityUpdateOrchestrator __instance)

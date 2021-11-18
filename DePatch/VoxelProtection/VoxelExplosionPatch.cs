@@ -1,5 +1,4 @@
 ﻿using Sandbox.Game;
-using System.Reflection;
 using Torch.Managers.PatchManager;
 
 namespace DePatch.VoxelProtection
@@ -9,9 +8,7 @@ namespace DePatch.VoxelProtection
     {
         public static void Patch(PatchContext ctx)
         {
-            MethodInfo _target = typeof(MyExplosionInfo).GetMethod("get_AffectVoxels", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            MethodInfo _patch = typeof(VoxelExplosionPatch).GetMethod(nameof(AffectVoxelsPatch), BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic);
-            ctx.GetPattern(_target).Prefixes.Add(_patch);
+            ctx.Prefix(typeof(MyExplosionInfo), "get_AffectVoxels", typeof(VoxelExplosionPatch), "AffectVoxelsPatch");
         }
 
         private static bool AffectVoxelsPatch(MyExplosionInfo __instance, ref bool __result)

@@ -4,7 +4,6 @@ using Sandbox.Game.Entities;
 using Sandbox.Game.World;
 using System;
 using System.Linq;
-using System.Reflection;
 using Torch.Managers.PatchManager;
 
 namespace DePatch.PVEZONE
@@ -15,10 +14,9 @@ namespace DePatch.PVEZONE
     {
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-        private static void Patch(PatchContext ctx)
+        public static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyCubeGrid).GetMethod("UpdateAfterSimulation100", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
-                Suffixes.Add(typeof(MyCubeGridPatch).GetMethod(nameof(UpdateAfterSimulation100), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+            ctx.Suffix(typeof(MyCubeGrid), typeof(MyCubeGridPatch), "UpdateAfterSimulation100");
         }
 
         private static void UpdateAfterSimulation100(MyCubeGrid __instance)

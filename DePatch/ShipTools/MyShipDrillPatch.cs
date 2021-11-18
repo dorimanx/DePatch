@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Weapons;
@@ -11,23 +10,23 @@ namespace DePatch.ShipTools
 
     internal static class MyShipDrillPatch
     {
-        private static void Patch(PatchContext ctx)
-        {
-            ctx.GetPattern(typeof(MyShipDrill).GetMethod("UpdateBeforeSimulation10", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
-                Prefixes.Add(typeof(MyShipDrillPatch).GetMethod(nameof(UpdateBeforeSimulation10), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
-        }
-
-        private static MethodInfo Receiver_IsPoweredChanged = typeof(MyShipDrill).GetMethod("Receiver_IsPoweredChanged", BindingFlags.Instance | BindingFlags.NonPublic) ?? throw new MissingMethodException("missing Receiver_IsPoweredChanged");
-
         private static PropertyInfo ShakeAmount = typeof(MyShipDrill).GetProperty("ShakeAmount");
+        private static MethodInfo Receiver_IsPoweredChanged;
+        private static FieldInfo m_drillFrameCountdown;
+        private static FieldInfo m_drillBase;
+        public static FieldInfo m_wantsToCollect;
+        private static MethodInfo InitSubBlocks;
 
-        private static FieldInfo m_drillFrameCountdown = typeof(MyShipDrill).GetField("m_drillFrameCountdown", BindingFlags.Instance | BindingFlags.NonPublic);
+        public static void Patch(PatchContext ctx)
+        {
+            Receiver_IsPoweredChanged = typeof(MyShipDrill).easyMethod("Receiver_IsPoweredChanged");
+            m_drillFrameCountdown = typeof(MyShipDrill).easyField("m_drillFrameCountdown");
+            m_drillBase = typeof(MyShipDrill).easyField("m_drillBase");
+            m_wantsToCollect = typeof(MyShipDrill).easyField("m_wantsToCollect");
+            InitSubBlocks = typeof(MyCubeBlock).easyMethod("InitSubBlocks");
 
-        private static FieldInfo m_drillBase = typeof(MyShipDrill).GetField("m_drillBase", BindingFlags.Instance | BindingFlags.NonPublic);
-
-        public static FieldInfo m_wantsToCollect = typeof(MyShipDrill).GetField("m_wantsToCollect", BindingFlags.Instance | BindingFlags.NonPublic);
-
-        private static MethodInfo InitSubBlocks = typeof(MyCubeBlock).GetMethod("InitSubBlocks", BindingFlags.Instance | BindingFlags.NonPublic);
+            ctx.Prefix(typeof(MyShipDrill), typeof(MyShipDrillPatch), "UpdateBeforeSimulation10");
+        }
 
         private static bool UpdateBeforeSimulation10(MyShipDrill __instance)
         {

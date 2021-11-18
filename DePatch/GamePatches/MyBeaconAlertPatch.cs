@@ -15,10 +15,9 @@ namespace DePatch.GamePatches
     {
         public static readonly List<string> BadNames = new List<string> { "Small Grid", "Static Grid", "Large Grid" };
 
-        private static void Patch(PatchContext ctx)
+        public static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyEntityController).GetMethod("RaiseControlledEntityChanged", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
-                Prefixes.Add(typeof(MyBeaconAlertPatch).GetMethod(nameof(RaiseControlledEntityChanged), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+            ctx.Prefix(typeof(MyEntityController), typeof(MyBeaconAlertPatch), "RaiseControlledEntityChanged");
         }
 
         private static bool IsBadName(string name)

@@ -10,12 +10,12 @@ namespace DePatch.GamePatches
 
     internal static class MyProductionBlockPatch
     {
-        internal readonly static MethodInfo OnRemoveQueueItem = typeof(MyProductionBlock).GetMethod("OnRemoveQueueItem", BindingFlags.Instance | BindingFlags.NonPublic);
+        internal static MethodInfo OnRemoveQueueItem;
 
-        private static void Patch(PatchContext ctx)
+        public static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyProductionBlock).GetMethod("RemoveFirstQueueItemAnnounce", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
-                Prefixes.Add(typeof(MyProductionBlockPatch).GetMethod(nameof(RemoveFirstQueueItemAnnouncePatch), BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static));
+            OnRemoveQueueItem = typeof(MyProductionBlock).easyMethod("OnRemoveQueueItem");
+            ctx.Prefix(typeof(MyProductionBlock), "RemoveFirstQueueItemAnnounce", typeof(MyProductionBlockPatch), "RemoveFirstQueueItemAnnouncePatch");
         }
 
         public static bool RemoveFirstQueueItemAnnouncePatch(MyProductionBlock __instance, MyFixedPoint amount, float progress = 0f)

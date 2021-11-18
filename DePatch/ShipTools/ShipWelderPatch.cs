@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using DePatch.BlocksDisable;
 using Sandbox.Definitions;
 using Sandbox.Game;
@@ -22,10 +21,9 @@ namespace DePatch.ShipTools
     {
         private static Dictionary<string, int> m_missingComponents;
 
-        private static void Patch(PatchContext ctx)
+        public static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyShipWelder).GetMethod("Activate", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
-                Prefixes.Add(typeof(ShipWelderPatch).GetMethod(nameof(Activate), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+            ctx.Prefix(typeof(MyShipWelder), typeof(ShipWelderPatch), "Activate");
         }
 
         private static void Activate(MyShipWelder __instance, HashSet<MySlimBlock> targets)
@@ -96,9 +94,7 @@ namespace DePatch.ShipTools
             {
                 MyDefinitionId myDefinitionId = new MyDefinitionId(typeof(MyObjectBuilder_Component), keyValuePair.Key);
                 if (Math.Max(keyValuePair.Value - (int)inventory.GetItemAmount(myDefinitionId, MyItemFlags.None, false), 0) != 0 && Sync.IsServer && __instance.UseConveyorSystem)
-                {
                     __instance.CubeGrid.GridSystems.ConveyorSystem.PullItem(myDefinitionId, new MyFixedPoint?(keyValuePair.Value), __instance, __instance.GetInventory(0), false, false);
-                }
             }
 
             m_missingComponents.Clear();

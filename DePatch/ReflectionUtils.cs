@@ -1,10 +1,12 @@
-﻿using Sandbox.Game;
+﻿using NLog;
+using Sandbox.Game;
 using Sandbox.Game.Entities.Character;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Torch.Managers.PatchManager;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using VRageMath;
@@ -13,14 +15,142 @@ namespace DePatch
 {
     public static class ReflectionUtils
     {
-        public static MethodInfo GetMethod<T>(string name, bool isPrivate = false)
+        private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
+        public const BindingFlags all = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+        // Extensions by Dev Buddhist
+
+        internal static object InvokeInstanceMethod(Type type, object instance, string methodName, object[] args)
         {
-            return typeof(T).GetMethod(name, BindingFlags.Instance | (isPrivate ? BindingFlags.NonPublic : BindingFlags.Public));
+            var method = type.GetMethod(methodName, all);
+            return method.Invoke(instance, args);
         }
 
-        public static FieldInfo GetField<T>(string name, bool isPrivate = false)
+        // Extensions by DEV Slimeradio
+
+        public static FieldInfo easyField(this Type type, string name, bool needThrow = true)
         {
-            return typeof(T).GetField(name, BindingFlags.Instance | (isPrivate ? BindingFlags.NonPublic : BindingFlags.Public));
+            var ms = type.GetFields(all);
+            foreach (var t in ms)
+            {
+                if (t.Name == name) { return t; }
+            }
+
+            Log.Error("Field not found: " + name);
+            foreach (var t in ms)
+            {
+                Log.Error(type.Name + " -> " + t.Name);
+                if (t.Name == name) { return t; }
+            }
+
+            if (needThrow) throw new Exception("Field " + name + " not found");
+            return null;
+        }
+
+        public static MethodInfo easyMethod(this Type type, string name, bool needThrow = true, string[] names = null, Type[] types = null)
+        {
+            var ms = type.GetMethods(all);
+            foreach (var t in ms)
+            {
+                if (t.Name == name)
+                {
+                    if (names == null) return t;
+
+                    if (t.MatchMethod(names, types))
+                        return t;
+                }
+            }
+
+            if (needThrow) throw new Exception("Method " + name + " not found");
+            return null;
+        }
+
+        /// <summary>
+        /// Methods run before the original method is run. If they return false the original method is skipped.
+        /// </summary>
+        /// <param name="_ctx"></param>
+        /// <param name="t"></param>
+        /// <param name="t2"></param>
+        /// <param name="name"></param>
+        public static void Prefix(this PatchContext _ctx, Type t, Type t2, string name)
+        {
+            try
+            {
+                _ctx.GetPattern(t.easyMethod(name)).Prefixes.Add(t2.easyMethod(name));
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed patch :" + name + " " + t, e);
+            }
+        }
+
+        /// <summary>
+        /// Methods run before the original method is run. If they return false the original method is skipped.
+        /// </summary>
+        /// <param name="_ctx"></param>
+        /// <param name="t"></param>
+        /// <param name="name"></param>
+        /// <param name="t2"></param>
+        /// <param name="name2"></param>
+        public static void Prefix(this PatchContext _ctx, Type t, String name, Type t2, String name2)
+        {
+            try
+            {
+                _ctx.GetPattern(t.easyMethod(name)).Prefixes.Add(t2.easyMethod(name2));
+            }
+            catch
+            {
+                throw new Exception("Failed patch :" + name + " " + t);
+            }
+        }
+
+        public static void Suffix(this PatchContext _ctx, Type t, Type t2, string name)
+        {
+            try
+            {
+                _ctx.GetPattern(t.easyMethod(name)).Suffixes.Add(t2.easyMethod(name));
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed patch :" + name + " " + t, e);
+            }
+        }
+
+        public static void Suffix(this PatchContext _ctx, Type t, string name, Type t2, string name2)
+        {
+            try
+            {
+                _ctx.GetPattern(t.easyMethod(name)).Suffixes.Add(t2.easyMethod(name2));
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed patch :" + name + " " + t, e);
+            }
+        }
+
+        private static bool MatchMethod(this MethodInfo info, string[] names, Type[] types = null)
+        {
+            var pars = info.GetParameters();
+            if (pars.Length != names.Length) return false;
+
+            bool ok = true;
+            for (var x = 0; x < pars.Length; x++)
+            {
+                if (types != null && pars[x].ParameterType != types[x])
+                {
+                    ok = false;
+                    break;
+                }
+
+                if (pars[x].Name != names[x])
+                {
+                    ok = false;
+                    break;
+                }
+            }
+
+            return ok;
         }
 
         public static bool PlayersNarby(IMyCubeBlock block, int radius)
@@ -42,14 +172,6 @@ namespace DePatch
                 }
             }
             return false;
-        }
-
-        internal static object InvokeInstanceMethod(Type type, object instance, string methodName, Object[] args)
-        {
-            BindingFlags bindFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
-                                     | BindingFlags.Static;
-            var method = type.GetMethod(methodName, bindFlags);
-            return method.Invoke(instance, args);
         }
     }
 }

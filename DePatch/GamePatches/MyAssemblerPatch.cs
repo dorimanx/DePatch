@@ -9,10 +9,9 @@ namespace DePatch.GamePatches
 
     internal static class MyAssemblerPatch
     {
-        private static void Patch(PatchContext ctx)
+        public static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyAssembler).GetMethod("UpdateBeforeSimulation100", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
-                Prefixes.Add(typeof(MyAssemblerPatch).GetMethod(nameof(UpdateBeforeSimulation100), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+            ctx.Prefix(typeof(MyAssembler), typeof(MyAssemblerPatch), "UpdateBeforeSimulation100");
         }
 
         private static void UpdateBeforeSimulation100(MyAssembler __instance)

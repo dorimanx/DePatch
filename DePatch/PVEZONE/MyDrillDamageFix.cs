@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 using Sandbox.Game.Weapons;
 using Sandbox.Game.World;
@@ -12,12 +11,12 @@ namespace DePatch.PVEZONE
 
     internal static class MyDrillDamageFix
     {
-        private static FieldInfo drillEntity = typeof(MyDrillBase).GetField("m_drillEntity", BindingFlags.Instance | BindingFlags.NonPublic) ?? throw new MissingFieldException("m_drillEntity is missing");
+        private static FieldInfo drillEntity;
 
-        private static void Patch(PatchContext ctx)
+        public static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyDrillBase).GetMethod("TryDrillBlocks", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
-                Prefixes.Add(typeof(MyDrillDamageFix).GetMethod(nameof(TryDrillBlocks), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+            drillEntity = typeof(MyDrillBase).easyField("m_drillEntity");
+            ctx.Prefix(typeof(MyDrillBase), typeof(MyDrillDamageFix), "TryDrillBlocks");
         }
 
         private static bool TryDrillBlocks(MyDrillBase __instance, ref bool __result)

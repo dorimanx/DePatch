@@ -17,15 +17,10 @@ namespace DePatch.GamePatches
             typeof(MyCubeGrid)
         }, new ParameterModifier[0]);
 
-        internal static readonly MethodInfo UpdateMass = typeof(MySpaceBall).GetMethod("RefreshPhysicsBody", BindingFlags.Instance | BindingFlags.NonPublic);
-
-        internal static readonly MethodInfo UpdatePatch = typeof(MySpaceBallPatch).GetMethod(nameof(PatchInitMethod), BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("Failed to find patch method");
-        internal static readonly MethodInfo UpdateMassPatch = typeof(MySpaceBallPatch).GetMethod(nameof(PatchRefreshPhysicsBodyMethod), BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("Failed to find patch method");
-
         public static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(Update).Prefixes.Add(UpdatePatch);
-            ctx.GetPattern(UpdateMass).Prefixes.Add(UpdateMassPatch);
+            ctx.GetPattern(Update).Prefixes.Add(typeof(MySpaceBallPatch).GetMethod(nameof(PatchInitMethod), BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic) ?? throw new Exception("Failed to find patch method"));
+            ctx.Prefix(typeof(MySpaceBall), "RefreshPhysicsBody", typeof(MySpaceBallPatch), "PatchRefreshPhysicsBodyMethod");
         }
 
         private static void PatchInitMethod(MySpaceBall __instance)

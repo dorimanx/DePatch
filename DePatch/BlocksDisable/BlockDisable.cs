@@ -1,7 +1,6 @@
 ﻿using Sandbox.Game.Entities.Cube;
 using System;
 using Sandbox.Game.World;
-using System.Reflection;
 using Torch.Managers.PatchManager;
 
 namespace DePatch.BlocksDisable
@@ -11,10 +10,9 @@ namespace DePatch.BlocksDisable
     {
         private static int Cooldown = 1;
 
-        private static void Patch(PatchContext ctx)
+        public static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyFunctionalBlock).GetMethod("UpdateAfterSimulation100", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
-                Prefixes.Add(typeof(BlockDisable).GetMethod(nameof(UpdateAfterSimulation100), BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static));
+            ctx.Prefix(typeof(MyFunctionalBlock), typeof(BlockDisable), "UpdateAfterSimulation100");
         }
 
         public static void UpdateAfterSimulation100(MyFunctionalBlock __instance)

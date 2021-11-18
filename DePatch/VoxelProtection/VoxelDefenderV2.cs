@@ -1,5 +1,4 @@
 ﻿using Sandbox.Game.Entities;
-using System.Reflection;
 using Torch.Managers.PatchManager;
 
 namespace DePatch.VoxelProtection
@@ -8,10 +7,9 @@ namespace DePatch.VoxelProtection
 
     internal static class VoxelDefenderV2
     {
-        private static void Patch(PatchContext ctx)
+        public static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(typeof(MyCubeGrid).GetMethod("PerformCutouts", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)).
-                Prefixes.Add(typeof(VoxelDefenderV2).GetMethod(nameof(PerformCutouts), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+            ctx.Prefix(typeof(MyCubeGrid), typeof(VoxelDefenderV2), "PerformCutouts");
         }
 
         private static bool PerformCutouts()
