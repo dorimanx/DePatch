@@ -16,30 +16,30 @@ namespace DePatch.VoxelProtection
     {
         private static ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> FindGridGroups(long gridID)
         {
-            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = new ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group>();
-            Parallel.ForEach(MyCubeGridGroups.Static.Physical.Groups, group =>
-            {
-                foreach (MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Node groupNodes in group.Nodes)
-                {
-                    MyCubeGrid grid = groupNodes.NodeData;
+            var groups = new ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group>();
 
-                    if (grid.Physics == null)
-                        continue;
+            _ = Parallel.ForEach(MyCubeGridGroups.Static.Physical.Groups, group =>
+              {
+                  foreach (MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Node groupNodes in group.Nodes)
+                  {
+                      MyCubeGrid grid = groupNodes.NodeData;
 
-                    /* Gridname is wrong ignore */
-                    if (!grid.EntityId.Equals(gridID))
-                        continue;
+                      if (grid.Physics is null)
+                          continue;
 
-                    groups.Add(group);
-                    break;
-                }
-            });
+                      /* Gridname is wrong ignore */
+                      if (!grid.EntityId.Equals(gridID))
+                          continue;
+
+                      groups.Add(group);
+                      break;
+                  }
+              });
 
             return groups;
         }
 
-        private static bool CheckGroups(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups,
-                                        out MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group)
+        private static bool CheckGroups(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups, out MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group)
         {
             /* No group or too many groups found */
             if (groups.Count < 1)
@@ -63,23 +63,24 @@ namespace DePatch.VoxelProtection
 
         private static bool FixGroup(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group)
         {
-            List<MyObjectBuilder_EntityBase> objectBuilderList = new List<MyObjectBuilder_EntityBase>();
-            List<MyCubeGrid> gridsList = new List<MyCubeGrid>();
+            var objectBuilderList = new List<MyObjectBuilder_EntityBase>();
+            var gridsList = new List<MyCubeGrid>();
 
-            foreach (MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Node groupNodes in group.Nodes)
+            foreach (var groupNodes in group.Nodes)
             {
-                MyCubeGrid grid = groupNodes.NodeData;
+                var grid = groupNodes.NodeData;
+
                 gridsList.Add(grid);
 
                 grid.Physics.ClearSpeed();
 
-                MyObjectBuilder_EntityBase ob = grid.GetObjectBuilder(true);
+                var ob = grid.GetObjectBuilder(true);
 
                 if (!objectBuilderList.Contains(ob))
                 {
                     if (ob is MyObjectBuilder_CubeGrid gridBuilder)
                     {
-                        foreach (MyObjectBuilder_CubeBlock cubeBlock in gridBuilder.CubeBlocks)
+                        foreach (var cubeBlock in gridBuilder.CubeBlocks)
                         {
                             if (cubeBlock is MyObjectBuilder_OxygenTank o2Tank)
                                 o2Tank.AutoRefill = false;
@@ -94,7 +95,7 @@ namespace DePatch.VoxelProtection
                 }
             }
 
-            foreach (MyCubeGrid grid in gridsList)
+            foreach (var grid in gridsList)
             {
                 if (!(grid is IMyEntity entity) || entity.MarkedForClose || entity.Closed)
                     continue;
@@ -131,21 +132,14 @@ namespace DePatch.VoxelProtection
             return true;
         }
 
-        private static bool FixGroups(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups)
+        public static bool FixShip(long gridID)
         {
-            var result = CheckGroups(groups, out MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group);
+            var result = CheckGroups(FindGridGroups(gridID), out var group);
 
             if (!result)
                 return result;
 
             return FixGroup(group);
-        }
-
-        public static bool FixShip(long gridID)
-        {
-            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = FindGridGroups(gridID);
-
-            return FixGroups(groups);
         }
     }
 }
