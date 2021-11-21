@@ -105,6 +105,30 @@ namespace DePatch
             }
         }
 
+        public static void Prefix(this PatchContext _ctx, Type t, Type t2, string name, string[] parametorNames = null)
+        {
+            try
+            {
+                _ctx.GetPattern(t.easyMethod(name, names: parametorNames)).Prefixes.Add(t2.easyMethod(name));
+            }
+            catch
+            {
+                throw new Exception("Failed patch :" + name + " " + t);
+            }
+        }
+
+        public static void Prefix(this PatchContext _ctx, Type t, string name, Type t2, string name2, string[] parametorNames = null)
+        {
+            try
+            {
+                _ctx.GetPattern(t.easyMethod(name, names: parametorNames)).Prefixes.Add(t2.easyMethod(name2));
+            }
+            catch
+            {
+                throw new Exception("Failed patch :" + name + " " + t);
+            }
+        }
+
         public static void Suffix(this PatchContext _ctx, Type t, Type t2, string name)
         {
             try
@@ -126,6 +150,18 @@ namespace DePatch
             catch (Exception e)
             {
                 throw new Exception("Failed patch :" + name + " " + t, e);
+            }
+        }
+
+        public static void Suffix(this PatchContext _ctx, Type t, string name, Type t2, string name2, string[] parametorNames = null)
+        {
+            try
+            {
+                _ctx.GetPattern(t.easyMethod(name, names: parametorNames)).Suffixes.Add(t2.easyMethod(name2));
+            }
+            catch
+            {
+                throw new Exception("Failed patch :" + name + " " + t);
             }
         }
 

@@ -1,8 +1,5 @@
 ﻿using Sandbox.Game.Entities;
-using System;
-using System.Reflection;
 using Torch.Managers.PatchManager;
-using VRage.Game;
 
 namespace DePatch.GamePatches
 {
@@ -10,12 +7,7 @@ namespace DePatch.GamePatches
 
     internal static class MyCameraBlockPatch
     {
-        private static void Patch(PatchContext ctx) => ctx.GetPattern(typeof(MyCameraBlock).GetMethod("Init", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[2]
-            {
-                typeof(MyObjectBuilder_CubeBlock),
-                typeof(MyCubeGrid)
-            }, new ParameterModifier[0])).
-            Prefixes.Add(typeof(MyCameraBlockPatch).GetMethod(nameof(CameraInit), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+        public static void Patch(PatchContext ctx) => ctx.Prefix(typeof(MyCameraBlock), "Init", typeof(MyCameraBlockPatch), "CameraInit", new[] { "objectBuilder", "cubeGrid" });
 
         private static void CameraInit(MyCameraBlock __instance)
         {

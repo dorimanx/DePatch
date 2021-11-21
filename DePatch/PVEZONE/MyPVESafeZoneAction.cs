@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using DePatch.CoolDown;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Blocks;
@@ -28,15 +27,7 @@ namespace DePatch.PVEZONE
         public static bool BootTickStarted = true;
         private static bool ServerBootLoopStart = true;
 
-        private static void Patch(PatchContext ctx) => ctx.GetPattern(typeof(MySessionComponentSafeZones).GetMethod("IsActionAllowed", BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance, null,
-                new Type[4]
-                {
-                    typeof(MyEntity),
-                    typeof(MySafeZoneAction),
-                    typeof(long),
-                    typeof(ulong)
-                }, new ParameterModifier[0])).
-                Prefixes.Add(typeof(MyPVESafeZoneAction).GetMethod(nameof(IsActionAllowedPatch), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+        public static void Patch(PatchContext ctx) => ctx.Prefix(typeof(MySessionComponentSafeZones), "IsActionAllowed", typeof(MyPVESafeZoneAction), "IsActionAllowedPatch", new[] { "entity", "action", "sourceEntityId", "user" });
 
         private static bool CheckAllowedToLock(MyCubeGrid Grid)
         {
@@ -95,7 +86,7 @@ namespace DePatch.PVEZONE
             }
         }
 
-        private static bool IsActionAllowedPatch(MyEntity entity, MySafeZoneAction action, ulong user, ref bool __result)
+        private static bool IsActionAllowedPatch(MyEntity entity, MySafeZoneAction action, long sourceEntityId, ulong user, ref bool __result)
         {
             if (!DePatchPlugin.Instance.Config.Enabled)
                 return true;

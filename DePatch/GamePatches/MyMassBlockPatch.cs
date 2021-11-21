@@ -1,10 +1,6 @@
 ﻿using Sandbox.Definitions;
-using Sandbox.Game.Entities;
 using SpaceEngineers.Game.Entities.Blocks;
-using System;
-using System.Reflection;
 using Torch.Managers.PatchManager;
-using VRage.Game;
 
 namespace DePatch.GamePatches
 {
@@ -12,12 +8,7 @@ namespace DePatch.GamePatches
 
     internal static class MyMassBlockPatch
     {
-        private static void Patch(PatchContext ctx) => ctx.GetPattern(typeof(MyVirtualMass).GetMethod("Init", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[2]
-            {
-                typeof(MyObjectBuilder_CubeBlock),
-                typeof(MyCubeGrid)
-            }, new ParameterModifier[0])).
-            Prefixes.Add(typeof(MyMassBlockPatch).GetMethod(nameof(MassInit), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static));
+        public static void Patch(PatchContext ctx) => ctx.Prefix(typeof(MyVirtualMass), "Init", typeof(MyMassBlockPatch), "MassInit", new[] { "objectBuilder", "cubeGrid" });
 
         private static void MassInit(MyVirtualMass __instance)
         {

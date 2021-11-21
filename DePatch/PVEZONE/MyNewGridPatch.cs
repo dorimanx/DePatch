@@ -1,8 +1,5 @@
 using Sandbox.Game.Entities;
-using System;
-using System.Reflection;
 using Torch.Managers.PatchManager;
-using VRage.ObjectBuilders;
 
 namespace DePatch.PVEZONE
 {
@@ -10,11 +7,7 @@ namespace DePatch.PVEZONE
 
     internal static class MyNewGridPatch
     {
-        private static void Patch(PatchContext ctx) => ctx.GetPattern(typeof(MyCubeGrid).GetMethod("Init", BindingFlags.Instance | BindingFlags.Public, null, new Type[1]
-            {
-                typeof(MyObjectBuilder_EntityBase),
-            }, new ParameterModifier[0])).
-            Suffixes.Add(typeof(MyNewGridPatch).GetMethod(nameof(CubeGridInit), BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic));
+        public static void Patch(PatchContext ctx) => ctx.Suffix(typeof(MyCubeGrid), "Init", typeof(MyNewGridPatch), "CubeGridInit", new[] { "objectBuilder" });
 
         internal static void CubeGridInit(MyCubeGrid __instance)
         {
