@@ -12,7 +12,7 @@ namespace DePatch.BlocksDisable
 
         public static void Patch(PatchContext ctx)
         {
-            ctx.Prefix(typeof(MyFunctionalBlock), typeof(BlockDisable), "UpdateAfterSimulation100");
+            ctx.Prefix(typeof(MyFunctionalBlock), typeof(BlockDisable), nameof(UpdateAfterSimulation100));
         }
 
         public static void UpdateAfterSimulation100(MyFunctionalBlock __instance)

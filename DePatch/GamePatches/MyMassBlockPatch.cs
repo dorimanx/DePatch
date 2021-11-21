@@ -8,7 +8,7 @@ namespace DePatch.GamePatches
 
     internal static class MyMassBlockPatch
     {
-        public static void Patch(PatchContext ctx) => ctx.Prefix(typeof(MyVirtualMass), "Init", typeof(MyMassBlockPatch), "MassInit", new[] { "objectBuilder", "cubeGrid" });
+        public static void Patch(PatchContext ctx) => ctx.Prefix(typeof(MyVirtualMass), "Init", typeof(MyMassBlockPatch), nameof(MassInit), new[] { "objectBuilder", "cubeGrid" });
 
         private static void MassInit(MyVirtualMass __instance)
         {

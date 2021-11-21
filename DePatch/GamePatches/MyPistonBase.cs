@@ -11,7 +11,7 @@ namespace DePatch.GamePatches
     {
         public static void Patch(PatchContext ctx)
         {
-            ctx.Suffix(typeof(MyPistonBase), typeof(MyPistonShareInertiaTensor), "UpdateBeforeSimulation10");
+            ctx.Suffix(typeof(MyPistonBase), typeof(MyPistonShareInertiaTensor), nameof(UpdateBeforeSimulation10));
         }
 
         public static void UpdateBeforeSimulation10(MyPistonBase __instance)

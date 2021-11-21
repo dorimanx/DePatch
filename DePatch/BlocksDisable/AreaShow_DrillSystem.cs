@@ -12,7 +12,7 @@ namespace DePatch.BlocksDisable
 
         public static void Patch(PatchContext ctx)
         {
-            ctx.Suffix(typeof(MyShipDrill), typeof(AreaShow_DrillSystem), "UpdateAfterSimulation100");
+            ctx.Suffix(typeof(MyShipDrill), typeof(AreaShow_DrillSystem), nameof(UpdateAfterSimulation100));
         }
 
         private static void UpdateAfterSimulation100(MyTerminalBlock __instance)

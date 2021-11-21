@@ -8,7 +8,7 @@ namespace DePatch.GamePatches
     {
         public static void Patch(PatchContext ctx)
         {
-            ctx.Prefix(typeof(MyConveyorSorter), "UpdateAfterSimulation10", typeof(MyConveyorSorterPatch), "ConveyorSorterPatch");
+            ctx.Prefix(typeof(MyConveyorSorter), "UpdateAfterSimulation10", typeof(MyConveyorSorterPatch), nameof(ConveyorSorterPatch));
         }
 
         private static bool ConveyorSorterPatch(MyConveyorSorter __instance)

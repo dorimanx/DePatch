@@ -7,7 +7,7 @@ namespace DePatch.GamePatches
 
     internal static class MyCameraBlockPatch
     {
-        public static void Patch(PatchContext ctx) => ctx.Prefix(typeof(MyCameraBlock), "Init", typeof(MyCameraBlockPatch), "CameraInit", new[] { "objectBuilder", "cubeGrid" });
+        public static void Patch(PatchContext ctx) => ctx.Prefix(typeof(MyCameraBlock), "Init", typeof(MyCameraBlockPatch), nameof(CameraInit), new[] { "objectBuilder", "cubeGrid" });
 
         private static void CameraInit(MyCameraBlock __instance)
         {

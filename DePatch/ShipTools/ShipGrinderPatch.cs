@@ -25,7 +25,7 @@ namespace DePatch.ShipTools
 
         public static void Patch(PatchContext ctx)
         {
-            ctx.Prefix(typeof(MyShipGrinder), typeof(ShipGrinderPatch), "Activate");
+            ctx.Prefix(typeof(MyShipGrinder), typeof(ShipGrinderPatch), nameof(Activate));
         }
 
         private static void EmptyBlockInventories(MyCubeBlock block)

@@ -23,7 +23,7 @@ namespace DePatch.ShipTools
 
         public static void Patch(PatchContext ctx)
         {
-            ctx.Prefix(typeof(MyShipWelder), typeof(ShipWelderPatch), "Activate");
+            ctx.Prefix(typeof(MyShipWelder), typeof(ShipWelderPatch), nameof(Activate));
         }
 
         private static void Activate(MyShipWelder __instance, HashSet<MySlimBlock> targets)

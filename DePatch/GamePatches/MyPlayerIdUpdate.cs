@@ -15,7 +15,7 @@ namespace DePatch.GamePatches
 
         public static void Patch(PatchContext ctx)
         {
-            ctx.Suffix(typeof(MySession), "GetCheckpoint", typeof(MyPlayerIdUpdate), "GetCheckpointPostfix");
+            ctx.Suffix(typeof(MySession), "GetCheckpoint", typeof(MyPlayerIdUpdate), nameof(GetCheckpointPostfix));
         }
 
         private static void GetCheckpointPostfix(ref MyObjectBuilder_Checkpoint __result, ref bool isClientRequest)

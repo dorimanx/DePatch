@@ -8,8 +8,8 @@ namespace DePatch.GamePatches
     {
         public static void Patch(PatchContext ctx)
         {
-            ctx.Prefix(typeof(MyTimerBlock), "UpdateAfterSimulation10", typeof(MyTimerBlockPatch), "PatchMethod");
-            ctx.Prefix(typeof(MyTimerBlock), "Trigger", typeof(MyTimerBlockPatch), "TrigMethod");
+            ctx.Prefix(typeof(MyTimerBlock), "UpdateAfterSimulation10", typeof(MyTimerBlockPatch), nameof(PatchMethod));
+            ctx.Prefix(typeof(MyTimerBlock), "Trigger", typeof(MyTimerBlockPatch), nameof(TrigMethod));
         }
 
         private static void PatchMethod(MyTimerBlock __instance)

@@ -9,7 +9,7 @@ namespace DePatch.VoxelProtection
     {
         public static void Patch(PatchContext ctx)
         {
-            ctx.Prefix(typeof(MyCubeGrid), typeof(VoxelDefenderV2), "PerformCutouts");
+            ctx.Prefix(typeof(MyCubeGrid), typeof(VoxelDefenderV2), nameof(PerformCutouts));
         }
 
         private static bool PerformCutouts()

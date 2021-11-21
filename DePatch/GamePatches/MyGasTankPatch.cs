@@ -34,7 +34,7 @@ namespace DePatch.GamePatches
             ctx.GetPattern(OnFilledRatioCallback).
                 Prefixes.Add(typeof(MyGasTankPatch).GetMethod(nameof(OnFilledRatioCallbackPatch), BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance));
 
-            ctx.Prefix(typeof(MyGasTank), "ChangeFillRatioAmount", typeof(MyGasTankPatch), "ChangeFillRatioAmountPatch");
+            ctx.Prefix(typeof(MyGasTank), "ChangeFillRatioAmount", typeof(MyGasTankPatch), nameof(ChangeFillRatioAmountPatch));
         }
 
         public static bool ChangeFillRatioAmountPatch(MyGasTank __instance, double newFilledRatio)

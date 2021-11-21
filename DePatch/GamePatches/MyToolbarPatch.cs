@@ -27,7 +27,7 @@ namespace DePatch.GamePatches
             m_items = typeof(MyToolbar).easyField("m_items");
             TerminalBlock = MyToolbarItemTerminalBlockClass.easyField("m_block");
 
-            ctx.Suffix(typeof(MyToolbar), "SetItemAtIndexInternal", typeof(MyToolbarPatch), "SetItemAtIndexInternalPatch");
+            ctx.Suffix(typeof(MyToolbar), "SetItemAtIndexInternal", typeof(MyToolbarPatch), nameof(SetItemAtIndexInternalPatch));
         }
 
         private static void SetItemAtIndexInternalPatch(MyToolbar __instance, ref int i, ref MyToolbarItem item, ref bool initialization, bool gamepad = false)

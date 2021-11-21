@@ -29,7 +29,7 @@ namespace DePatch.GamePatches
             m_items = typeof(MyToolbar).easyField("m_items");
             TerminalBlock = MyToolbarItemTerminalBlockClass.easyField("m_block");
 
-            ctx.Suffix(typeof(MyCubeBlock), "ChangeOwner", typeof(ChangeOwnerPatch), "ChangeOwnerPatchSuffix");
+            ctx.Suffix(typeof(MyCubeBlock), "ChangeOwner", typeof(ChangeOwnerPatch), nameof(ChangeOwnerPatchSuffix));
         }
 
         private static void ChangeOwnerPatchSuffix(MyCubeBlock __instance, ref long owner, MyOwnershipShareModeEnum shareMode)

@@ -16,7 +16,7 @@ namespace DePatch.PVEZONE
 
         public static void Patch(PatchContext ctx)
         {
-            ctx.Suffix(typeof(MyCubeGrid), typeof(MyCubeGridPatch), "UpdateAfterSimulation100");
+            ctx.Suffix(typeof(MyCubeGrid), typeof(MyCubeGridPatch), nameof(UpdateAfterSimulation100));
         }
 
         private static void UpdateAfterSimulation100(MyCubeGrid __instance)

@@ -15,7 +15,7 @@ namespace DePatch.GamePatches
     {
         public static void Patch(PatchContext ctx)
         {
-            ctx.Prefix(typeof(MyRefinery), typeof(MyRefineryPatch), "DoUpdateTimerTick");
+            ctx.Prefix(typeof(MyRefinery), typeof(MyRefineryPatch), nameof(DoUpdateTimerTick));
         }
 
         private static void DoUpdateTimerTick(MyRefinery __instance)

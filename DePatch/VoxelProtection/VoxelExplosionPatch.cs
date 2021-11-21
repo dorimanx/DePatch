@@ -8,7 +8,7 @@ namespace DePatch.VoxelProtection
     {
         public static void Patch(PatchContext ctx)
         {
-            ctx.Prefix(typeof(MyExplosionInfo), "get_AffectVoxels", typeof(VoxelExplosionPatch), "AffectVoxelsPatch");
+            ctx.Prefix(typeof(MyExplosionInfo), "get_AffectVoxels", typeof(VoxelExplosionPatch), nameof(AffectVoxelsPatch));
         }
 
         private static bool AffectVoxelsPatch(MyExplosionInfo __instance, ref bool __result)

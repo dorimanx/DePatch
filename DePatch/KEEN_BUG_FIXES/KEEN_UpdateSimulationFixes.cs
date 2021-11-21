@@ -25,17 +25,17 @@ namespace DePatch.KEEN_BUG_FIXES
                 m_entitiesForUpdate100 = typeof(MyParallelEntityUpdateOrchestrator).easyField("m_entitiesForUpdate100");
 
                 if (DePatchPlugin.Instance.Config.UpdateAfterSimulation10FIX)
-                    ctx.Prefix(typeof(MyParallelEntityUpdateOrchestrator), typeof(KEEN_UpdateSimulationFixes), "UpdateAfterSimulation10");
+                    ctx.Prefix(typeof(MyParallelEntityUpdateOrchestrator), typeof(KEEN_UpdateSimulationFixes), nameof(UpdateAfterSimulation10));
 
                 if (DePatchPlugin.Instance.Config.UpdateAfterSimulation100FIX)
-                    ctx.Prefix(typeof(MyParallelEntityUpdateOrchestrator), typeof(KEEN_UpdateSimulationFixes), "UpdateAfterSimulation100");
+                    ctx.Prefix(typeof(MyParallelEntityUpdateOrchestrator), typeof(KEEN_UpdateSimulationFixes), nameof(UpdateAfterSimulation100));
 
                 if (DePatchPlugin.Instance.Config.UpdateBeforeSimulation100FIX)
-                    ctx.Prefix(typeof(MyParallelEntityUpdateOrchestrator), typeof(KEEN_UpdateSimulationFixes), "UpdateBeforeSimulation100");
+                    ctx.Prefix(typeof(MyParallelEntityUpdateOrchestrator), typeof(KEEN_UpdateSimulationFixes), nameof(UpdateBeforeSimulation100));
             }
 
             if (DePatchPlugin.Instance.Config.ParallelUpdateHandlerAfterSimulationFIX)
-                ctx.Prefix(typeof(MyParallelEntityUpdateOrchestrator), typeof(KEEN_UpdateSimulationFixes), "ParallelUpdateHandlerAfterSimulation");
+                ctx.Prefix(typeof(MyParallelEntityUpdateOrchestrator), typeof(KEEN_UpdateSimulationFixes), nameof(ParallelUpdateHandlerAfterSimulation));
         }
 
         private static bool UpdateAfterSimulation10(MyParallelEntityUpdateOrchestrator __instance)

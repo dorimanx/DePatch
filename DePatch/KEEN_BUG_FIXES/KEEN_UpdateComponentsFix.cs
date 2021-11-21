@@ -19,7 +19,7 @@ namespace DePatch.KEEN_BUG_FIXES
         public static void Patch(PatchContext ctx)
         {
             m_sessionComponentsForUpdate = typeof(MySession).easyField("m_sessionComponentsForUpdate");
-            ctx.Prefix(typeof(MySession), typeof(KEEN_UpdateComponentsFix), "UpdateComponents");
+            ctx.Prefix(typeof(MySession), typeof(KEEN_UpdateComponentsFix), nameof(UpdateComponents));
         }
 
         public static bool UpdateComponents(MySession __instance)

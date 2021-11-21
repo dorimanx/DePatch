@@ -11,7 +11,7 @@ namespace DePatch.GamePatches
     {
         public static void Patch(PatchContext ctx)
         {
-            ctx.Prefix(typeof(MyAssembler), typeof(MyAssemblerPatch), "UpdateBeforeSimulation100");
+            ctx.Prefix(typeof(MyAssembler), typeof(MyAssemblerPatch), nameof(UpdateBeforeSimulation100));
         }
 
         private static void UpdateBeforeSimulation100(MyAssembler __instance)

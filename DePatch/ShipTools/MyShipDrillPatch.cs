@@ -25,7 +25,7 @@ namespace DePatch.ShipTools
             m_wantsToCollect = typeof(MyShipDrill).easyField("m_wantsToCollect");
             InitSubBlocks = typeof(MyCubeBlock).easyMethod("InitSubBlocks");
 
-            ctx.Prefix(typeof(MyShipDrill), typeof(MyShipDrillPatch), "UpdateBeforeSimulation10");
+            ctx.Prefix(typeof(MyShipDrill), typeof(MyShipDrillPatch), nameof(UpdateBeforeSimulation10));
         }
 
         private static bool UpdateBeforeSimulation10(MyShipDrill __instance)

@@ -27,7 +27,7 @@ namespace DePatch.PVEZONE
         public static bool BootTickStarted = true;
         private static bool ServerBootLoopStart = true;
 
-        public static void Patch(PatchContext ctx) => ctx.Prefix(typeof(MySessionComponentSafeZones), "IsActionAllowed", typeof(MyPVESafeZoneAction), "IsActionAllowedPatch", new[] { "entity", "action", "sourceEntityId", "user" });
+        public static void Patch(PatchContext ctx) => ctx.Prefix(typeof(MySessionComponentSafeZones), "IsActionAllowed", typeof(MyPVESafeZoneAction), nameof(IsActionAllowedPatch), new[] { "entity", "action", "sourceEntityId", "user" });
 
         private static bool CheckAllowedToLock(MyCubeGrid Grid)
         {

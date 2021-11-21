@@ -21,7 +21,7 @@ namespace DePatch.GamePatches
 
         public static void Patch(PatchContext ctx)
         {
-            ctx.Prefix(typeof(MyProgrammableBlock), typeof(MyProgramBlockSlow), "Run");
+            ctx.Prefix(typeof(MyProgrammableBlock), typeof(MyProgramBlockSlow), nameof(Run));
         }
 
         public static void Init()

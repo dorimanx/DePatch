@@ -7,7 +7,7 @@ namespace DePatch.PVEZONE
 
     internal static class MyNewGridPatch
     {
-        public static void Patch(PatchContext ctx) => ctx.Suffix(typeof(MyCubeGrid), "Init", typeof(MyNewGridPatch), "CubeGridInit", new[] { "objectBuilder" });
+        public static void Patch(PatchContext ctx) => ctx.Suffix(typeof(MyCubeGrid), "Init", typeof(MyNewGridPatch), nameof(CubeGridInit), new[] { "objectBuilder" });
 
         internal static void CubeGridInit(MyCubeGrid __instance)
         {

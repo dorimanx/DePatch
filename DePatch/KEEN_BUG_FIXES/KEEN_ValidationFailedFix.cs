@@ -13,7 +13,7 @@ namespace DePatch.KEEN_BUG_FIXES
     {
         public static void Patch(PatchContext ctx)
         {
-            ctx.Prefix(typeof(MyMultiplayerServerBase), typeof(KEEN_ValidationFailedFix), "ValidationFailed");
+            ctx.Prefix(typeof(MyMultiplayerServerBase), typeof(KEEN_ValidationFailedFix), nameof(ValidationFailed));
         }
 
         private static bool ValidationFailed(ulong clientId, bool kick = true, string additionalInfo = null, bool stackTrace = true)

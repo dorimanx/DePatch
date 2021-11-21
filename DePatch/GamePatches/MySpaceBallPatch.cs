@@ -9,8 +9,8 @@ namespace DePatch.GamePatches
     {
         public static void Patch(PatchContext ctx)
         {
-            ctx.Prefix(typeof(MySpaceBall), "Init", typeof(MySpaceBallPatch), "PatchInitMethod", new[] { "objectBuilder", "cubeGrid" });
-            ctx.Prefix(typeof(MySpaceBall), "RefreshPhysicsBody", typeof(MySpaceBallPatch), "PatchRefreshPhysicsBodyMethod");
+            ctx.Prefix(typeof(MySpaceBall), "Init", typeof(MySpaceBallPatch), nameof(PatchInitMethod), new[] { "objectBuilder", "cubeGrid" });
+            ctx.Prefix(typeof(MySpaceBall), "RefreshPhysicsBody", typeof(MySpaceBallPatch), nameof(PatchRefreshPhysicsBodyMethod));
         }
 
         private static void PatchInitMethod(MySpaceBall __instance)

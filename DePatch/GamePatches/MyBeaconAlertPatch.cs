@@ -17,7 +17,7 @@ namespace DePatch.GamePatches
 
         public static void Patch(PatchContext ctx)
         {
-            ctx.Prefix(typeof(MyEntityController), typeof(MyBeaconAlertPatch), "RaiseControlledEntityChanged");
+            ctx.Prefix(typeof(MyEntityController), typeof(MyBeaconAlertPatch), nameof(RaiseControlledEntityChanged));
         }
 
         private static bool IsBadName(string name)

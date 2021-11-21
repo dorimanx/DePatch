@@ -15,7 +15,7 @@ namespace DePatch.GamePatches
         public static void Patch(PatchContext ctx)
         {
             OnRemoveQueueItem = typeof(MyProductionBlock).easyMethod("OnRemoveQueueItem");
-            ctx.Prefix(typeof(MyProductionBlock), "RemoveFirstQueueItemAnnounce", typeof(MyProductionBlockPatch), "RemoveFirstQueueItemAnnouncePatch");
+            ctx.Prefix(typeof(MyProductionBlock), "RemoveFirstQueueItemAnnounce", typeof(MyProductionBlockPatch), nameof(RemoveFirstQueueItemAnnouncePatch));
         }
 
         public static bool RemoveFirstQueueItemAnnouncePatch(MyProductionBlock __instance, MyFixedPoint amount, float progress = 0f)
