@@ -60,25 +60,25 @@ namespace DePatch.ShipTools
             if (DePatchPlugin.Instance.Config.DrillIgnoreSubtypes)
                 m_drillFrameCountdown.SetValue(drill, (int)m_drillFrameCountdown.GetValue(drill) + DePatchPlugin.Instance.Config.DrillUpdateRate);
             else
-                m_drillFrameCountdown.SetValue(drill, (int)(float)((int)m_drillFrameCountdown.GetValue(drill) + drillSettings.TickRate));
+                m_drillFrameCountdown.SetValue(drill, (int)m_drillFrameCountdown.GetValue(drill) + drillSettings.TickRate);
 
-            if (!drill.CanShoot(MyShootActionEnum.PrimaryAction, drill.OwnerId, out var _))
+            if (!drill.CanShoot(MyShootActionEnum.PrimaryAction, drill.OwnerId, out MyGunStatusEnum myGunStatusEnum))
             {
                 ShakeAmount.SetValue(drill, 0f);
                 return;
             }
 
-            var collectOre = (bool)m_wantsToCollect.GetValue(drill);
+            var wantsToCollect = (bool)m_wantsToCollect.GetValue(drill);
 
             if (DePatchPlugin.Instance.Config.DrillIgnoreSubtypes)
-                collectOre = ((bool)m_wantsToCollect.GetValue(drill) || DePatchPlugin.Instance.Config.DrillDisableRightClick);
+                wantsToCollect = (bool)m_wantsToCollect.GetValue(drill) || DePatchPlugin.Instance.Config.DrillDisableRightClick;
             else if (drillSettings.DisableRightClick)
-                collectOre = ((bool)m_wantsToCollect.GetValue(drill) || drillSettings.DisableRightClick);
+                wantsToCollect = (bool)m_wantsToCollect.GetValue(drill) || drillSettings.DisableRightClick;
             else
-                collectOre = (bool)m_wantsToCollect.GetValue(drill);
+                wantsToCollect = (bool)m_wantsToCollect.GetValue(drill);
 
             var myDrillBase = (MyDrillBase)m_drillBase.GetValue(drill);
-            if (myDrillBase.Drill(drill.Enabled || collectOre, true, false, 0.1f))
+            if (myDrillBase.Drill(drill.Enabled || wantsToCollect, true, false, 0.1f))
             {
                 ShakeAmount.SetValue(drill, 1f);
                 return;

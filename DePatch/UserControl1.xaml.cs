@@ -13,7 +13,6 @@ namespace DePatch
 {
     public partial class UserControlDepatch : UserControl
     {
-
         private DePatchPlugin Plugin { get; }
 
         public UserControlDepatch()
@@ -57,9 +56,7 @@ namespace DePatch
             Plugin.Config.SpeedingModeSelector = (SpeedingMode)SpeedingModeCombobox.SelectedIndex;
 
             if (IgnorePBSubTypesHere.Text.Length > 1)
-            {
                 MyProgramBlockSlow.Init();
-            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -84,14 +81,10 @@ namespace DePatch
             Plugin.Config.SpeedingModeSelector = (SpeedingMode)SpeedingModeCombobox.SelectedIndex;
 
             if (IgnorePBSubTypesHere.Text.Length > 1)
-            {
                 MyProgramBlockSlow.Init();
-            }
 
             if (ModsBlock.Text.Length == 0)
-            {
                 Plugin.Config.Mods.Clear();
-            }
             else
             {
                 if (ModsBlock.Text.Length > 10 && ModsBlock.Text.Split(new char[]
@@ -106,9 +99,8 @@ namespace DePatch
                 }))
                     {
                         if (!ulong.TryParse(s, out var item))
-                        {
                             break;
-                        }
+
                         Plugin.Config.Mods.Add(item);
                         item = 0UL;
                     }
@@ -124,7 +116,7 @@ namespace DePatch
         {
             ShipTool.shipTools.Add(new ShipTool
             {
-                Speed = ShipTool.DEFAULT_SPEED,
+                Speed = ShipTool.DEFAULT_SPEED_W,
                 Subtype = "New",
                 Type = ToolType.Welder
             });
@@ -132,11 +124,8 @@ namespace DePatch
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            var selectedItem = ShipToolsGrid.SelectedItem;
-            if (selectedItem != null && selectedItem is ShipTool)
-            {
-                ShipTool.shipTools.Remove((ShipTool)selectedItem);
-            }
+            if (ShipToolsGrid.SelectedItem != null && ShipToolsGrid.SelectedItem is ShipTool tool)
+                ShipTool.shipTools.Remove(tool);
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)

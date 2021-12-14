@@ -468,7 +468,7 @@
 						TextWrapping="Wrap"
 						Width="120"
 						Margin="10,72,359,502"
-						Text="{Binding Path=DrillUpdateRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"
+						Text="{Binding Path=DrillUpdateRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 						IsEnabled="{Binding Path=DrillIgnoreSubtypes}" />
                     <ComboBox
 						Name="DrillModeCombobox"

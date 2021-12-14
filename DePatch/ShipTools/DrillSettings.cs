@@ -16,7 +16,7 @@ namespace DePatch.ShipTools
 
         public bool DisableRightClick { get; set; }
 
-        public float TickRate { get; set; } = 90f;
+        public int TickRate { get; set; } = 90;
 
         public static string Serialize(DrillSettings settings) => string.Format("{0}:{1}:{2}:{3}",
                                                                   settings.Subtype,
@@ -33,7 +33,7 @@ namespace DePatch.ShipTools
                 Subtype = array[0],
                 DisableRightClick = bool.Parse(array[1]),
                 Mode = (DrillingMode)Enum.Parse(typeof(DrillingMode), array[2]),
-                TickRate = float.Parse(array[3])
+                TickRate = int.Parse(array[3])
             };
         }
 
