@@ -21,8 +21,8 @@ namespace DePatch.KEEN_BUG_FIXES
             if (DePatchPlugin.Instance.Config.UpdateAfterSimulation10FIX || DePatchPlugin.Instance.Config.UpdateAfterSimulation100FIX
                                                                          || DePatchPlugin.Instance.Config.UpdateBeforeSimulation100FIX)
             {
-                m_entitiesForUpdate10 = typeof(MyParallelEntityUpdateOrchestrator).easyField("m_entitiesForUpdate10");
-                m_entitiesForUpdate100 = typeof(MyParallelEntityUpdateOrchestrator).easyField("m_entitiesForUpdate100");
+                m_entitiesForUpdate10 = typeof(MyParallelEntityUpdateOrchestrator).EasyField("m_entitiesForUpdate10");
+                m_entitiesForUpdate100 = typeof(MyParallelEntityUpdateOrchestrator).EasyField("m_entitiesForUpdate100");
 
                 if (DePatchPlugin.Instance.Config.UpdateAfterSimulation10FIX)
                     ctx.Prefix(typeof(MyParallelEntityUpdateOrchestrator), typeof(KEEN_UpdateSimulationFixes), nameof(UpdateAfterSimulation10));

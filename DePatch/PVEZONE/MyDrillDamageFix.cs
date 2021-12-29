@@ -15,7 +15,7 @@ namespace DePatch.PVEZONE
 
         public static void Patch(PatchContext ctx)
         {
-            drillEntity = typeof(MyDrillBase).easyField("m_drillEntity");
+            drillEntity = typeof(MyDrillBase).EasyField("m_drillEntity");
             ctx.Prefix(typeof(MyDrillBase), typeof(MyDrillDamageFix), nameof(TryDrillBlocks));
         }
 

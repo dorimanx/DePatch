@@ -26,7 +26,7 @@ namespace DePatch.KEEN_BUG_FIXES
 
         public static void Patch(PatchContext ctx)
         {
-            entity_OnClose = typeof(MySafeZone).easyMethod("entity_OnClose");
+            entity_OnClose = typeof(MySafeZone).EasyMethod("entity_OnClose");
             ctx.Prefix(typeof(MySafeZone), typeof(KEEN_RemoveEntityPhantomPathFix), nameof(RemoveEntityPhantom));
         }
 

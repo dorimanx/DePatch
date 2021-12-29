@@ -24,8 +24,8 @@ namespace DePatch.ShipTools
     {
         private static readonly Dictionary<string, int> m_missingComponents = new Dictionary<string, int>();
 
-        internal readonly static MethodInfo FindProjectedBlocks = typeof(MyShipWelder).easyMethod("FindProjectedBlocks");
-        internal readonly static MethodInfo SetBuildingMusic = typeof(MyShipToolBase).easyMethod("SetBuildingMusic");
+        internal readonly static MethodInfo FindProjectedBlocks = typeof(MyShipWelder).EasyMethod("FindProjectedBlocks");
+        internal readonly static MethodInfo SetBuildingMusic = typeof(MyShipToolBase).EasyMethod("SetBuildingMusic");
 
         public static void Patch(PatchContext ctx)
         {

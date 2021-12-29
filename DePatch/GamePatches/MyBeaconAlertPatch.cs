@@ -40,8 +40,7 @@ namespace DePatch.GamePatches
             {
                 new List<IMyBeacon>();
                 List<IMySlimBlock> list = new List<IMySlimBlock>();
-                IMyTerminalBlock myTerminalBlock = __instance.ControlledEntity as IMyTerminalBlock;
-                if (myTerminalBlock != null)
+                if (__instance.ControlledEntity is IMyTerminalBlock myTerminalBlock)
                 {
                     myTerminalBlock.CubeGrid.GetBlocks(list, null);
                     if (!list.Exists((IMySlimBlock x) => x.FatBlock != null && DePatchPlugin.Instance.Config.BeaconSubTypes.Contains(x.BlockDefinition.Id.SubtypeName)))

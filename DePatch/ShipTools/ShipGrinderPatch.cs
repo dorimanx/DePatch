@@ -24,14 +24,14 @@ namespace DePatch.ShipTools
     {
         private static FieldInfo m_wantsToShake;
         private static FieldInfo m_otherGrid;
-        internal readonly static MethodInfo SetBuildingMusic = typeof(MyShipToolBase).easyMethod("SetBuildingMusic");
+        internal readonly static MethodInfo SetBuildingMusic = typeof(MyShipToolBase).EasyMethod("SetBuildingMusic");
 
         private static readonly List<MyPhysicalInventoryItem> m_tmpItemList = new List<MyPhysicalInventoryItem>();
 
         public static void Patch(PatchContext ctx)
         {
-            m_wantsToShake = typeof(MyShipGrinder).easyField("m_wantsToShake");
-            m_otherGrid = typeof(MyShipGrinder).easyField("m_otherGrid");
+            m_wantsToShake = typeof(MyShipGrinder).EasyField("m_wantsToShake");
+            m_otherGrid = typeof(MyShipGrinder).EasyField("m_otherGrid");
 
             ctx.Prefix(typeof(MyShipGrinder), typeof(ShipGrinderPatch), nameof(Activate));
         }

@@ -14,7 +14,7 @@ namespace DePatch.GamePatches
 
         public static void Patch(PatchContext ctx)
         {
-            OnRemoveQueueItem = typeof(MyProductionBlock).easyMethod("OnRemoveQueueItem");
+            OnRemoveQueueItem = typeof(MyProductionBlock).EasyMethod("OnRemoveQueueItem");
             ctx.Prefix(typeof(MyProductionBlock), "RemoveFirstQueueItemAnnounce", typeof(MyProductionBlockPatch), nameof(RemoveFirstQueueItemAnnouncePatch));
         }
 

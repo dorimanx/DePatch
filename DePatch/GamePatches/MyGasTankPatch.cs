@@ -23,8 +23,8 @@ namespace DePatch.GamePatches
         private static int Batch = 0;
         private static ulong LastFrameCounter = 0;
 
-        internal readonly static MethodInfo OnFilledRatioCallback = typeof(MyGasTank).easyMethod("OnFilledRatioCallback");
-        internal readonly static MethodInfo ChangeFilledRatio = typeof(MyGasTank).easyMethod("ChangeFilledRatio");
+        internal readonly static MethodInfo OnFilledRatioCallback = typeof(MyGasTank).EasyMethod("OnFilledRatioCallback");
+        internal readonly static MethodInfo ChangeFilledRatio = typeof(MyGasTank).EasyMethod("ChangeFilledRatio");
 
         private static Action<double> FilledCallback(MyGasTank x) => (Action<double>)OnFilledRatioCallback.CreateDelegate(typeof(Action<double>), x);
         private static readonly ConcurrentDictionary<int, Tuple<MyGasTank, double>> TanksToUpdate = new ConcurrentDictionary<int, Tuple<MyGasTank, double>>();

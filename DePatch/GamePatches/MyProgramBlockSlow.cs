@@ -13,11 +13,11 @@ namespace DePatch.GamePatches
 
     public static class MyProgramBlockSlow
     {
-        private static Dictionary<long, int> timers1 = new Dictionary<long, int>();
-        private static Dictionary<long, int> timers10 = new Dictionary<long, int>();
-        private static Dictionary<long, int> timers100 = new Dictionary<long, int>();
+        private static readonly Dictionary<long, int> timers1 = new Dictionary<long, int>();
+        private static readonly Dictionary<long, int> timers10 = new Dictionary<long, int>();
+        private static readonly Dictionary<long, int> timers100 = new Dictionary<long, int>();
 
-        static HashSet<MyStringHash> ignoredTimers = new HashSet<MyStringHash>();
+        static readonly HashSet<MyStringHash> ignoredTimers = new HashSet<MyStringHash>();
 
         public static void Patch(PatchContext ctx)
         {

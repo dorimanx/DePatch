@@ -29,7 +29,7 @@ namespace DePatch
 
         // Extensions by DEV Slimeradio
 
-        public static FieldInfo easyField(this Type type, string name, bool needThrow = true)
+        public static FieldInfo EasyField(this Type type, string name, bool needThrow = true)
         {
             var ms = type.GetFields(all);
             foreach (var t in ms)
@@ -48,7 +48,26 @@ namespace DePatch
             return null;
         }
 
-        public static MethodInfo easyMethod(this Type type, string name, bool needThrow = true, string[] names = null, Type[] types = null)
+        public static PropertyInfo EasyProp(this Type type, String name, bool needThrow = true)
+        {
+            var ms = type.GetProperties(all);
+            foreach (var t in ms)
+            {
+                if (t.Name == name) { return t; }
+            }
+
+            Log.Error("Property not found: " + name);
+            foreach (var t in ms)
+            {
+                Log.Error(type.Name + " -> " + t.Name);
+                if (t.Name == name) { return t; }
+            }
+
+            if (needThrow) throw new Exception("Property " + name + " not found");
+            return null;
+        }
+
+        public static MethodInfo EasyMethod(this Type type, string name, bool needThrow = true, string[] names = null, Type[] types = null)
         {
             var ms = type.GetMethods(all);
             foreach (var t in ms)
@@ -77,7 +96,7 @@ namespace DePatch
         {
             try
             {
-                _ctx.GetPattern(t.easyMethod(name)).Prefixes.Add(t2.easyMethod(name));
+                _ctx.GetPattern(t.EasyMethod(name)).Prefixes.Add(t2.EasyMethod(name));
             }
             catch (Exception e)
             {
@@ -97,7 +116,7 @@ namespace DePatch
         {
             try
             {
-                _ctx.GetPattern(t.easyMethod(name)).Prefixes.Add(t2.easyMethod(name2));
+                _ctx.GetPattern(t.EasyMethod(name)).Prefixes.Add(t2.EasyMethod(name2));
             }
             catch
             {
@@ -109,7 +128,7 @@ namespace DePatch
         {
             try
             {
-                _ctx.GetPattern(t.easyMethod(name, names: parametorNames)).Prefixes.Add(t2.easyMethod(name));
+                _ctx.GetPattern(t.EasyMethod(name, names: parametorNames)).Prefixes.Add(t2.EasyMethod(name));
             }
             catch
             {
@@ -121,7 +140,7 @@ namespace DePatch
         {
             try
             {
-                _ctx.GetPattern(t.easyMethod(name, names: parametorNames)).Prefixes.Add(t2.easyMethod(name2));
+                _ctx.GetPattern(t.EasyMethod(name, names: parametorNames)).Prefixes.Add(t2.EasyMethod(name2));
             }
             catch
             {
@@ -133,7 +152,7 @@ namespace DePatch
         {
             try
             {
-                _ctx.GetPattern(t.easyMethod(name)).Suffixes.Add(t2.easyMethod(name));
+                _ctx.GetPattern(t.EasyMethod(name)).Suffixes.Add(t2.EasyMethod(name));
             }
             catch (Exception e)
             {
@@ -145,7 +164,7 @@ namespace DePatch
         {
             try
             {
-                _ctx.GetPattern(t.easyMethod(name)).Suffixes.Add(t2.easyMethod(name2));
+                _ctx.GetPattern(t.EasyMethod(name)).Suffixes.Add(t2.EasyMethod(name2));
             }
             catch (Exception e)
             {
@@ -157,7 +176,7 @@ namespace DePatch
         {
             try
             {
-                _ctx.GetPattern(t.easyMethod(name, names: parametorNames)).Suffixes.Add(t2.easyMethod(name2));
+                _ctx.GetPattern(t.EasyMethod(name, names: parametorNames)).Suffixes.Add(t2.EasyMethod(name2));
             }
             catch
             {

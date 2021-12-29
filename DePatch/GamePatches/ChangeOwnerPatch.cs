@@ -26,8 +26,8 @@ namespace DePatch.GamePatches
 
         public static void Patch(PatchContext ctx)
         {
-            m_items = typeof(MyToolbar).easyField("m_items");
-            TerminalBlock = MyToolbarItemTerminalBlockClass.easyField("m_block");
+            m_items = typeof(MyToolbar).EasyField("m_items");
+            TerminalBlock = MyToolbarItemTerminalBlockClass.EasyField("m_block");
 
             ctx.Suffix(typeof(MyCubeBlock), "ChangeOwner", typeof(ChangeOwnerPatch), nameof(ChangeOwnerPatchSuffix));
         }

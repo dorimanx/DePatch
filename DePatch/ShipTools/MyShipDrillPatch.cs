@@ -10,7 +10,7 @@ namespace DePatch.ShipTools
 
     internal static class MyShipDrillPatch
     {
-        private static PropertyInfo ShakeAmount = typeof(MyShipDrill).GetProperty("ShakeAmount");
+        private static readonly PropertyInfo ShakeAmount = typeof(MyShipDrill).GetProperty("ShakeAmount");
         private static MethodInfo Receiver_IsPoweredChanged;
         private static FieldInfo m_drillFrameCountdown;
         private static FieldInfo m_drillBase;
@@ -19,11 +19,11 @@ namespace DePatch.ShipTools
 
         public static void Patch(PatchContext ctx)
         {
-            Receiver_IsPoweredChanged = typeof(MyShipDrill).easyMethod("Receiver_IsPoweredChanged");
-            m_drillFrameCountdown = typeof(MyShipDrill).easyField("m_drillFrameCountdown");
-            m_drillBase = typeof(MyShipDrill).easyField("m_drillBase");
-            m_wantsToCollect = typeof(MyShipDrill).easyField("m_wantsToCollect");
-            InitSubBlocks = typeof(MyCubeBlock).easyMethod("InitSubBlocks");
+            Receiver_IsPoweredChanged = typeof(MyShipDrill).EasyMethod("Receiver_IsPoweredChanged");
+            m_drillFrameCountdown = typeof(MyShipDrill).EasyField("m_drillFrameCountdown");
+            m_drillBase = typeof(MyShipDrill).EasyField("m_drillBase");
+            m_wantsToCollect = typeof(MyShipDrill).EasyField("m_wantsToCollect");
+            InitSubBlocks = typeof(MyCubeBlock).EasyMethod("InitSubBlocks");
 
             ctx.Prefix(typeof(MyShipDrill), typeof(MyShipDrillPatch), nameof(UpdateBeforeSimulation10));
         }
