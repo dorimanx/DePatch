@@ -18,7 +18,7 @@ namespace DePatch.KEEN_BUG_FIXES
                 return true;
 
             value = ChargeMode.Auto;
-            return true;
+            return false;
         }
     }
 }
