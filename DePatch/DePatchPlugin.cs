@@ -12,6 +12,7 @@ using DePatch.VoxelProtection;
 using HarmonyLib;
 using NLog;
 using Sandbox;
+using Sandbox.Game.World;
 using Torch;
 using Torch.API;
 using Torch.API.Managers;
@@ -125,8 +126,9 @@ namespace DePatch
 
         public override void Update()
         {
-            base.Update();
-            MyGasTankPatch.UpdateTanks();
+            if (!MySession.Static.IsSaveInProgress)
+                MyGasTankPatch.UpdateTanks();
+
             ServerAliveLog.UpdateLOG();
             MyPVESafeZoneAction.UpdateBoot();
         }
