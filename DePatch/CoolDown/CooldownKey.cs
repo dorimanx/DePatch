@@ -6,6 +6,7 @@ namespace DePatch.CoolDown
         public static readonly SteamIdCooldownKey LoopOnBootRequestID = new SteamIdCooldownKey(76000000000000001);
         public static readonly SteamIdCooldownKey LoopAliveLogRequestID = new SteamIdCooldownKey(76000000000000002);
         public static readonly SteamIdCooldownKey LoopPlayerIdsSaveRequestID = new SteamIdCooldownKey(76000000000000003);
+        public static readonly SteamIdCooldownKey LoopSaveXML_ID = new SteamIdCooldownKey(76000000000000004);
 
         private ulong SteamId { get; }
 

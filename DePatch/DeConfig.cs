@@ -91,14 +91,15 @@ namespace DePatch
         private bool _UpdateAfterSimulation100FIX = true;
         private bool _UpdateBeforeSimulation100FIX = true;
         private bool _ParallelUpdateHandlerAfterSimulationFIX = true;
-        private bool _UpdateComponentsFix = false;
+        private bool _UpdateComponentsFix;
         private bool _RemoveEntityPhantomFIX = true;
         private bool _MyEntityDuplicateFix = true;
         private bool _DenyPlacingBlocksOnEnemyGrid;
         private bool _FixExploits = true;
         private bool _GasTanksOptimization = true;
-        private bool _PlayersIdUpdate = false;
-        private bool _TurretsAimFix = false;
+        private bool _PlayersIdUpdate;
+        private bool _TurretsAimFix;
+        private bool _GameSaveFix;
 
         public bool DamageThreading
         {
@@ -618,6 +619,12 @@ namespace DePatch
         {
             get => _TurretsAimFix;
             set => SetValue(ref _TurretsAimFix, value);
+        }
+
+        public bool GameSaveFix
+        {
+            get => _GameSaveFix;
+            set => SetValue(ref _GameSaveFix, value);
         }
     }
 }
