@@ -48,6 +48,9 @@ namespace DePatch.GamePatches
                     var steamId = MyEventContext.Current.Sender.Value;
                     var requesterPlayer = Sync.Players.TryGetPlayerBySteamId(steamId);
 
+                    if (IsItGroup != null && IsItGroup.TypeId.ToString() == "MyObjectBuilder_ToolbarItemEmote")
+                        return;
+
                     if (IsItGroup != null && IsItGroup.TypeId.ToString() != "MyObjectBuilder_ToolbarItemTerminalGroup")
                     {
                         if (!(item is MyToolbarItemWeapon) && TerminalBlock.GetValue(item) is MyTerminalBlock TerminalItemBlock)

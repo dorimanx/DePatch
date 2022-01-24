@@ -208,6 +208,16 @@ namespace DePatch
             return ok;
         }
 
+        private static MethodInfo GetMethodPatch(this Type type, string name, BindingFlags flags)
+        {
+            return type.GetMethod(name, flags) ?? throw new Exception($"Couldn't find method {name} on {type}");
+        }
+
+        public static MethodInfo GetMethod_RYO(this Type t, string name)
+        {
+            return GetMethodPatch(t, name, all);
+        }
+
         public static bool PlayersNarby(IMyCubeBlock block, int radius)
         {
             if (block != null)

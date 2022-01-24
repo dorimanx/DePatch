@@ -57,6 +57,7 @@
     <Compile Include="BlocksDisable\PlayersUtility.cs" />
     <Compile Include="BlocksDisable\GridSpeedPatch.cs" />
     <Compile Include="GamePatches\ChangeOwnerPatch.cs" />
+    <Compile Include="GamePatches\SafeZoneOptimizer.cs" />
     <Compile Include="GamePatches\MyProductionBlockPatch.cs" />
     <Compile Include="GamePatches\MyGasTankPatch.cs" />
     <Compile Include="GamePatches\MyToolbarPatch.cs" />

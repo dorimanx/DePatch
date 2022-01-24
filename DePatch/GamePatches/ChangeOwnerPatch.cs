@@ -205,6 +205,9 @@ namespace DePatch.GamePatches
                                         var ToolbarBlock = ((MyToolbarItem[])m_items.GetValue(ShipController.Toolbar))[j];
                                         var IsItGroup = ToolbarBlock.GetObjectBuilder();
 
+                                        if (IsItGroup != null && IsItGroup.TypeId.ToString() == "MyObjectBuilder_ToolbarItemEmote")
+                                            continue;
+
                                         if (IsItGroup != null && IsItGroup.TypeId.ToString() != "MyObjectBuilder_ToolbarItemTerminalGroup")
                                         {
                                             if (!(ToolbarBlock is MyToolbarItemWeapon) && TerminalBlock.GetValue(ToolbarBlock) is MyTerminalBlock TerminalItemBlock)
