@@ -76,7 +76,6 @@
     <Compile Include="GamePatches\ZCargoCleanup.cs" />
     <Compile Include="BlocksDisable\AreaShow_DrillSystem.cs" />
     <Compile Include="BlocksDisable\AreaShow_BuildAndRepairSystem.cs" />
-    <Compile Include="KEEN_BUG_FIXES\KEEN_ValidationFailedFix.cs" />
     <Compile Include="GamePatches\ServerAliveLog.cs" />
     <Compile Include="KEEN_BUG_FIXES\KEEN_ModUpdateFix.cs" />
     <Compile Include="GamePatches\MyAssemblerPatch.cs" />
