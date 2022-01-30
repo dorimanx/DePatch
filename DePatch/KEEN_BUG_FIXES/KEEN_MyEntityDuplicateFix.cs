@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using HarmonyLib;
 using NLog;
 using Sandbox.Game.Entities;
@@ -31,52 +30,44 @@ namespace DePatch.KEEN_BUG_FIXES
                 long NewValue = value;
 
                 // here we check for duplicate ID and if found marking as used and adding new one. to avoid crash.
-                if (MyEntityIdentifier.ExistsById(value))
+                if (MyEntityIdentifier.ExistsById(NewValue))
                 {
-                    // if it's voxels remove the value id
+                    // if it's voxels remove the duplicate value id
                     if (__instance.GetType().ToString() == "Sandbox.Game.Entities.MyVoxelPhysics")
                     {
-                        MyEntityIdentifier.RemoveEntity(value);
-                        NewValue = MyEntityIdentifier.GetIdUniqueNumber(value);
-                    }
-                    else
-                    {
-                        MyEntityIdentifier.MarkIdUsed(value);
-
-                        NewValue = MyEntityIdentifier.GetIdUniqueNumber(value);
-
-                        if (MyEntityIdentifier.ExistsById(NewValue))
+                        MyEntityIdentifier.RemoveEntity(NewValue);
+                        EntityIdSetter(__instance, NewValue);
+                        try
                         {
-                            bool CheckNewValueID = true;
-                            int loopCount = 0;
-
-                            // make sure that new ID is not used.
-                            while (CheckNewValueID)
-                            {
-                                if (MyEntityIdentifier.ExistsById(NewValue))
-                                    NewValue = MyEntityIdentifier.GetIdUniqueNumber(NewValue);
-                                else
-                                    CheckNewValueID = false;
-
-                                Thread.Sleep(2);
-                                loopCount++;
-                                if (loopCount > 120)
-                                {
-                                    loopCount = 0;
-                                    Log.Warn($"ALERT!!! CheckNewValueID stuck in loop, cant allocate not existing ID.");
-                                }
-                            }
+                            MyEntityIdentifier.AddEntityWithId(__instance);
+                        }
+                        catch
+                        {
+                            // Die in silent void
                         }
 
-                        if (__instance.Name == value.ToString())
-                            __instance.Name = NewValue.ToString();
-
-                        SendSomeLogs(__instance, value, NewValue);
+                        return false;
                     }
+
+                    // if it's grid blocks do checks.
+                    MyEntityIdentifier.MarkIdUsed(NewValue);
+                    NewValue = MyEntityIdentifier.GetIdUniqueNumber(NewValue);
+
+                    if (__instance.Name == value.ToString())
+                        __instance.Name = NewValue.ToString();
+
+                    SendSomeLogs(__instance, value, NewValue);
                 }
 
-                EntityIdSetter(__instance, NewValue);
-                MyEntityIdentifier.AddEntityWithId(__instance);
+                try
+                {
+                    EntityIdSetter(__instance, NewValue);
+                    MyEntityIdentifier.AddEntityWithId(__instance);
+                }
+                catch
+                {
+                    // Die in silent void
+                }
 
                 return false;
             }
@@ -99,6 +90,9 @@ namespace DePatch.KEEN_BUG_FIXES
         {
             try
             {
+                if (__instance == null)
+                    return;
+
                 var ObjectLocation = __instance.PositionComp?.GetPosition();
                 MyCubeGrid InstanceGrid = null;
 
