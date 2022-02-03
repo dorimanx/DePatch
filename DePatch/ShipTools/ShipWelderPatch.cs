@@ -32,10 +32,8 @@ namespace DePatch.ShipTools
             ctx.Prefix(typeof(MyShipWelder), typeof(ShipWelderPatch), nameof(Activate));
         }
 
-        public static bool Activate(MyShipWelder __instance, ref bool __result, HashSet<MySlimBlock> targets)
+        public static bool Activate(MyShipWelder __instance, HashSet<MySlimBlock> targets, ref bool __result)
         {
-            __result = false;
-
             if (!DePatchPlugin.Instance.Config.Enabled || __instance == null || __instance.MarkedForClose || __instance.Closed)
                 return true;
 
@@ -99,22 +97,23 @@ namespace DePatch.ShipTools
             foreach (MySlimBlock mySlimBlock in targets)
             {
                 if (mySlimBlock.IsFullIntegrity || mySlimBlock == __instance.SlimBlock)
-                {
                     num--;
-                }
                 else
                 {
                     MyCubeBlockDefinition.PreloadConstructionModels(mySlimBlock.BlockDefinition);
                     mySlimBlock.GetMissingComponents(m_missingComponents);
                 }
             }
+
             MyInventory inventory = __instance.GetInventory(0);
+            var Base = (MyShipToolBase)__instance;
             foreach (KeyValuePair<string, int> keyValuePair in m_missingComponents)
             {
                 MyDefinitionId myDefinitionId = new MyDefinitionId(typeof(MyObjectBuilder_Component), keyValuePair.Key);
-                if (Math.Max(keyValuePair.Value - (int)inventory.GetItemAmount(myDefinitionId, MyItemFlags.None, false), 0) != 0 && Sync.IsServer && __instance.UseConveyorSystem)
-                    __instance.CubeGrid.GridSystems.ConveyorSystem.PullItem(myDefinitionId, new MyFixedPoint?(keyValuePair.Value), __instance, inventory, false, false);
+                if (Math.Max(keyValuePair.Value - (int)inventory.GetItemAmount(myDefinitionId, MyItemFlags.None, false), 0) != 0 && Sync.IsServer && Base.UseConveyorSystem)
+                    Base.CubeGrid.GridSystems.ConveyorSystem.PullItem(myDefinitionId, new MyFixedPoint?(keyValuePair.Value), __instance, inventory, false, false);
             }
+
             if (Sync.IsServer)
             {
                 float num2 = 0.25f / Math.Min(4, (num > 0) ? num : 1);
@@ -142,7 +141,7 @@ namespace DePatch.ShipTools
                                 if (mySlimBlock2.HasDeformation || mySlimBlock2.MaxDeformation > 0.0001f || !mySlimBlock2.IsFullIntegrity)
                                 {
                                     float maxAllowedBoneMovement = MyShipWelder.WELDER_MAX_REPAIR_BONE_MOVEMENT_SPEED * 250f * 0.001f;
-                                    mySlimBlock2.IncreaseMountLevel(num3, __instance.OwnerId, inventory, maxAllowedBoneMovement, __instance.HelpOthers, __instance.IDModule.ShareMode, false, false);
+                                    mySlimBlock2.IncreaseMountLevel(num3, Base.OwnerId, inventory, maxAllowedBoneMovement, __instance.HelpOthers, Base.IDModule.ShareMode, false, false);
                                 }
                             }
                         }
@@ -162,7 +161,7 @@ namespace DePatch.ShipTools
             {
                 MyWelder.ProjectionRaycastData[] array = (MyWelder.ProjectionRaycastData[])FindProjectedBlocks.Invoke(__instance, new object[] { });
 
-                if (__instance.UseConveyorSystem)
+                if (Base.UseConveyorSystem)
                 {
                     MyWelder.ProjectionRaycastData[] array2 = array;
                     foreach (MyWelder.ProjectionRaycastData PRayData in array2)
@@ -171,7 +170,7 @@ namespace DePatch.ShipTools
                         if (components != null && components.Length != 0)
                         {
                             MyDefinitionId id = components[0].Definition.Id;
-                            __instance.CubeGrid.GridSystems.ConveyorSystem.PullItem(id, new MyFixedPoint?(1), __instance, inventory, false, false);
+                            Base.CubeGrid.GridSystems.ConveyorSystem.PullItem(id, new MyFixedPoint?(1), __instance, inventory, false, false);
                         }
                     }
                 }
@@ -179,7 +178,7 @@ namespace DePatch.ShipTools
                 new HashSet<MyCubeGrid.MyBlockLocation>();
                 bool flag3 = MySession.Static.CreativeMode;
 
-                if (MySession.Static.Players.TryGetPlayerId(__instance.BuiltBy, out MyPlayer.PlayerId id2) && MySession.Static.Players.TryGetPlayerById(id2, out MyPlayer myPlayer))
+                if (MySession.Static.Players.TryGetPlayerId(Base.BuiltBy, out MyPlayer.PlayerId id2) && MySession.Static.Players.TryGetPlayerById(id2, out MyPlayer myPlayer))
                     flag3 |= MySession.Static.CreativeToolsEnabled(Sync.MyId);
 
                 foreach (MyWelder.ProjectionRaycastData projectionRaycastData in array)

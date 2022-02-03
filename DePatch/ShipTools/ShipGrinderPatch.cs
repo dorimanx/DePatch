@@ -36,10 +36,8 @@ namespace DePatch.ShipTools
             ctx.Prefix(typeof(MyShipGrinder), typeof(ShipGrinderPatch), nameof(Activate));
         }
 
-        public static bool Activate(MyShipGrinder __instance, ref bool __result, HashSet<MySlimBlock> targets)
+        public static bool Activate(MyShipGrinder __instance, HashSet<MySlimBlock> targets, ref bool __result)
         {
-            __result = false;
-
             if (!DePatchPlugin.Instance.Config.Enabled || __instance == null || __instance.MarkedForClose || __instance.Closed)
                 return true;
 
@@ -89,8 +87,10 @@ namespace DePatch.ShipTools
                     m_otherGrid.SetValue(__instance, mySlimBlock.CubeGrid);
 
                     var OtherCubeGrid = (MyCubeGrid)m_otherGrid.GetValue(__instance);
+                    if (OtherCubeGrid == null)
+                        return true;
 
-                    if (OtherCubeGrid == null || OtherCubeGrid.Physics == null || !OtherCubeGrid.Physics.Enabled)
+                    if (OtherCubeGrid.Physics == null || !OtherCubeGrid.Physics.Enabled)
                     {
                         num--;
                     }
@@ -99,15 +99,18 @@ namespace DePatch.ShipTools
                         MyCubeBlockDefinition.PreloadConstructionModels(mySlimBlock.BlockDefinition);
                         if (Sync.IsServer)
                         {
-                            MyDamageInformation myDamageInformation = new MyDamageInformation(false, amount, MyDamageType.Grind, __instance.EntityId);
+                            var Base = (MyCubeBlock)__instance;
+
+                            MyDamageInformation myDamageInformation = new MyDamageInformation(false, amount, MyDamageType.Grind, Base.EntityId);
                             if (mySlimBlock.UseDamageSystem)
                                 MyDamageSystem.Static.RaiseBeforeDamageApplied(mySlimBlock, ref myDamageInformation);
 
                             if (mySlimBlock.CubeGrid.Editable)
                             {
-                                mySlimBlock.DecreaseMountLevel(myDamageInformation.Amount, __instance.GetInventory(0), false, __instance.OwnerId, false);
+                                mySlimBlock.DecreaseMountLevel(myDamageInformation.Amount, __instance.GetInventory(0), false, Base.OwnerId, false);
                                 mySlimBlock.MoveItemsFromConstructionStockpile(__instance.GetInventory(0), MyItemFlags.None);
                             }
+
                             if (mySlimBlock.UseDamageSystem)
                                 MyDamageSystem.Static.RaiseAfterDamageApplied(mySlimBlock, myDamageInformation);
 
