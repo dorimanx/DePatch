@@ -3,6 +3,7 @@ using System.Reflection;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Weapons;
 using Torch.Managers.PatchManager;
+using VRage.Game.ModAPI;
 
 namespace DePatch.ShipTools
 {
