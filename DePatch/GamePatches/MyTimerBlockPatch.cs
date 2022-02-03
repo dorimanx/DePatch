@@ -14,7 +14,7 @@ namespace DePatch.GamePatches
 
         private static void PatchMethod(MyTimerBlock __instance)
         {
-            if (__instance == null || !DePatchPlugin.Instance.Config.Enabled || __instance.TriggerDelay >= DePatchPlugin.Instance.Config.TimerMinDelay)
+            if (__instance == null || !DePatchPlugin.Instance.Config.Enabled)
                 return;
 
             __instance.TriggerDelay = DePatchPlugin.Instance.Config.TimerMinDelay;
@@ -24,6 +24,8 @@ namespace DePatch.GamePatches
         {
             if (!DePatchPlugin.Instance.Config.Enabled)
                 return true;
+
+            __instance.TriggerDelay = DePatchPlugin.Instance.Config.TimerMinDelay;
 
             return !DePatchPlugin.Instance.Config.DisableTrigNow;
         }
