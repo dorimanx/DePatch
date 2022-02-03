@@ -28,6 +28,8 @@ namespace DePatch.KEEN_BUG_FIXES
 
             m_componentsForUpdateOnce = typeof(MyGameLogic).EasyField("m_componentsForUpdateOnce");
             ctx.Prefix(typeof(MyGameLogic), typeof(KEEN_UpdateComponentsFix), nameof(UpdateOnceBeforeFrame));
+
+            ctx.Prefix(typeof(MyHierarchyComponentBase), typeof(KEEN_UpdateComponentsFix), nameof(RemoveChild));
         }
 
         public static bool UpdateComponents(MySession __instance)
@@ -129,6 +131,21 @@ namespace DePatch.KEEN_BUG_FIXES
             }
 
             return false;
+        }
+
+        public static bool RemoveChild(MyHierarchyComponentBase __instance, IMyEntity child, bool preserveWorldPos = false)
+        {
+            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.UpdateComponentsFix)
+                return true;
+
+            if (__instance == null || child == null)
+                return false;
+
+            MyHierarchyComponentBase myHierarchyComponentBase = child.Components?.Get<MyHierarchyComponentBase>();
+            if (myHierarchyComponentBase == null)
+                return false;
+ 
+            return true;
         }
     }
 }
