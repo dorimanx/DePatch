@@ -17,15 +17,17 @@ namespace DePatch.GamePatches
             if (__instance == null || !DePatchPlugin.Instance.Config.Enabled)
                 return;
 
-            __instance.TriggerDelay = DePatchPlugin.Instance.Config.TimerMinDelay;
+            if (__instance.TriggerDelay < DePatchPlugin.Instance.Config.TimerMinDelay)
+                __instance.TriggerDelay = DePatchPlugin.Instance.Config.TimerMinDelay;
         }
 
         private static bool TrigMethod(MyTimerBlock __instance)
         {
-            if (!DePatchPlugin.Instance.Config.Enabled)
+            if (__instance == null || !DePatchPlugin.Instance.Config.Enabled)
                 return true;
 
-            __instance.TriggerDelay = DePatchPlugin.Instance.Config.TimerMinDelay;
+            if (__instance.TriggerDelay < DePatchPlugin.Instance.Config.TimerMinDelay)
+                __instance.TriggerDelay = DePatchPlugin.Instance.Config.TimerMinDelay;
 
             return !DePatchPlugin.Instance.Config.DisableTrigNow;
         }
