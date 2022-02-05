@@ -147,11 +147,7 @@
                         ToolTip="This will delay crazy update of each gas tank in world and save server CPU and Client CPU load."
                         IsChecked="{Binding GasTanksOptimization}" />
                     <CheckBox
-                        Content="ClientID Update on Save (experemental)" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,292,0,0"
-                        ToolTip="This will allow saving steamid to client id field for each player, during save, this can lead to silent crash on world save, use it on your own RISK."
-                        IsChecked="{Binding PlayersIdUpdate}" />
-                    <CheckBox
-                        Content="Fix Turrets Target Selectors" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,312,0,0"
+                        Content="Fix Turrets Target Selectors" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,292,0,0"
                         ToolTip="This will allow setting turrets to shoot at different targets, it's bugged right now.."
                         IsChecked="{Binding TurretsAimFix}" />
                     <CheckBox

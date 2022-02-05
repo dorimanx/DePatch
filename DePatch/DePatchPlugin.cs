@@ -104,9 +104,6 @@ namespace DePatch
 
             GameIsReady = true;
 
-            if (Config.PlayersIdUpdate)
-                MyPlayerIdUpdate.Patch(context);
-
             if (Config.PveZoneEnabled)
             {
                 PVE.Init(this);
