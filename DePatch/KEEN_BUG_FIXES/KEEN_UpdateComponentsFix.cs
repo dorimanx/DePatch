@@ -22,7 +22,7 @@ namespace DePatch.KEEN_BUG_FIXES
             m_sessionComponentsForUpdate = typeof(MySession).EasyField("m_sessionComponentsForUpdate");
             ctx.Prefix(typeof(MySession), typeof(KEEN_UpdateComponentsFix), nameof(UpdateComponents));
 
-            ctx.Prefix(typeof(MyHierarchyComponentBase), typeof(KEEN_UpdateOnceBeforeFrameFix), nameof(RemoveChild));
+            ctx.Prefix(typeof(MyHierarchyComponentBase), typeof(KEEN_UpdateComponentsFix), nameof(RemoveChild));
         }
 
         public static bool UpdateComponents(MySession __instance)
@@ -96,7 +96,7 @@ namespace DePatch.KEEN_BUG_FIXES
 
         public static bool RemoveChild(MyHierarchyComponentBase __instance, IMyEntity child, bool preserveWorldPos = false)
         {
-            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.UpdateOnceBeforeFrameFix)
+            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.UpdateComponentsFix)
                 return true;
 
             if (__instance == null || child == null)
