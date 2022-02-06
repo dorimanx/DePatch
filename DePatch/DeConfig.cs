@@ -86,11 +86,12 @@ namespace DePatch
         private bool _NoEnemyPlayerLandingGearLocks;
         private bool _NanoBuildArea;
         private bool _NanoDrillArea;
-        private bool _UpdateAfterSimulation10FIX = true;
-        private bool _UpdateAfterSimulation100FIX = true;
-        private bool _UpdateBeforeSimulation100FIX = true;
-        private bool _ParallelUpdateHandlerAfterSimulationFIX = true;
+        private bool _UpdateAfterSimulation10FIX;
+        private bool _UpdateAfterSimulation100FIX;
+        private bool _UpdateBeforeSimulation100FIX;
+        private bool _ParallelUpdateHandlerAfterSimulationFIX;
         private bool _UpdateComponentsFix;
+        private bool _UpdateOnceBeforeFrameFix;
         private bool _RemoveEntityPhantomFIX = true;
         private bool _MyEntityDuplicateFix = true;
         private bool _DenyPlacingBlocksOnEnemyGrid;
@@ -581,6 +582,12 @@ namespace DePatch
         {
             get => _UpdateComponentsFix;
             set => SetValue(ref _UpdateComponentsFix, value);
+        }
+
+        public bool UpdateOnceBeforeFrameFix
+        {
+            get => _UpdateOnceBeforeFrameFix;
+            set => SetValue(ref _UpdateOnceBeforeFrameFix, value);
         }
 
         public bool DenyPlacingBlocksOnEnemyGrid

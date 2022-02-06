@@ -167,27 +167,31 @@
                         ToolTip="This will tap to KEEN function for ParallelUpdateHandlerAfterSimulation and check for NULLs and prevent server crash."
                         IsChecked="{Binding ParallelUpdateHandlerAfterSimulationFIX}" Width="244" Grid.ColumnSpan="3" />
                     <CheckBox
-                        Content="Fix RemoveEntityPhantom" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,252,0,0"
+                        Content="Fix RemoveEntityPhantom" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,306,0,0"
                         ToolTip="This will tap to KEEN function for RemoveEntityPhantom and check for Bugs and prevent server crash."
                         IsChecked="{Binding RemoveEntityPhantomFIX}" Width="164" Grid.ColumnSpan="2" />
                     <CheckBox
-                        Content="Fix MyEntity Duplicates" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,272,0,0"
+                        Content="Fix MyEntity Duplicates" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,326,0,0"
                         ToolTip="This will tap to KEEN function for MyEntity Set and check for duplicate Entity ID and prevent server crash."
                         IsChecked="{Binding MyEntityDuplicateFix}" Width="153" Grid.ColumnSpan="2" />
                     <CheckBox
-                        Content="Fix MySession UpdateComponents" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,292,0,0"
+                        Content="Fix MySession UpdateComponents" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,252,0,0"
                         ToolTip="This will tap to KEEN function for UpdateComponents and check for Null bugs and prevent server crash."
                         IsChecked="{Binding UpdateComponentsFix}" Width="209" Grid.ColumnSpan="3" />
                     <CheckBox
-                        Content="Fix possible silent crash on Game Save" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,324,0,0"
+                        Content="Fix possible silent crash on Game Save" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,329,0,0"
                         ToolTip="This will tap to many KEEN functions for game save and prevent server silent crash.&#xA;if other plugins using SAVE code for patching, it's will not allow them too. only as Suffix, needs restart&#xA;Also this will reduce save size by not saving the large XML every 5min, only once in 25min&#xA;game can load with sbcB5 only!"
-                        IsChecked="{Binding GameSaveFix}" Width="226" Grid.ColumnSpan="3" />
+                        IsChecked="{Binding GameSaveFix}" Width="226" />
                     <Label
                         Content="Experimental Feature! See description!"
                         HorizontalAlignment="Left"
-                        Margin="267,307,0,0"
+                        Margin="10,306,0,0"
                         VerticalAlignment="Top"
-                        RenderTransformOrigin="0.576,0.348" Grid.ColumnSpan="3" Width="212" Height="23" />
+                        RenderTransformOrigin="0.576,0.348" Width="212" Height="23" />
+                    <CheckBox
+                        Content="Fix UpdateOnceBeforeFrame" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,272,0,0"
+                        ToolTip="This will tap to KEEN function for UpdateOnceBeforeFrame and check for Null bugs and prevent server crash.&#xA;This can add more LOAD when enabled, need restart"
+                        IsChecked="{Binding UpdateOnceBeforeFrameFix}" Width="209" Grid.ColumnSpan="3" />
                 </Grid>
             </TabItem>
             <TabItem

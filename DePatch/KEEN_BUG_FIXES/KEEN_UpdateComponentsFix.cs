@@ -7,10 +7,7 @@ using Sandbox.Game.World;
 using System.Collections.Generic;
 using VRage.Game.Components;
 using Sandbox.Engine.Multiplayer;
-using VRage.Game.Entity;
-using VRage.Game.Entity.EntityComponents.Interfaces;
 using VRage.ModAPI;
-using VRage.Collections;
 
 namespace DePatch.KEEN_BUG_FIXES
 {
@@ -19,17 +16,13 @@ namespace DePatch.KEEN_BUG_FIXES
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
         private static FieldInfo m_sessionComponentsForUpdate;
-        private static FieldInfo m_componentsForUpdateOnce;
 
         public static void Patch(PatchContext ctx)
         {
             m_sessionComponentsForUpdate = typeof(MySession).EasyField("m_sessionComponentsForUpdate");
             ctx.Prefix(typeof(MySession), typeof(KEEN_UpdateComponentsFix), nameof(UpdateComponents));
 
-            m_componentsForUpdateOnce = typeof(MyGameLogic).EasyField("m_componentsForUpdateOnce");
-            ctx.Prefix(typeof(MyGameLogic), typeof(KEEN_UpdateComponentsFix), nameof(UpdateOnceBeforeFrame));
-
-            ctx.Prefix(typeof(MyHierarchyComponentBase), typeof(KEEN_UpdateComponentsFix), nameof(RemoveChild));
+            ctx.Prefix(typeof(MyHierarchyComponentBase), typeof(KEEN_UpdateOnceBeforeFrameFix), nameof(RemoveChild));
         }
 
         public static bool UpdateComponents(MySession __instance)
@@ -101,41 +94,9 @@ namespace DePatch.KEEN_BUG_FIXES
             return false;
         }
 
-        public static bool UpdateOnceBeforeFrame()
-        {
-            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.UpdateComponentsFix)
-                return true;
-
-            try
-            {
-                var m_componentsForUpdateOnceList = (CachingList<MyGameLogicComponent>)m_componentsForUpdateOnce.GetValue(null);
-                if (m_componentsForUpdateOnceList == null)
-                    return true;
-
-                m_componentsForUpdateOnceList.ApplyChanges();
-
-                foreach (MyGameLogicComponent myGameLogicComponent in m_componentsForUpdateOnceList)
-                {
-                    if (myGameLogicComponent == null)
-                        continue;
-
-                    myGameLogicComponent.NeedsUpdate &= ~MyEntityUpdateEnum.BEFORE_NEXT_FRAME;
-
-                    if (!myGameLogicComponent.MarkedForClose && !myGameLogicComponent.Closed)
-                        ((IMyGameLogicComponent)myGameLogicComponent).UpdateOnceBeforeFrame(false);
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Error during UpdateOnceBeforeFrame Function! Crash Avoided");
-            }
-
-            return false;
-        }
-
         public static bool RemoveChild(MyHierarchyComponentBase __instance, IMyEntity child, bool preserveWorldPos = false)
         {
-            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.UpdateComponentsFix)
+            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.UpdateOnceBeforeFrameFix)
                 return true;
 
             if (__instance == null || child == null)
@@ -144,7 +105,7 @@ namespace DePatch.KEEN_BUG_FIXES
             MyHierarchyComponentBase myHierarchyComponentBase = child.Components?.Get<MyHierarchyComponentBase>();
             if (myHierarchyComponentBase == null)
                 return false;
- 
+
             return true;
         }
     }
