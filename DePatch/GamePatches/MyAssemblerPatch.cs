@@ -1,4 +1,5 @@
 ﻿using Sandbox.Game.Entities.Cube;
+using SpaceEngineers.Game.Entities.Blocks;
 using System.Reflection;
 using Torch.Managers.PatchManager;
 using VRage.Game;
@@ -33,12 +34,13 @@ namespace DePatch.GamePatches
                     if (__instance.RepeatEnabled && DePatchPlugin.Instance.Config.DisableAssemblerLoop)
                     {
                         __instance.RequestRepeatEnabled(false);
+
                         if (!__instance.IsQueueEmpty)
                             __instance.ClearQueue();
                     }
                     if (DePatchPlugin.Instance.Config.DisableProductionOnShip)
                     {
-                        if (!__instance.CubeGrid.IsStatic && __instance.CubeGrid.GridSizeEnum == MyCubeSize.Large)
+                        if (!__instance.CubeGrid.IsStatic && !(__instance is MySurvivalKit))
                         {
                             __instance.Enabled = false;
 
@@ -51,23 +53,6 @@ namespace DePatch.GamePatches
             catch
             {
             }
-
-            /* this code is obsolete.
-            if (DePatchPlugin.Instance.Config.CargoCleanup)
-            {
-                /// loop for 30 sec till next grid add / remove
-                if (!CooldownManager.CheckCooldown(LoopRequestID, null, out var LoopremainingSeconds))
-                {
-                    var LoopTimer = LoopremainingSeconds;
-                    return true;
-                }
-                CooldownManager.StartCooldown(LoopRequestID, null, LoopCooldown);
-                Task.Run(delegate
-                {
-                    CargoCleanup.SearchAndDeleteItemStacks();
-                });
-            }
-            */
         }
     }
 }

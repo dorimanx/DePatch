@@ -25,36 +25,29 @@ namespace DePatch.GamePatches
                 if (MyFakes.FORCE_ADD_TRASH_REMOVAL_MENU)
                     MyFakes.FORCE_ADD_TRASH_REMOVAL_MENU = false;
 
+                if (__instance == null)
+                    return;
+
                 var blockSubType = __instance.BlockDefinition.Id.SubtypeName;
                 var LargeSmallSheld = "LargeShipSmallShieldGeneratorBase";
                 var LargeLargeShield = "LargeShipLargeShieldGeneratorBase";
                 var SmallSmallShield = "SmallShipSmallShieldGeneratorBase";
                 var SmallMicroShield = "SmallShipMicroShieldGeneratorBase";
 
-                if (!__instance.CubeGrid.IsStatic &&
-                        (__instance.CubeGrid.GridSizeEnum == MyCubeSize.Large ||
-                        __instance.CubeGrid.GridSizeEnum == MyCubeSize.Small)
-                        && DePatchPlugin.Instance.Config.DisableProductionOnShip)
+                if (DePatchPlugin.Instance.Config.DisableProductionOnShip && !__instance.CubeGrid.IsStatic && __instance.Enabled)
                 {
-                    if (__instance != null && (
-                            string.Compare(LargeSmallSheld, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0 ||
-                            string.Compare(LargeLargeShield, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0 ||
-                            string.Compare(SmallSmallShield, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0 ||
-                            string.Compare(SmallMicroShield, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0))
+                    if (string.Compare(LargeSmallSheld, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0 ||
+                        string.Compare(LargeLargeShield, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0 ||
+                        string.Compare(SmallSmallShield, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0 ||
+                        string.Compare(SmallMicroShield, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0)
                     {
+                        // do nothing
                     }
                     else
-                    {
-                        if (__instance.Enabled)
-                        {
-                            __instance.Enabled = false;
-                        }
-                    }
+                        __instance.Enabled = false;
                 }
 
-                if (__instance != null && __instance.CubeGrid != null && __instance.CubeGrid.IsStatic == false
-                                                                      && __instance.CubeGrid.GridSizeEnum == MyCubeSize.Large
-                                                                      && DePatchPlugin.Instance.Config.ShieldsAntiHack)
+                if (__instance.CubeGrid?.IsStatic == false && __instance.CubeGrid.GridSizeEnum == MyCubeSize.Large && DePatchPlugin.Instance.Config.ShieldsAntiHack)
                 {
                     if (MySession.Static.Players.IdentityIsNpc(__instance.CubeGrid.BigOwners.FirstOrDefault()))
                         return;
@@ -82,17 +75,6 @@ namespace DePatch.GamePatches
                                     item.Enabled = false;
                                     AlertPlayer = true;
                                 }
-
-                                /* // no longer needed shield off shield points 0
-                                if (item is IMyUpgradeModule && item.Enabled)
-                                {
-                                    if (item.BlockDefinition.Id.SubtypeName.Contains("ShieldCapacitor") || item.BlockDefinition.Id.SubtypeName.Contains("ShieldFluxCoil"))
-                                    {
-                                        item.Enabled = false;
-                                        AlertPlayer = true;
-                                    }
-                                }
-                                */
                             }
                         }
                         if (MySession.Static.Players.GetOnlinePlayers().Count() > 0)
