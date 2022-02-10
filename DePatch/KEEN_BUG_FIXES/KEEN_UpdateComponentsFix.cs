@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using VRage.Game.Components;
 using Sandbox.Engine.Multiplayer;
 using VRage.ModAPI;
+using DePatch.CoolDown;
 
 namespace DePatch.KEEN_BUG_FIXES
 {
@@ -16,6 +17,10 @@ namespace DePatch.KEEN_BUG_FIXES
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
         private static FieldInfo m_sessionComponentsForUpdate;
+
+        private static bool CounterIsActive = false;
+        private static int CrashCounter = 0;
+        private static bool CheckTimer = false;
 
         public static void Patch(PatchContext ctx)
         {
@@ -34,6 +39,35 @@ namespace DePatch.KEEN_BUG_FIXES
             {
                 if (__instance is null)
                     return false;
+
+                if (CounterIsActive)
+                {
+                    // arm new timer.
+                    int LoopCooldown = 10 * 1000;
+                    CooldownManager.StartCooldown(SteamIdCooldownKey.LoopCrashComponents, null, LoopCooldown);
+                    CounterIsActive = false;
+                    CheckTimer = true;
+                }
+
+                if (CheckTimer)
+                {
+                    _ = CooldownManager.CheckCooldown(SteamIdCooldownKey.LoopCrashComponents, null, out var remainingSecondsCrashCheck);
+
+                    if (remainingSecondsCrashCheck < 1)
+                    {
+                        CheckTimer = false;
+                        CrashCounter = 0;
+                    }
+                }
+
+                // allow crash if we stuck in loop
+                if (CrashCounter >= 25)
+                {
+                    CounterIsActive = false;
+                    CheckTimer = false;
+                    CrashCounter = 0;
+                    return true;
+                }
 
                 var m_sessionComponentsForUpdateList = (Dictionary<int, SortedSet<MySessionComponentBase>>)m_sessionComponentsForUpdate.GetValue(__instance);
 
@@ -89,7 +123,9 @@ namespace DePatch.KEEN_BUG_FIXES
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error during UpdateComponents Function! Crash Avoided");
+                CounterIsActive = true;
+                CrashCounter++;
+                Log.Error(ex, $"Error during UpdateComponents Function! Crash Avoided, crash loop number : {CrashCounter}");
             }
             return false;
         }
