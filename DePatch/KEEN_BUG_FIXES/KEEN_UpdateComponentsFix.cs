@@ -17,10 +17,11 @@ namespace DePatch.KEEN_BUG_FIXES
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
         private static FieldInfo m_sessionComponentsForUpdate;
+        private static Dictionary<int, SortedSet<MySessionComponentBase>> ThisSessionComponentsForUpdate;
 
         private static bool CounterIsActive = false;
         private static int CrashCounter = 0;
-        private static bool CheckTimer = false;
+        private static bool CheckTimer = false; 
 
         public static void Patch(PatchContext ctx)
         {
@@ -69,9 +70,11 @@ namespace DePatch.KEEN_BUG_FIXES
                     return true;
                 }
 
-                var m_sessionComponentsForUpdateList = (Dictionary<int, SortedSet<MySessionComponentBase>>)m_sessionComponentsForUpdate.GetValue(__instance);
+                // Optimization by RYO, cache the session once.
+                if (ThisSessionComponentsForUpdate == null)
+                    ThisSessionComponentsForUpdate = (Dictionary<int, SortedSet<MySessionComponentBase>>)m_sessionComponentsForUpdate.GetValue(__instance);
 
-                if (m_sessionComponentsForUpdateList.TryGetValue(1, out SortedSet<MySessionComponentBase> sortedSet))
+                if (ThisSessionComponentsForUpdate.TryGetValue(1, out SortedSet<MySessionComponentBase> sortedSet))
                 {
                     if (sortedSet != null && sortedSet.Count > 0)
                     {
@@ -89,7 +92,7 @@ namespace DePatch.KEEN_BUG_FIXES
                 if (MyMultiplayer.Static != null)
                     MyMultiplayer.Static.ReplicationLayer.Simulate();
 
-                if (m_sessionComponentsForUpdateList.TryGetValue(2, out SortedSet<MySessionComponentBase> sortedSet2))
+                if (ThisSessionComponentsForUpdate.TryGetValue(2, out SortedSet<MySessionComponentBase> sortedSet2))
                 {
                     if (sortedSet2 != null && sortedSet2.Count > 0)
                     {
@@ -104,7 +107,7 @@ namespace DePatch.KEEN_BUG_FIXES
                     }
                 }
 
-                if (m_sessionComponentsForUpdateList.TryGetValue(4, out SortedSet<MySessionComponentBase> sortedSet3))
+                if (ThisSessionComponentsForUpdate.TryGetValue(4, out SortedSet<MySessionComponentBase> sortedSet3))
                 {
                     if (sortedSet3 != null && sortedSet3.Count > 0)
                     {
