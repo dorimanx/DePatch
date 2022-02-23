@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Reflection;
 using Sandbox.Game.Entities;
+using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.Weapons;
 using Torch.Managers.PatchManager;
 using VRage.Game.ModAPI;
@@ -40,52 +41,45 @@ namespace DePatch.ShipTools
             if (__instance.BlockDefinition.Id.SubtypeName.Contains("NanobotDrillSystem"))
                 return true;
 
-            DrillUpdate(__instance);
+            Receiver_IsPoweredChanged.Invoke(__instance, new object[0]);
+            InitSubBlocks.Invoke(__instance, new object[0]);
+
+            if (__instance.Parent?.Physics == null)
+                return false;
+
+            m_drillFrameCountdown.SetValue(__instance, (int)m_drillFrameCountdown.GetValue(__instance) - 10);
+            if ((int)m_drillFrameCountdown.GetValue(__instance) > 0)
+                return false;
+
+            DrillSettings drillSettings = DrillSettings.drills.ToList().Find((DrillSettings b) => b.Subtype == __instance.DefinitionId.SubtypeName);
+
+            if (DePatchPlugin.Instance.Config.DrillIgnoreSubtypes)
+                m_drillFrameCountdown.SetValue(__instance, (int)m_drillFrameCountdown.GetValue(__instance) + DePatchPlugin.Instance.Config.DrillUpdateRate);
+            else
+                m_drillFrameCountdown.SetValue(__instance, (int)m_drillFrameCountdown.GetValue(__instance) + drillSettings.TickRate);
+
+            if (__instance.CanShoot(MyShootActionEnum.PrimaryAction, __instance.OwnerId, out MyGunStatusEnum _))
+            {
+                var wantsToCollect = (bool)m_wantsToCollect.GetValue(__instance);
+
+                if (DePatchPlugin.Instance.Config.DrillIgnoreSubtypes)
+                    wantsToCollect = (bool)m_wantsToCollect.GetValue(__instance) || DePatchPlugin.Instance.Config.DrillDisableRightClick;
+                else if (drillSettings.DisableRightClick)
+                    wantsToCollect = (bool)m_wantsToCollect.GetValue(__instance) || drillSettings.DisableRightClick;
+                else
+                    wantsToCollect = (bool)m_wantsToCollect.GetValue(__instance);
+
+                var myDrillBase = (MyDrillBase)m_drillBase.GetValue(__instance);
+
+                if (myDrillBase.Drill(__instance.Enabled || wantsToCollect, speedMultiplier: 0.1f))
+                    ShakeAmount.SetValue(__instance, 1f);
+                else
+                    ShakeAmount.SetValue(__instance, 0.5f);
+            }
+            else
+                ShakeAmount.SetValue(__instance, 0.0f);
 
             return false;
-        }
-
-        private static void DrillUpdate(MyShipDrill drill)
-        {
-            Receiver_IsPoweredChanged.Invoke(drill, new object[0]);
-            InitSubBlocks.Invoke(drill, new object[0]);
-
-            if (drill.Parent?.Physics == null)
-                return;
-
-            m_drillFrameCountdown.SetValue(drill, (int)m_drillFrameCountdown.GetValue(drill) - 10);
-            if ((int)m_drillFrameCountdown.GetValue(drill) > 0)
-                return;
-
-            DrillSettings drillSettings = DrillSettings.drills.ToList().Find((DrillSettings b) => b.Subtype == drill.DefinitionId.SubtypeName);
-            if (DePatchPlugin.Instance.Config.DrillIgnoreSubtypes)
-                m_drillFrameCountdown.SetValue(drill, (int)m_drillFrameCountdown.GetValue(drill) + DePatchPlugin.Instance.Config.DrillUpdateRate);
-            else
-                m_drillFrameCountdown.SetValue(drill, (int)m_drillFrameCountdown.GetValue(drill) + drillSettings.TickRate);
-
-            if (!drill.CanShoot(MyShootActionEnum.PrimaryAction, drill.OwnerId, out MyGunStatusEnum myGunStatusEnum))
-            {
-                ShakeAmount.SetValue(drill, 0f);
-                return;
-            }
-
-            var wantsToCollect = (bool)m_wantsToCollect.GetValue(drill);
-
-            if (DePatchPlugin.Instance.Config.DrillIgnoreSubtypes)
-                wantsToCollect = (bool)m_wantsToCollect.GetValue(drill) || DePatchPlugin.Instance.Config.DrillDisableRightClick;
-            else if (drillSettings.DisableRightClick)
-                wantsToCollect = (bool)m_wantsToCollect.GetValue(drill) || drillSettings.DisableRightClick;
-            else
-                wantsToCollect = (bool)m_wantsToCollect.GetValue(drill);
-
-            var myDrillBase = (MyDrillBase)m_drillBase.GetValue(drill);
-            if (myDrillBase.Drill(drill.Enabled || wantsToCollect, true, false, 0.1f))
-            {
-                ShakeAmount.SetValue(drill, 1f);
-                return;
-            }
-
-            ShakeAmount.SetValue(drill, 0.5f);
         }
     }
 }

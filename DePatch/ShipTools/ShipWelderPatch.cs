@@ -46,7 +46,8 @@ namespace DePatch.ShipTools
                 if (string.Compare(subtypeLarge, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0 ||
                     string.Compare(subtypeSmall, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0)
                 {
-                    __instance.Enabled = false;
+                    if (__instance.Enabled)
+                        __instance.Enabled = false;
                 }
             }
 
@@ -55,7 +56,10 @@ namespace DePatch.ShipTools
                 if (__instance.IsFunctional && !MySession.Static.Players.IsPlayerOnline(__instance.OwnerId))
                 {
                     if (PlayersUtility.KeepBlockOffWelder(__instance))
-                        __instance.Enabled = false;
+                    {
+                        if (__instance.Enabled)
+                            __instance.Enabled = false;
+                    }
                 }
             }
 
@@ -91,111 +95,108 @@ namespace DePatch.ShipTools
             targets.Remove(__instance.SlimBlock);
 
             bool flag = false;
-            int num = targets.Count;
+            int count = targets.Count;
             m_missingComponents.Clear();
 
-            foreach (MySlimBlock mySlimBlock in targets)
+            foreach (MySlimBlock target in targets)
             {
-                if (mySlimBlock.IsFullIntegrity || mySlimBlock == __instance.SlimBlock)
-                    num--;
+                if (target.IsFullIntegrity || target == __instance.SlimBlock)
+                    count--;
                 else
                 {
-                    MyCubeBlockDefinition.PreloadConstructionModels(mySlimBlock.BlockDefinition);
-                    mySlimBlock.GetMissingComponents(m_missingComponents);
+                    MyCubeBlockDefinition.PreloadConstructionModels(target.BlockDefinition);
+                    target.GetMissingComponents(m_missingComponents);
                 }
             }
 
-            MyInventory inventory = __instance.GetInventory(0);
+            MyInventory inventory = MyEntityExtensions.GetInventory(__instance);
             var Base = (MyShipToolBase)__instance;
-            foreach (KeyValuePair<string, int> keyValuePair in m_missingComponents)
+            foreach (KeyValuePair<string, int> missingComponent in m_missingComponents)
             {
-                MyDefinitionId myDefinitionId = new MyDefinitionId(typeof(MyObjectBuilder_Component), keyValuePair.Key);
-                if (Math.Max(keyValuePair.Value - (int)inventory.GetItemAmount(myDefinitionId, MyItemFlags.None, false), 0) != 0 && Sync.IsServer && Base.UseConveyorSystem)
-                    Base.CubeGrid.GridSystems.ConveyorSystem.PullItem(myDefinitionId, new MyFixedPoint?(keyValuePair.Value), __instance, inventory, false, false);
+                MyDefinitionId myDefinitionId = new MyDefinitionId(typeof(MyObjectBuilder_Component), missingComponent.Key);
+                if (Math.Max(missingComponent.Value - (int)inventory.GetItemAmount(myDefinitionId, MyItemFlags.None, false), 0) != 0 && Sync.IsServer && Base.UseConveyorSystem)
+                    Base.CubeGrid.GridSystems.ConveyorSystem.PullItem(myDefinitionId, new MyFixedPoint?(missingComponent.Value), __instance, MyEntityExtensions.GetInventory(__instance), false, false);
             }
 
             if (Sync.IsServer)
             {
-                float num2 = 0.25f / Math.Min(4, (num > 0) ? num : 1);
-                float num3 = MySession.Static.WelderSpeedMultiplier * MyShipWelder.WELDER_AMOUNT_PER_SECOND * num2;
+                float num1 = 0.25f / Math.Min(4, count > 0 ? count : 1);
 
-                if (num3 < shipTool.Speed)
-                    num3 = shipTool.Speed;
-
-                using (HashSet<MySlimBlock>.Enumerator enumerator = targets.GetEnumerator())
+                foreach (MySlimBlock target in targets)
                 {
-                    while (enumerator.MoveNext())
+                    if (target.CubeGrid.Physics != null && target.CubeGrid.Physics.Enabled && target != __instance.SlimBlock)
                     {
-                        MySlimBlock mySlimBlock2 = enumerator.Current;
-                        if (mySlimBlock2.CubeGrid.Physics != null && mySlimBlock2.CubeGrid.Physics.Enabled && mySlimBlock2 != __instance.SlimBlock)
+                        float num2 = MySession.Static.WelderSpeedMultiplier * MyShipWelder.WELDER_AMOUNT_PER_SECOND * num1;
+
+                        if (num2 < shipTool.Speed)
+                            num2 = shipTool.Speed;
+
+                        bool? nullable = target.ComponentStack.WillFunctionalityRise(num2);
+                        if (!nullable.HasValue || !nullable.Value || MySession.Static.CheckLimitsAndNotify(MySession.Static.LocalPlayerId, target.BlockDefinition.BlockPairName, target.BlockDefinition.PCU - MyCubeBlockDefinition.PCU_CONSTRUCTION_STAGE_COST))
                         {
-                            bool? flag2 = mySlimBlock2.ComponentStack.WillFunctionalityRise(num3);
-                            if (flag2 == null || !flag2.Value || MySession.Static.CheckLimitsAndNotify(MySession.Static.LocalPlayerId, mySlimBlock2.BlockDefinition.BlockPairName, mySlimBlock2.BlockDefinition.PCU - MyCubeBlockDefinition.PCU_CONSTRUCTION_STAGE_COST, 0, 0, null))
+                            if (target.CanContinueBuild(inventory))
+                                flag = true;
+
+                            target.MoveItemsToConstructionStockpile(inventory);
+                            target.MoveUnneededItemsFromConstructionStockpile(inventory);
+
+                            if (target.HasDeformation || target.MaxDeformation > 9.99999974737875E-05 || !target.IsFullIntegrity)
                             {
-                                if (mySlimBlock2.CanContinueBuild(inventory))
-                                    flag = true;
-
-                                mySlimBlock2.MoveItemsToConstructionStockpile(inventory);
-                                mySlimBlock2.MoveUnneededItemsFromConstructionStockpile(inventory);
-
-                                if (mySlimBlock2.HasDeformation || mySlimBlock2.MaxDeformation > 0.0001f || !mySlimBlock2.IsFullIntegrity)
-                                {
-                                    float maxAllowedBoneMovement = MyShipWelder.WELDER_MAX_REPAIR_BONE_MOVEMENT_SPEED * 250f * 0.001f;
-                                    mySlimBlock2.IncreaseMountLevel(num3, Base.OwnerId, inventory, maxAllowedBoneMovement, __instance.HelpOthers, Base.IDModule.ShareMode, false, false);
-                                }
+                                float maxAllowedBoneMovement = (float)(MyShipWelder.WELDER_MAX_REPAIR_BONE_MOVEMENT_SPEED * 250.0 * (1.0 / 1000.0));
+                                target.IncreaseMountLevel(num2, Base.OwnerId, inventory, maxAllowedBoneMovement, __instance.HelpOthers, Base.IDModule.ShareMode);
                             }
                         }
                     }
-                    goto Exit;
                 }
             }
-            foreach (MySlimBlock mySlimBlock3 in targets)
+            else
             {
-                if (mySlimBlock3 != __instance.SlimBlock && mySlimBlock3.CanContinueBuild(inventory))
-                    flag = true;
+                foreach (MySlimBlock target in targets)
+                {
+                    if (target != __instance.SlimBlock && target.CanContinueBuild(inventory))
+                        flag = true;
+                }
             }
-        Exit:
             m_missingComponents.Clear();
 
             if (!flag && Sync.IsServer)
             {
-                MyWelder.ProjectionRaycastData[] array = (MyWelder.ProjectionRaycastData[])FindProjectedBlocks.Invoke(__instance, new object[] { });
+                MyWelder.ProjectionRaycastData[] projectedBlocks = (MyWelder.ProjectionRaycastData[])FindProjectedBlocks.Invoke(__instance, new object[] { });
 
                 if (Base.UseConveyorSystem)
                 {
-                    MyWelder.ProjectionRaycastData[] array2 = array;
-                    foreach (MyWelder.ProjectionRaycastData PRayData in array2)
+                    foreach (MyWelder.ProjectionRaycastData projectionRaycastData in projectedBlocks)
                     {
-                        MyCubeBlockDefinition.Component[] components = PRayData.hitCube.BlockDefinition.Components;
+                        MyCubeBlockDefinition.Component[] components = projectionRaycastData.hitCube.BlockDefinition.Components;
                         if (components != null && components.Length != 0)
-                        {
-                            MyDefinitionId id = components[0].Definition.Id;
-                            Base.CubeGrid.GridSystems.ConveyorSystem.PullItem(id, new MyFixedPoint?(1), __instance, inventory, false, false);
-                        }
+                            Base.CubeGrid.GridSystems.ConveyorSystem.PullItem(components[0].Definition.Id, new MyFixedPoint?(1), __instance, inventory, false, false);
                     }
                 }
 
-                new HashSet<MyCubeGrid.MyBlockLocation>();
-                bool flag3 = MySession.Static.CreativeMode;
+                HashSet<MyCubeGrid.MyBlockLocation> myBlockLocationSet = new HashSet<MyCubeGrid.MyBlockLocation>();
+                bool creativeMode = MySession.Static.CreativeMode;
 
-                if (MySession.Static.Players.TryGetPlayerId(Base.BuiltBy, out MyPlayer.PlayerId id2) && MySession.Static.Players.TryGetPlayerById(id2, out MyPlayer myPlayer))
-                    flag3 |= MySession.Static.CreativeToolsEnabled(Sync.MyId);
+                if (MySession.Static.Players.TryGetPlayerId(Base.BuiltBy, out MyPlayer.PlayerId result) && MySession.Static.Players.TryGetPlayerById(result, out MyPlayer _))
+                    creativeMode |= MySession.Static.CreativeToolsEnabled(Sync.MyId);
 
-                foreach (MyWelder.ProjectionRaycastData projectionRaycastData in array)
+                foreach (MyWelder.ProjectionRaycastData projectionRaycastData in projectedBlocks)
                 {
-                    if (__instance.IsWithinWorldLimits(projectionRaycastData.cubeProjector, projectionRaycastData.hitCube.BlockDefinition.BlockPairName, flag3 ? projectionRaycastData.hitCube.BlockDefinition.PCU : MyCubeBlockDefinition.PCU_CONSTRUCTION_STAGE_COST) && (MySession.Static.CreativeMode || inventory.ContainItems(new MyFixedPoint?(1), projectionRaycastData.hitCube.BlockDefinition.Components[0].Definition.Id, MyItemFlags.None)))
+                    if (__instance.IsWithinWorldLimits(projectionRaycastData.cubeProjector, projectionRaycastData.hitCube.BlockDefinition.BlockPairName, creativeMode ? projectionRaycastData.hitCube.BlockDefinition.PCU : MyCubeBlockDefinition.PCU_CONSTRUCTION_STAGE_COST) && (MySession.Static.CreativeMode || inventory.ContainItems(new MyFixedPoint?(1), projectionRaycastData.hitCube.BlockDefinition.Components[0].Definition.Id)))
                     {
                         MyWelder.ProjectionRaycastData invokedBlock = projectionRaycastData;
-                        MySandboxGame.Static.Invoke(delegate ()
+                        MySandboxGame.Static.Invoke(() =>
                         {
-                            if (!invokedBlock.cubeProjector.Closed && !invokedBlock.cubeProjector.CubeGrid.Closed && (invokedBlock.hitCube.FatBlock == null || !invokedBlock.hitCube.FatBlock.Closed))
-                                invokedBlock.cubeProjector.Build(invokedBlock.hitCube, __instance.OwnerId, __instance.EntityId, true, __instance.BuiltBy);
+                            if (invokedBlock.cubeProjector.Closed || invokedBlock.cubeProjector.CubeGrid.Closed || invokedBlock.hitCube.FatBlock != null && invokedBlock.hitCube.FatBlock.Closed)
+                                return;
 
-                        }, "ShipWelder BuildProjection", -1, 0);
+                            invokedBlock.cubeProjector.Build(invokedBlock.hitCube, __instance.OwnerId, __instance.EntityId, builtBy: __instance.BuiltBy);
+
+                        }, "ShipWelder BuildProjection");
                         flag = true;
                     }
                 }
             }
+
             if (flag)
                 SetBuildingMusic.Invoke(__instance, new object[] { 150 });
 
