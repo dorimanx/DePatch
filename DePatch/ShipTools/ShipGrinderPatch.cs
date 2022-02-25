@@ -95,15 +95,13 @@ namespace DePatch.ShipTools
                         MyCubeBlockDefinition.PreloadConstructionModels(target.BlockDefinition);
                         if (Sync.IsServer)
                         {
-                            var Base = (MyCubeBlock)__instance;
-
-                            MyDamageInformation info = new MyDamageInformation(false, amount, MyDamageType.Grind, Base.EntityId);
+                            MyDamageInformation info = new MyDamageInformation(false, amount, MyDamageType.Grind, __instance.EntityId);
                             if (target.UseDamageSystem)
                                 MyDamageSystem.Static.RaiseBeforeDamageApplied(target, ref info);
 
                             if (target.CubeGrid.Editable)
                             {
-                                target.DecreaseMountLevel(info.Amount, MyEntityExtensions.GetInventory(__instance), identityId: Base.OwnerId);
+                                target.DecreaseMountLevel(info.Amount, MyEntityExtensions.GetInventory(__instance), identityId: __instance.OwnerId);
                                 target.MoveItemsFromConstructionStockpile(MyEntityExtensions.GetInventory(__instance));
                             }
 
