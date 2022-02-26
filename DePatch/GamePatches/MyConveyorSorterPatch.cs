@@ -17,7 +17,10 @@ namespace DePatch.GamePatches
                 return true;
 
             if (__instance != null && __instance.OwnerId == 0L && __instance.DrainAll)
+            {
+                __instance.DrainAll = false;
                 return false;
+            }
 
             return true;
         }

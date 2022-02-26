@@ -192,6 +192,10 @@
                         Content="Fix UpdateOnceBeforeFrame" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,272,0,0"
                         ToolTip="This will tap to KEEN function for UpdateOnceBeforeFrame and check for Null bugs and prevent server crash.&#xA;This can add more LOAD when enabled, need restart"
                         IsChecked="{Binding UpdateOnceBeforeFrameFix}" Width="209" Grid.ColumnSpan="3" />
+                    <CheckBox
+                        Content="Forbid using Detach Head in Timers" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,372,0,0"
+                        ToolTip="Forbid adding Detach Head Action (rotors/pistons/hinges) to Timer Block, to prevent creating Clang Machine and kill your server."
+                        IsChecked="{Binding FixTimerDetachExploits}" />
                 </Grid>
             </TabItem>
             <TabItem

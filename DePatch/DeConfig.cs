@@ -96,6 +96,7 @@ namespace DePatch
         private bool _MyEntityDuplicateFix = true;
         private bool _DenyPlacingBlocksOnEnemyGrid;
         private bool _FixExploits = true;
+        private bool _FixTimerDetachExploits = true;
         private bool _GasTanksOptimization = true;
         private bool _TurretsAimFix;
         private bool _GameSaveFix;
@@ -600,6 +601,12 @@ namespace DePatch
         {
             get => _FixExploits;
             set => SetValue(ref _FixExploits, value);
+        }
+
+        public bool FixTimerDetachExploits
+        {
+            get => _FixTimerDetachExploits;
+            set => SetValue(ref _FixTimerDetachExploits, value);
         }
 
         public bool GasTanksOptimization

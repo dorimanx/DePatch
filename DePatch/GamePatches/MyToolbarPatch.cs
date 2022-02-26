@@ -6,6 +6,7 @@ using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.Multiplayer;
 using Sandbox.Game.Screens.Helpers;
+using SpaceEngineers.Game.Entities.Blocks;
 using Torch;
 using Torch.Managers.PatchManager;
 using VRage.Game;
@@ -30,16 +31,42 @@ namespace DePatch.GamePatches
             ctx.Suffix(typeof(MyToolbar), "SetItemAtIndexInternal", typeof(MyToolbarPatch), nameof(SetItemAtIndexInternalPatch));
         }
 
-        private static void SetItemAtIndexInternalPatch(MyToolbar __instance, ref int i, ref MyToolbarItem item, ref bool initialization, bool gamepad = false)
+        private static void SetItemAtIndexInternalPatch(MyToolbar __instance, ref int i, ref MyToolbarItem item, ref bool initialization, ref bool gamepad)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.FixExploits)
                 return;
 
-            if (initialization || __instance is null || item is null || __instance.ToolbarType == MyToolbarType.Character)
+            if (__instance is null || __instance.Owner is null || item is null || __instance.ToolbarType == MyToolbarType.Character)
+                return;
+
+            // forbid using Timer Block, to Attach/Detach rotor/piston/hinges head, to stop Clang Machines.
+            if (DePatchPlugin.Instance.Config.FixTimerDetachExploits && __instance.Owner is MyTimerBlock TimerBlock && item.GetObjectBuilder() != null)
+            {
+                var steamId = MyEventContext.Current.Sender.Value;
+                var requesterPlayer = Sync.Players.TryGetPlayerBySteamId(steamId);
+
+                if (item is MyToolbarItemActions Action && Action.ActionId == "Detach")
+                {
+                    __instance.SetItemAtIndex(i, null, false);
+                    __instance.SetItemAtIndex(i, null, true);
+
+                    if (__instance.GetControllerPlayerID() != 0L)
+                        MyVisualScriptLogicProvider.ClearToolbarSlot(i, __instance.GetControllerPlayerID());
+                    else
+                    {
+                        if (requesterPlayer != null)
+                            MyVisualScriptLogicProvider.ClearToolbarSlot(i, requesterPlayer.Identity.IdentityId);
+                    }
+
+                    return;
+                }
+            }
+
+            if (initialization)
                 return;
 
             // deny adding toolbar item if ToolBar Block is owned by nobody = 0L but do allow if toolbar item block is also owned by 0L or shared with all.
-            if (__instance.Owner != null && ((MyCubeBlock)__instance.Owner).IDModule != null && ((MyCubeBlock)__instance.Owner).IDModule.Owner == 0L)
+            if (((MyCubeBlock)__instance.Owner).IDModule != null && ((MyCubeBlock)__instance.Owner).IDModule.Owner == 0L)
             {
                 try
                 {
@@ -72,7 +99,7 @@ namespace DePatch.GamePatches
                             MyVisualScriptLogicProvider.ClearToolbarSlot(i, __instance.GetControllerPlayerID());
                         else
                             if (requesterPlayer != null)
-                                MyVisualScriptLogicProvider.ClearToolbarSlot(i, requesterPlayer.Identity.IdentityId);
+                            MyVisualScriptLogicProvider.ClearToolbarSlot(i, requesterPlayer.Identity.IdentityId);
                     }
                 }
                 catch (Exception ex)
