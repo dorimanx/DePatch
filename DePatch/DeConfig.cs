@@ -17,7 +17,7 @@ namespace DePatch
         private bool _disableAssemblerLoop;
         private bool _disableProductionOnShip;
         private bool _disableNanoBotsOnShip;
-        private bool _enabled;
+        private bool _enabled = true;
         private bool _checkForUpdates;
         private bool _shipToolsEnabled;
         private bool _beaconAlert;
@@ -63,7 +63,7 @@ namespace DePatch
         private int _maxProtectedSmallGridSize = 10000;
         private int _maxProtectedLargeGridSize = 10000;
         private int _maxGridSizeToConvert = 500;
-        private float _damageToBlocksVoxel = 0.00f;
+        private float _damageToBlocksVoxel = 0.01f;
         private float _damageToBlocksRamming = 0.05f;
         private bool _convertToStatic;
         private bool _damageThreading;
@@ -92,13 +92,13 @@ namespace DePatch
         private bool _ParallelUpdateHandlerAfterSimulationFIX;
         private bool _UpdateComponentsFix;
         private bool _UpdateOnceBeforeFrameFix;
-        private bool _RemoveEntityPhantomFIX = true;
+        private bool _RemoveEntityPhantomFIX;
         private bool _MyEntityDuplicateFix = true;
         private bool _DenyPlacingBlocksOnEnemyGrid;
         private bool _FixExploits = true;
         private bool _FixTimerDetachExploits = true;
         private bool _GasTanksOptimization = true;
-        private bool _TurretsAimFix;
+        private bool _TurretsAimFix = true;
         private bool _GameSaveFix;
 
         public bool DamageThreading

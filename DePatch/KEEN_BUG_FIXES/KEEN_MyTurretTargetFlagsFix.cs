@@ -21,9 +21,6 @@ namespace DePatch.KEEN_BUG_FIXES
 
         public static void PatchMyTurretTarget()
         {
-            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.TurretsAimFix)
-                return;
-
             _ = _harmony.Patch(original, new HarmonyMethod(prefix));
         }
 

@@ -85,7 +85,6 @@ namespace DePatch
             if (newState == TorchGameState.Loading)
             {
                 _harmony.PatchAll();
-                KEEN_MyTurretTargetFlagsFix.PatchMyTurretTarget();
 
                 if (Config.UpdateAfterSimulation10FIX
                     || Config.UpdateAfterSimulation100FIX
@@ -95,11 +94,17 @@ namespace DePatch
                     KEEN_UpdateSimulationFixes.Patch(context);
                 }
 
+                if (Config.TurretsAimFix)
+                    KEEN_MyTurretTargetFlagsFix.PatchMyTurretTarget();
+
                 if (Config.UpdateComponentsFix)
                     KEEN_UpdateComponentsFix.Patch(context);
 
                 if (Config.UpdateOnceBeforeFrameFix)
                     KEEN_UpdateOnceBeforeFrameFix.Patch(context);
+
+                if (Config.RemoveEntityPhantomFIX)
+                    KEEN_RemoveEntityPhantomPathFix.Patch(context);
             }
 
             if (newState != TorchGameState.Loaded)

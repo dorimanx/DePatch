@@ -281,7 +281,7 @@ namespace DePatch.KEEN_BUG_FIXES
                             {
                                 while (!screenshotTaken())
                                 {
-                                    Thread.Sleep(10);
+                                    Thread.Sleep(5);
                                 }
                             }
 
@@ -631,24 +631,25 @@ namespace DePatch.KEEN_BUG_FIXES
 
                 while (sizeInBytesAsync.Result == 0)
                 {
-                    Thread.Sleep(100);
-
-                    LoopBraker++;
-                    // exit if 5 minutes no result.
-                    if (LoopBraker >= 3000)
+                    if (sizeInBytesAsync.Result == 99999999999999999UL)
                     {
+                        // seems like there was crash in SaveFile stream. exit now
                         __result = false;
                         sizeInBytes = 0UL;
                         return false;
                     }
-                }
 
-                if (sizeInBytesAsync.Result == 99999999999999999UL)
-                {
-                    // seems like there was crash in SaveFile stream. exit now
-                    __result = false;
-                    sizeInBytes = 0UL;
-                    return false;
+                    Thread.Sleep(5);
+
+                    LoopBraker++;
+
+                    if (LoopBraker >= 60000)
+                    {
+                        // exit if no result for long time, safe fail.
+                        __result = false;
+                        sizeInBytes = 0UL;
+                        return false;
+                    }
                 }
 
                 sizeInBytes = sizeInBytesAsync.Result;

@@ -13,7 +13,6 @@ using NLog;
 
 namespace DePatch.KEEN_BUG_FIXES
 {
-    [PatchShim]
     public static class KEEN_RemoveEntityPhantomPathFix
     {
         // Code by Buddhist#3825 (Discord)
