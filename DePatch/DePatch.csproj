@@ -61,6 +61,7 @@
     <Compile Include="GamePatches\MyProductionBlockPatch.cs" />
     <Compile Include="GamePatches\MyGasTankPatch.cs" />
     <Compile Include="GamePatches\MyToolbarPatch.cs" />
+    <Compile Include="KEEN_BUG_FIXES\KEEN_UpdateShootingFix.cs" />
     <Compile Include="KEEN_BUG_FIXES\KEEN_UpdateOnceBeforeFrameFix.cs" />
     <Compile Include="KEEN_BUG_FIXES\KEEN_SaveFix.cs" />
     <Compile Include="KEEN_BUG_FIXES\KEEN_UpdateComponentsFix.cs" />
