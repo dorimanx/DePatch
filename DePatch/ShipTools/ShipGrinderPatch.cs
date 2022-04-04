@@ -102,17 +102,6 @@ namespace DePatch.ShipTools
 
                             if (target.CubeGrid.Editable)
                             {
-                                if (target.FatBlock != null && !target.FatBlock.IsFunctional && target.FatBlock is MyLargeTurretBase Turret)
-                                {
-                                    Turret.Enabled = false;
-                                    Turret.OnEndShoot(MyShootActionEnum.PrimaryAction);
-                                    Turret.SetShooting(false);
-                                    Turret.Render.NeedsDrawFromParent = false;
-                                    Turret.StopShootingSound();
-                                    Turret.UpdateAfterSimulation();
-                                    Turret.DisableUpdates();
-                                }
-
                                 target.DecreaseMountLevel(info.Amount, MyEntityExtensions.GetInventory(__instance), identityId: __instance.OwnerId);
                                 target.MoveItemsFromConstructionStockpile(MyEntityExtensions.GetInventory(__instance));
                             }
