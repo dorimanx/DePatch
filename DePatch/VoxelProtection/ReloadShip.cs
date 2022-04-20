@@ -1,15 +1,11 @@
 ﻿using Sandbox.Common.ObjectBuilders;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using VRage;
 using VRage.Game;
 using VRage.Game.ModAPI;
-using VRage.Groups;
 using VRage.ModAPI;
-using VRage.ObjectBuilders;
 using VRageMath;
 
 namespace DePatch.VoxelProtection
