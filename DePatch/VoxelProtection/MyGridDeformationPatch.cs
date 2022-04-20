@@ -185,23 +185,15 @@ namespace DePatch.VoxelProtection
                                         drills.Enabled = false;
                                 }
 
-                                /* This part of code belong to Foogs great plugin dev! */
+                                /* This part of code belong to Foogs and SlimeRadio also LordTylus, great plugins developers! FixShip after converting to static */
                                 var grids = MyCubeGridGroups.Static.GetGroups(GridLinkTypeEnum.Logical).GetGroupNodes(GridCube);
                                 grids.SortNoAlloc((x, y) => x.BlocksCount.CompareTo(y.BlocksCount));
                                 grids.Reverse();
                                 grids.SortNoAlloc((x, y) => x.GridSizeEnum.CompareTo(y.GridSizeEnum));
 
-                                MyMultiplayer.RaiseEvent(grids.First(), (MyCubeGrid x) => new Action(x.ConvertToStatic), MyEventContext.Current.Sender);
+                                MyMultiplayer.RaiseEvent(grids.FirstOrDefault(), (MyCubeGrid x) => new Action(x.ConvertToStatic), MyEventContext.Current.Sender);
 
-                                /* This part of code belong to LordTylus great plugin dev! FixShip after converting to static */
-                                ReloadShip.FixShip(GridCube.EntityId);
-
-                                foreach (var ReloadedGrids in grids)
-                                {
-                                    if (ReloadedGrids.Physics == null)
-                                        continue;
-                                    ReloadedGrids.Physics?.ClearSpeed();
-                                }
+                                ReloadShip.FixShip(GridCube);
                             }
                         }
                     }

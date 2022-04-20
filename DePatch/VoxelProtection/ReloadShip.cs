@@ -4,7 +4,9 @@ using Sandbox.ModAPI;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using VRage;
 using VRage.Game;
+using VRage.Game.ModAPI;
 using VRage.Groups;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
@@ -12,134 +14,142 @@ using VRageMath;
 
 namespace DePatch.VoxelProtection
 {
+    public static class SpawnCounter
+    {
+        public class SpawnCallback
+        {
+            private int _counter;
+            private List<IMyEntity> _entlist;
+            private readonly int _maxCount;
+
+            public SpawnCallback(int count)
+            {
+                _counter = 0;
+                _entlist = new List<IMyEntity>();
+                _maxCount = count;
+            }
+
+            public void Increment(IMyEntity ent)
+            {
+                _counter++;
+                _entlist.Add(ent);
+
+                if (_counter < _maxCount)
+                    return;
+
+                FinalSpawnCallback(_entlist);
+            }
+
+            private static void FinalSpawnCallback(List<IMyEntity> grids)
+            {
+                foreach (MyCubeGrid ent in grids)
+                {
+                    ent.DetectDisconnectsAfterFrame();
+                    MyAPIGateway.Entities.AddEntity(ent, true);
+                }
+            }
+        }
+    }
+
     class ReloadShip
     {
-        private static ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> FindGridGroups(long gridID)
+        private static bool FixGroup(List<MyCubeGrid> GridGroup)
         {
-            var groups = new ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group>();
-
-            _ = Parallel.ForEach(MyCubeGridGroups.Static.Physical.Groups, group =>
-              {
-                  foreach (MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Node groupNodes in group.Nodes)
-                  {
-                      MyCubeGrid grid = groupNodes.NodeData;
-
-                      if (grid.Physics is null)
-                          continue;
-
-                      /* Gridname is wrong ignore */
-                      if (!grid.EntityId.Equals(gridID))
-                          continue;
-
-                      groups.Add(group);
-                      break;
-                  }
-              });
-
-            return groups;
-        }
-
-        private static bool CheckGroups(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups, out MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group)
-        {
-            /* No group or too many groups found */
-            if (groups.Count < 1)
-            {
-                group = null;
-                return false;
-            }
-
-            /* too many groups found */
-            if (groups.Count > 1)
-            {
-                group = null;
-                return false;
-            }
-
-            if (!groups.TryPeek(out group))
-                return false;
-
-            return true;
-        }
-
-        private static bool FixGroup(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group)
-        {
-            var objectBuilderList = new List<MyObjectBuilder_EntityBase>();
             var gridsList = new List<MyCubeGrid>();
+            SpawnCounter.SpawnCallback counter = null;
+            MyObjectBuilder_CubeGrid[] cubeGrids = new MyObjectBuilder_CubeGrid[GridGroup.Count];
+            var index = 0;
 
-            foreach (var groupNodes in group.Nodes)
+            foreach (var Grid in GridGroup)
             {
-                var grid = groupNodes.NodeData;
+                if (!(Grid is IMyEntity entity) || entity.MarkedForClose || entity.Closed)
+                    continue;
 
-                gridsList.Add(grid);
+                Grid.Physics.ClearSpeed();
+                var ob = Grid.GetObjectBuilder(true);
 
-                grid.Physics.ClearSpeed();
-
-                var ob = grid.GetObjectBuilder(true);
-
-                if (!objectBuilderList.Contains(ob))
+                if (ob is MyObjectBuilder_CubeGrid gridBuilder)
                 {
-                    if (ob is MyObjectBuilder_CubeGrid gridBuilder)
+                    foreach (var cubeBlock in gridBuilder.CubeBlocks)
                     {
-                        foreach (var cubeBlock in gridBuilder.CubeBlocks)
-                        {
-                            if (cubeBlock is MyObjectBuilder_OxygenTank o2Tank)
-                                o2Tank.AutoRefill = false;
-                            if (cubeBlock is MyObjectBuilder_MotorStator MotorStator)
-                                MotorStator.RotorLock = true;
-                            if (cubeBlock is MyObjectBuilder_MotorAdvancedStator MotorAdvancedStator)
-                                MotorAdvancedStator.RotorLock = true;
-                        }
+                        if (cubeBlock is MyObjectBuilder_OxygenTank o2Tank)
+                            o2Tank.AutoRefill = false;
+                        if (cubeBlock is MyObjectBuilder_MotorStator MotorStator)
+                            MotorStator.RotorLock = true;
+                        if (cubeBlock is MyObjectBuilder_MotorAdvancedStator MotorAdvancedStator)
+                            MotorAdvancedStator.RotorLock = true;
                     }
-                    ob.PositionAndOrientation.Value.Orientation.Normalize();
-                    objectBuilderList.Add(ob);
                 }
+
+                ob.PositionAndOrientation.Value.Orientation.Normalize();
+                cubeGrids[index] = (MyObjectBuilder_CubeGrid)ob;
+                index++;
+                gridsList.Add(Grid);
             }
 
             foreach (var grid in gridsList)
             {
-                if (!(grid is IMyEntity entity) || entity.MarkedForClose || entity.Closed)
-                    continue;
-
-                entity.Close();
+                grid.Close();
             }
 
-            MyAPIGateway.Entities.RemapObjectBuilderCollection(objectBuilderList);
+            MyAPIGateway.Entities.RemapObjectBuilderCollection(cubeGrids);
+            MatrixD projection_matrix = cubeGrids[0].PositionAndOrientation.Value.GetMatrix();
+            SetNewRotationGroup(ref cubeGrids, projection_matrix.Forward, projection_matrix.Up);
+            counter = new SpawnCounter.SpawnCallback(cubeGrids.Length);
 
-            var MainGridOrgPosition = objectBuilderList[0].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
-            var NewPositionShift = (Vector3D.Forward * 6) + (Vector3D.Up * 9);
-            var MainGridNewPos = MainGridOrgPosition + NewPositionShift;
-
-            for (int i = 0; i < objectBuilderList.Count; i++)
+            foreach (var grid in cubeGrids)
             {
-                var InspectedGrid = (MyObjectBuilder_CubeGrid)objectBuilderList[i];
-
-                if (i == 0)
-                {
-                    var mainGridPos = InspectedGrid.PositionAndOrientation.GetValueOrDefault();
-                    mainGridPos.Position = MainGridNewPos;
-                    InspectedGrid.PositionAndOrientation = mainGridPos;
-                }
-                else
-                {
-                    var AttachedGridPos = InspectedGrid.PositionAndOrientation.GetValueOrDefault();
-                    AttachedGridPos.Position = AttachedGridPos.Position + MainGridNewPos - MainGridOrgPosition;
-                    InspectedGrid.PositionAndOrientation = AttachedGridPos;
-                }
-
-                _ = MyAPIGateway.Entities.CreateFromObjectBuilderParallel(InspectedGrid, addToScene: true);
+                MyAPIGateway.Entities.CreateFromObjectBuilderParallel(grid, false, counter.Increment);
             }
 
             return true;
         }
 
-        public static bool FixShip(long gridID)
+        private static void SetNewRotationGroup(ref MyObjectBuilder_CubeGrid[] grids, Vector3D forward, Vector3D up)
         {
-            var result = CheckGroups(FindGridGroups(gridID), out var group);
+            Vector3 m_pasteDirUp = up * (Vector3.Up * 25);
+            Vector3 m_pasteDirForward = forward;
+            var main_grid = grids[0];
+            var main_grid_pos = main_grid.PositionAndOrientation.Value.Position;
+            var main_grid_matrix = main_grid.PositionAndOrientation.Value.GetMatrix();
 
-            if (!result)
-                return result;
+            int i = 0;
+            var rotation_matrix = Matrix.Multiply(Matrix.Invert(main_grid_matrix), Matrix.CreateWorld((Vector3D)main_grid_pos, m_pasteDirForward, m_pasteDirUp));
 
-            return FixGroup(group);
+            while (i < grids.Length && i <= grids.Length - 1)
+            {
+                //copied from UpdateGridTransformations
+                if (grids[i].PositionAndOrientation != null)
+                {
+                    grids[i].CreatePhysics = true;
+                    grids[i].DestructibleBlocks = true;
+                    grids[i].EnableSmallToLargeConnections = true;
+                    grids[i].PositionAndOrientation = new MyPositionAndOrientation?(new MyPositionAndOrientation(grids[i].PositionAndOrientation.Value.GetMatrix() * rotation_matrix));
+                    grids[i].PositionAndOrientation.Value.Orientation.Normalize();
+                    i++;
+                }
+            }
+        }
+
+        public static bool FixShip(MyCubeGrid grid)
+        {
+            // only here we can see attached by landing gear grids to main grid!
+            var IMygrids = new List<IMyCubeGrid>();
+            MyAPIGateway.GridGroups.GetGroup(grid, GridLinkTypeEnum.Physical, IMygrids);
+
+            // convert back to MyCubeGrid
+            var grids = new List<MyCubeGrid>();
+            foreach (var Mygrid in IMygrids)
+            {
+                grids.Add((MyCubeGrid)Mygrid);
+            }
+
+            // sort the list. largest to smallest
+            grids.SortNoAlloc((x, y) => x.BlocksCount.CompareTo(y.BlocksCount));
+            grids.Reverse();
+            grids.SortNoAlloc((x, y) => x.GridSizeEnum.CompareTo(y.GridSizeEnum));
+
+            return FixGroup(grids);
         }
     }
 }
