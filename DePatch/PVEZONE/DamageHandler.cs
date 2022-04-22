@@ -111,12 +111,12 @@ namespace DePatch.PVEZONE
 
                     zone1 = false;
                     zone2 = false;
-                    if (PVE.PVESphere.Contains(OnlinePlayersList.Find((MyPlayer b) =>
-                            b.Identity.IdentityId == myAutomaticRifleGun.OwnerIdentityId).Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                    if (PVE.PVESphere.Contains((Vector3D)(OnlinePlayersList.Find((MyPlayer b) =>
+                            b.Identity.IdentityId == myAutomaticRifleGun.OwnerIdentityId).Character?.PositionComp.GetPosition())) == ContainmentType.Contains)
                         zone1 = true;
 
-                    if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && PVE.PVESphere2.Contains(OnlinePlayersList.Find((MyPlayer b) =>
-                            b.Identity.IdentityId == myAutomaticRifleGun.OwnerIdentityId).Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                    if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && PVE.PVESphere2.Contains((Vector3D)(OnlinePlayersList.Find((MyPlayer b) =>
+                            b.Identity.IdentityId == myAutomaticRifleGun.OwnerIdentityId).Character?.PositionComp.GetPosition())) == ContainmentType.Contains)
                         zone2 = true;
 
                     if (!zone1 && !zone2)
@@ -132,11 +132,11 @@ namespace DePatch.PVEZONE
 
                     zone1 = false;
                     zone2 = false;
-                    if (PVE.PVESphere.Contains(OnlinePlayersList.Find((MyPlayer b) =>
-                            b.Identity.IdentityId == toolBase.OwnerIdentityId).Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                    if (PVE.PVESphere.Contains((Vector3D)(OnlinePlayersList.Find((MyPlayer b) =>
+                            b.Identity.IdentityId == toolBase.OwnerIdentityId).Character?.PositionComp.GetPosition())) == ContainmentType.Contains)
                         zone1 = true;
-                    if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && PVE.PVESphere2.Contains(OnlinePlayersList.Find((MyPlayer b) =>
-                            b.Identity.IdentityId == toolBase.OwnerIdentityId).Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                    if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && PVE.PVESphere2.Contains((Vector3D)(OnlinePlayersList.Find((MyPlayer b) =>
+                            b.Identity.IdentityId == toolBase.OwnerIdentityId).Character?.PositionComp.GetPosition())) == ContainmentType.Contains)
                         zone2 = true;
 
                     if (!zone1 && !zone2)
@@ -167,11 +167,11 @@ namespace DePatch.PVEZONE
 
                     zone1 = false;
                     zone2 = false;
-                    if (PVE.PVESphere.Contains(OnlinePlayersList.Find((MyPlayer b) =>
-                            b.Identity.IdentityId == character.GetPlayerIdentityId()).Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                    if (PVE.PVESphere.Contains((Vector3D)(OnlinePlayersList.Find((MyPlayer b) =>
+                            b.Identity.IdentityId == character.GetPlayerIdentityId()).Character?.PositionComp.GetPosition())) == ContainmentType.Contains)
                         zone1 = true;
-                    if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && PVE.PVESphere2.Contains(OnlinePlayersList.Find((MyPlayer b) =>
-                            b.Identity.IdentityId == character.GetPlayerIdentityId()).Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                    if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && PVE.PVESphere2.Contains((Vector3D)(OnlinePlayersList.Find((MyPlayer b) =>
+                            b.Identity.IdentityId == character.GetPlayerIdentityId()).Character?.PositionComp.GetPosition())) == ContainmentType.Contains)
                         zone2 = true;
 
                     if (!zone1 && !zone2)
@@ -192,7 +192,7 @@ namespace DePatch.PVEZONE
                     if (!zone1 && !zone2)
                         return;
 
-                    if (mySlimBlock != null && mySlimBlock.CubeGrid.Physics != null && (info.Type == MyDamageType.Fall || info.Type == MyDamageType.Deformation))
+                    if (mySlimBlock?.CubeGrid?.Physics != null && (info.Type == MyDamageType.Fall || info.Type == MyDamageType.Deformation))
                     {
                         if (mySlimBlock.CubeGrid.Physics.LinearVelocity.Length() > 30 || mySlimBlock.CubeGrid.Physics.AngularVelocity.Length() > 30)
                             RammingGrid = true;
