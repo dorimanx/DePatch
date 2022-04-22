@@ -9,10 +9,12 @@ using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.Multiplayer;
 using Sandbox.Game.Weapons;
 using Sandbox.Game.World;
+using Sandbox.ModAPI;
 using Torch;
 using Torch.Managers.PatchManager;
 using VRage.Game;
 using VRage.Game.Entity;
+using VRage.Game.ModAPI;
 using VRage.Game.ObjectBuilders.Components;
 using VRageMath;
 
@@ -113,9 +115,7 @@ namespace DePatch.PVEZONE
                             BoundingBoxD ExtendedBox = new BoundingSphereD(LockingBondingBox.Center, rad).GetBoundingBox();
                             var GridBox = new MyOrientedBoundingBoxD(ExtendedBox, entity.WorldMatrix);
                             var Entities = new List<MyEntity>();
-                            var CleanList = new List<MyEntity>();
-                            var AttachedFilterList = new List<MyEntity>();
-                            var ExcludeSubGrids = new List<MyEntity>();
+                            var CleanList = new List<MyCubeGrid>();
                             MyGamePruningStructure.GetAllEntitiesInOBB(ref GridBox, Entities);
 
                             // check if any voxels or planets are in list, if yes, just lock.
@@ -129,184 +129,105 @@ namespace DePatch.PVEZONE
                                     LockingGrid = LockingGear;
                             }
 
-                            // no owner or nobody cant lock
-                            if (LockingGrid != null && LockingGrid.BigOwners.Count > 0)
+                            // no owner or nobody cant lock but if it's 1 block landing gear to build from it, then ok.
+                            if (LockingGrid != null && LockingGrid.BigOwners?.Count > 0 && LockingGrid.BigOwners.FirstOrDefault() > 0)
                                 LockingGridHasOwner = true;
                             else
+                            {
+                                if (LockingGrid != null && LockingGrid.BlocksCount == 1)
+                                    return true;
+
                                 return false;
+                            }
+
+                            var LockingGridOwner = LockingGrid.BigOwners.FirstOrDefault();
 
                             // if locking grid is NPC and have less than 30 blocks deny lock.
-                            if (LockingGridHasOwner && MySession.Static.Players.IdentityIsNpc(LockingGrid.BigOwners.FirstOrDefault()) && LockingGrid.BlocksCount < 30)
+                            if (LockingGridHasOwner && MySession.Static.Players.IdentityIsNpc(LockingGridOwner) && LockingGrid.BlocksCount < 30)
                                 return false;
 
-                            // add new list without the locking grid and keep filtering.
-                            foreach (var CopyList in Entities.OfType<MyCubeGrid>())
+                            // only here we can see attached by landing gear grids to main grid!
+                            var IMygrids = new List<IMyCubeGrid>();
+                            MyAPIGateway.GridGroups.GetGroup(grid, GridLinkTypeEnum.Physical, IMygrids);
+
+                            // convert back to MyCubeGrid
+                            var grids = new List<MyCubeGrid>();
+                            foreach (var Mygrid in IMygrids)
                             {
-                                if (LockingGrid.EntityId == CopyList.EntityId)
+                                grids.Add((MyCubeGrid)Mygrid);
+                            }
+
+                            // sort the list. largest to smallest
+                            grids.SortNoAlloc((x, y) => x.BlocksCount.CompareTo(y.BlocksCount));
+                            grids.Reverse();
+                            grids.SortNoAlloc((x, y) => x.GridSizeEnum.CompareTo(y.GridSizeEnum));
+
+                            // add new list without the locking grid and all that attached to it.
+                            foreach (var GridToFilter in Entities.OfType<MyCubeGrid>())
+                            {
+                                if (grids.Contains(GridToFilter))
                                     continue;
 
-                                CleanList.Add(CopyList);
+                                if (GridToFilter.IsPreview)
+                                    continue;
+
+                                CleanList.Add(GridToFilter);
                             }
 
-                            // check attached to locking grid other grids and filer them out from list.
-                            var AttachedList = LockingGrid.GridSystems.LandingSystem.GetAttachedEntities();
-                            if (AttachedList != null && AttachedList.Count > 0)
+                            // sort the list. largest to smallest
+                            CleanList.SortNoAlloc((x, y) => x.BlocksCount.CompareTo(y.BlocksCount));
+                            CleanList.Reverse();
+                            CleanList.SortNoAlloc((x, y) => x.GridSizeEnum.CompareTo(y.GridSizeEnum));
+
+                            var LockingToGridOwner = 0L;
+
+                            if (CleanList.FirstOrDefault().BigOwners?.Count > 0)
+                                LockingToGridOwner = CleanList.FirstOrDefault().BigOwners.FirstOrDefault();
+
+                            // same owner or not owned.
+                            if (LockingGridOwner == LockingToGridOwner || LockingToGridOwner == 0)
                             {
-                                foreach (var AlreadyAttached in AttachedList)
-                                {
-                                    if (AlreadyAttached != null && CleanList.OfType<MyCubeGrid>().Contains((MyEntity)AlreadyAttached))
-                                        CleanList.Remove((MyEntity)AlreadyAttached);
-                                }
+                                CleanList.Clear();
+                                return true;
                             }
 
-                            // check and filer all attached to locking grid other grids from list.
-                            if (CleanList.Count > 1)
+                            // locking to npc grid
+                            if (LockingToGridOwner > 0 && MySession.Static.Players.IdentityIsNpc(LockingToGridOwner))
                             {
-                                foreach (var AttachedFilter in CleanList.OfType<MyCubeGrid>())
-                                {
-                                    var AnyAttached = AttachedFilter.GridSystems.LandingSystem.GetAttachedEntities();
-
-                                    if (AnyAttached != null && AnyAttached.OfType<MyCubeGrid>().Contains(LockingGrid))
-                                        AttachedFilterList.Add(AttachedFilter);
-                                }
-
-                                // if found other grid locked on main locking grid, remove it from list.
-                                if (AttachedFilterList != null && AttachedFilterList.Count > 0)
-                                {
-                                    foreach (var CleanUpA in AttachedFilterList.OfType<MyCubeGrid>())
-                                    {
-                                        if (CleanUpA != null && CleanList.OfType<MyCubeGrid>().Contains(CleanUpA))
-                                            CleanList.Remove(CleanUpA);
-                                    }
-                                }
+                                CleanList.Clear();
+                                return true;
                             }
 
-                            // remove all Rotor subgrids from list if they are on locking grid.
-                            if (CleanList.Count > 1)
+                            var GridFactionID = MySession.Static.Factions.TryGetPlayerFaction(LockingToGridOwner);
+                            var LockingGridFaction = MySession.Static.Factions.TryGetPlayerFaction(LockingGridOwner);
+
+                            if (LockingGridHasOwner)
                             {
-                                var AttachedRotorSubGrids = LockingGrid.GridSystems.TerminalSystem.Blocks.OfType<MyMotorStator>();
-                                if (AttachedRotorSubGrids != null)
+                                // both have factions?
+                                if (GridFactionID != null && LockingGridFaction != null)
                                 {
-                                    foreach (var SubGridBlock in AttachedRotorSubGrids)
+                                    // same faction?
+                                    if (LockingGridFaction.FactionId == GridFactionID.FactionId)
                                     {
-                                        if (SubGridBlock != null & SubGridBlock.Rotor != null && CleanList.OfType<MyCubeGrid>().Contains(SubGridBlock.Rotor.CubeGrid))
-                                            CleanList.Remove(SubGridBlock.Rotor.CubeGrid);
-                                    }
-                                }
-                            }
-
-                            // remove all Piston subgrids from list if they are on locking grid.
-                            if (CleanList.Count > 1)
-                            {
-                                var AttachedPistonSubGrids = LockingGrid.GridSystems.TerminalSystem.Blocks.OfType<MyExtendedPistonBase>();
-                                if (AttachedPistonSubGrids != null)
-                                {
-                                    foreach (var SubGridBlock in AttachedPistonSubGrids)
-                                    {
-                                        if (SubGridBlock != null && SubGridBlock.TopGrid != null && CleanList.OfType<MyCubeGrid>().Contains(SubGridBlock.TopGrid))
-                                            CleanList.Remove(SubGridBlock.TopGrid);
-                                    }
-                                }
-                            }
-
-                            // remove all Connected With connector subgrids from list if they are on locking grid.
-                            if (CleanList.Count > 1)
-                            {
-                                var ConnectedSubGrids = LockingGrid.GridSystems.TerminalSystem.Blocks.OfType<MyShipConnector>();
-                                if (ConnectedSubGrids != null)
-                                {
-                                    foreach (var SubGridBlock in ConnectedSubGrids)
-                                    {
-                                        if (SubGridBlock != null && SubGridBlock.Other != null && CleanList.OfType<MyCubeGrid>().Contains(SubGridBlock.Other.CubeGrid))
-                                            CleanList.Remove(SubGridBlock.Other.CubeGrid);
-                                    }
-                                }
-                            }
-
-                            // remove all subgrids from other grids in list.
-                            if (CleanList.Count > 1)
-                            {
-                                foreach (var CleanUpSubsA in CleanList.OfType<MyCubeGrid>())
-                                {
-                                    foreach (var CheckAllBlocks in CleanUpSubsA.GridSystems.TerminalSystem.Blocks.OfType<MyMotorStator>())
-                                    {
-                                        if (CheckAllBlocks != null && CheckAllBlocks.Rotor != null && CleanList.OfType<MyCubeGrid>().Contains(CheckAllBlocks.Rotor.CubeGrid))
-                                            ExcludeSubGrids.Add(CheckAllBlocks.Rotor.CubeGrid);
-                                    }
-                                    foreach (var CheckAllBlocks in CleanUpSubsA.GridSystems.TerminalSystem.Blocks.OfType<MyExtendedPistonBase>())
-                                    {
-                                        if (CheckAllBlocks != null && CheckAllBlocks.TopGrid != null && CleanList.OfType<MyCubeGrid>().Contains(CheckAllBlocks.TopGrid))
-                                            ExcludeSubGrids.Add(CheckAllBlocks.TopGrid);
-                                    }
-                                    foreach (var CheckAllBlocks in CleanUpSubsA.GridSystems.TerminalSystem.Blocks.OfType<MyShipConnector>())
-                                    {
-                                        if (CheckAllBlocks != null && CheckAllBlocks.Other != null && CleanList.OfType<MyCubeGrid>().Contains(CheckAllBlocks.Other.CubeGrid))
-                                            ExcludeSubGrids.Add(CheckAllBlocks.Other.CubeGrid);
-                                    }
-                                }
-
-                                if (ExcludeSubGrids != null && ExcludeSubGrids.Count > 0)
-                                {
-                                    foreach (var CleanSubsB in ExcludeSubGrids.OfType<MyCubeGrid>())
-                                    {
-                                        if (CleanSubsB != null && CleanList.OfType<MyCubeGrid>().Contains(CleanSubsB))
-                                        {
-                                            CleanList.Remove(CleanSubsB);
-
-                                            if (!CheckAllowedToLock(CleanSubsB))
-                                            {
-                                                CleanList.Clear();
-                                                return false;
-                                            }
-                                        }
-                                    }
-                                    if (CleanList.Count > 1)
+                                        CleanList.Clear();
                                         return true;
-                                }
-                            }
+                                    }
 
-                            // Simple 1 grid locking to other grid checks.
-                            if (CleanList.Count == 1)
-                            {
-                                if (CleanList.OfType<MyCubeGrid>().FirstOrDefault().BigOwners.Count > 0 && LockingGrid.BigOwners.FirstOrDefault() == CleanList.OfType<MyCubeGrid>().FirstOrDefault().BigOwners.FirstOrDefault())
-                                {
-                                    CleanList.Clear();
-                                    return true;
-                                }
+                                    var FactionsRelationship = MySession.Static.Factions.GetRelationBetweenFactions(GridFactionID.FactionId, LockingGridFaction.FactionId);
 
-                                if (CleanList.OfType<MyCubeGrid>().FirstOrDefault().BigOwners.Count > 0 && MySession.Static.Players.IdentityIsNpc(CleanList.OfType<MyCubeGrid>().FirstOrDefault().BigOwners.FirstOrDefault()))
-                                {
-                                    CleanList.Clear();
-                                    return true;
-                                }
-
-                                var GridFactionID = MySession.Static.Factions.TryGetPlayerFaction(CleanList.OfType<MyCubeGrid>().FirstOrDefault().BigOwners.FirstOrDefault());
-                                var LockingGridFaction = MySession.Static.Factions.TryGetPlayerFaction(LockingGrid.BigOwners.FirstOrDefault());
-
-                                if (LockingGridHasOwner)
-                                {
-                                    if (GridFactionID != null && LockingGridFaction != null)
+                                    // faction relationship
+                                    switch (FactionsRelationship.Item1)
                                     {
-                                        var FactionsRelationship = MySession.Static.Factions.GetRelationBetweenFactions(GridFactionID.FactionId, LockingGridFaction.FactionId);
-
-                                        if (LockingGridFaction.FactionId == GridFactionID.FactionId)
-                                        {
+                                        case MyRelationsBetweenFactions.Enemies:
+                                            break;
+                                        case MyRelationsBetweenFactions.Neutral:
+                                        case MyRelationsBetweenFactions.Friends:
                                             CleanList.Clear();
                                             return true;
-                                        }
-
-                                        switch (FactionsRelationship.Item1)
-                                        {
-                                            case MyRelationsBetweenFactions.Neutral:
-                                            case MyRelationsBetweenFactions.Friends:
-                                                CleanList.Clear();
-                                                return true;
-                                        }
                                     }
                                 }
-                                CleanList.Clear();
-                                return false;
                             }
+                            // no match then deny.
                             CleanList.Clear();
                             return false;
                         }
