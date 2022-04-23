@@ -174,29 +174,28 @@ namespace DePatch.PVEZONE
                                 CleanList.Add(GridToFilter);
                             }
 
-                            // sort the list. largest to smallest
-                            CleanList.SortNoAlloc((x, y) => x.BlocksCount.CompareTo(y.BlocksCount));
-                            CleanList.Reverse();
-                            CleanList.SortNoAlloc((x, y) => x.GridSizeEnum.CompareTo(y.GridSizeEnum));
-
                             var LockingToGridOwner = 0L;
 
-                            if (CleanList.FirstOrDefault().BigOwners?.Count > 0)
-                                LockingToGridOwner = CleanList.FirstOrDefault().BigOwners.FirstOrDefault();
+                            // sort the list. largest to smallest
+                            if (CleanList != null && CleanList.Count > 0)
+                            {
+                                CleanList.SortNoAlloc((x, y) => x.BlocksCount.CompareTo(y.BlocksCount));
+                                CleanList.Reverse();
+                                CleanList.SortNoAlloc((x, y) => x.GridSizeEnum.CompareTo(y.GridSizeEnum));
+
+                                if (CleanList.FirstOrDefault().BigOwners?.Count > 0)
+                                    LockingToGridOwner = CleanList.FirstOrDefault().BigOwners.FirstOrDefault();
+
+                                CleanList.Clear();
+                            }
 
                             // same owner or not owned.
                             if (LockingGridOwner == LockingToGridOwner || LockingToGridOwner == 0)
-                            {
-                                CleanList.Clear();
                                 return true;
-                            }
 
                             // locking to npc grid
                             if (LockingToGridOwner > 0 && MySession.Static.Players.IdentityIsNpc(LockingToGridOwner))
-                            {
-                                CleanList.Clear();
                                 return true;
-                            }
 
                             var GridFactionID = MySession.Static.Factions.TryGetPlayerFaction(LockingToGridOwner);
                             var LockingGridFaction = MySession.Static.Factions.TryGetPlayerFaction(LockingGridOwner);
@@ -208,10 +207,7 @@ namespace DePatch.PVEZONE
                                 {
                                     // same faction?
                                     if (LockingGridFaction.FactionId == GridFactionID.FactionId)
-                                    {
-                                        CleanList.Clear();
                                         return true;
-                                    }
 
                                     var FactionsRelationship = MySession.Static.Factions.GetRelationBetweenFactions(GridFactionID.FactionId, LockingGridFaction.FactionId);
 
@@ -228,7 +224,6 @@ namespace DePatch.PVEZONE
                                 }
                             }
                             // no match then deny.
-                            CleanList.Clear();
                             return false;
                         }
                     case MySafeZoneAction.Building:
