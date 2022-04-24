@@ -6,6 +6,7 @@ using VRage;
 using VRage.Game;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
+using VRage.ObjectBuilders;
 using VRageMath;
 
 namespace DePatch.VoxelProtection
@@ -52,8 +53,8 @@ namespace DePatch.VoxelProtection
         private static bool FixGroup(List<MyCubeGrid> GridGroup)
         {
             var gridsList = new List<MyCubeGrid>();
+            var ObList = new List<MyObjectBuilder_EntityBase>();
             SpawnCounter.SpawnCallback counter = null;
-            MyObjectBuilder_CubeGrid[] cubeGrids = new MyObjectBuilder_CubeGrid[GridGroup.Count];
             var index = 0;
 
             foreach (var Grid in GridGroup)
@@ -78,14 +79,24 @@ namespace DePatch.VoxelProtection
                 }
 
                 ob.PositionAndOrientation.Value.Orientation.Normalize();
-                cubeGrids[index] = (MyObjectBuilder_CubeGrid)ob;
-                index++;
+                ObList.Add(ob);
                 gridsList.Add(Grid);
             }
+
+            if (ObList.Count == 0)
+                return false;
 
             foreach (var grid in gridsList)
             {
                 grid.Close();
+            }
+
+            MyObjectBuilder_CubeGrid[] cubeGrids = new MyObjectBuilder_CubeGrid[ObList.Count];
+
+            foreach (var ObGrid in ObList)
+            {
+                cubeGrids[index] = (MyObjectBuilder_CubeGrid)ObGrid;
+                index++;
             }
 
             MyAPIGateway.Entities.RemapObjectBuilderCollection(cubeGrids);
