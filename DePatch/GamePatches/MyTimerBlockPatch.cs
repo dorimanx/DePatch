@@ -29,6 +29,9 @@ namespace DePatch.GamePatches
             if (__instance.TriggerDelay < DePatchPlugin.Instance.Config.TimerMinDelay)
                 __instance.TriggerDelay = DePatchPlugin.Instance.Config.TimerMinDelay;
 
+            if (__instance.OwnerId == 0)
+                return false;
+
             return !DePatchPlugin.Instance.Config.DisableTrigNow;
         }
     }
