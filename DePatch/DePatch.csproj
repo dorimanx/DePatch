@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(SolutionDir)\Props\Plugin.props" />
@@ -57,7 +57,6 @@
     <Compile Include="BlocksDisable\PlayersUtility.cs" />
     <Compile Include="BlocksDisable\GridSpeedPatch.cs" />
     <Compile Include="GamePatches\ChangeOwnerPatch.cs" />
-    <Compile Include="GamePatches\SafeZoneOptimizer.cs" />
     <Compile Include="GamePatches\MyProductionBlockPatch.cs" />
     <Compile Include="GamePatches\MyGasTankPatch.cs" />
     <Compile Include="GamePatches\MyToolbarPatch.cs" />
@@ -82,11 +81,8 @@
     <Compile Include="GamePatches\MyPistonBase.cs" />
     <Compile Include="GamePatches\MyProgramBlockSlow.cs" />
     <Compile Include="GamePatches\MyRefineryPatch.cs" />
-    <Compile Include="OptiDamage\DamageContract.cs" />
     <Compile Include="PVEZONE\DamageHandler.cs" />
-    <Compile Include="OptiDamage\DamageNetwork.cs" />
     <Compile Include="DeConfig.cs" />
-    <Compile Include="OptiDamage\DefomationNetwork.cs" />
     <Compile Include="DePatchPlugin.cs" />
     <Compile Include="DeUpdater.cs" />
     <Compile Include="PVEZONE\PVEGrid2.cs" />
@@ -110,13 +106,11 @@
     <Compile Include="PVEZONE\PVE.cs" />
     <Compile Include="PVEZONE\PVEGrid.cs" />
     <Compile Include="ReflectionUtils.cs" />
-    <Compile Include="OptiDamage\SessionPatch.cs" />
     <Compile Include="ShipTools\ShipGrinderPatch.cs" />
     <Compile Include="ShipTools\ShipTool.cs" />
     <Compile Include="ShipTools\ShipToolDeserializer.cs" />
     <Compile Include="ShipTools\ShipToolSerializer.cs" />
     <Compile Include="ShipTools\ShipWelderPatch.cs" />
-    <Compile Include="OptiDamage\SyncGridDamageContract.cs" />
     <Compile Include="ShipTools\ToolType.cs" />
     <Compile Include="UserControl1.xaml.cs">
       <DependentUpon>UserControl1.xaml</DependentUpon>
