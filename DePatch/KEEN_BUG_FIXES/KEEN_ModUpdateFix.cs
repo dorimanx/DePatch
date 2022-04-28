@@ -1,13 +1,14 @@
-﻿using HarmonyLib;
+﻿using Torch.Managers.PatchManager;
 using VRage.GameServices;
 
 namespace DePatch.KEEN_BUG_FIXES
 {
-    [HarmonyPatch(typeof(MyWorkshopItem))]
-    [HarmonyPatch("IsUpToDate")]
-    class KEEN_ModUpdateFix
+    [PatchShim]
+    public static class KEEN_ModUpdateFix
     {
-        static void Postfix(MyWorkshopItem __instance, ref bool __result)
+        public static void Patch(PatchContext ctx) => ctx.Suffix(typeof(MyWorkshopItem), typeof(KEEN_ModUpdateFix), nameof(IsUpToDate));
+
+        static void IsUpToDate(MyWorkshopItem __instance, ref bool __result)
         {
             if (!DePatchPlugin.Instance.Config.Enabled)
                 return;
