@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Windows.Controls;
 using DePatch.GamePatches;
 using DePatch.KEEN_BUG_FIXES;
-using DePatch.OptiDamage;
 using DePatch.PVEZONE;
 using DePatch.ShipTools;
 using DePatch.VoxelProtection;
@@ -51,11 +50,14 @@ namespace DePatch
             Instance = this;
             SetupConfig();
 
+            /*
             if (Config.CheckForUpdates && DeUpdater.CheckAndUpdate(this, torch))
             {
                 Process.Start(Assembly.GetAssembly(typeof(InstanceManager)).Location, string.Join(" ", Environment.GetCommandLineArgs()));
                 Environment.Exit(0);
             }
+            */
+
             if (!Config.Enabled)
                 return;
 
@@ -65,9 +67,6 @@ namespace DePatch
             {
                 _sessionManager.AddOverrideMod(m);
             });
-
-            if (Config.DamageThreading)
-                _sessionManager.AddOverrideMod(2274830517UL);
 
             Log.Info("Mod Loader Complete overriding");
             if (_sessionManager != null)
@@ -102,9 +101,6 @@ namespace DePatch
 
                 if (Config.UpdateOnceBeforeFrameFix)
                     KEEN_UpdateOnceBeforeFrameFix.Patch(context);
-
-                if (Config.RemoveEntityPhantomFIX)
-                    KEEN_RemoveEntityPhantomPathFix.Patch(context);
             }
 
             if (newState != TorchGameState.Loaded)
@@ -122,9 +118,6 @@ namespace DePatch
 
             if (Config.ProtectGrid)
                 MyGridDeformationPatch.Init();
-
-            if (Config.DamageThreading)
-                SessionPatch.Timer.Start();
 
             patchManager.Commit();
         }

@@ -66,7 +66,6 @@ namespace DePatch
         private float _damageToBlocksVoxel = 0.01f;
         private float _damageToBlocksRamming = 0.05f;
         private bool _convertToStatic;
-        private bool _damageThreading;
         private bool _slowPbUpdateEnable;
         private int _slowPbUpdate1 = 2;
         private int _slowPbUpdate10 = 4;
@@ -99,12 +98,6 @@ namespace DePatch
         private bool _GasTanksOptimization = true;
         private bool _TurretsAimFix = true;
         private bool _GameSaveFix;
-
-        public bool DamageThreading
-        {
-            get => _damageThreading;
-            set => SetValue(ref _damageThreading, value);
-        }
 
         public int MaxProtectedLargeGridSize
         {

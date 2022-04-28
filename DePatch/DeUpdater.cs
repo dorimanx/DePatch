@@ -13,6 +13,7 @@ namespace DePatch
 {
     internal static class DeUpdater
     {
+        /*
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
         public static bool CheckAndUpdate(TorchPluginBase plugin, ITorchBase torch)
@@ -50,5 +51,6 @@ namespace DePatch
             }
             return false;
         }
+        */
     }
 }

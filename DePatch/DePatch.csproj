@@ -90,7 +90,6 @@
     <Compile Include="ShipTools\DrillSettings.cs" />
     <Compile Include="VoxelProtection\ReloadShip.cs" />
     <Compile Include="VoxelProtection\VoxelExplosionPatch.cs" />
-    <Compile Include="KEEN_BUG_FIXES\KEEN_MyBatteryFix.cs" />
     <Compile Include="GamePatches\MyBeaconAlertPatch.cs" />
     <Compile Include="GamePatches\MyCameraBlockPatch.cs" />
     <Compile Include="PVEZONE\MyCubeGridPatch.cs" />
