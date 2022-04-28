@@ -32,7 +32,9 @@ namespace DePatch.GamePatches
             ctx.Suffix(typeof(MyCubeBlock), "ChangeOwner", typeof(ChangeOwnerPatch), nameof(ChangeOwnerPatchSuffix));
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter
         private static void ChangeOwnerPatchSuffix(MyCubeBlock __instance, ref long owner, MyOwnershipShareModeEnum shareMode)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.FixExploits)
                 return;

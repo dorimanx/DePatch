@@ -133,7 +133,9 @@ namespace DePatch.KEEN_BUG_FIXES
             return false;
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter
         public static bool RemoveChild(MyHierarchyComponentBase __instance, IMyEntity child, bool preserveWorldPos = false)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.UpdateComponentsFix)
                 return true;

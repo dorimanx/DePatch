@@ -16,7 +16,7 @@ namespace DePatch.VoxelProtection
         public class SpawnCallback
         {
             private int _counter;
-            private List<IMyEntity> _entlist;
+            private readonly List<IMyEntity> _entlist;
             private readonly int _maxCount;
 
             public SpawnCallback(int count)

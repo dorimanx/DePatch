@@ -674,9 +674,9 @@ namespace DePatch.KEEN_BUG_FIXES
                 if (Sync.IsServer)
                 {
                     if (Start)
-                        NetworkManager.RaiseStaticEvent(OnServerSaving, true, default(EndpointId), null);
+                        NetworkManager.RaiseStaticEvent(OnServerSaving, true, target: default, null);
                     else
-                        NetworkManager.RaiseStaticEvent(OnServerSaving, false, default(EndpointId), null);
+                        NetworkManager.RaiseStaticEvent(OnServerSaving, false, target: default, null);
                 }
             }
             catch (Exception ex)

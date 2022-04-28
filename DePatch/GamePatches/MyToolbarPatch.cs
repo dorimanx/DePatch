@@ -31,7 +31,9 @@ namespace DePatch.GamePatches
             ctx.Suffix(typeof(MyToolbar), "SetItemAtIndexInternal", typeof(MyToolbarPatch), nameof(SetItemAtIndexInternalPatch));
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter
         private static void SetItemAtIndexInternalPatch(MyToolbar __instance, ref int i, ref MyToolbarItem item, ref bool initialization, ref bool gamepad)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.FixExploits)
                 return;
@@ -40,7 +42,7 @@ namespace DePatch.GamePatches
                 return;
 
             // forbid using Timer Block, to Attach/Detach rotor/piston/hinges head, to stop Clang Machines.
-            if (DePatchPlugin.Instance.Config.FixTimerDetachExploits && __instance.Owner is MyTimerBlock TimerBlock && item.GetObjectBuilder() != null)
+            if (DePatchPlugin.Instance.Config.FixTimerDetachExploits && __instance.Owner is MyTimerBlock && item.GetObjectBuilder() != null)
             {
                 var steamId = MyEventContext.Current.Sender.Value;
                 var requesterPlayer = Sync.Players.TryGetPlayerBySteamId(steamId);

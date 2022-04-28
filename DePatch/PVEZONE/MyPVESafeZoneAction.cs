@@ -88,7 +88,10 @@ namespace DePatch.PVEZONE
             }
         }
 
-        private static bool IsActionAllowedPatch(MyEntity entity, MySafeZoneAction action, long sourceEntityId, ulong user, ref bool __result)
+        private static bool IsActionAllowedPatch(
+#pragma warning disable IDE0060 // Remove unused parameter
+            MyEntity entity, MySafeZoneAction action, long sourceEntityId, ulong user, ref bool __result)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             if (!DePatchPlugin.Instance.Config.Enabled)
                 return true;

@@ -15,7 +15,9 @@ namespace DePatch.KEEN_BUG_FIXES
 
         private static readonly Action<MyEntity, long> EntityIdSetter = (e, value) => AccessTools.Field(typeof(MyEntity), "m_entityId").SetValue(e, value);
 
+#pragma warning disable IDE0051 // Remove unused private members
         private static bool Prefix(MyEntity __instance, ref long value)
+#pragma warning restore IDE0051 // Remove unused private members
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.MyEntityDuplicateFix)
                 return true;

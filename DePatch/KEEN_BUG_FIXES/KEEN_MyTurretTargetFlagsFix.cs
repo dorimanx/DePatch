@@ -24,7 +24,9 @@ namespace DePatch.KEEN_BUG_FIXES
             _ = _harmony.Patch(original, new HarmonyMethod(prefix));
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter
         private static bool MethodIsValid(MyTurretTargetFlags value, ref bool __result)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.TurretsAimFix)
                 return true;
