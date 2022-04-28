@@ -167,10 +167,6 @@
                         ToolTip="This will tap to KEEN function for ParallelUpdateHandlerAfterSimulation and check for NULLs and prevent server crash."
                         IsChecked="{Binding ParallelUpdateHandlerAfterSimulationFIX}" Width="244" Grid.ColumnSpan="3" />
                     <CheckBox
-                        Content="Fix RemoveEntityPhantom" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,306,0,0"
-                        ToolTip="This will tap to KEEN function for RemoveEntityPhantom and check for Bugs and prevent server crash."
-                        IsChecked="{Binding RemoveEntityPhantomFIX}" Width="164" Grid.ColumnSpan="2" />
-                    <CheckBox
                         Content="Fix MyEntity Duplicates" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,326,0,0"
                         ToolTip="This will tap to KEEN function for MyEntity Set and check for duplicate Entity ID and prevent server crash."
                         IsChecked="{Binding MyEntityDuplicateFix}" Width="153" Grid.ColumnSpan="2" />
