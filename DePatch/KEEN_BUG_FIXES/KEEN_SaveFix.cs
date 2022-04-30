@@ -524,51 +524,31 @@ namespace DePatch.KEEN_BUG_FIXES
 
         private static async Task<ulong> SaveFile(string path, bool compress, MyObjectBuilder_Base objectBuilder, Type serializeAsType = null)
         {
+            var sizeInBytes = 99999999999999999UL;
+
             try
             {
-                var sizeInBytes = 0UL;
-
-                using (Stream stream = MyFileSystem.OpenWrite(path, FileMode.Create))
+                using (Stream stream1 = MyFileSystem.OpenWrite(path, FileMode.Create))
                 {
                     // check if stream is not null
-                    if (stream == null)
-                    {
-                        sizeInBytes = 99999999999999999UL;
-                        await stream.FlushAsync();
-                        stream.Dispose();
+                    if (stream1 == null)
                         return sizeInBytes;
-                    }
 
-                    if (compress)
+                    using (Stream stream2 = compress ? stream1.WrapGZip() : stream1)
                     {
-                        using (Stream stream2 = stream.WrapGZip(true, false))
-                        {
-                            // add Flush
-                            await stream2.FlushAsync();
+                        long position = stream1.Position;
+                        Type type = serializeAsType;
+                        if (type is null)
+                            type = objectBuilder.GetType();
+                        MyXmlSerializerManager.GetSerializer(type).Serialize(stream2, objectBuilder);
+                        sizeInBytes = (ulong)(stream1.Position - position);
 
-                            long position = stream.Position;
-                            MyXmlSerializerManager.GetSerializer(serializeAsType ?? objectBuilder.GetType()).Serialize(stream2, objectBuilder);
-                            sizeInBytes = (ulong)(stream.Position - position);
-
-                            // add Flush here
-                            await stream2.FlushAsync();
-                        }
-                    }
-                    else
-                    {
-                        // add Flush
-                        await stream.FlushAsync();
-
-                        long position = stream.Position;
-                        MyXmlSerializerManager.GetSerializer(serializeAsType ?? objectBuilder.GetType()).Serialize(stream, objectBuilder);
-                        sizeInBytes = (ulong)(stream.Position - position);
-
-                        // add Flush
-                        await stream.FlushAsync();
+                        // add Flush here
+                        await stream2.FlushAsync();
                     }
 
                     // add Dispose here
-                    stream.Dispose();
+                    stream1.Dispose();
                 }
 
                 return sizeInBytes;
@@ -617,15 +597,10 @@ namespace DePatch.KEEN_BUG_FIXES
                 if (path.Contains("Sandbox.sbc") || path.Contains("SANDBOX_0_0_0_.sbs"))
                 {
                     // use Parallel Tasks to reduce lag during save.
-                    MyAPIGateway.Parallel.StartBackground(() =>
-                        {
-                            sizeInBytesAsync = SaveFile(path, compress, LocalobjectBuilder, serializeAsType);
-                        });
+                    MyAPIGateway.Parallel.StartBackground(() => { sizeInBytesAsync = SaveFile(path, compress, LocalobjectBuilder, serializeAsType); });
                 }
                 else
-                {
                     sizeInBytesAsync = SaveFile(path, compress, LocalobjectBuilder, serializeAsType);
-                }
 
                 ulong LoopBraker = 0;
 
@@ -639,11 +614,12 @@ namespace DePatch.KEEN_BUG_FIXES
                         return false;
                     }
 
-                    Thread.Sleep(5);
+                    Thread.Sleep(1);
 
                     LoopBraker++;
 
-                    if (LoopBraker >= 60000)
+                    // 4min and still didnt save large parts of save! abort.
+                    if (LoopBraker >= 240000)
                     {
                         // exit if no result for long time, safe fail.
                         __result = false;
