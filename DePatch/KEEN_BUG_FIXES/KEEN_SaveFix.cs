@@ -536,6 +536,9 @@ namespace DePatch.KEEN_BUG_FIXES
 
                     using (Stream stream2 = compress ? stream1.WrapGZip() : stream1)
                     {
+                        // add Flush here
+                        await stream2.FlushAsync();
+
                         long position = stream1.Position;
                         Type type = serializeAsType;
                         if (type is null)
@@ -594,12 +597,14 @@ namespace DePatch.KEEN_BUG_FIXES
                 else if (path.Contains("SANDBOX_0_0_0_.sbs"))
                     Log.Warn($"Now Saving SANDBOX_0_0_0_.sbs");
 
+                /*
                 if (path.Contains("Sandbox.sbc") || path.Contains("SANDBOX_0_0_0_.sbs"))
                 {
                     // use Parallel Tasks to reduce lag during save.
                     MyAPIGateway.Parallel.StartBackground(() => { sizeInBytesAsync = SaveFile(path, compress, LocalobjectBuilder, serializeAsType); });
                 }
                 else
+                */
                     sizeInBytesAsync = SaveFile(path, compress, LocalobjectBuilder, serializeAsType);
 
                 ulong LoopBraker = 0;
