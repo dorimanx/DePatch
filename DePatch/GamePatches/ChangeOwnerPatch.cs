@@ -207,7 +207,7 @@ namespace DePatch.GamePatches
                                         var ToolbarBlock = ((MyToolbarItem[])m_items.GetValue(ShipController.Toolbar))[j];
                                         var IsItGroup = ToolbarBlock.GetObjectBuilder();
 
-                                        if (IsItGroup != null && IsItGroup.TypeId.ToString() == "MyObjectBuilder_ToolbarItemEmote")
+                                        if (IsItGroup != null && (IsItGroup.TypeId.ToString() == "MyObjectBuilder_ToolbarItemEmote" || IsItGroup.TypeId.ToString() == "MyObjectBuilder_MyToolbarItemAnimation"))
                                             continue;
 
                                         if (IsItGroup != null && IsItGroup.TypeId.ToString() != "MyObjectBuilder_ToolbarItemTerminalGroup")
