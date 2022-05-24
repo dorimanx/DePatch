@@ -147,6 +147,7 @@ namespace DePatch.VoxelProtection
                             var worldAABB = GridCube.PositionComp.WorldAABB;
                             var closestPlanet = MyGamePruningStructure.GetClosestPlanet(ref worldAABB);
                             var elevation = double.PositiveInfinity;
+
                             if (closestPlanet != null)
                             {
                                 var centerOfMassWorld = GridPhysics.CenterOfMassWorld;
@@ -155,7 +156,7 @@ namespace DePatch.VoxelProtection
                             }
 
                             if (elevation < 250 && elevation != double.PositiveInfinity &&
-                                GridCube.GetFatBlockCount<MyMotorSuspension>() < 4 &&
+                                GridCube.GetFatBlockCount<MyMotorSuspension>() < 6 &&
                                 GridCube.GetFatBlockCount<MyThrust>() >= 6)
                             {
                                 damage.Amount = 0f;
@@ -167,6 +168,7 @@ namespace DePatch.VoxelProtection
                                     if (Cockpit != null && Cockpit.Pilot != null)
                                         Cockpit.RemovePilot();
                                 }
+
                                 foreach (var Cryo in GridCube.GetFatBlocks<MyCryoChamber>())
                                 {
                                     if (Cryo != null && Cryo.Pilot != null)

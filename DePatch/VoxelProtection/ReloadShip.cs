@@ -1,6 +1,9 @@
-﻿using Sandbox.Common.ObjectBuilders;
+﻿using Sandbox;
+using Sandbox.Common.ObjectBuilders;
 using Sandbox.Game.Entities;
+using Sandbox.Game.GameSystems;
 using Sandbox.ModAPI;
+using System;
 using System.Collections.Generic;
 using VRage;
 using VRage.Game;
@@ -50,6 +53,8 @@ namespace DePatch.VoxelProtection
 
     class ReloadShip
     {
+        private static readonly Random Random = new Random();
+
         private static bool FixGroup(List<MyCubeGrid> GridGroup)
         {
             var gridsList = new List<MyCubeGrid>();
@@ -100,8 +105,10 @@ namespace DePatch.VoxelProtection
             }
 
             MyAPIGateway.Entities.RemapObjectBuilderCollection(cubeGrids);
-            MatrixD projection_matrix = cubeGrids[0].PositionAndOrientation.Value.GetMatrix();
-            SetNewRotationGroup(ref cubeGrids, projection_matrix.Forward, projection_matrix.Up);
+
+            // this code made by FOOGS! code ported from garage plugin!
+            ChangePosition(ref cubeGrids);
+
             counter = new SpawnCounter.SpawnCallback(cubeGrids.Length);
 
             foreach (var grid in cubeGrids)
@@ -112,30 +119,145 @@ namespace DePatch.VoxelProtection
             return true;
         }
 
-        private static void SetNewRotationGroup(ref MyObjectBuilder_CubeGrid[] grids, Vector3D forward, Vector3D up)
+        private static void ChangePosition(ref MyObjectBuilder_CubeGrid[] grids)
         {
-            Vector3 m_pasteDirUp = up * (Vector3.Up * 25);
-            Vector3 m_pasteDirForward = forward;
+            double randomdistance = Random.Next(1, 10);
+            Vector3D First_SpawnPoint = Vector3D.Zero;
+            var MainGridMatrix = grids[0].PositionAndOrientation.Value.GetMatrix();
+
+            MainGridMatrix.Translation = RandomPositionFromPoint(MainGridMatrix.Translation, randomdistance);
+            var sphere = new BoundingSphereD(Vector3D.Zero, 0);
+
+            for (int i = 0; i < grids.Length; i++)
+            {
+                if (i == 0)
+                    sphere = grids[i].CalculateBoundingSphere();
+                else
+                    sphere.Include(grids[i].CalculateBoundingSphere());
+            }
+
+            MainGridMatrix.Translation = MainGridMatrix.Translation + MainGridMatrix.Forward * (1 + sphere.Radius) + MainGridMatrix.Up * (1 + sphere.Radius);
+            Vector3D GridPosition = MainGridMatrix.Translation;
+            Vector3D? first_freepos = MyEntities.FindFreePlaceCustom(GridPosition, ((float)sphere.Radius * 0) + 1, 20, 5, 10, 2);
+
+            if (first_freepos != null)
+                First_SpawnPoint = (Vector3D)first_freepos;
+            else
+            {
+                first_freepos = MyEntities.FindFreePlaceCustom(GridPosition, ((float)sphere.Radius * 0) + 50, 20, 15, 15, 10);
+                if (first_freepos == null || first_freepos == Vector3D.Zero)
+                    First_SpawnPoint = GridPosition;
+            }
+
+            if (First_SpawnPoint == Vector3D.Zero)
+                return;
+
+            sphere.Center = First_SpawnPoint;
+
+            //First loop
+            //set new pos for grids
+            Vector3D first_oldpos = grids[0].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
+            for (int i = 0; i < grids.Length; i++) // set position
+            {
+                var ob = grids[i];
+
+                if (i == 0)
+                {
+                    if (ob.PositionAndOrientation.HasValue)
+                    {
+                        var posiyto = ob.PositionAndOrientation.GetValueOrDefault();
+                        posiyto.Position = First_SpawnPoint;
+                        ob.PositionAndOrientation = posiyto;
+                    }
+                }
+                else
+                {
+                    var o = ob.PositionAndOrientation.GetValueOrDefault();
+                    o.Position = First_SpawnPoint + o.Position - first_oldpos;
+                    ob.PositionAndOrientation = o;
+                }
+            }
+
+            grids = AlightToGravity(grids);
+
+            Vector3D Second_SpawnPoint = (Vector3D)MyAPIGateway.Entities.FindFreePlace(First_SpawnPoint, (float)sphere.Radius + 5, 24, 3, 1); // - basePos
+            Vector3D second_oldpos = grids[0].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
+
+            for (int i = 0; i < grids.Length; i++) // set position
+            {
+                var ob = grids[i];
+
+                if (i == 0)
+                {
+                    if (ob.PositionAndOrientation.HasValue)
+                    {
+                        var posiyto = ob.PositionAndOrientation.GetValueOrDefault();
+                        posiyto.Position = Second_SpawnPoint;
+                        ob.PositionAndOrientation = posiyto;
+                    }
+                }
+                else
+                {
+                    var o = ob.PositionAndOrientation.GetValueOrDefault();
+                    o.Position = Second_SpawnPoint + o.Position - second_oldpos;
+                    ob.PositionAndOrientation = o;
+                }
+            }
+        }
+
+        private static MyObjectBuilder_CubeGrid[] AlightToGravity(MyObjectBuilder_CubeGrid[] grids)
+        {
+            Vector3 m_pasteDirForward = new Vector3(0f, 1f, 0f);
+
             var main_grid = grids[0];
-            var main_grid_pos = main_grid.PositionAndOrientation.Value.Position;
-            var main_grid_matrix = main_grid.PositionAndOrientation.Value.GetMatrix();
+            var pos = main_grid.PositionAndOrientation.Value.Position;
+            var hack = main_grid.PositionAndOrientation.Value.GetMatrix();
+
+            Vector3 gravity = MyGravityProviderSystem.CalculateNaturalGravityInPoint(hack.Translation); //find gravity
+            gravity.Normalize();
+            m_pasteDirForward = Vector3D.Reject(m_pasteDirForward, gravity);
+            Vector3 m_pasteDirUp = -gravity;
+            m_pasteDirForward = Vector3.Normalize(m_pasteDirForward);
+            m_pasteDirUp = Vector3.Normalize(m_pasteDirUp);
+            Vector3 crossed = Vector3.Cross(m_pasteDirForward, m_pasteDirUp);
+            m_pasteDirForward -= crossed;
 
             int i = 0;
-            var rotation_matrix = Matrix.Multiply(Matrix.Invert(main_grid_matrix), Matrix.CreateWorld((Vector3D)main_grid_pos, m_pasteDirForward, m_pasteDirUp));
+            var matrixx = Matrix.Multiply(Matrix.Invert(hack), Matrix.CreateWorld((Vector3D)pos, m_pasteDirForward, m_pasteDirUp));
 
             while (i < grids.Length && i <= grids.Length - 1)
             {
-                //copied from UpdateGridTransformations
                 if (grids[i].PositionAndOrientation != null)
                 {
                     grids[i].CreatePhysics = true;
-                    grids[i].DestructibleBlocks = true;
                     grids[i].EnableSmallToLargeConnections = true;
-                    grids[i].PositionAndOrientation = new MyPositionAndOrientation?(new MyPositionAndOrientation(grids[i].PositionAndOrientation.Value.GetMatrix() * rotation_matrix));
+                    grids[i].PositionAndOrientation = new MyPositionAndOrientation?(new MyPositionAndOrientation(grids[i].PositionAndOrientation.Value.GetMatrix() * matrixx));
                     grids[i].PositionAndOrientation.Value.Orientation.Normalize();
+
                     i++;
                 }
             }
+
+            return grids;
+        }
+
+        /// <summary>
+        ///     Randomizes a vector by the given amount
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="distance"></param>
+        /// <returns></returns>
+        public static Vector3D RandomPositionFromPoint(Vector3D start, double distance)
+        {
+            double z = Random.NextDouble() * 2 - 1;
+            double piVal = Random.NextDouble() * 2 * Math.PI;
+            double zSqrt = Math.Sqrt(1 - z * z);
+            var direction = new Vector3D(zSqrt * Math.Cos(piVal), zSqrt * Math.Sin(piVal), z);
+
+            direction.Normalize();
+            start += direction * -2;
+
+            return start + direction * distance;
         }
 
         public static bool FixShip(MyCubeGrid grid)
