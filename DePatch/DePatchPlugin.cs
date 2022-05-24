@@ -101,6 +101,9 @@ namespace DePatch
 
                 if (Config.UpdateOnceBeforeFrameFix)
                     KEEN_UpdateOnceBeforeFrameFix.Patch(context);
+
+                if (Config.GameSaveFix)
+                    KEEN_SaveFix.Patch(context);
             }
 
             if (newState != TorchGameState.Loaded)

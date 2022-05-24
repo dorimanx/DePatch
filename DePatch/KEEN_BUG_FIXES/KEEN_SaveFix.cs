@@ -23,12 +23,10 @@ using System.IO.Compression;
 using VRage.Game.Voxels;
 using VRage.ObjectBuilders;
 using System.Threading.Tasks;
-using Sandbox.ModAPI;
 using DePatch.CoolDown;
 
 namespace DePatch.KEEN_BUG_FIXES
 {
-    [PatchShim]
     public static class KEEN_SaveFix
     {
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
