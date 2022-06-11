@@ -157,7 +157,7 @@ namespace DePatch.VoxelProtection
 
                             if (elevation < 250 && elevation != double.PositiveInfinity &&
                                 GridCube.GetFatBlockCount<MyMotorSuspension>() < 6 &&
-                                GridCube.GetFatBlockCount<MyThrust>() >= 6)
+                                (GridCube.GetFatBlockCount<MyThrust>() >= 6 || GridCube.GetFatBlockCount<MyThrust>() == 0))
                             {
                                 damage.Amount = 0f;
 

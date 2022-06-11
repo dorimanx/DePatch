@@ -3,7 +3,6 @@ using Sandbox.Common.ObjectBuilders;
 using Sandbox.Game.Entities;
 using Sandbox.Game.GameSystems;
 using Sandbox.ModAPI;
-using System;
 using System.Collections.Generic;
 using VRage;
 using VRage.Game;
@@ -53,8 +52,6 @@ namespace DePatch.VoxelProtection
 
     class ReloadShip
     {
-        private static readonly Random Random = new Random();
-
         private static bool FixGroup(List<MyCubeGrid> GridGroup)
         {
             var gridsList = new List<MyCubeGrid>();
@@ -91,6 +88,20 @@ namespace DePatch.VoxelProtection
             if (ObList.Count == 0)
                 return false;
 
+            Vector3D GridCockpit = Vector3D.Zero;
+
+            foreach (var Block in gridsList[0].GetFatBlocks())
+            {
+                if (Block is MyCockpit Cockpit)
+                {
+                    if ((Cockpit.IsMainCockpit && Cockpit.IsFunctional) || Cockpit.IsFunctional)
+                    {
+                        GridCockpit = Cockpit.PositionComp.GetPosition();
+                        break;
+                    }
+                }
+            }
+
             foreach (var grid in gridsList)
             {
                 grid.Close();
@@ -107,7 +118,7 @@ namespace DePatch.VoxelProtection
             MyAPIGateway.Entities.RemapObjectBuilderCollection(cubeGrids);
 
             // this code made by FOOGS! code ported from garage plugin!
-            ChangePosition(ref cubeGrids);
+            ChangePosition(ref cubeGrids, GridCockpit);
 
             counter = new SpawnCounter.SpawnCallback(cubeGrids.Length);
 
@@ -119,14 +130,12 @@ namespace DePatch.VoxelProtection
             return true;
         }
 
-        private static void ChangePosition(ref MyObjectBuilder_CubeGrid[] grids)
+        private static void ChangePosition(ref MyObjectBuilder_CubeGrid[] grids, Vector3D GridCockpit)
         {
-            double randomdistance = Random.Next(1, 10);
             Vector3D First_SpawnPoint = Vector3D.Zero;
             var MainGridMatrix = grids[0].PositionAndOrientation.Value.GetMatrix();
-
-            MainGridMatrix.Translation = RandomPositionFromPoint(MainGridMatrix.Translation, randomdistance);
             var sphere = new BoundingSphereD(Vector3D.Zero, 0);
+            double SphereRadius;
 
             for (int i = 0; i < grids.Length; i++)
             {
@@ -136,15 +145,14 @@ namespace DePatch.VoxelProtection
                     sphere.Include(grids[i].CalculateBoundingSphere());
             }
 
-            MainGridMatrix.Translation = MainGridMatrix.Translation + MainGridMatrix.Forward * (1 + sphere.Radius) + MainGridMatrix.Up * (1 + sphere.Radius);
             Vector3D GridPosition = MainGridMatrix.Translation;
-            Vector3D? first_freepos = MyEntities.FindFreePlaceCustom(GridPosition, ((float)sphere.Radius * 0) + 1, 20, 5, 10, 2);
+            Vector3D? first_freepos = (Vector3D)MyAPIGateway.Entities.FindFreePlace(GridPosition, radius: 5, maxTestCount: 25, testsPerDistance: 5, stepSize: 5);
 
             if (first_freepos != null)
                 First_SpawnPoint = (Vector3D)first_freepos;
             else
             {
-                first_freepos = MyEntities.FindFreePlaceCustom(GridPosition, ((float)sphere.Radius * 0) + 50, 20, 15, 15, 10);
+                first_freepos = (Vector3D)MyAPIGateway.Entities.FindFreePlace(GridPosition, radius: 25, maxTestCount: 25, testsPerDistance: 10, stepSize: 10);
                 if (first_freepos == null || first_freepos == Vector3D.Zero)
                     First_SpawnPoint = GridPosition;
             }
@@ -152,38 +160,31 @@ namespace DePatch.VoxelProtection
             if (First_SpawnPoint == Vector3D.Zero)
                 return;
 
-            sphere.Center = First_SpawnPoint;
-
             //First loop
-            //set new pos for grids
+            sphere.Center = First_SpawnPoint;
             Vector3D first_oldpos = grids[0].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
-            for (int i = 0; i < grids.Length; i++) // set position
-            {
-                var ob = grids[i];
 
-                if (i == 0)
-                {
-                    if (ob.PositionAndOrientation.HasValue)
-                    {
-                        var posiyto = ob.PositionAndOrientation.GetValueOrDefault();
-                        posiyto.Position = First_SpawnPoint;
-                        ob.PositionAndOrientation = posiyto;
-                    }
-                }
-                else
-                {
-                    var o = ob.PositionAndOrientation.GetValueOrDefault();
-                    o.Position = First_SpawnPoint + o.Position - first_oldpos;
-                    ob.PositionAndOrientation = o;
-                }
-            }
+            //set new pos for grids
+            SetGridspositions(grids, First_SpawnPoint, first_oldpos);
 
-            grids = AlightToGravity(grids);
+            grids = SetAlignedToGravity(grids, GridCockpit);
 
-            Vector3D Second_SpawnPoint = (Vector3D)MyAPIGateway.Entities.FindFreePlace(First_SpawnPoint, (float)sphere.Radius + 5, 24, 3, 1); // - basePos
+            // Second loop after gravity alignment.
+            if (sphere.Radius > 30 || sphere.Radius < 15)
+                SphereRadius = 30;
+            else
+                SphereRadius = sphere.Radius;
+
+            Vector3D GravityAligned_SpawnPoint = (Vector3D)MyAPIGateway.Entities.FindFreePlace(First_SpawnPoint, radius: (float)SphereRadius, maxTestCount: 30, testsPerDistance: 5, stepSize: 5); // - basePos
             Vector3D second_oldpos = grids[0].PositionAndOrientation.GetValueOrDefault().Position + Vector3D.Zero;
 
-            for (int i = 0; i < grids.Length; i++) // set position
+            // correct position for all grids.
+            SetGridspositions(grids, GravityAligned_SpawnPoint, second_oldpos);
+        }
+
+        private static void SetGridspositions(MyObjectBuilder_CubeGrid[] grids, Vector3D SpawnPoint, Vector3D oldpos)
+        {
+            for (int i = 0; i < grids.Length; i++)
             {
                 var ob = grids[i];
 
@@ -192,38 +193,54 @@ namespace DePatch.VoxelProtection
                     if (ob.PositionAndOrientation.HasValue)
                     {
                         var posiyto = ob.PositionAndOrientation.GetValueOrDefault();
-                        posiyto.Position = Second_SpawnPoint;
+                        posiyto.Position = SpawnPoint;
                         ob.PositionAndOrientation = posiyto;
                     }
                 }
                 else
                 {
                     var o = ob.PositionAndOrientation.GetValueOrDefault();
-                    o.Position = Second_SpawnPoint + o.Position - second_oldpos;
+                    o.Position = SpawnPoint + o.Position - oldpos;
                     ob.PositionAndOrientation = o;
                 }
             }
         }
 
-        private static MyObjectBuilder_CubeGrid[] AlightToGravity(MyObjectBuilder_CubeGrid[] grids)
+        private static MyObjectBuilder_CubeGrid[] SetAlignedToGravity(MyObjectBuilder_CubeGrid[] grids, Vector3D GridCockpit)
         {
-            Vector3 m_pasteDirForward = new Vector3(0f, 1f, 0f);
-
-            var main_grid = grids[0];
-            var pos = main_grid.PositionAndOrientation.Value.Position;
-            var hack = main_grid.PositionAndOrientation.Value.GetMatrix();
-
-            Vector3 gravity = MyGravityProviderSystem.CalculateNaturalGravityInPoint(hack.Translation); //find gravity
-            gravity.Normalize();
-            m_pasteDirForward = Vector3D.Reject(m_pasteDirForward, gravity);
-            Vector3 m_pasteDirUp = -gravity;
-            m_pasteDirForward = Vector3.Normalize(m_pasteDirForward);
-            m_pasteDirUp = Vector3.Normalize(m_pasteDirUp);
-            Vector3 crossed = Vector3.Cross(m_pasteDirForward, m_pasteDirUp);
-            m_pasteDirForward -= crossed;
-
+            Vector3D position = grids[0].PositionAndOrientation.Value.Position;
+            Vector3D direction;
+            float gravityOffset = 15f;
+            float gravityRotation = 0f;
+            Vector3D vector3D;
             int i = 0;
-            var matrixx = Matrix.Multiply(Matrix.Invert(hack), Matrix.CreateWorld((Vector3D)pos, m_pasteDirForward, m_pasteDirUp));
+
+            if (GridCockpit != Vector3D.Zero)
+                position = GridCockpit;
+
+            Vector3 vector = MyGravityProviderSystem.CalculateNaturalGravityInPoint(position);
+            if (vector == Vector3.Zero)
+                vector = MyGravityProviderSystem.CalculateArtificialGravityInPoint(position, 1f);
+
+            if (vector != Vector3.Zero)
+            {
+                vector.Normalize();
+                //vector3D = -vector;
+                vector3D = Vector3D.Down;
+                position += vector * gravityOffset;
+
+                direction = Vector3D.CalculatePerpendicularVector(vector);
+                if (gravityRotation != 0f)
+                {
+                    MatrixD matrix = MatrixD.CreateFromAxisAngle(vector3D, gravityRotation);
+                    direction = Vector3D.Transform(direction, matrix);
+                }
+            }
+            else
+            {
+                direction = Vector3D.Right;
+                vector3D = Vector3D.Up;
+            }
 
             while (i < grids.Length && i <= grids.Length - 1)
             {
@@ -231,33 +248,36 @@ namespace DePatch.VoxelProtection
                 {
                     grids[i].CreatePhysics = true;
                     grids[i].EnableSmallToLargeConnections = true;
-                    grids[i].PositionAndOrientation = new MyPositionAndOrientation?(new MyPositionAndOrientation(grids[i].PositionAndOrientation.Value.GetMatrix() * matrixx));
-                    grids[i].PositionAndOrientation.Value.Orientation.Normalize();
-
                     i++;
                 }
             }
 
+            MatrixD worldMatrix = MatrixD.CreateWorld(position, direction, vector3D);
+            RelocateGrids(grids, worldMatrix);
+
             return grids;
         }
 
-        /// <summary>
-        ///     Randomizes a vector by the given amount
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="distance"></param>
-        /// <returns></returns>
-        public static Vector3D RandomPositionFromPoint(Vector3D start, double distance)
+        private static void RelocateGrids(MyObjectBuilder_CubeGrid[] cubegrids, MatrixD worldMatrix0)
         {
-            double z = Random.NextDouble() * 2 - 1;
-            double piVal = Random.NextDouble() * 2 * Math.PI;
-            double zSqrt = Math.Sqrt(1 - z * z);
-            var direction = new Vector3D(zSqrt * Math.Cos(piVal), zSqrt * Math.Sin(piVal), z);
+            MatrixD matrix = cubegrids[0].PositionAndOrientation.Value.GetMatrix();
+            MatrixD matrixD = Matrix.Invert(matrix) * worldMatrix0.GetOrientation();
+            Matrix matrix2 = matrixD;
 
-            direction.Normalize();
-            start += direction * -2;
-
-            return start + direction * distance;
+            foreach (MyObjectBuilder_CubeGrid Grid in cubegrids)
+            {
+                if (Grid.PositionAndOrientation != null)
+                {
+                    MatrixD matrixD2 = Grid.PositionAndOrientation.Value.GetMatrix();
+                    Vector3 value = Vector3.TransformNormal(matrixD2.Translation - matrix.Translation, matrix2);
+                    matrixD2 *= matrix2;
+                    Vector3D translation = worldMatrix0.Translation + value;
+                    matrixD2.Translation = Vector3D.Zero;
+                    matrixD2 = MatrixD.Orthogonalize(matrixD2);
+                    matrixD2.Translation = translation;
+                    Grid.PositionAndOrientation = new MyPositionAndOrientation?(new MyPositionAndOrientation(ref matrixD2));
+                }
+            }
         }
 
         public static bool FixShip(MyCubeGrid grid)
