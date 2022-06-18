@@ -4,8 +4,10 @@ using Sandbox.Game.Entities;
 using Sandbox.Game.GameSystems;
 using Sandbox.ModAPI;
 using System.Collections.Generic;
+using System.Linq;
 using VRage;
 using VRage.Game;
+using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
@@ -13,50 +15,12 @@ using VRageMath;
 
 namespace DePatch.VoxelProtection
 {
-    public static class SpawnCounter
-    {
-        public class SpawnCallback
-        {
-            private int _counter;
-            private readonly List<IMyEntity> _entlist;
-            private readonly int _maxCount;
-
-            public SpawnCallback(int count)
-            {
-                _counter = 0;
-                _entlist = new List<IMyEntity>();
-                _maxCount = count;
-            }
-
-            public void Increment(IMyEntity ent)
-            {
-                _counter++;
-                _entlist.Add(ent);
-
-                if (_counter < _maxCount)
-                    return;
-
-                FinalSpawnCallback(_entlist);
-            }
-
-            private static void FinalSpawnCallback(List<IMyEntity> grids)
-            {
-                foreach (MyCubeGrid ent in grids)
-                {
-                    ent.DetectDisconnectsAfterFrame();
-                    MyAPIGateway.Entities.AddEntity(ent, true);
-                }
-            }
-        }
-    }
-
     class ReloadShip
     {
         private static bool FixGroup(List<MyCubeGrid> GridGroup)
         {
             var gridsList = new List<MyCubeGrid>();
             var ObList = new List<MyObjectBuilder_EntityBase>();
-            SpawnCounter.SpawnCallback counter = null;
             var index = 0;
 
             foreach (var Grid in GridGroup)
@@ -120,11 +84,45 @@ namespace DePatch.VoxelProtection
             // this code made by FOOGS! code ported from garage plugin!
             ChangePosition(ref cubeGrids, GridCockpit);
 
-            counter = new SpawnCounter.SpawnCallback(cubeGrids.Length);
+            var NewMyEntityList = new List<MyEntity>();
+            var GridsCount = cubeGrids.Count();
+            var GridsCreated = 0;
 
-            foreach (var grid in cubeGrids)
+            foreach (var ObGrid in cubeGrids)
             {
-                MyAPIGateway.Entities.CreateFromObjectBuilderParallel(grid, false, counter.Increment);
+                MyEntities.CreateFromObjectBuilderParallel(ObGrid, false, delegate (MyEntity grid)
+                {
+                    var NewGrid = (MyCubeGrid)grid;
+
+                    if (grid.Physics != null)
+                    {
+                        grid.Physics.Gravity = Vector3.Zero;
+                        grid.Physics.ClearSpeed();
+                        grid.Physics.Deactivate();
+                    }
+
+                    NewGrid.DetectDisconnectsAfterFrame();
+                    NewMyEntityList.Add(grid);
+                    ++GridsCreated;
+
+                    if (GridsCount == GridsCreated)
+                    {
+                        NewMyEntityList.Reverse();
+
+                        foreach (var ReadyGrid in NewMyEntityList)
+                        {
+                            MyEntities.Add(ReadyGrid, true);
+
+                            if (ReadyGrid.Physics != null)
+                            {
+                                var GridGavity = (MyCubeGrid)ReadyGrid;
+                                ReadyGrid.Physics.Activate();
+                                ReadyGrid.Physics.Gravity = Vector3.Zero;
+                                GridGavity.Physics.DisableGravity = 2;
+                            }
+                        }
+                    }
+                });
             }
 
             return true;
