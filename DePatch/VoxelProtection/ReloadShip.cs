@@ -22,6 +22,7 @@ namespace DePatch.VoxelProtection
             var gridsList = new List<MyCubeGrid>();
             var ObList = new List<MyObjectBuilder_EntityBase>();
             var index = 0;
+            var GridSizeForParallel = false;
 
             foreach (var Grid in GridGroup)
             {
@@ -68,6 +69,9 @@ namespace DePatch.VoxelProtection
 
             foreach (var grid in gridsList)
             {
+                if (grid.BlocksCount > 10)
+                    GridSizeForParallel = true;
+
                 grid.Close();
             }
 
@@ -85,44 +89,75 @@ namespace DePatch.VoxelProtection
             ChangePosition(ref cubeGrids, GridCockpit);
 
             var NewMyEntityList = new List<MyEntity>();
+            var SubgridsList = new List<IMyEntity>();
             var GridsCount = cubeGrids.Count();
             var GridsCreated = 0;
 
             foreach (var ObGrid in cubeGrids)
             {
-                MyEntities.CreateFromObjectBuilderParallel(ObGrid, false, delegate (MyEntity grid)
+                if (ObGrid.CubeBlocks.Count() < 10)
                 {
-                    var NewGrid = (MyCubeGrid)grid;
+                    var NewEntity = MyAPIGateway.Entities.CreateFromObjectBuilderAndAdd(ObGrid);
 
-                    if (grid.Physics != null)
+                    if (NewEntity.Physics != null && GridsCount > 1 && GridSizeForParallel)
                     {
-                        grid.Physics.Gravity = Vector3.Zero;
-                        grid.Physics.ClearSpeed();
-                        grid.Physics.Deactivate();
+                        NewEntity.Physics.Gravity = Vector3.Zero;
+                        NewEntity.Physics.ClearSpeed();
+                        NewEntity.Physics.Deactivate();
+                        SubgridsList.Add(NewEntity);
+                        GridsCount--;
                     }
-
-                    NewGrid.DetectDisconnectsAfterFrame();
-                    NewMyEntityList.Add(grid);
-                    ++GridsCreated;
-
-                    if (GridsCount == GridsCreated)
+                }
+                else
+                {
+                    MyEntities.CreateFromObjectBuilderParallel(ObGrid, false, delegate (MyEntity grid)
                     {
-                        NewMyEntityList.Reverse();
+                        var NewGrid = (MyCubeGrid)grid;
 
-                        foreach (var ReadyGrid in NewMyEntityList)
+                        if (grid.Physics != null)
                         {
-                            MyEntities.Add(ReadyGrid, true);
+                            grid.Physics.Gravity = Vector3.Zero;
+                            grid.Physics.ClearSpeed();
+                            grid.Physics.Deactivate();
+                        }
 
-                            if (ReadyGrid.Physics != null)
+                        NewGrid.DetectDisconnectsAfterFrame();
+                        NewMyEntityList.Add(grid);
+                        ++GridsCreated;
+
+                        if (GridsCount == GridsCreated)
+                        {
+                            NewMyEntityList.Reverse();
+
+                            foreach (var ReadyGrid in NewMyEntityList)
                             {
-                                var GridGavity = (MyCubeGrid)ReadyGrid;
-                                ReadyGrid.Physics.Activate();
-                                ReadyGrid.Physics.Gravity = Vector3.Zero;
-                                GridGavity.Physics.DisableGravity = 2;
+                                MyEntities.Add(ReadyGrid, true);
+
+                                if (ReadyGrid.Physics != null)
+                                {
+                                    var GridGavity = (MyCubeGrid)ReadyGrid;
+                                    ReadyGrid.Physics.Activate();
+                                    ReadyGrid.Physics.Gravity = Vector3.Zero;
+                                    GridGavity.Physics.DisableGravity = 2;
+                                }
+                            }
+
+                            if (SubgridsList.Count > 0)
+                            {
+                                foreach (var SubGrid in SubgridsList)
+                                {
+                                    if (SubGrid.Physics != null)
+                                    {
+                                        var SubGridGavity = (MyCubeGrid)SubGrid;
+                                        SubGrid.Physics.Activate();
+                                        SubGrid.Physics.Gravity = Vector3.Zero;
+                                        SubGridGavity.Physics.DisableGravity = 2;
+                                    }
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
             }
 
             return true;
