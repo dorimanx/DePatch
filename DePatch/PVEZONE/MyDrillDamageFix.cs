@@ -28,14 +28,19 @@ namespace DePatch.PVEZONE
             {
                 var myPlayer = MySession.Static.Players.GetOnlinePlayers().ToList().Find((MyPlayer b) => b.Identity.IdentityId == handDrill.OwnerIdentityId);
 
+                if (myPlayer == null || myPlayer.Character == null)
+                    return true;
+
+                var PlayerPosition = myPlayer.Character.PositionComp.GetPosition();
+
                 if (DePatchPlugin.Instance.Config.PveZoneEnabled2)
                 {
                     var zone1 = false;
                     var zone2 = false;
 
-                    if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                    if (PVE.PVESphere.Contains(PlayerPosition) == ContainmentType.Contains)
                         zone1 = true;
-                    if (PVE.PVESphere2.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                    if (PVE.PVESphere2.Contains(PlayerPosition) == ContainmentType.Contains)
                         zone2 = true;
 
                     if (zone1 || zone2)
@@ -44,7 +49,7 @@ namespace DePatch.PVEZONE
                         return false;
                     }
                 }
-                else if (PVE.PVESphere.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                else if (PVE.PVESphere.Contains(PlayerPosition) == ContainmentType.Contains)
                 {
                     __result = false;
                     return false;
