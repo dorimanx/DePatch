@@ -69,7 +69,7 @@ namespace DePatch.VoxelProtection
 
             foreach (var grid in gridsList)
             {
-                if (grid.BlocksCount > 10)
+                if (grid.BlocksCount >= 200)
                     GridSizeForParallel = true;
 
                 grid.Close();
@@ -95,7 +95,7 @@ namespace DePatch.VoxelProtection
 
             foreach (var ObGrid in cubeGrids)
             {
-                if (ObGrid.CubeBlocks.Count() < 10)
+                if (ObGrid.CubeBlocks.Count() <= 200)
                 {
                     var NewEntity = MyAPIGateway.Entities.CreateFromObjectBuilderAndAdd(ObGrid);
 
