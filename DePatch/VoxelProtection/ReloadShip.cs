@@ -89,7 +89,7 @@ namespace DePatch.VoxelProtection
             ChangePosition(ref cubeGrids, GridCockpit);
 
             var NewMyEntityList = new List<MyEntity>();
-            var SubgridsList = new List<IMyEntity>();
+            //var SubgridsList = new List<IMyEntity>();
             var GridsCount = cubeGrids.Count();
             var GridsCreated = 0;
 
@@ -101,8 +101,8 @@ namespace DePatch.VoxelProtection
 
                     if (NewEntity.Physics != null && GridsCount > 1 && GridSizeForParallel)
                     {
-                        GravitySubGrid(NewEntity, false);
-                        SubgridsList.Add(NewEntity);
+                        //GravitySubGrid(NewEntity, false);
+                        //SubgridsList.Add(NewEntity);
                         GridsCount--;
                     }
                 }
@@ -112,8 +112,8 @@ namespace DePatch.VoxelProtection
                     {
                         var NewGrid = (MyCubeGrid)grid;
 
-                        if (grid.Physics != null)
-                            GravityMainGrid(grid, false);
+                        //if (grid.Physics != null)
+                        //    GravityMainGrid(grid, false);
 
                         NewGrid.DetectDisconnectsAfterFrame();
                         NewMyEntityList.Add(grid);
@@ -127,17 +127,17 @@ namespace DePatch.VoxelProtection
                             {
                                 MyEntities.Add(ReadyGrid, true);
 
-                                if (ReadyGrid.Physics != null)
-                                    GravityMainGrid(ReadyGrid, true);
+                                //if (ReadyGrid.Physics != null)
+                                //    GravityMainGrid(ReadyGrid, true);
                             }
 
-                            if (SubgridsList.Count > 0)
-                            {
-                                foreach (var SubGrid in SubgridsList)
-                                {
-                                    GravitySubGrid(SubGrid, true);
-                                }
-                            }
+                            //if (SubgridsList.Count > 0)
+                            //{
+                            //    foreach (var SubGrid in SubgridsList)
+                            //    {
+                            //        GravitySubGrid(SubGrid, true);
+                            //    }
+                            //}
                         }
                     });
                 }
