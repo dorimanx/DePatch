@@ -98,6 +98,7 @@ namespace DePatch
         private bool _GasTanksOptimization = true;
         private bool _TurretsAimFix = true;
         private bool _GameSaveFix;
+        private bool _BlockShareResearch;
 
         public int MaxProtectedLargeGridSize
         {
@@ -611,6 +612,12 @@ namespace DePatch
         {
             get => _GameSaveFix;
             set => SetValue(ref _GameSaveFix, value);
+        }
+
+        public bool BlockShareResearch
+        {
+            get => _BlockShareResearch;
+            set => SetValue(ref _BlockShareResearch, value);
         }
     }
 }

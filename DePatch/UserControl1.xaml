@@ -192,6 +192,10 @@
                         Content="Forbid using Detach Head in Timers" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,372,0,0"
                         ToolTip="Forbid adding Detach Head Action (rotors/pistons/hinges) to Timer Block, to prevent creating Clang Machine and kill your server."
                         IsChecked="{Binding FixTimerDetachExploits}" />
+                    <CheckBox
+                        Content="Block Sharing Research" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,392,0,0"
+                        ToolTip="Forbid player to share research with faction members."
+                        IsChecked="{Binding BlockShareResearch}" />
                 </Grid>
             </TabItem>
             <TabItem
