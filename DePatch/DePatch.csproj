@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlocksDisable\BlockDisable.cs" />
+    <Compile Include="BlocksDisable\ForbiddenBlocksPatch.cs" />
     <Compile Include="BlocksDisable\PlayersUtility.cs" />
     <Compile Include="BlocksDisable\GridSpeedPatch.cs" />
     <Compile Include="GamePatches\ChangeOwnerPatch.cs" />

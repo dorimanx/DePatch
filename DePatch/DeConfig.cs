@@ -99,6 +99,8 @@ namespace DePatch
         private bool _TurretsAimFix = true;
         private bool _GameSaveFix;
         private bool _BlockShareResearch;
+        private bool _ForbiddenBlocks;
+        private ObservableCollection<string> _ForbiddenBlocksList = new ObservableCollection<string>();
 
         public int MaxProtectedLargeGridSize
         {
@@ -618,6 +620,20 @@ namespace DePatch
         {
             get => _BlockShareResearch;
             set => SetValue(ref _BlockShareResearch, value);
+        }
+
+        public bool ForbiddenBlocks
+        {
+            get => _ForbiddenBlocks;
+            set => SetValue(ref _ForbiddenBlocks, value);
+        }
+
+        [XmlArray("ForbiddenBlocksList")]
+        [XmlArrayItem("ForbiddenBlocksList", ElementName = "Block Subtypes")]
+        public ObservableCollection<string> ForbiddenBlocksList
+        {
+            get => _ForbiddenBlocksList;
+            set => SetValue(ref _ForbiddenBlocksList, value);
         }
     }
 }

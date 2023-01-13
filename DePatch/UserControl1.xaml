@@ -800,6 +800,17 @@
                         VerticalAlignment="Top"
                         Width="194"
                         Text="{Binding SlowPBIgnored, Mode=TwoWay, StringFormat=N2, UpdateSourceTrigger=PropertyChanged}" RenderTransformOrigin="0.559,0.615" Grid.Column="1" />
+                    <CheckBox
+                        Content="Enable forbidding of placing blocks on non static grid"
+                        HorizontalAlignment="Left"
+                        Margin="10,337,0,244"
+                        IsChecked="{Binding ForbiddenBlocks}"
+                        Width="307" Grid.ColumnSpan="2" />
+                    <Button
+                        Grid.Column="1"
+                        Margin="10,358,276,195"
+                        Content="Edit Forbidden Non Static Blocks"
+                        Click="EditForbiddenBlocksList_OnClick" />
                 </Grid>
             </TabItem>
         </TabControl>

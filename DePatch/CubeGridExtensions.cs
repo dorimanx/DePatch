@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Sandbox.Definitions;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
 
@@ -24,6 +27,23 @@ namespace DePatch
             if (Playerfaction != null && gridFaction != null)
             {
                 if (Playerfaction.FactionId == gridFaction.FactionId)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsMatchForbidden(MyCubeBlockDefinition definition)
+        {
+            HashSet<string> blockList = new HashSet<string>(DePatchPlugin.Instance.Config.ForbiddenBlocksList);
+            if (blockList.Count == 0)
+                return false;
+
+            foreach (string name in blockList)
+            {
+                if (name.Equals(definition.ToString().Substring(16), StringComparison.OrdinalIgnoreCase) ||
+                    name.Equals(definition.Id.SubtypeId.ToString(), StringComparison.OrdinalIgnoreCase) ||
+                    name.Equals(definition.Id.TypeId.ToString(), StringComparison.OrdinalIgnoreCase))
                     return true;
             }
 

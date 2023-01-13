@@ -165,6 +165,14 @@ namespace DePatch
             }.Edit((ICollection<string>)Plugin.Config.ExemptedFactions, "Exempted Factions/Players - Use player names or faction tags");
         }
 
+        private void EditForbiddenBlocksList_OnClick(object sender, RoutedEventArgs e)
+        {
+            new CollectionEditor
+            {
+                Owner = Window.GetWindow(this)
+            }.Edit((ICollection<string>)Plugin.Config.ForbiddenBlocksList, "Forbidden Non Static Blocks - Use subtypeId or part of subtype");
+        }
+
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
             Plugin.Save();

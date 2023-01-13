@@ -1,4 +1,8 @@
+using Sandbox.Engine.Multiplayer;
+using Sandbox.Game;
 using Sandbox.Game.Entities;
+using Sandbox.Game.World;
+using System;
 using Torch.Managers.PatchManager;
 
 namespace DePatch.PVEZONE
@@ -11,9 +15,47 @@ namespace DePatch.PVEZONE
 
         internal static void CubeGridInit(MyCubeGrid __instance)
         {
-            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.PveZoneEnabled || !DePatchPlugin.GameIsReady || __instance == null)
+            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.GameIsReady || __instance == null)
                 return;
- 
+
+            if (DePatchPlugin.Instance.Config.ForbiddenBlocks && !__instance.IsStatic && __instance.Physics != null)
+            {
+                foreach (var FirstBlock in __instance.CubeBlocks)
+                {
+                    if (FirstBlock == null || FirstBlock.BlockDefinition == null)
+                        continue;
+
+                    if (CubeGridExtensions.IsMatchForbidden(FirstBlock.BlockDefinition))
+                    {
+                        __instance.Physics.ClearSpeed();
+                        MyMultiplayer.RaiseEvent(__instance, (MyCubeGrid x) => new Action(x.ConvertToStatic), default);
+                        __instance.ConvertToStatic();
+
+                        var playerId = FirstBlock.BuiltBy;
+
+                        if (!MySession.Static.Players.IsPlayerOnline(playerId))
+                            break;
+
+                        var BlockName = FirstBlock.BlockDefinition.DisplayNameText;
+
+                        if (BlockName == string.Empty || BlockName.Equals(null))
+                        {
+                            BlockName = FirstBlock.BlockDefinition.Id.SubtypeId.ToString();
+                            if (BlockName == string.Empty || BlockName.Equals(null))
+                                BlockName = FirstBlock.BlockDefinition.Id.TypeId.ToString();
+                        }
+
+                        var DenyAlert = $"This Block >>{BlockName}<< can be only on static grid. New grid is now Static!.";
+                        MyVisualScriptLogicProvider.ShowNotification(DenyAlert, 10000, "Red", playerId);
+
+                        break;
+                    }
+                }
+            }
+
+            if (!DePatchPlugin.Instance.Config.PveZoneEnabled)
+                return;
+
             if (!PVEGrid.Grids.ContainsKey(__instance))
                 PVEGrid.Grids.Add(__instance, new PVEGrid(__instance));
 
