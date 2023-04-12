@@ -113,7 +113,7 @@ namespace DePatch
 
             if (Config.PveZoneEnabled)
             {
-                PVE.Init(this);
+                PVE.Init(this, context);
                 FreezerPatch.ApplyPatch(_harmony, Torch);
             }
 

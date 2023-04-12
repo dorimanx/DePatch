@@ -31,29 +31,29 @@ namespace DePatch.PVEZONE
                     if (__instance.MarkedForClose || __instance.Closed)
                     {
                         if (PVEGrid.Grids.ContainsKey(__instance))
-                            PVEGrid.Grids.Remove(__instance);
+                            _ = PVEGrid.Grids.Remove(__instance);
 
                         if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && PVEGrid2.Grids2.ContainsKey(__instance))
-                            PVEGrid2.Grids2.Remove(__instance);
+                            _ = PVEGrid2.Grids2.Remove(__instance);
 
                         if (PVE.EntitiesInZone.Contains(__instance.EntityId))
-                            PVE.EntitiesInZone.Remove(__instance.EntityId);
+                            _ = PVE.EntitiesInZone.Remove(__instance.EntityId);
 
                         if (PVE.EntitiesInZone2.Contains(__instance.EntityId))
-                            PVE.EntitiesInZone2.Remove(__instance.EntityId);
+                            _ = PVE.EntitiesInZone2.Remove(__instance.EntityId);
                     }
 
-                    var HasOwner = (__instance.BigOwners.Count > 0) ? __instance.BigOwners.FirstOrDefault() : 0L;
+                    var HasOwner = (__instance.BigOwners?.Count > 0) ? __instance.BigOwners?.FirstOrDefault() : 0L;
                     var NPC_Grid = false;
 
-                    if (HasOwner != 0L && MySession.Static.Players.IdentityIsNpc(HasOwner))
+                    if (HasOwner != 0L && MySession.Static.Players.IdentityIsNpc((long)HasOwner))
                         NPC_Grid = true;
 
                     if (NPC_Grid && PVEGrid.Grids.ContainsKey(__instance))
-                        PVEGrid.Grids.Remove(__instance);
+                        _ = PVEGrid.Grids.Remove(__instance);
 
                     if (DePatchPlugin.Instance.Config.PveZoneEnabled2 && NPC_Grid && PVEGrid2.Grids2.ContainsKey(__instance))
-                        PVEGrid2.Grids2.Remove(__instance);
+                        _ = PVEGrid2.Grids2.Remove(__instance);
 
                     if (NPC_Grid)
                         goto exit;
@@ -72,7 +72,7 @@ namespace DePatch.PVEZONE
                     {
                         if (PVE.EntitiesInZone.Contains(__instance.EntityId))
                         {
-                            PVE.EntitiesInZone.Remove(__instance.EntityId);
+                            _ = PVE.EntitiesInZone.Remove(__instance.EntityId);
                             pVEGrid?.OnGridLeft();
                         }
                     }
@@ -95,7 +95,7 @@ namespace DePatch.PVEZONE
                         {
                             if (PVE.EntitiesInZone2.Contains(__instance.EntityId))
                             {
-                                PVE.EntitiesInZone2.Remove(__instance.EntityId);
+                                _ = PVE.EntitiesInZone2.Remove(__instance.EntityId);
                                 pVEGrid2?.OnGridLeft2();
                             }
                         }

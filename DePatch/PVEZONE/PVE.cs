@@ -3,6 +3,7 @@ using System.Linq;
 using NLog;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
+using Torch.Managers.PatchManager;
 using VRage.Game.Entity;
 using VRageMath;
 
@@ -18,14 +19,14 @@ namespace DePatch.PVEZONE
         public static BoundingSphereD PVESphere;
         public static BoundingSphereD PVESphere2;
 
-        public static void Init(DePatchPlugin plugin)
+        public static void Init(DePatchPlugin plugin, PatchContext ctx)
         {
             if (!DePatchPlugin.Instance.Config.Enabled)
                 return;
 
             PVESphere = new BoundingSphereD(new Vector3D(plugin.Config.PveX, plugin.Config.PveY, plugin.Config.PveZ), plugin.Config.PveZoneRadius);
             PVESphere2 = new BoundingSphereD(new Vector3D(plugin.Config.PveX2, plugin.Config.PveY2, plugin.Config.PveZ2), plugin.Config.PveZoneRadius2);
-            DamageHandler.Init();
+            DamageHandler.Patch(ctx);
             Log.Info("Initing PVE ZONE... Complete!");
         }
 

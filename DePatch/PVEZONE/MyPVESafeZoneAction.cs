@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DePatch.CoolDown;
 using Sandbox.Game.Entities;
@@ -304,23 +304,6 @@ namespace DePatch.PVEZONE
                             return true;
                         }
                 }
-            }
-
-            if (!DePatchPlugin.Instance.Config.PveZoneEnabled)
-                return true;
-
-            if (action != MySafeZoneAction.Shooting)
-                return true;
-
-            if (entity is MyCharacter character)
-            {
-                if (character == null)
-                    return true;
-
-                var myPlayer = MySession.Static.Players.GetOnlinePlayers().ToList().Find(b => b.Identity.IdentityId == character.GetPlayerIdentityId());
-
-                if (myPlayer != null && PVE.CheckEntityInZone(myPlayer, ref IsInPVEZone))
-                    return false;
             }
 
             return true;

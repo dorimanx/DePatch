@@ -57,14 +57,15 @@ namespace DePatch.VoxelProtection
             {
                 if (CheckAdminGrid(target))
                 {
-                    damage.Amount = 0;
+                    damage.Amount = 0f;
                     damage.IsDeformation = false;
                     return;
                 }
             }
 
             // if disabled, return
-            if (!DePatchPlugin.Instance.Config.ProtectGrid) return;
+            if (!DePatchPlugin.Instance.Config.ProtectGrid)
+                return;
 
             if (damage.Type != MyDamageType.Fall)
             {
@@ -95,7 +96,7 @@ namespace DePatch.VoxelProtection
                 damage.IsDeformation = false;
 
                 // getting info that damage should be 0! PVE or shield protection, then just move on.
-                if (damage.Amount == 0f)
+                if (damage.Amount <= 0f)
                     return;
 
                 // no damage from voxels.
@@ -137,6 +138,7 @@ namespace DePatch.VoxelProtection
                         damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksVoxel;
 
                     _ = MyGravityProviderSystem.CalculateNaturalGravityInPoint(GridCube.PositionComp.GetPosition(), out var ingravitynow);
+
                     if (ingravitynow <= 20f && ingravitynow >= 0.2f)
                     {
                         if (DePatchPlugin.Instance.Config.ConvertToStatic &&
@@ -196,17 +198,18 @@ namespace DePatch.VoxelProtection
                                 MyMultiplayer.RaiseEvent(grids.FirstOrDefault(), (MyCubeGrid x) => new Action(x.ConvertToStatic), MyEventContext.Current.Sender);
 
                                 ReloadShip.FixShip(GridCube);
+
+                                return;
                             }
                         }
                     }
-                    return;
                 }
 
                 // reduce LAG by removing need for deformation culculations.
                 damage.IsDeformation = false;
 
                 // getting info that damage should be 0! PVE or shield protection, then just move on.
-                if (damage.Amount == 0f)
+                if (damage.Amount <= 0f)
                     return;
 
                 if (DePatchPlugin.Instance.Config.DamageToBlocksRamming <= 0f || DePatchPlugin.Instance.Config.DamageToBlocksRamming > 1f)
@@ -219,8 +222,6 @@ namespace DePatch.VoxelProtection
                         damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksRamming;
                     if (GridCube.IsStatic)
                         damage.Amount = 0f;
-
-                    return;
                 }
             }
         }
