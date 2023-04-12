@@ -93,6 +93,7 @@ namespace DePatch
         private bool _UpdateOnceBeforeFrameFix;
         private bool _MyEntityDuplicateFix = true;
         private bool _DenyPlacingBlocksOnEnemyGrid;
+        private bool _DenyPlacingBlocksOnNPCGrid;
         private bool _FixExploits = true;
         private bool _FixTimerDetachExploits = true;
         private bool _GasTanksOptimization = true;
@@ -584,6 +585,12 @@ namespace DePatch
         {
             get => _DenyPlacingBlocksOnEnemyGrid;
             set => SetValue(ref _DenyPlacingBlocksOnEnemyGrid, value);
+        }
+
+        public bool DenyPlacingBlocksOnNPCGrid
+        {
+            get => _DenyPlacingBlocksOnNPCGrid;
+            set => SetValue(ref _DenyPlacingBlocksOnNPCGrid, value);
         }
 
         public bool FixExploits

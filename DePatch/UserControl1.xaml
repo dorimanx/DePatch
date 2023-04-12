@@ -664,9 +664,12 @@
                     <CheckBox Content="AdminBlock Support" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,112,0,0"
                         ToolTip="When checked, and grid has block with subtype AdminGrid then no damage to this grid."
                         IsChecked="{Binding AdminGrid}"/>
-                    <CheckBox Content="Deny Build Blocks on Enemy Grid" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,132,0,0"
-                        ToolTip="When checked, Plugin will DENY placing new blocks on Enemy Grid NOT including NPC, only Admin or Faction member can place."
+                    <CheckBox Content="Deny Building Blocks on Enemy Player Grid (Outside of PVE)" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,132,0,0"
+                        ToolTip="When checked, Plugin will DENY placing new blocks on Enemy Player Grid, NOT including NPC, only Admin or Faction member can place."
                         IsChecked="{Binding DenyPlacingBlocksOnEnemyGrid}"/>
+                    <CheckBox Content="Deny Building Blocks on NPC Grid (Outside of PVE or Inside)" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,148,0,0"
+                        ToolTip="When checked, Plugin will DENY placing new blocks on NPC Grid NOT including player Grids!, only Admin can place."
+                        IsChecked="{Binding DenyPlacingBlocksOnNPCGrid}"/>
                 </Grid>
             </TabItem>
             <TabItem

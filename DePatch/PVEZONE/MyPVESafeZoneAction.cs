@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using DePatch.CoolDown;
 using Sandbox.Game.Entities;
@@ -228,38 +228,53 @@ namespace DePatch.PVEZONE
                         }
                     case MySafeZoneAction.Building:
                         {
-                            if (DePatchPlugin.Instance.Config.PveZoneEnabled || DePatchPlugin.Instance.Config.DenyPlacingBlocksOnEnemyGrid)
+                            if (DePatchPlugin.Instance.Config.PveZoneEnabled || DePatchPlugin.Instance.Config.DenyPlacingBlocksOnEnemyGrid || DePatchPlugin.Instance.Config.DenyPlacingBlocksOnNPCGrid)
                             {
                                 if (grid == null || user == 0UL || entity is MyWelder Welder || MySession.Static.IsUserAdmin(user))
                                     return true;
 
-                                if (DePatchPlugin.Instance.Config.DenyPlacingBlocksOnEnemyGrid)
+                                // allow to place blocks if grid has no owner.
+                                if (grid.BigOwners.Count < 1)
+                                    return true;
+
+                                if (DePatchPlugin.Instance.Config.PveZoneEnabled)
                                 {
-                                    // allow to place blocks if grid has no owner.
-                                    if (grid.BigOwners.Count < 1)
+                                    var myPlayer = Sync.Players.TryGetPlayerBySteamId(user);
+                                    if (myPlayer == null)
                                         return true;
 
-                                    // allow to place if grid is owned by NPC
-                                    if (MySession.Static.Players.IdentityIsNpc(grid.BigOwners.FirstOrDefault()))
+                                    if (PVE.CheckEntityInZone(myPlayer, ref IsInPVEZone))
+                                    {
+                                        // allow to place if grid is owned by NPC and we allow that in config!
+                                        if (MySession.Static.Players.IdentityIsNpc(grid.BigOwners.FirstOrDefault()) && !DePatchPlugin.Instance.Config.DenyPlacingBlocksOnNPCGrid)
+                                            return true;
+
+                                        if (grid.IsFriendlyPlayer(user))
+                                            return true;
+
+                                        return false;
+                                    }
+                                }
+
+                                if (DePatchPlugin.Instance.Config.DenyPlacingBlocksOnEnemyGrid || DePatchPlugin.Instance.Config.DenyPlacingBlocksOnNPCGrid)
+                                {
+                                    // allow to place if grid is owned by NPC and we allow that in config!
+                                    if (MySession.Static.Players.IdentityIsNpc(grid.BigOwners.FirstOrDefault()) && !DePatchPlugin.Instance.Config.DenyPlacingBlocksOnNPCGrid)
                                         return true;
+                                    else
+                                    {
+                                        if (MySession.Static.Players.IdentityIsNpc(grid.BigOwners.FirstOrDefault()) && DePatchPlugin.Instance.Config.DenyPlacingBlocksOnNPCGrid)
+                                            return false;
+                                    }
 
                                     // allow to place if grid owned by same player or his faction member.
                                     if (grid.IsFriendlyPlayer(user))
                                         return true;
 
-                                    // deny placing.
-                                    return false;
-                                }
-
-                                var myPlayer = Sync.Players.TryGetPlayerBySteamId(user);
-                                if (myPlayer == null)
-                                    return true;
-
-                                if (PVE.CheckEntityInZone(myPlayer, ref IsInPVEZone))
-                                {
-                                    if (grid.IsFriendlyPlayer(user))
+                                    if (DePatchPlugin.Instance.Config.DenyPlacingBlocksOnNPCGrid && !DePatchPlugin.Instance.Config.DenyPlacingBlocksOnEnemyGrid)
                                         return true;
 
+                                    // deny placing.
                                     return false;
                                 }
                             }
