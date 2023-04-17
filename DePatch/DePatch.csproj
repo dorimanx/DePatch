@@ -79,7 +79,6 @@
     <Compile Include="GamePatches\ServerAliveLog.cs" />
     <Compile Include="KEEN_BUG_FIXES\KEEN_ModUpdateFix.cs" />
     <Compile Include="GamePatches\MyAssemblerPatch.cs" />
-    <Compile Include="KEEN_BUG_FIXES\KEEN_MyEntityDuplicateFix.cs" />
     <Compile Include="GamePatches\MyPistonBase.cs" />
     <Compile Include="GamePatches\MyProgramBlockSlow.cs" />
     <Compile Include="GamePatches\MyRefineryPatch.cs" />
