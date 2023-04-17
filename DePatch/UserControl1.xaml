@@ -147,10 +147,6 @@
                         ToolTip="This will delay crazy update of each gas tank in world and save server CPU and Client CPU load."
                         IsChecked="{Binding GasTanksOptimization}" />
                     <CheckBox
-                        Content="Fix Turrets Target Selectors" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,292,0,0"
-                        ToolTip="This will allow setting turrets to shoot at different targets, it's bugged right now.."
-                        IsChecked="{Binding TurretsAimFix}" />
-                    <CheckBox
                         Content="Fix UpdateAfterSimulation100" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,192,0,0"
                         ToolTip="This will tap to KEEN function for UpdateAfterSimulation100 and check for NULLs and prevent server crash."
                         IsChecked="{Binding UpdateAfterSimulation100FIX}" Grid.ColumnSpan="2" />

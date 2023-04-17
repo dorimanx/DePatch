@@ -93,9 +93,6 @@ namespace DePatch
                     KEEN_UpdateSimulationFixes.Patch(context);
                 }
 
-                if (Config.TurretsAimFix)
-                    KEEN_MyTurretTargetFlagsFix.PatchMyTurretTarget();
-
                 if (Config.UpdateComponentsFix)
                     KEEN_UpdateComponentsFix.Patch(context);
 

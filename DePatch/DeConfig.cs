@@ -95,7 +95,6 @@ namespace DePatch
         private bool _FixExploits = true;
         private bool _FixTimerDetachExploits = true;
         private bool _GasTanksOptimization = true;
-        private bool _TurretsAimFix = true;
         private bool _GameSaveFix;
         private bool _BlockShareResearch;
         private bool _ForbiddenBlocks;
@@ -595,12 +594,6 @@ namespace DePatch
         {
             get => _GasTanksOptimization;
             set => SetValue(ref _GasTanksOptimization, value);
-        }
-
-        public bool TurretsAimFix
-        {
-            get => _TurretsAimFix;
-            set => SetValue(ref _TurretsAimFix, value);
         }
 
         public bool GameSaveFix

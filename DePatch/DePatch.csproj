@@ -66,7 +66,6 @@
     <Compile Include="KEEN_BUG_FIXES\KEEN_UpdateComponentsFix.cs" />
     <Compile Include="KEEN_BUG_FIXES\KEEN_UpdateSimulationFixes.cs" />
     <Compile Include="KEEN_BUG_FIXES\KEEN_ColorChangeExploitFix.cs" />
-    <Compile Include="KEEN_BUG_FIXES\KEEN_MyTurretTargetFlagsFix.cs" />
     <Compile Include="PVEZONE\FreezerPatch.cs" />
     <Compile Include="CoolDown\CooldownManager.cs" />
     <Compile Include="CoolDown\CurrentCooldown.cs" />
