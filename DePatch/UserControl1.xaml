@@ -379,7 +379,7 @@
                             Text="{Binding PveMessageLeft2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <CheckBox
                             Content="Allow Shooting NPC in All Zones"
-                            ToolTip="Allow to shoot NPC and back! Side Effect! all weapons will try to shoot enemy grid but without destroying blocks."
+                            ToolTip="Allow to shoot NPC and back! Player Grid VS Player Grid! no damage, but you can kill the chars!"
                             HorizontalAlignment="Left" VerticalAlignment="Top" Margin="260,106,0,0"
                             IsEnabled="{Binding PveZoneEnabled}"
                             IsChecked="{Binding AllowToShootNPCinZone}" />
