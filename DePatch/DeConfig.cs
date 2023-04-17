@@ -56,7 +56,7 @@ namespace DePatch
         private bool _drillIgnoreSubtypes = true;
         private List<string> _DrillsSettings = new List<string>();
         private bool _protectVoxels;
-        private bool _stopExplosion = true;
+        private bool _stopExplosion;
         private bool _protectGrid;
         private float _minProtectSpeed = 40f;
         private float _staticConvertSpeed = 70f;
