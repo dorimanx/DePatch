@@ -90,7 +90,6 @@ namespace DePatch
         private bool _UpdateBeforeSimulation100FIX;
         private bool _ParallelUpdateHandlerAfterSimulationFIX;
         private bool _UpdateComponentsFix;
-        private bool _UpdateOnceBeforeFrameFix;
         private bool _DenyPlacingBlocksOnEnemyGrid;
         private bool _DenyPlacingBlocksOnNPCGrid;
         private bool _FixExploits = true;
@@ -566,12 +565,6 @@ namespace DePatch
         {
             get => _UpdateComponentsFix;
             set => SetValue(ref _UpdateComponentsFix, value);
-        }
-
-        public bool UpdateOnceBeforeFrameFix
-        {
-            get => _UpdateOnceBeforeFrameFix;
-            set => SetValue(ref _UpdateOnceBeforeFrameFix, value);
         }
 
         public bool DenyPlacingBlocksOnEnemyGrid
