@@ -1,7 +1,5 @@
 using System;
-using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Windows.Controls;
 using DePatch.GamePatches;
 using DePatch.KEEN_BUG_FIXES;
@@ -17,7 +15,6 @@ using Torch.API;
 using Torch.API.Managers;
 using Torch.API.Plugins;
 using Torch.Managers.PatchManager;
-using Torch.Server.Managers;
 using Torch.Session;
 
 namespace DePatch
@@ -121,6 +118,8 @@ namespace DePatch
 
         public override void Update()
         {
+            base.Update();
+
             if (!MySession.Static.IsSaveInProgress)
                 MyGasTankPatch.UpdateTanks();
 
@@ -166,6 +165,8 @@ namespace DePatch
                 Torch.GameStateChanged -= Torch_GameStateChanged;
             }
             _sessionManager = null;
+
+            base.Dispose();
         }
     }
 }

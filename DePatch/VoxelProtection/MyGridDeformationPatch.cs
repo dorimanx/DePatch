@@ -111,8 +111,8 @@ namespace DePatch.VoxelProtection
                 {
                     if (GridCube.IsStatic)
                         damage.Amount = 0f;
-                    else
-                        damage.Amount = 0.01f;
+                    //else
+                        //damage.Amount = 0.01f;
                     return;
                 }
 
@@ -218,8 +218,9 @@ namespace DePatch.VoxelProtection
                 // bump to other grid on high speed, prevent stuck in other blocks
                 if (AttackerEntity is MyCubeBlock || AttackerEntity is MyCubeGrid)
                 {
-                    if (damage.Amount > DePatchPlugin.Instance.Config.DamageToBlocksRamming)
-                        damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksRamming;
+                    //if (damage.Amount > DePatchPlugin.Instance.Config.DamageToBlocksRamming)
+                    //    damage.Amount = DePatchPlugin.Instance.Config.DamageToBlocksRamming;
+
                     if (GridCube.IsStatic)
                         damage.Amount = 0f;
                 }
