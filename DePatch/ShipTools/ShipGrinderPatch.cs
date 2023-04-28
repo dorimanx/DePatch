@@ -48,6 +48,12 @@ namespace DePatch.ShipTools
             if (!DePatchPlugin.Instance.Config.ShipToolsEnabled)
                 return true;
 
+            if (targets.Count == 0)
+            {
+                __result = false;
+                return false;
+            }
+
             var enumerable = ShipTool.shipTools.Where(t => t.Subtype == __instance.DefinitionId.SubtypeId.String);
             var shipTools = enumerable.ToList();
 
@@ -72,11 +78,30 @@ namespace DePatch.ShipTools
             int count = targets.Count;
             m_otherGrid.SetValue(__instance, null);
 
+            HashSet<MySlimBlock> targetsReduced = new HashSet<MySlimBlock>();
+
             if (targets.Count > 0)
             {
                 // prevent self grinding
                 if (targets.Remove(__instance.SlimBlock))
                     count = targets.Count;
+
+                if (targets.Count > 20)
+                {
+                    int targetsCount = 0;
+                    foreach (var NewTraget in targets)
+                    {
+                        targetsReduced.Add(NewTraget);
+                        targetsCount++;
+
+                        if (targetsCount == 20)
+                            break;
+                    }
+
+                    targets.Clear();
+                    targets = targetsReduced;
+                    count = targets.Count;
+                }
 
                 m_otherGrid.SetValue(__instance, targets.FirstElement().CubeGrid);
             }
@@ -84,8 +109,8 @@ namespace DePatch.ShipTools
             float num = 0.25f / Math.Min(4, targets.Count); // if 1 target then here 0.25
             float amount = MySession.Static.GrinderSpeedMultiplier * 4f * num; // if 1 target then here 3 if GrinderSpeedMultiplier is 3 in game config
 
-            if (amount < shipTool.Speed)
-                amount = MySession.Static.GrinderSpeedMultiplier * shipTool.Speed;
+            if (amount < shipTool.Speed || targets.Count < 3)
+                amount = MySession.Static.GrinderSpeedMultiplier * shipTool.Speed * 2;
             else
                 return true;
 

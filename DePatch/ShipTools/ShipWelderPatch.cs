@@ -66,6 +66,12 @@ namespace DePatch.ShipTools
             if (!DePatchPlugin.Instance.Config.ShipToolsEnabled)
                 return true;
 
+            if (targets.Count == 0)
+            {
+                __result = false;
+                return false;
+            }
+
             var enumerable = ShipTool.shipTools.Where(t => t.Subtype == __instance.DefinitionId.SubtypeId.String);
             var shipTools = enumerable.ToList();
 
@@ -97,6 +103,28 @@ namespace DePatch.ShipTools
             bool flag = false;
             int count = targets.Count;
             m_missingComponents.Clear();
+
+            HashSet<MySlimBlock> targetsReduced = new HashSet<MySlimBlock>();
+
+            if (targets.Count > 30)
+            {
+                int targetsCount = 0;
+                foreach (var NewTraget in targets)
+                {
+                    if (NewTraget.IsFullIntegrity)
+                        continue;
+
+                    targetsReduced.Add(NewTraget);
+                    targetsCount++;
+
+                    if (targetsCount == 30)
+                        break;
+                }
+
+                targets.Clear();
+                targets = targetsReduced;
+                count = targets.Count;
+            }
 
             foreach (MySlimBlock target in targets)
             {

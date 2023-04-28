@@ -67,6 +67,9 @@ namespace DePatch.VoxelProtection
             if (!DePatchPlugin.Instance.Config.ProtectGrid)
                 return;
 
+            if (damage.Type == MyDamageType.Grind || damage.Type == MyDamageType.Drill)
+                return;
+
             if (damage.Type != MyDamageType.Fall)
             {
                 if (damage.Type != MyDamageType.Deformation)
