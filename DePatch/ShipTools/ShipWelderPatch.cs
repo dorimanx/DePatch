@@ -109,28 +109,31 @@ namespace DePatch.ShipTools
                 }
             }
 
-            MyInventory inventory = MyEntityExtensions.GetInventory(__instance);
+            float num1 = 0.25f / Math.Min(4, count > 0 ? count : 1);
+            float num2 = MySession.Static.WelderSpeedMultiplier * MyShipWelder.WELDER_AMOUNT_PER_SECOND * num1;
+
+            if (num2 < shipTool.Speed)
+                num2 = shipTool.Speed;
+            else
+                return true;
+
+            MyInventory inventory = __instance.GetInventory(0);
 
             foreach (KeyValuePair<string, int> missingComponent in m_missingComponents)
             {
+                var ShipToolBase = __instance as MyShipToolBase; // base.UseConveyorSystem
+                var CubeBlock = __instance as MyCubeBlock; // base.CubeGrid.GridSystems.ConveyorSystem
                 MyDefinitionId myDefinitionId = new MyDefinitionId(typeof(MyObjectBuilder_Component), missingComponent.Key);
-                if (Math.Max(missingComponent.Value - (int)inventory.GetItemAmount(myDefinitionId, MyItemFlags.None, false), 0) != 0 && Sync.IsServer && __instance.UseConveyorSystem)
-                    __instance.CubeGrid.GridSystems.ConveyorSystem.PullItem(myDefinitionId, new MyFixedPoint?(missingComponent.Value), __instance, MyEntityExtensions.GetInventory(__instance), false, false);
+                if (Math.Max(missingComponent.Value - (int)inventory.GetItemAmount(myDefinitionId, MyItemFlags.None, false), 0) != 0 && Sync.IsServer && ShipToolBase.UseConveyorSystem)
+                    CubeBlock.CubeGrid.GridSystems.ConveyorSystem.PullItem(myDefinitionId, new MyFixedPoint?(missingComponent.Value), __instance, __instance.GetInventory(0), false, false);
             }
 
             if (Sync.IsServer)
             {
-                float num1 = 0.25f / Math.Min(4, count > 0 ? count : 1);
-
                 foreach (MySlimBlock target in targets)
                 {
                     if (target.CubeGrid.Physics != null && target.CubeGrid.Physics.Enabled && target != __instance.SlimBlock)
                     {
-                        float num2 = MySession.Static.WelderSpeedMultiplier * MyShipWelder.WELDER_AMOUNT_PER_SECOND * num1;
-
-                        if (num2 < shipTool.Speed)
-                            num2 = shipTool.Speed;
-
                         bool? nullable = target.ComponentStack.WillFunctionalityRise(num2);
                         if (!nullable.HasValue || !nullable.Value || MySession.Static.CheckLimitsAndNotify(MySession.Static.LocalPlayerId, target.BlockDefinition.BlockPairName, target.BlockDefinition.PCU - MyCubeBlockDefinition.PCU_CONSTRUCTION_STAGE_COST))
                         {
@@ -140,10 +143,11 @@ namespace DePatch.ShipTools
                             target.MoveItemsToConstructionStockpile(inventory);
                             target.MoveUnneededItemsFromConstructionStockpile(inventory);
 
-                            if (target.HasDeformation || target.MaxDeformation > 9.99999974737875E-05 || !target.IsFullIntegrity)
+                            if (target.HasDeformation || target.MaxDeformation > 0.0001f || !target.IsFullIntegrity)
                             {
-                                float maxAllowedBoneMovement = (float)(MyShipWelder.WELDER_MAX_REPAIR_BONE_MOVEMENT_SPEED * 250.0 * (1.0 / 1000.0));
-                                target.IncreaseMountLevel(num2, __instance.OwnerId, inventory, maxAllowedBoneMovement, __instance.HelpOthers, __instance.IDModule.ShareMode);
+                                var CubeBlock = __instance as MyCubeBlock; // base.OwnerId
+                                float maxAllowedBoneMovement = (float)(MyShipWelder.WELDER_MAX_REPAIR_BONE_MOVEMENT_SPEED * 250f * 0.001f);
+                                target.IncreaseMountLevel(num2, CubeBlock.OwnerId, inventory, maxAllowedBoneMovement, __instance.HelpOthers, CubeBlock.IDModule.ShareMode, false, false);
                             }
                         }
                     }
@@ -163,20 +167,24 @@ namespace DePatch.ShipTools
             {
                 MyWelder.ProjectionRaycastData[] projectedBlocks = (MyWelder.ProjectionRaycastData[])FindProjectedBlocks.Invoke(__instance, new object[] { });
 
-                if (__instance.UseConveyorSystem)
+                var ShipToolBase = __instance as MyShipToolBase; // base.UseConveyorSystem
+
+                if (ShipToolBase.UseConveyorSystem)
                 {
                     foreach (MyWelder.ProjectionRaycastData projectionRaycastData in projectedBlocks)
                     {
+                        var MyCubeBlock2 = __instance as MyCubeBlock;
                         MyCubeBlockDefinition.Component[] components = projectionRaycastData.hitCube.BlockDefinition.Components;
                         if (components != null && components.Length != 0)
-                            __instance.CubeGrid.GridSystems.ConveyorSystem.PullItem(components[0].Definition.Id, new MyFixedPoint?(1), __instance, inventory, false, false);
+                            MyCubeBlock2.CubeGrid.GridSystems.ConveyorSystem.PullItem(components[0].Definition.Id, new MyFixedPoint?(1), __instance, inventory, false, false);
                     }
                 }
 
                 HashSet<MyCubeGrid.MyBlockLocation> myBlockLocationSet = new HashSet<MyCubeGrid.MyBlockLocation>();
                 bool creativeMode = MySession.Static.CreativeMode;
+                var MyCubeBlock = __instance as MyCubeBlock;
 
-                if (MySession.Static.Players.TryGetPlayerId(__instance.BuiltBy, out MyPlayer.PlayerId result) && MySession.Static.Players.TryGetPlayerById(result, out MyPlayer _))
+                if (MySession.Static.Players.TryGetPlayerId(MyCubeBlock.BuiltBy, out MyPlayer.PlayerId result) && MySession.Static.Players.TryGetPlayerById(result, out MyPlayer _))
                     creativeMode |= MySession.Static.CreativeToolsEnabled(Sync.MyId);
 
                 foreach (MyWelder.ProjectionRaycastData projectionRaycastData in projectedBlocks)
@@ -186,19 +194,20 @@ namespace DePatch.ShipTools
                         MyWelder.ProjectionRaycastData invokedBlock = projectionRaycastData;
                         MySandboxGame.Static.Invoke(() =>
                         {
-                            if (invokedBlock.cubeProjector.Closed || invokedBlock.cubeProjector.CubeGrid.Closed || invokedBlock.hitCube.FatBlock != null && invokedBlock.hitCube.FatBlock.Closed)
-                                return;
+                            if (!invokedBlock.cubeProjector.Closed && !invokedBlock.cubeProjector.CubeGrid.Closed && (invokedBlock.hitCube.FatBlock == null || !invokedBlock.hitCube.FatBlock.Closed))
+                                invokedBlock.cubeProjector.Build(invokedBlock.hitCube, __instance.OwnerId, __instance.EntityId, true, __instance.BuiltBy);
 
-                            invokedBlock.cubeProjector.Build(invokedBlock.hitCube, __instance.OwnerId, __instance.EntityId, builtBy: __instance.BuiltBy);
-
-                        }, "ShipWelder BuildProjection");
+                        }, "ShipWelder BuildProjection", -1, 0);
                         flag = true;
                     }
                 }
             }
 
             if (flag)
-                SetBuildingMusic.Invoke(__instance, new object[] { 150 });
+            {
+                var ShipToolBase = __instance as MyShipToolBase;
+                SetBuildingMusic.Invoke(ShipToolBase, new object[] { 150 });
+            }
 
             __result = flag;
 

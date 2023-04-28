@@ -73,13 +73,21 @@ namespace DePatch.ShipTools
             m_otherGrid.SetValue(__instance, null);
 
             if (targets.Count > 0)
+            {
+                // prevent self grinding
+                if (targets.Remove(__instance.SlimBlock))
+                    count = targets.Count;
+
                 m_otherGrid.SetValue(__instance, targets.FirstElement().CubeGrid);
+            }
 
-            float num = 0.25f / Math.Min(4, targets.Count);
-            float amount = MySession.Static.GrinderSpeedMultiplier * 4f * num;
+            float num = 0.25f / Math.Min(4, targets.Count); // if 1 target then here 0.25
+            float amount = MySession.Static.GrinderSpeedMultiplier * 4f * num; // if 1 target then here 3 if GrinderSpeedMultiplier is 3 in game config
 
-            if (4f * num < shipTool.Speed)
+            if (amount < shipTool.Speed)
                 amount = MySession.Static.GrinderSpeedMultiplier * shipTool.Speed;
+            else
+                return true;
 
             foreach (MySlimBlock target in targets)
             {
@@ -89,21 +97,28 @@ namespace DePatch.ShipTools
 
                     var OtherCubeGrid = (MyCubeGrid)m_otherGrid.GetValue(__instance);
 
-                    if ((OtherCubeGrid.Physics == null ? 1 : (!OtherCubeGrid.Physics.Enabled ? 1 : 0)) != 0)
+                    if (OtherCubeGrid?.Physics == null || !OtherCubeGrid.Physics.Enabled)
                         count--;
                     else
                     {
                         MyCubeBlockDefinition.PreloadConstructionModels(target.BlockDefinition);
                         if (Sync.IsServer)
                         {
-                            MyDamageInformation info = new MyDamageInformation(false, amount, MyDamageType.Grind, __instance.EntityId);
+                            MyDamageInformation info = new MyDamageInformation(false, amount, MyDamageType.Grind, __instance.GetBaseEntity().EntityId);
                             if (target.UseDamageSystem)
                                 MyDamageSystem.Static.RaiseBeforeDamageApplied(target, ref info);
 
+                            if (info.Amount <= 0)
+                            {
+                                count--;
+                                continue;
+                            }
+
                             if (target.CubeGrid.Editable)
                             {
-                                target.DecreaseMountLevel(info.Amount, MyEntityExtensions.GetInventory(__instance), identityId: __instance.OwnerId);
-                                target.MoveItemsFromConstructionStockpile(MyEntityExtensions.GetInventory(__instance));
+                                var CubeBlockOwner = __instance as MyCubeBlock; // base.OwnerId
+                                target.DecreaseMountLevel(info.Amount, __instance.GetInventory(0), false, CubeBlockOwner.OwnerId, false);
+                                target.MoveItemsFromConstructionStockpile(__instance.GetInventory(0), MyItemFlags.None);
                             }
 
                             if (target.UseDamageSystem)
@@ -122,13 +137,16 @@ namespace DePatch.ShipTools
                             }
                         }
                         if (count > 0)
-                            SetBuildingMusic.Invoke(__instance, new object[] { 200 });
+                        {
+                            var MyshipTooBase = __instance as MyShipToolBase;
+                            SetBuildingMusic.Invoke(MyshipTooBase, new object[] { 200 });
+                        }
                     }
                 }
             }
-            m_wantsToShake.SetValue(__instance, (uint)count > 0U);
+            m_wantsToShake.SetValue(__instance, count != 0);
 
-            __result = (uint)count > 0U;
+            __result = count != 0;
 
             return false;
         }
@@ -137,14 +155,14 @@ namespace DePatch.ShipTools
         {
             for (int index = 0; index < block.InventoryCount; index++)
             {
-                MyInventory inventory = MyEntityExtensions.GetInventory(block, index);
+                MyInventory inventory = block.GetInventory(index);
                 if (!inventory.Empty())
                 {
                     m_tmpItemList.Clear();
                     m_tmpItemList.AddRange(inventory.GetItems());
-                    foreach (MyPhysicalInventoryItem tmpItem in m_tmpItemList)
+                    foreach (MyPhysicalInventoryItem myPhysicalInventoryItem in m_tmpItemList)
                     {
-                        MyInventory.Transfer(inventory, MyEntityExtensions.GetInventory(Grinder), tmpItem.ItemId);
+                        MyInventory.Transfer(inventory, Grinder.GetInventory(0), myPhysicalInventoryItem.ItemId, -1, null, false);
                     }
                 }
             }
