@@ -110,6 +110,8 @@ namespace DePatch
 
             DrillSettings.InitDefinitions();
 
+            ShipGrinderPatch.Patch(context);
+
             if (Config.ProtectGrid)
                 MyGridDeformationPatch.Init();
 
