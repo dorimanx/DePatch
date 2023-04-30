@@ -62,8 +62,6 @@ namespace DePatch.KEEN_BUG_FIXES
             ctx.Prefix(typeof(MyLocalCache), typeof(KEEN_SaveFix), nameof(SaveCheckpoint), new[] { "checkpoint", "sessionPath", "sizeInBytes", "fileList" });
             ctx.Prefix(typeof(MyLocalCache), typeof(KEEN_SaveFix), nameof(SaveWorldConfiguration), new[] { "configuration", "sessionPath", "sizeInBytes", "fileList" });
             ctx.Prefix(typeof(MyLocalCache), typeof(KEEN_SaveFix), nameof(SaveSector), new[] { "sector", "sessionPath", "sectorPosition", "sizeInBytes", "fileList" });
-
-            ctx.Prefix(typeof(MyObjectBuilderSerializer), typeof(KEEN_SaveFix), nameof(SerializeXML), new[] { "path", "compress", "objectBuilder", "sizeInBytes", "serializeAsType" });
         }
 
         public static bool MySession_Save(MySession __instance, out MySessionSnapshot snapshot, ref bool __result, string customSaveName = null)
@@ -386,7 +384,7 @@ namespace DePatch.KEEN_BUG_FIXES
 
             string text = Path.Combine(sessionPath, "Sandbox.sbc");
             bool SerializeXMLResult = false;
-            _ = SerializeXML(text, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, checkpoint, out sizeInBytes, ref SerializeXMLResult, null);
+            _ = SerializeXMLInternal(text, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, checkpoint, out sizeInBytes, ref SerializeXMLResult, null);
 
             // make sure we dont have duplicate in this list!
             if (fileList != null && !fileList.Contains(new MyCloudFile(text, false)))
@@ -435,7 +433,7 @@ namespace DePatch.KEEN_BUG_FIXES
                 fileList.Add(new MyCloudFile(text, false));
 
             bool SerializeXMLResult = false;
-            _ = SerializeXML(text, false, configuration, out sizeInBytes, ref SerializeXMLResult, null);
+            _ = SerializeXMLInternal(text, false, configuration, out sizeInBytes, ref SerializeXMLResult, null);
 
             __result = SerializeXMLResult;
             return false;
@@ -479,7 +477,7 @@ namespace DePatch.KEEN_BUG_FIXES
 
                     // lock the path to prevent possible crash here!
                     lock (sectorPath)
-                        _ = SerializeXML(sectorPath, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, sector, out sizeInBytes, ref SerializeXMLResult, null);
+                        _ = SerializeXMLInternal(sectorPath, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, sector, out sizeInBytes, ref SerializeXMLResult, null);
 
                     // make sure we dont have duplicate in this list!
                     if (!fileList.Contains(new MyCloudFile(sectorPath, false)))
@@ -499,7 +497,7 @@ namespace DePatch.KEEN_BUG_FIXES
                 string text = sectorPath + "B5";
                 // lock the path to prevent possible crash here!
                 lock (text)
-                    SerializeXMLResult = MyObjectBuilderSerializer.SerializePB(text, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, sector, out sizeInBytes);
+                    SerializeXMLResult = SerializePBInternal(text, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, sector, out sizeInBytes);
 
                 // make sure we dont have duplicate in this list!
                 if (!fileList.Contains(new MyCloudFile(text, false)))
@@ -520,47 +518,8 @@ namespace DePatch.KEEN_BUG_FIXES
             return false;
         }
 
-        private static async Task<ulong> SaveFile(string path, bool compress, MyObjectBuilder_Base objectBuilder, Type serializeAsType = null)
-        {
-            var sizeInBytes = 99999999999999999UL;
-
-            try
-            {
-                using (Stream stream1 = MyFileSystem.OpenWrite(path, FileMode.Create))
-                {
-                    // check if stream is not null
-                    if (stream1 == null)
-                        return sizeInBytes;
-
-                    using (Stream stream2 = compress ? stream1.WrapGZip() : stream1)
-                    {
-                        // add Flush here
-                        await stream2.FlushAsync();
-
-                        long position = stream1.Position;
-                        Type type = serializeAsType;
-                        if (type is null)
-                            type = objectBuilder.GetType();
-                        MyXmlSerializerManager.GetSerializer(type).Serialize(stream2, objectBuilder);
-                        sizeInBytes = (ulong)(stream1.Position - position);
-
-                        // add Flush here
-                        await stream2.FlushAsync();
-                    }
-
-                    // add Dispose here
-                    stream1.Dispose();
-                }
-
-                return sizeInBytes;
-            }
-            catch
-            {
-                return 99999999999999999UL;
-            }
-        }
-
-        public static bool SerializeXML(string path, bool compress, MyObjectBuilder_Base objectBuilder, out ulong sizeInBytes, ref bool __result, Type serializeAsType = null)
+        // local function
+        public static bool SerializeXMLInternal(string path, bool compress, MyObjectBuilder_Base objectBuilder, out ulong sizeInBytes, ref bool __result, Type serializeAsType = null)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.GameSaveFix)
             {
@@ -576,18 +535,12 @@ namespace DePatch.KEEN_BUG_FIXES
                 return false;
             }
 
-            // add try catch here, as if something wrong here, windows just kills torch without any log, only windows error log with not much help.
+            // delete file if already somehow there.
+            if (File.Exists(path))
+                File.Delete(path);
+
             try
             {
-                // delete file if already somehow there.
-                if (File.Exists(path))
-                    File.Delete(path);
-
-                // use local object to avoid reading locked source.
-                var LocalobjectBuilder = objectBuilder;
-
-                Task<ulong> sizeInBytesAsync = Task.FromResult(0UL);
-
                 if (path.Contains("Sandbox.sbc"))
                     Log.Warn($"Now Saving Sandbox.sbc");
                 else if (path.Contains("Sandbox_config.sbc"))
@@ -595,54 +548,80 @@ namespace DePatch.KEEN_BUG_FIXES
                 else if (path.Contains("SANDBOX_0_0_0_.sbs"))
                     Log.Warn($"Now Saving SANDBOX_0_0_0_.sbs");
 
-                /*
-                if (path.Contains("Sandbox.sbc") || path.Contains("SANDBOX_0_0_0_.sbs"))
+                var sizeInBytesTmp = 0UL;
+
+                var MyXmlSerializer = Task.Run(async () =>
                 {
-                    // use Parallel Tasks to reduce lag during save.
-                    MyAPIGateway.Parallel.StartBackground(() => { sizeInBytesAsync = SaveFile(path, compress, LocalobjectBuilder, serializeAsType); });
-                }
-                else
-                */
-                    sizeInBytesAsync = SaveFile(path, compress, LocalobjectBuilder, serializeAsType);
-
-                ulong LoopBraker = 0;
-
-                while (sizeInBytesAsync.Result == 0)
-                {
-                    if (sizeInBytesAsync.Result == 99999999999999999UL)
+                    using (Stream stream1 = MyFileSystem.OpenWrite(path, FileMode.Create))
                     {
-                        // seems like there was crash in SaveFile stream. exit now
-                        __result = false;
-                        sizeInBytes = 0UL;
-                        return false;
+                        // check if stream is not null
+                        if (stream1 == null)
+                            return sizeInBytesTmp;
+
+                        using (Stream stream2 = compress ? stream1.WrapGZip() : stream1)
+                        {
+                            long position = stream1.Position;
+                            MyXmlSerializerManager.GetSerializer(serializeAsType ?? objectBuilder.GetType()).Serialize(stream2, objectBuilder);
+                            sizeInBytesTmp = (ulong)(stream1.Position - position);
+
+                            // add Flush here
+                            await stream2.FlushAsync();
+                        }
                     }
+                    return sizeInBytesTmp;
+                });
 
-                    Thread.Sleep(1);
+                Task.WaitAll(MyXmlSerializer);
 
-                    LoopBraker++;
-
-                    // 4min and still didnt save large parts of save! abort.
-                    if (LoopBraker >= 240000)
-                    {
-                        // exit if no result for long time, safe fail.
-                        __result = false;
-                        sizeInBytes = 0UL;
-                        return false;
-                    }
-                }
-
-                sizeInBytes = sizeInBytesAsync.Result;
+                sizeInBytes = sizeInBytesTmp;
+                __result = true;
+                return false;
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Error during SerializeXML Function! Error: " + path + " failed to serialize., Crash Avoided");
-                sizeInBytes = 0UL;
+                MyLog.Default.WriteLine("Error: " + path + " failed to serialize.");
+                MyLog.Default.WriteLine(ex.ToString());
+
                 __result = false;
+                sizeInBytes = 0UL;
                 return false;
             }
+        }
 
-            __result = true;
-            return false;
+        public static bool SerializePBInternal(string path, bool compress, MyObjectBuilder_Base objectBuilder, out ulong sizeInBytes)
+        {
+            bool result = false;
+            var sizeInBytesTmp = 0UL;
+
+            try
+            {
+                var ObjectBuilderSerializer = Task.Run(() =>
+                {
+                    using (Stream stream = MyFileSystem.OpenWrite(path, FileMode.Create))
+                    {
+                        if (stream == null)
+                            result = false;
+
+                        result = MyObjectBuilderSerializer.SerializePB(stream, compress, objectBuilder, out sizeInBytesTmp);
+                    }
+
+                    return result;
+                });
+
+                Task.WaitAll(ObjectBuilderSerializer);
+
+                sizeInBytes = sizeInBytesTmp;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                MyLog.Default.WriteLine("Error: " + path + " failed to serialize.");
+                MyLog.Default.WriteLine(ex.ToString());
+                sizeInBytes = 0UL;
+                result = false;
+            }
+            sizeInBytes = sizeInBytesTmp;
+            return result;
         }
 
         // local function
