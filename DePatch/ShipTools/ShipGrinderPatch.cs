@@ -18,9 +18,7 @@ namespace DePatch.ShipTools
         public static void Patch(PatchContext ctx)
         {
             ctx.Prefix(typeof(MyDamageSystem), typeof(ShipGrinderPatch), nameof(RaiseBeforeDamageApplied));
-
-            if (DePatchPlugin.Instance.Config.PveZoneEnabled)
-                ctx.Prefix(typeof(MyShipGrinder), typeof(ShipGrinderPatch), nameof(Activate));
+            ctx.Prefix(typeof(MyShipGrinder), typeof(ShipGrinderPatch), nameof(Activate));
         }
 
         public static bool RaiseBeforeDamageApplied(MyDamageSystem __instance, object target, ref MyDamageInformation info)
@@ -72,26 +70,28 @@ namespace DePatch.ShipTools
 
         public static bool Activate(MyShipGrinder __instance, ref HashSet<MySlimBlock> targets, ref bool __result)
         {
-            if (!DePatchPlugin.Instance.Config.Enabled || __instance == null || __instance.MarkedForClose || __instance.Closed)
+            if (!DePatchPlugin.Instance.Config.Enabled)
                 return true;
 
-            if (targets.Count == 0)
-            {
-                __result = false;
+            __result = false;
+
+            if (__instance == null || __instance.MarkedForClose || __instance.Closed)
                 return false;
-            }
+
+            if (targets.Count == 0)
+                return false;
+
+            _ = targets.RemoveWhere(b => b == null || (b.FatBlock != null && (b.FatBlock.Closed || b.FatBlock.MarkedForClose)));
 
             if (DePatchPlugin.Instance.Config.PveZoneEnabled && PVE.CheckEntityInZone(__instance.CubeGrid))
             {
                 _ = targets.RemoveWhere(b => !__instance.GetUserRelationToOwner(b.OwnerId).IsFriendly());
 
                 if (targets.Count == 0)
-                {
-                    __result = false;
                     return false;
-                }
             }
 
+            __result = true;
             return true;
         }
     }
