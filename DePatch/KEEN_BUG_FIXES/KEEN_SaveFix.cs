@@ -588,6 +588,7 @@ namespace DePatch.KEEN_BUG_FIXES
             }
         }
 
+        // local function
         public static bool SerializePBInternal(string path, bool compress, MyObjectBuilder_Base objectBuilder, out ulong sizeInBytes)
         {
             bool result = false;
