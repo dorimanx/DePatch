@@ -19,7 +19,11 @@ namespace DePatch.ShipTools
         {
             ctx.Prefix(typeof(MyDamageSystem), typeof(ShipGrinderPatch), nameof(RaiseBeforeDamageApplied));
             ctx.Prefix(typeof(MyShipGrinder), typeof(ShipGrinderPatch), nameof(Activate));
+            ctx.Suffix(typeof(MyShipGrinder), "Activate", typeof(ShipGrinderPatch), nameof(ActivateAfter));
+            ctx.Prefix(typeof(MySlimBlock), typeof(ShipGrinderPatch), nameof(SpawnConstructionStockpile));
         }
+
+        static Dictionary<long, HashSet<MySlimBlock>> TargetsInternal = new Dictionary<long, HashSet<MySlimBlock>>();
 
         public static bool RaiseBeforeDamageApplied(MyDamageSystem __instance, object target, ref MyDamageInformation info)
         { // keep it BOOL here.
@@ -83,15 +87,62 @@ namespace DePatch.ShipTools
 
             _ = targets.RemoveWhere(b => b == null || (b.FatBlock != null && (b.FatBlock.Closed || b.FatBlock.MarkedForClose)));
 
+            if (DePatchPlugin.Instance.Config.ShipToolsEnabled && DePatchPlugin.Instance.Config.NoStockPileSpawnFromGrinders)
+            {
+                if (TargetsInternal.ContainsKey(__instance.EntityId))
+                    TargetsInternal.Remove(__instance.EntityId);
+
+                TargetsInternal.Add(__instance.EntityId, targets);
+            }
+
             if (DePatchPlugin.Instance.Config.PveZoneEnabled && PVE.CheckEntityInZone(__instance.CubeGrid))
             {
                 _ = targets.RemoveWhere(b => !__instance.GetUserRelationToOwner(b.OwnerId).IsFriendly());
 
                 if (targets.Count == 0)
                     return false;
+
+                if (DePatchPlugin.Instance.Config.ShipToolsEnabled && DePatchPlugin.Instance.Config.NoStockPileSpawnFromGrinders)
+                {
+                    if (TargetsInternal.ContainsKey(__instance.EntityId))
+                        TargetsInternal.Remove(__instance.EntityId);
+
+                    TargetsInternal.Add(__instance.EntityId, targets);
+                }
             }
 
             __result = true;
+            return true;
+        }
+
+        public static void ActivateAfter(MyShipGrinder __instance, HashSet<MySlimBlock> targets, bool __result)
+        {
+            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.ShipToolsEnabled || __instance == null)
+                return;
+
+            if (DePatchPlugin.Instance.Config.NoStockPileSpawnFromGrinders)
+            {
+                if (TargetsInternal.ContainsKey(__instance.EntityId))
+                    TargetsInternal.Remove(__instance.EntityId);
+            }
+        }
+
+        public static bool SpawnConstructionStockpile(MySlimBlock __instance)
+        {
+            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.ShipToolsEnabled || __instance == null)
+                return true;
+
+            if (DePatchPlugin.Instance.Config.NoStockPileSpawnFromGrinders)
+            {
+                if (TargetsInternal.Count > 0)
+                {
+                    foreach (var target in TargetsInternal)
+                    {
+                        if (target.Value.Contains(__instance))
+                            return false;
+                    }
+                }
+            }
             return true;
         }
     }

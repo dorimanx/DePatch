@@ -452,6 +452,13 @@
 						Grid.Column="1"
 						IsEnabled="{Binding Path=ShipToolsEnabled}"
 						Click="Button_Click_1" />
+                    <CheckBox
+                        Content="Dont Spawn Stockpile"
+                        HorizontalAlignment="Left"
+                        Margin="292,10,0,0"
+                        VerticalAlignment="Top"
+                        ToolTip="Prevent spawning stockpile items from grinded blocks to save SIM and prevent havok bugs"
+                        IsChecked="{Binding NoStockPileSpawnFromGrinders}" Grid.Column="1" />
                 </Grid>
             </TabItem>
             <TabItem
