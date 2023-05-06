@@ -24,6 +24,7 @@ using VRage.Game.Voxels;
 using VRage.ObjectBuilders;
 using System.Threading.Tasks;
 using DePatch.CoolDown;
+using Sandbox.ModAPI;
 
 namespace DePatch.KEEN_BUG_FIXES
 {
@@ -64,6 +65,7 @@ namespace DePatch.KEEN_BUG_FIXES
             ctx.Prefix(typeof(MyLocalCache), typeof(KEEN_SaveFix), nameof(SaveSector), new[] { "sector", "sessionPath", "sectorPosition", "sizeInBytes", "fileList" });
         }
 
+        // first function to run on save.
         public static bool MySession_Save(MySession __instance, out MySessionSnapshot snapshot, ref bool __result, string customSaveName = null)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.GameSaveFix)
@@ -71,6 +73,16 @@ namespace DePatch.KEEN_BUG_FIXES
                 snapshot = new MySessionSnapshot();
                 __result = false;
                 return true;
+            }
+
+            var TorchCurrentSession = DePatchPlugin.Instance.Torch.CurrentSession;
+
+            // No point to create one more save on restart command. 1 save is just fine.
+            if (TorchCurrentSession == null || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloading || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloaded)
+            {
+                snapshot = new MySessionSnapshot();
+                __result = false;
+                return false;
             }
 
             // Prevent cheaters to grab world with request from cheat plugin.
@@ -151,6 +163,7 @@ namespace DePatch.KEEN_BUG_FIXES
             return false;
         }
 
+        // second function to run on save
         public static bool MySessionSnapshot_Save(MySessionSnapshot __instance, Func<bool> screenshotTaken, string thumbName, ref bool __result)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.GameSaveFix)
@@ -166,6 +179,26 @@ namespace DePatch.KEEN_BUG_FIXES
                 return false;
             }
 
+            var TorchCurrentSession = DePatchPlugin.Instance.Torch.CurrentSession;
+
+            // Make sure we are still alive to create save!
+            if (TorchCurrentSession == null || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloading || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloaded)
+            {
+                __result = false;
+                return false;
+            }
+
+            var NewTask = Task.Run(async () =>
+            {
+                return await MySessionSnapshot_SaveAsync(__instance, screenshotTaken, thumbName);
+            });
+
+            __result = NewTask.Result;
+            return false;
+        }
+
+        public static Task<bool> MySessionSnapshot_SaveAsync(MySessionSnapshot __instance, Func<bool> screenshotTaken, string thumbName)
+        {
             // Prevent cheaters to grab world with request from cheat plugin.
             var steamId = MyEventContext.Current.Sender.Value;
             var requesterPlayer = Sync.Players.TryGetPlayerBySteamId(steamId);
@@ -173,9 +206,7 @@ namespace DePatch.KEEN_BUG_FIXES
             if (requesterPlayer != null && !MySession.Static.IsUserModerator(steamId))
             {
                 Log.Error($"Detected User asking to save world, possible hacker ID: {steamId} Player name: {requesterPlayer.DisplayName}");
-
-                __result = false;
-                return false;
+                return Task.FromResult(false);
             }
 
             __instance.VicinityGatherTask.WaitOrExecute(false);
@@ -185,8 +216,7 @@ namespace DePatch.KEEN_BUG_FIXES
             FastResourceLock m_savingLockInternal = (FastResourceLock)m_savingLock.GetValue(__instance);
             if (m_savingLockInternal == null)
             {
-                __result = false;
-                return false;
+                return Task.FromResult(false);
             }
 
             using (m_savingLockInternal.AcquireExclusiveUsing())
@@ -201,8 +231,7 @@ namespace DePatch.KEEN_BUG_FIXES
                     {
                         SavingSuccess.SetValue(__instance, false);
                         Log.Warn("Failed to get file access for files in target dir. Exiting!");
-                        __result = false;
-                        return false;
+                        return Task.FromResult(false);
                     }
 
                     string savingDir = __instance.SavingDir;
@@ -335,7 +364,6 @@ namespace DePatch.KEEN_BUG_FIXES
                     {
                         Log.Warn(ex2, "There was an error while saving snapshot.");
                         flag = false;
-                        __result = flag;
                     }
 
                     if (!flag)
@@ -360,8 +388,7 @@ namespace DePatch.KEEN_BUG_FIXES
 
             SavingSuccess.SetValue(__instance, flag);
 
-            __result = flag;
-            return false;
+            return Task.FromResult(flag);
         }
 
         public static bool SaveCheckpoint(MyObjectBuilder_Checkpoint checkpoint, string sessionPath, out ulong sizeInBytes, List<MyCloudFile> fileList, ref bool __result)
@@ -382,9 +409,18 @@ namespace DePatch.KEEN_BUG_FIXES
                 return false;
             }
 
+            var TorchCurrentSession = DePatchPlugin.Instance.Torch.CurrentSession;
+
+            // Make sure we are still alive to create save!
+            if (TorchCurrentSession == null || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloading || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloaded)
+            {
+                __result = false;
+                sizeInBytes = 0UL;
+                return false;
+            }
+
             string text = Path.Combine(sessionPath, "Sandbox.sbc");
-            bool SerializeXMLResult = false;
-            _ = SerializeXMLInternal(text, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, checkpoint, out sizeInBytes, ref SerializeXMLResult, null);
+            bool SerializeXMLResult = SerializeXMLInternal(text, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, checkpoint, out sizeInBytes, null);
 
             // make sure we dont have duplicate in this list!
             if (fileList != null && !fileList.Contains(new MyCloudFile(text, false)))
@@ -425,6 +461,16 @@ namespace DePatch.KEEN_BUG_FIXES
                 return false;
             }
 
+            var TorchCurrentSession = DePatchPlugin.Instance.Torch.CurrentSession;
+
+            // Make sure we are still alive to create save!
+            if (TorchCurrentSession == null || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloading || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloaded)
+            {
+                __result = false;
+                sizeInBytes = 0UL;
+                return false;
+            }
+
             string text = Path.Combine(sessionPath, "Sandbox_config.sbc");
             //MyLog.Default.WriteLineAndConsole("Saving Sandbox world configuration file " + text);
 
@@ -432,8 +478,7 @@ namespace DePatch.KEEN_BUG_FIXES
             if (fileList != null && !fileList.Contains(new MyCloudFile(text, false)))
                 fileList.Add(new MyCloudFile(text, false));
 
-            bool SerializeXMLResult = false;
-            _ = SerializeXMLInternal(text, false, configuration, out sizeInBytes, ref SerializeXMLResult, null);
+            bool SerializeXMLResult = SerializeXMLInternal(text, false, configuration, out sizeInBytes, null);
 
             __result = SerializeXMLResult;
             return false;
@@ -456,6 +501,16 @@ namespace DePatch.KEEN_BUG_FIXES
                 return false;
             }
 
+            var TorchCurrentSession = DePatchPlugin.Instance.Torch.CurrentSession;
+
+            // Make sure we are still alive to create save!
+            if (TorchCurrentSession == null || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloading || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloaded)
+            {
+                __result = false;
+                sizeInBytes = 0UL;
+                return false;
+            }
+
             try
             {
                 string sectorPath = GetSectorPath(sessionPath, sectorPosition);
@@ -475,9 +530,7 @@ namespace DePatch.KEEN_BUG_FIXES
                         goto Skip;
                     }
 
-                    // lock the path to prevent possible crash here!
-                    lock (sectorPath)
-                        _ = SerializeXMLInternal(sectorPath, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, sector, out sizeInBytes, ref SerializeXMLResult, null);
+                    SerializeXMLResult = SerializeXMLInternal(sectorPath, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, sector, out sizeInBytes, null);
 
                     // make sure we dont have duplicate in this list!
                     if (!fileList.Contains(new MyCloudFile(sectorPath, false)))
@@ -489,15 +542,12 @@ namespace DePatch.KEEN_BUG_FIXES
                 }
                 else
                 {
-                    SerializeXMLResult = true;
                     Log.Warn($"SaveSector: SANDBOX_0_00.sbs will be saved in {remainingSecondsToNexXML_Save} seconds");
                     Log.Warn($"SaveSector: Now saving SANDBOX_0_00.sbsB5 only");
                 }
 
                 string text = sectorPath + "B5";
-                // lock the path to prevent possible crash here!
-                lock (text)
-                    SerializeXMLResult = SerializePBInternal(text, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, sector, out sizeInBytes);
+                SerializeXMLResult = SerializePBInternal(text, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, sector, out sizeInBytes);
 
                 // make sure we dont have duplicate in this list!
                 if (!fileList.Contains(new MyCloudFile(text, false)))
@@ -512,25 +562,34 @@ namespace DePatch.KEEN_BUG_FIXES
                 Log.Error(ex, $"Error during SaveSector Function!, Crash Avoided");
                 sizeInBytes = 0UL;
                 __result = false;
-                return false;
             }
 
             return false;
         }
 
         // local function
-        public static bool SerializeXMLInternal(string path, bool compress, MyObjectBuilder_Base objectBuilder, out ulong sizeInBytes, ref bool __result, Type serializeAsType = null)
+        private static void GetSerializer(string path, bool compress, MyObjectBuilder_Base objectBuilder, Type serializeAsType, out ulong sizeInBytesTmp)
         {
-            if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.GameSaveFix)
+            using (Stream stream1 = MyFileSystem.OpenWrite(path, FileMode.Create))
             {
-                __result = false;
-                sizeInBytes = 0UL;
-                return true;
-            }
+                // check if stream is not null
+                if (stream1 == null)
+                    sizeInBytesTmp = 0UL;
 
+                using (Stream stream2 = compress ? stream1.WrapGZip() : stream1)
+                {
+                    long position = stream1.Position;
+                    MyXmlSerializerManager.GetSerializer(serializeAsType ?? objectBuilder.GetType()).Serialize(stream2, objectBuilder);
+                    sizeInBytesTmp = (ulong)(stream1.Position - position);
+                }
+            }
+        }
+
+        // local function
+        public static bool SerializeXMLInternal(string path, bool compress, MyObjectBuilder_Base objectBuilder, out ulong sizeInBytes, Type serializeAsType = null)
+        {
             if (path == string.Empty || objectBuilder == null)
             {
-                __result = false;
                 sizeInBytes = 0UL;
                 return false;
             }
@@ -550,42 +609,37 @@ namespace DePatch.KEEN_BUG_FIXES
 
                 var sizeInBytesTmp = 0UL;
 
-                var MyXmlSerializer = Task.Run(async () =>
-                {
-                    using (Stream stream1 = MyFileSystem.OpenWrite(path, FileMode.Create))
-                    {
-                        // check if stream is not null
-                        if (stream1 == null)
-                            return sizeInBytesTmp;
-
-                        using (Stream stream2 = compress ? stream1.WrapGZip() : stream1)
-                        {
-                            long position = stream1.Position;
-                            MyXmlSerializerManager.GetSerializer(serializeAsType ?? objectBuilder.GetType()).Serialize(stream2, objectBuilder);
-                            sizeInBytesTmp = (ulong)(stream1.Position - position);
-
-                            // add Flush here
-                            await stream2.FlushAsync();
-                        }
-                    }
-                    return sizeInBytesTmp;
-                });
-
-                Task.WaitAll(MyXmlSerializer);
+                MyAPIGateway.Parallel.StartBackground(() => GetSerializer(path, compress, objectBuilder, serializeAsType, out sizeInBytesTmp)).WaitOrExecute();
 
                 sizeInBytes = sizeInBytesTmp;
-                __result = true;
-                return false;
+                return sizeInBytes != 0;
             }
             catch (Exception ex)
             {
                 MyLog.Default.WriteLine("Error: " + path + " failed to serialize.");
                 MyLog.Default.WriteLine(ex.ToString());
 
-                __result = false;
                 sizeInBytes = 0UL;
                 return false;
             }
+        }
+
+        // local function
+        private static void SerializePB(string path, bool compress, MyObjectBuilder_Base objectBuilder, out ulong sizeInBytesTmp)
+        {
+            bool result;
+            sizeInBytesTmp = 0UL;
+
+            using (Stream stream = MyFileSystem.OpenWrite(path, FileMode.Create))
+            {
+                if (stream == null)
+                    sizeInBytesTmp = 0UL;
+
+                result = MyObjectBuilderSerializer.SerializePB(stream, compress, objectBuilder, out sizeInBytesTmp);
+            }
+
+            if (!result)
+                sizeInBytesTmp = 0UL;
         }
 
         // local function
@@ -596,23 +650,10 @@ namespace DePatch.KEEN_BUG_FIXES
 
             try
             {
-                var ObjectBuilderSerializer = Task.Run(() =>
-                {
-                    using (Stream stream = MyFileSystem.OpenWrite(path, FileMode.Create))
-                    {
-                        if (stream == null)
-                            result = false;
-
-                        result = MyObjectBuilderSerializer.SerializePB(stream, compress, objectBuilder, out sizeInBytesTmp);
-                    }
-
-                    return result;
-                });
-
-                Task.WaitAll(ObjectBuilderSerializer);
+                MyAPIGateway.Parallel.StartBackground(() => SerializePB(path, compress, objectBuilder, out sizeInBytesTmp)).WaitOrExecute();
 
                 sizeInBytes = sizeInBytesTmp;
-                return result;
+                return sizeInBytes != 0;
             }
             catch (Exception ex)
             {
@@ -621,6 +662,7 @@ namespace DePatch.KEEN_BUG_FIXES
                 sizeInBytes = 0UL;
                 result = false;
             }
+
             sizeInBytes = sizeInBytesTmp;
             return result;
         }
