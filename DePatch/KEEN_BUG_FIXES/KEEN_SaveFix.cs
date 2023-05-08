@@ -75,14 +75,17 @@ namespace DePatch.KEEN_BUG_FIXES
                 return true;
             }
 
-            var TorchCurrentSession = DePatchPlugin.Instance.Torch.CurrentSession;
-
-            // No point to create one more save on restart command. 1 save is just fine.
-            if (TorchCurrentSession == null || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloading || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloaded)
+            if (!DePatchPlugin.Instance.Config.AllowExtraGameSave)
             {
-                snapshot = new MySessionSnapshot();
-                __result = false;
-                return false;
+                var TorchCurrentSession = DePatchPlugin.Instance.Torch.CurrentSession;
+
+                // No point to create one more save on restart command. 1 save is just fine.
+                if (TorchCurrentSession == null || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloading || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloaded)
+                {
+                    snapshot = new MySessionSnapshot();
+                    __result = false;
+                    return false;
+                }
             }
 
             // Prevent cheaters to grab world with request from cheat plugin.
@@ -179,13 +182,16 @@ namespace DePatch.KEEN_BUG_FIXES
                 return false;
             }
 
-            var TorchCurrentSession = DePatchPlugin.Instance.Torch.CurrentSession;
-
-            // Make sure we are still alive to create save!
-            if (TorchCurrentSession == null || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloading || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloaded)
+            if (!DePatchPlugin.Instance.Config.AllowExtraGameSave)
             {
-                __result = false;
-                return false;
+                var TorchCurrentSession = DePatchPlugin.Instance.Torch.CurrentSession;
+
+                // Make sure we are still alive to create save!
+                if (TorchCurrentSession == null || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloading || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloaded)
+                {
+                    __result = false;
+                    return false;
+                }
             }
 
             var NewTask = Task.Run(async () =>
@@ -409,16 +415,6 @@ namespace DePatch.KEEN_BUG_FIXES
                 return false;
             }
 
-            var TorchCurrentSession = DePatchPlugin.Instance.Torch.CurrentSession;
-
-            // Make sure we are still alive to create save!
-            if (TorchCurrentSession == null || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloading || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloaded)
-            {
-                __result = false;
-                sizeInBytes = 0UL;
-                return false;
-            }
-
             string text = Path.Combine(sessionPath, "Sandbox.sbc");
             bool SerializeXMLResult = SerializeXMLInternal(text, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, checkpoint, out sizeInBytes, null);
 
@@ -461,16 +457,6 @@ namespace DePatch.KEEN_BUG_FIXES
                 return false;
             }
 
-            var TorchCurrentSession = DePatchPlugin.Instance.Torch.CurrentSession;
-
-            // Make sure we are still alive to create save!
-            if (TorchCurrentSession == null || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloading || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloaded)
-            {
-                __result = false;
-                sizeInBytes = 0UL;
-                return false;
-            }
-
             string text = Path.Combine(sessionPath, "Sandbox_config.sbc");
             //MyLog.Default.WriteLineAndConsole("Saving Sandbox world configuration file " + text);
 
@@ -498,16 +484,6 @@ namespace DePatch.KEEN_BUG_FIXES
                 sizeInBytes = 0UL;
                 Log.Warn($"SaveSector Function FAILED! Sector or fileList NULL");
                 __result = false;
-                return false;
-            }
-
-            var TorchCurrentSession = DePatchPlugin.Instance.Torch.CurrentSession;
-
-            // Make sure we are still alive to create save!
-            if (TorchCurrentSession == null || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloading || TorchCurrentSession.State == Torch.API.Session.TorchSessionState.Unloaded)
-            {
-                __result = false;
-                sizeInBytes = 0UL;
                 return false;
             }
 

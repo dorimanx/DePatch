@@ -99,6 +99,7 @@ namespace DePatch
         private bool _BlockShareResearch;
         private bool _ForbiddenBlocks;
         private bool _NoStockPileSpawnFromGrinders;
+        private bool _AllowExtraGameSave;
         private ObservableCollection<string> _ForbiddenBlocksList = new ObservableCollection<string>();
 
         public int MaxProtectedLargeGridSize
@@ -619,6 +620,12 @@ namespace DePatch
         {
             get => _NoStockPileSpawnFromGrinders;
             set => SetValue(ref _NoStockPileSpawnFromGrinders, value);
+        }
+
+        public bool AllowExtraGameSave
+        {
+            get => _AllowExtraGameSave;
+            set => SetValue(ref _AllowExtraGameSave, value);
         }
 
         [XmlArray("ForbiddenBlocksList")]

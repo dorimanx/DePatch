@@ -126,14 +126,14 @@
                         ToolTip="This will enable ShareInertiaTensor on each piston block in game to reduce SIM load."
                         IsChecked="{Binding PistonInertiaTensor}" />
                     <CheckBox
-                        Content="Block shooting on server boot for X sec" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,352,0,0"
+                        Content="Block shooting on server boot for X sec" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,377,0,0"
                         ToolTip="This will disable shooting globaly after server boot for X seconds. need at lease 1 assembler in world"
                         IsChecked="{Binding DelayShootingOnBoot}" />
                     <TextBox
                         x:Name="DelayShootingOnBootTime"
                         HorizontalAlignment="Left"
                         Height="23"
-                        Margin="253,344,0,0"
+                        Margin="243,377,0,0"
                         TextWrapping="Wrap"
                         VerticalAlignment="Top"
                         Width="44"
@@ -167,23 +167,28 @@
                         ToolTip="This will tap to KEEN function for UpdateComponents and check for Null bugs and prevent server crash."
                         IsChecked="{Binding UpdateComponentsFix}" Width="209" Grid.ColumnSpan="3" />
                     <CheckBox
-                        Content="Fix possible silent crash on Game Save" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,329,0,0"
+                        Content="Speedup Save Game Code + Bugs Fix" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,334,0,0"
                         ToolTip="This will tap to many KEEN functions for game save and prevent server silent crash.&#xA;if other plugins using SAVE code for patching, it's will not allow them too. only as Suffix, needs restart&#xA;Also this will reduce save size by not saving the large XML every 5min, only once in 25min&#xA;game can load with sbcB5 only!"
                         IsChecked="{Binding GameSaveFix}" Width="226" />
                     <Label
                         Content="Experimental Feature! See description!"
                         HorizontalAlignment="Left"
-                        Margin="10,306,0,0"
+                        Margin="5,311,0,0"
                         VerticalAlignment="Top"
                         RenderTransformOrigin="0.576,0.348" Width="212" Height="23" />
                     <CheckBox
-                        Content="Forbid using Detach Head in Timers" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,372,0,0"
+                        Content="Forbid using Detach Head in Timers" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,291,0,0"
                         ToolTip="Forbid adding Detach Head Action (rotors/pistons/hinges) to Timer Block, to prevent creating Clang Machine and kill your server."
-                        IsChecked="{Binding FixTimerDetachExploits}" />
+                        IsChecked="{Binding FixTimerDetachExploits}" RenderTransformOrigin="0.512,1.533" />
                     <CheckBox
-                        Content="Block Sharing Research" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,392,0,0"
+                        Content="Block Sharing Research" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,397,0,0"
                         ToolTip="Forbid player to share research with faction members."
                         IsChecked="{Binding BlockShareResearch}" />
+                    <CheckBox
+                        Content="Allow Game Save before closing/unload Torch" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="29,349,0,0"
+                        ToolTip="Each time server restart! its will save 2 saves, we can deny second save by disabling this checkbox.&#xA;Also no save when closing Torch with X"
+                        IsEnabled="{Binding GameSaveFix}"
+                        IsChecked="{Binding AllowExtraGameSave}" RenderTransformOrigin="0.512,1.533" />
                 </Grid>
             </TabItem>
             <TabItem
