@@ -38,6 +38,7 @@ namespace DePatch.KEEN_BUG_FIXES
 
         private static PropertyInfo SavingSuccess;
         private static FieldInfo m_savingLock;
+        private static FieldInfo lastSaveName;
         private static PropertyInfo TooLongPath;
         private static PropertyInfo SavedSizeInBytes;
         private static PropertyInfo CloudResultSet;
@@ -51,14 +52,15 @@ namespace DePatch.KEEN_BUG_FIXES
             OnServerSaving = typeof(MySession).EasyMethod("OnServerSaving");
 
             m_savingLock = typeof(MySessionSnapshot).EasyField("m_savingLock");
+            lastSaveName = typeof(MySession).EasyField("lastSaveName");
             SavingSuccess = typeof(MySessionSnapshot).EasyProp("SavingSuccess");
             TooLongPath = typeof(MySessionSnapshot).EasyProp("TooLongPath");
             SavedSizeInBytes = typeof(MySessionSnapshot).EasyProp("SavedSizeInBytes");
             CloudResultSet = typeof(MySessionSnapshot).EasyProp("CloudResult");
 
-            ctx.Prefix(typeof(MySession), "Save", typeof(KEEN_SaveFix), nameof(MySession_Save), new[] { "snapshot", "customSaveName" });
+            ctx.Prefix(typeof(MySession), "Save", typeof(KEEN_SaveFix), nameof(MySession_Save), new[] { "snapshot", "customSaveName", "progress" });
 
-            ctx.Prefix(typeof(MySessionSnapshot), "Save", typeof(KEEN_SaveFix), nameof(MySessionSnapshot_Save), new[] { "screenshotTaken", "thumbName" });
+            ctx.Prefix(typeof(MySessionSnapshot), "Save", typeof(KEEN_SaveFix), nameof(MySessionSnapshot_Save), new[] { "screenshotTaken", "thumbName", "progress" });
 
             ctx.Prefix(typeof(MyLocalCache), typeof(KEEN_SaveFix), nameof(SaveCheckpoint), new[] { "checkpoint", "sessionPath", "sizeInBytes", "fileList" });
             ctx.Prefix(typeof(MyLocalCache), typeof(KEEN_SaveFix), nameof(SaveWorldConfiguration), new[] { "configuration", "sessionPath", "sizeInBytes", "fileList" });
@@ -66,7 +68,7 @@ namespace DePatch.KEEN_BUG_FIXES
         }
 
         // first function to run on save.
-        public static bool MySession_Save(MySession __instance, out MySessionSnapshot snapshot, ref bool __result, string customSaveName = null)
+        public static bool MySession_Save(MySession __instance, out MySessionSnapshot snapshot, ref bool __result, string customSaveName = null, Action<SaveProgress> progress = null)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.GameSaveFix)
             {
@@ -103,71 +105,105 @@ namespace DePatch.KEEN_BUG_FIXES
 
             m_isSaveInProgress.SetValue(__instance, true);
 
-            // use torch user notify system with try/catch
-            SaveStartEnd(true);
+            if (Sync.IsServer)
+            {
+                // use torch user notify system with try/catch
+                SaveStartEnd(true);
+            }
 
             snapshot = new MySessionSnapshot();
-            Log.Warn("Saving snapshot - START");
+            Log.Warn("Saving World - START");
 
             using (MySandboxGame.Log.IndentUsing(LoggingOptions.NONE))
             {
+                string saveName = customSaveName ?? __instance.Name;
+                if (customSaveName != null)
+                {
+                    if (!Path.IsPathRooted(customSaveName))
+                    {
+                        string text = __instance.CurrentPath;
+                        if (text[text.Length - 1] == '/')
+                            text = text.Remove(text.Length - 1);
+
+                        string directoryName = Path.GetDirectoryName(text);
+                        if (Directory.Exists(directoryName))
+                            __instance.CurrentPath = Path.Combine(directoryName, customSaveName);
+                        else
+                            __instance.CurrentPath = MyLocalCache.GetSessionSavesPath(customSaveName, false, true, false);
+                    }
+                    else
+                    {
+                        __instance.CurrentPath = customSaveName;
+                        saveName = Path.GetFileName(customSaveName);
+                    }
+                }
+
+                lastSaveName.SetValue(__instance, saveName);
+                snapshot.TargetDir = __instance.CurrentPath;
+                snapshot.SavingDir = Path.Combine(snapshot.TargetDir, ".new");
                 try
                 {
-                    string saveName = customSaveName ?? __instance.Name;
-                    if (customSaveName != null)
-                    {
-                        if (!Path.IsPathRooted(customSaveName))
-                        {
-                            string directoryName = Path.GetDirectoryName(__instance.CurrentPath);
-                            if (Directory.Exists(directoryName))
-                                __instance.CurrentPath = Path.Combine(directoryName, customSaveName);
-                            else
-                                __instance.CurrentPath = MyLocalCache.GetSessionSavesPath(customSaveName, false, true, false);
-                        }
-                        else
-                        {
-                            __instance.CurrentPath = customSaveName;
-                            saveName = Path.GetFileName(customSaveName);
-                        }
-                    }
-
-                    snapshot.TargetDir = __instance.CurrentPath;
-                    snapshot.SavingDir = Path.Combine(snapshot.TargetDir, ".new");
-
                     Log.Warn("Saving to .new directory");
 
+                    MySandboxGame.Log.WriteLine("Making world state snapshot.");
+                    LogMemoryUsage("Before snapshot.");
                     snapshot.CheckpointSnapshot = __instance.GetCheckpoint(saveName, false);
+                    if (progress != null)
+                        progress(SaveProgress.CheckPoints);
+
                     snapshot.SectorSnapshot = __instance.GetSector(true);
+                    if (progress != null)
+                        progress(SaveProgress.Sector);
+
                     snapshot.CompressedVoxelSnapshots = __instance.VoxelMaps.GetVoxelMapsData(true, true, null);
+                    if (progress != null)
+                        progress(SaveProgress.VoxelMaps);
+
                     snapshot.VicinityGatherTask = (ParallelTasks.Task)GatherVicinityInformation.Invoke(__instance, new object[] { snapshot.CheckpointSnapshot });
+                    if (progress != null)
+                        progress(SaveProgress.VicinityInformation);
+
                     Dictionary<string, IMyStorage> voxelStorageNameCache = new Dictionary<string, IMyStorage>();
                     snapshot.VoxelSnapshots = __instance.VoxelMaps.GetVoxelMapsData(true, false, voxelStorageNameCache);
                     snapshot.VoxelStorageNameCache = voxelStorageNameCache;
-
+                    LogMemoryUsage("After snapshot.");
                     __instance.SaveDataComponents();
+
+                    if (progress != null)
+                        progress(SaveProgress.Components);
 
                     // use torch user notify system with try/catch
                     SaveStartEnd(false);
                 }
                 catch (Exception ex)
                 {
+                    MySandboxGame.Log.WriteLine(ex);
                     m_isSaveInProgress.SetValue(__instance, false);
+                    Action<bool, string> onSaved = MySession.OnSaved;
+                    if (onSaved != null)
+                        onSaved(false, snapshot.TargetDir);
+
                     SaveStartEnd(false);
                     __result = false;
                     Log.Error(ex, "Error during Game Save Function! Crash Avoided");
                     return false;
                 }
             }
-            Log.Warn("Saving snapshot - END");
+            Log.Warn("Saving World - END");
+            LogMemoryUsage("Directory cleanup");
 
             m_isSaveInProgress.SetValue(__instance, false);
+
+            Action<bool, string> onSaved2 = MySession.OnSaved;
+            if (onSaved2 != null)
+                onSaved2(true, snapshot.TargetDir);
 
             __result = true;
             return false;
         }
 
         // second function to run on save
-        public static bool MySessionSnapshot_Save(MySessionSnapshot __instance, Func<bool> screenshotTaken, string thumbName, ref bool __result)
+        public static bool MySessionSnapshot_Save(MySessionSnapshot __instance, Func<bool> screenshotTaken, string thumbName, ref bool __result, Action<SaveProgress> progress = null)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.GameSaveFix)
             {
@@ -196,14 +232,17 @@ namespace DePatch.KEEN_BUG_FIXES
 
             var NewTask = Task.Run(async () =>
             {
-                return await MySessionSnapshot_SaveAsync(__instance, screenshotTaken, thumbName);
+                return await MySessionSnapshot_SaveAsync(__instance, screenshotTaken, thumbName, ref progress);
             });
+
+            if (progress != null)
+                progress(SaveProgress.SnapshotFinished);
 
             __result = NewTask.Result;
             return false;
         }
 
-        public static Task<bool> MySessionSnapshot_SaveAsync(MySessionSnapshot __instance, Func<bool> screenshotTaken, string thumbName)
+        public static Task<bool> MySessionSnapshot_SaveAsync(MySessionSnapshot __instance, Func<bool> screenshotTaken, string thumbName, ref Action<SaveProgress> progress)
         {
             // Prevent cheaters to grab world with request from cheat plugin.
             var steamId = MyEventContext.Current.Sender.Value;
@@ -221,114 +260,124 @@ namespace DePatch.KEEN_BUG_FIXES
 
             FastResourceLock m_savingLockInternal = (FastResourceLock)m_savingLock.GetValue(__instance);
             if (m_savingLockInternal == null)
-            {
                 return Task.FromResult(false);
-            }
 
             using (m_savingLockInternal.AcquireExclusiveUsing())
             {
-                Log.Warn("Session snapshot save - START");
-
-                using (MySandboxGame.Log.IndentUsing(LoggingOptions.NONE))
+                try
                 {
-                    Directory.CreateDirectory(__instance.TargetDir);
+                    Log.Warn("Session snapshot save - START");
 
-                    if (!CheckAccessToFiles(__instance))
+                    using (MySandboxGame.Log.IndentUsing(LoggingOptions.NONE))
                     {
-                        SavingSuccess.SetValue(__instance, false);
-                        Log.Warn("Failed to get file access for files in target dir. Exiting!");
-                        return Task.FromResult(false);
-                    }
-
-                    string savingDir = __instance.SavingDir;
-                    if (Directory.Exists(savingDir))
-                        Directory.Delete(savingDir, true);
-
-                    Directory.CreateDirectory(savingDir);
-                    List<MyCloudFile> list = new List<MyCloudFile>();
-                    if (thumbName != null)
-                        list.Add(new MyCloudFile(thumbName, false));
-
-                    try
-                    {
-                        ulong num3 = 0UL;
-                        bool SaveCheckpointResult = false;
-                        bool SaveSectorResult = false;
-                        TooLongPath.SetValue(__instance, false);
-
-                        _ = SaveCheckpoint(__instance.CheckpointSnapshot, __instance.SavingDir, out ulong num2, list, ref SaveCheckpointResult);
-                        _ = SaveSector(__instance.SectorSnapshot, __instance.SavingDir, Vector3I.Zero, out ulong num, list, ref SaveSectorResult);
-
-                        flag = SaveSectorResult && SaveCheckpointResult;
-
-                        if (flag)
+                        Directory.CreateDirectory(__instance.TargetDir);
+                        if (MyPlatformGameSettings.FORCE_REMOVE_READONLY)
+                            RemoveReadonly(__instance);
+                        else
                         {
-                            foreach (KeyValuePair<string, byte[]> keyValuePair in __instance.VoxelSnapshots)
+                            MySandboxGame.Log.WriteLine("Checking file access for files in target dir.");
+                            if (!CheckAccessToFiles(__instance))
                             {
-                                if (Path.Combine(__instance.SavingDir, keyValuePair.Key).Length > 260)
-                                {
-                                    Log.Warn("VoxelSnapshots TooLongPath detected BREAK!");
-                                    TooLongPath.SetValue(__instance, true);
-                                    flag = false;
-                                    break;
-                                }
-
-                                ulong num4 = 0UL;
-                                flag = flag && SaveVoxelSnapshot(__instance, keyValuePair.Key, keyValuePair.Value, true, out num4, list);
-                                if (flag)
-                                    num3 += num4;
-                            }
-
-                            __instance.VoxelSnapshots.Clear();
-                            __instance.VoxelStorageNameCache.Clear();
-
-                            foreach (KeyValuePair<string, byte[]> keyValuePair2 in __instance.CompressedVoxelSnapshots)
-                            {
-                                if (Path.Combine(__instance.SavingDir, keyValuePair2.Key).Length > 260)
-                                {
-                                    Log.Warn("CompressedVoxelSnapshots TooLongPath detected BREAK!");
-                                    TooLongPath.SetValue(__instance, true);
-                                    flag = false;
-                                    break;
-                                }
-
-                                ulong num5 = 0UL;
-                                flag = flag && SaveVoxelSnapshot(__instance, keyValuePair2.Key, keyValuePair2.Value, false, out num5, list);
-                                if (flag)
-                                    num3 += num5;
-                            }
-
-                            __instance.CompressedVoxelSnapshots.Clear();
-                        }
-
-                        if (flag && Sync.IsServer)
-                            flag = MyLocalCache.SaveLastSessionInfo(__instance.TargetDir, false, false, MySession.Static.Name, null, 0);
-
-                        if (flag)
-                        {
-                            SavedSizeInBytes.SetValue(__instance, num + num2 + num3);
-
-                            if (screenshotTaken != null)
-                            {
-                                while (!screenshotTaken())
-                                {
-                                    Thread.Sleep(5);
-                                }
-                            }
-
-                            if (game_SAVES_TO_CLOUD)
-                            {
-                                string containerName = MyCloudHelper.LocalToCloudWorldPath(__instance.TargetDir);
-                                CloudResultSet.SetValue(__instance, MyGameService.SaveToCloud(containerName, list));
-                                flag = (CloudResult)CloudResultSet.GetValue(__instance) == CloudResult.Ok;
+                                SavingSuccess.SetValue(__instance, false);
+                                Log.Warn("Failed to get file access for files in target dir. Exiting!");
+                                return Task.FromResult(false);
                             }
                         }
 
-                        if (flag)
+                        string savingDir = __instance.SavingDir;
+                        if (Directory.Exists(savingDir))
+                            Directory.Delete(savingDir, true);
+
+                        Directory.CreateDirectory(savingDir);
+                        List<MyCloudFile> list = new List<MyCloudFile>();
+                        if (thumbName != null)
+                            list.Add(new MyCloudFile(thumbName, false));
+
+                        try
                         {
-                            HashSet<string> hashSet = new HashSet<string>();
-                            try
+                            ulong num3 = 0UL;
+                            bool SaveCheckpointResult = false;
+                            bool SaveSectorResult = false;
+                            TooLongPath.SetValue(__instance, false);
+
+                            _ = SaveSector(__instance.SectorSnapshot, __instance.SavingDir, Vector3I.Zero, out ulong num, list, ref SaveSectorResult);
+                            _ = SaveCheckpoint(__instance.CheckpointSnapshot, __instance.SavingDir, out ulong num2, list, ref SaveCheckpointResult);
+
+                            flag = SaveSectorResult && SaveCheckpointResult;
+
+                            if (flag)
                             {
+                                foreach (KeyValuePair<string, byte[]> keyValuePair in __instance.VoxelSnapshots)
+                                {
+                                    if (Path.Combine(__instance.SavingDir, keyValuePair.Key).Length > 260)
+                                    {
+                                        Log.Warn("VoxelSnapshots TooLongPath detected BREAK!");
+                                        TooLongPath.SetValue(__instance, true);
+                                        flag = false;
+                                        break;
+                                    }
+
+                                    ulong num4 = 0UL;
+                                    flag = flag && SaveVoxelSnapshot(__instance, keyValuePair.Key, keyValuePair.Value, true, out num4, list);
+                                    if (flag)
+                                        num3 += num4;
+                                }
+
+                                __instance.VoxelSnapshots.Clear();
+                                __instance.VoxelStorageNameCache.Clear();
+
+                                foreach (KeyValuePair<string, byte[]> keyValuePair2 in __instance.CompressedVoxelSnapshots)
+                                {
+                                    if (Path.Combine(__instance.SavingDir, keyValuePair2.Key).Length > 260)
+                                    {
+                                        Log.Warn("CompressedVoxelSnapshots TooLongPath detected BREAK!");
+                                        TooLongPath.SetValue(__instance, true);
+                                        flag = false;
+                                        break;
+                                    }
+
+                                    ulong num5 = 0UL;
+                                    flag = flag && SaveVoxelSnapshot(__instance, keyValuePair2.Key, keyValuePair2.Value, false, out num5, list);
+                                    if (flag)
+                                        num3 += num5;
+                                }
+
+                                __instance.CompressedVoxelSnapshots.Clear();
+                            }
+
+                            if (progress != null)
+                                progress(SaveProgress.SnapshotVoxels);
+
+                            if (flag && Sync.IsServer)
+                                flag = MyLocalCache.SaveLastSessionInfo(__instance.TargetDir, false, false, MySession.Static.Name, null, 0);
+
+                            if (flag)
+                            {
+                                SavedSizeInBytes.SetValue(__instance, num + num2 + num3);
+
+                                if (screenshotTaken != null)
+                                {
+                                    while (!screenshotTaken())
+                                    {
+                                        Thread.Sleep(10);
+                                    }
+                                }
+
+                                if (game_SAVES_TO_CLOUD)
+                                {
+                                    string containerName = MyCloudHelper.LocalToCloudWorldPath(__instance.TargetDir);
+                                    CloudResultSet.SetValue(__instance, MyGameService.SaveToCloud(containerName, list));
+                                    flag = (CloudResult)CloudResultSet.GetValue(__instance) == CloudResult.Ok;
+                                }
+                            }
+
+                            if (progress != null)
+                                progress(SaveProgress.SnapshotScreenshot);
+
+                            if (flag)
+                            {
+                                HashSet<string> hashSet = new HashSet<string>();
+
                                 foreach (string text in Directory.GetFiles(savingDir))
                                 {
                                     string fileName = Path.GetFileName(text);
@@ -337,62 +386,69 @@ namespace DePatch.KEEN_BUG_FIXES
                                     hashSet.Add(fileName);
                                 }
                                 Log.Info("Copy Save Files is done!");
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Error(ex, "Error during Game Save in Copy Files! Function! Crash Avoided");
-                            }
 
-                            try
-                            {
-                                foreach (string path in Directory.GetFiles(__instance.TargetDir))
+                                try
                                 {
-                                    string fileName2 = Path.GetFileName(path);
-                                    if (!hashSet.Contains(fileName2) && !(fileName2 == MyTextConstants.SESSION_THUMB_NAME_AND_EXTENSION))
-                                        File.Delete(path);
+                                    foreach (string path in Directory.GetFiles(__instance.TargetDir))
+                                    {
+                                        string fileName2 = Path.GetFileName(path);
+                                        if (!hashSet.Contains(fileName2) && !(fileName2 == MyTextConstants.SESSION_THUMB_NAME_AND_EXTENSION))
+                                            File.Delete(path);
+                                    }
+
+                                    // make sure .new is exist before trying to delete it!
+                                    if (Directory.Exists(savingDir))
+                                        Directory.Delete(savingDir, true);
+                                    else
+                                        Log.Warn(".new directory was not found! strange, Crash Avoided");
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Warn(ex, "There was an error while cleaning the snapshot.");
                                 }
 
+                                Backup(__instance.TargetDir, __instance.TargetDir);
+                            }
+                        }
+                        catch (Exception ex2)
+                        {
+                            MySandboxGame.Log.WriteLine("There was an error while saving snapshot.");
+                            MySandboxGame.Log.WriteLine(ex2);
+                            flag = false;
+                        }
+
+                        if (!flag)
+                        {
+                            try
+                            {
                                 // make sure .new is exist before trying to delete it!
                                 if (Directory.Exists(savingDir))
+                                {
                                     Directory.Delete(savingDir, true);
-                                else
-                                    Log.Warn(".new directory was not found! strange, Crash Avoided");
+                                    Log.Warn("Deleted .new directory, Flag was FALSE");
+                                }
                             }
-                            catch (Exception ex)
+                            catch (Exception ex3)
                             {
-                                Log.Warn(ex, "There was an error while cleaning the snapshot.");
+                                Log.Warn(ex3, "There was an error while cleaning snapshot.");
                             }
-
-                            Backup(__instance.TargetDir, __instance.TargetDir);
-                        }
-                    }
-                    catch (Exception ex2)
-                    {
-                        Log.Warn(ex2, "There was an error while saving snapshot.");
-                        flag = false;
-                    }
-
-                    if (!flag)
-                    {
-                        try
-                        {
-                            // make sure .new is exist before trying to delete it!
-                            if (Directory.Exists(savingDir))
-                            {
-                                Directory.Delete(savingDir, true);
-                                Log.Warn("Deleted .new directory, Flag was FALSE");
-                            }
-                        }
-                        catch (Exception ex3)
-                        {
-                            Log.Warn(ex3, "There was an error while cleaning snapshot.");
                         }
                     }
                 }
-                Log.Warn("Saving world - END, All OK");
+                catch (IOException e)
+                {
+                    if (e.DiskIsFull())
+                        MyGameService.FormatTempFolder();
+
+                    throw;
+                }
             }
+            Log.Warn("Saving world - END, All OK");
 
             SavingSuccess.SetValue(__instance, flag);
+
+            if (progress != null)
+                progress(SaveProgress.SnapshotFinished);
 
             return Task.FromResult(flag);
         }
@@ -791,6 +847,23 @@ namespace DePatch.KEEN_BUG_FIXES
             }
             else if (MySession.Static.MaxBackupSaves == 0 && Directory.Exists(Path.Combine(backupDir, MyTextConstants.SESSION_SAVE_BACKUP_FOLDER)))
                 Directory.Delete(Path.Combine(backupDir, MyTextConstants.SESSION_SAVE_BACKUP_FOLDER), true);
+        }
+
+        // local function
+        private static void LogMemoryUsage(string msg) => MySandboxGame.Log.WriteMemoryUsage(msg);
+
+        // local function
+        private static void RemoveReadonly(MySessionSnapshot __instance)
+        {
+            foreach (string text in Directory.GetFiles(__instance.TargetDir, "*", SearchOption.TopDirectoryOnly))
+            {
+                if (!(text == MySession.Static.ThumbPath))
+                {
+                    FileAttributes attributes = File.GetAttributes(text);
+                    if (attributes.HasFlag(FileAttributes.ReadOnly))
+                        File.SetAttributes(text, attributes & ~FileAttributes.ReadOnly);
+                }
+            }
         }
     }
 }
