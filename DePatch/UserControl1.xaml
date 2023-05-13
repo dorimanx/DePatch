@@ -189,6 +189,10 @@
                         ToolTip="Each time server restart! its will save 2 saves, we can deny second save by disabling this checkbox.&#xA;Also no save when closing Torch with X"
                         IsEnabled="{Binding GameSaveFix}"
                         IsChecked="{Binding AllowExtraGameSave}" RenderTransformOrigin="0.512,1.533" />
+                    <CheckBox
+                        Content="Clear KEEN Emoji From Player Name" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,417,0,0"
+                        ToolTip="Removes Keen cross platform Emoji from player names, On/Off needs restart"
+                        IsChecked="{Binding ClearPlayerNameEmoji}" />
                 </Grid>
             </TabItem>
             <TabItem

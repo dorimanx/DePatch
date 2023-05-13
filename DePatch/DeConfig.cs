@@ -100,6 +100,7 @@ namespace DePatch
         private bool _ForbiddenBlocks;
         private bool _NoStockPileSpawnFromGrinders;
         private bool _AllowExtraGameSave;
+        private bool _ClearPlayerNameEmoji;
         private ObservableCollection<string> _ForbiddenBlocksList = new ObservableCollection<string>();
 
         public int MaxProtectedLargeGridSize
@@ -626,6 +627,12 @@ namespace DePatch
         {
             get => _AllowExtraGameSave;
             set => SetValue(ref _AllowExtraGameSave, value);
+        }
+
+        public bool ClearPlayerNameEmoji
+        {
+            get => _ClearPlayerNameEmoji;
+            set => SetValue(ref _ClearPlayerNameEmoji, value);
         }
 
         [XmlArray("ForbiddenBlocksList")]

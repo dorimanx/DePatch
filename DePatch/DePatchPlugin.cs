@@ -95,6 +95,9 @@ namespace DePatch
 
                 if (Config.GameSaveFix)
                     KEEN_SaveFix.Patch(context);
+
+                if (Config.ClearPlayerNameEmoji)
+                    PlayerEmojiCleanup.Patch(context);
             }
 
             if (newState != TorchGameState.Loaded)
