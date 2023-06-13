@@ -438,7 +438,7 @@ namespace DePatch.KEEN_BUG_FIXES
                 catch (IOException e)
                 {
                     if (e.DiskIsFull())
-                        MyGameService.FormatTempFolder();
+                        MyGameService.DeleteUnnecessaryFilesFromTempFolder();
 
                     throw;
                 }
@@ -769,7 +769,8 @@ namespace DePatch.KEEN_BUG_FIXES
 
                         if (__instance.VoxelStorageNameCache != null)
                         {
-                            if (__instance.VoxelStorageNameCache.TryGetValue(storageName, out IMyStorage myStorage) && !myStorage.Closed)
+                            IMyStorage myStorage = null;
+                            if (__instance.VoxelStorageNameCache.TryGetValue(storageName, out myStorage) && !myStorage.Closed)
                                 myStorage.SetDataCache(array, true);
                         }
                         goto ExitNow;
