@@ -74,7 +74,9 @@ namespace DePatch.KEEN_BUG_FIXES
                 if (ThisSessionComponentsForUpdate == null)
                     ThisSessionComponentsForUpdate = (Dictionary<int, SortedSet<MySessionComponentBase>>)m_sessionComponentsForUpdate.GetValue(__instance);
 
-                if (ThisSessionComponentsForUpdate.TryGetValue(1, out SortedSet<MySessionComponentBase> sortedSet))
+                SortedSet<MySessionComponentBase> sortedSet = null;
+
+                if (ThisSessionComponentsForUpdate.TryGetValue(1, out sortedSet))
                 {
                     if (sortedSet != null && sortedSet.Count > 0)
                     {
@@ -92,11 +94,11 @@ namespace DePatch.KEEN_BUG_FIXES
                 if (MyMultiplayer.Static != null)
                     MyMultiplayer.Static.ReplicationLayer.Simulate();
 
-                if (ThisSessionComponentsForUpdate.TryGetValue(2, out SortedSet<MySessionComponentBase> sortedSet2))
+                if (ThisSessionComponentsForUpdate.TryGetValue(2, out sortedSet))
                 {
-                    if (sortedSet2 != null && sortedSet2.Count > 0)
+                    if (sortedSet != null && sortedSet.Count > 0)
                     {
-                        foreach (MySessionComponentBase mySessionComponentBase2 in sortedSet2)
+                        foreach (MySessionComponentBase mySessionComponentBase2 in sortedSet)
                         {
                             if (mySessionComponentBase2 is null)
                                 continue;
@@ -107,11 +109,11 @@ namespace DePatch.KEEN_BUG_FIXES
                     }
                 }
 
-                if (ThisSessionComponentsForUpdate.TryGetValue(4, out SortedSet<MySessionComponentBase> sortedSet3))
+                if (ThisSessionComponentsForUpdate.TryGetValue(4, out sortedSet))
                 {
-                    if (sortedSet3 != null && sortedSet3.Count > 0)
+                    if (sortedSet != null && sortedSet.Count > 0)
                     {
-                        foreach (MySessionComponentBase mySessionComponentBase3 in sortedSet3)
+                        foreach (MySessionComponentBase mySessionComponentBase3 in sortedSet)
                         {
                             if (mySessionComponentBase3 is null)
                                 continue;

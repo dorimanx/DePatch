@@ -25,6 +25,7 @@ using VRage.ObjectBuilders;
 using System.Threading.Tasks;
 using DePatch.CoolDown;
 using Sandbox.ModAPI;
+using VRage.ObjectBuilders.Private;
 
 namespace DePatch.KEEN_BUG_FIXES
 {
@@ -478,7 +479,7 @@ namespace DePatch.KEEN_BUG_FIXES
             if (fileList != null && !fileList.Contains(new MyCloudFile(text, false)))
                 fileList.Add(new MyCloudFile(text, false));
 
-            MyObjectBuilder_WorldConfiguration myObjectBuilder_WorldConfiguration = MyObjectBuilderSerializer.CreateNewObject<MyObjectBuilder_WorldConfiguration>();
+            MyObjectBuilder_WorldConfiguration myObjectBuilder_WorldConfiguration = MyObjectBuilderSerializerKeen.CreateNewObject<MyObjectBuilder_WorldConfiguration>();
             myObjectBuilder_WorldConfiguration.Settings = checkpoint.Settings;
             myObjectBuilder_WorldConfiguration.Mods = checkpoint.Mods;
             myObjectBuilder_WorldConfiguration.SessionName = checkpoint.SessionName;
@@ -667,7 +668,7 @@ namespace DePatch.KEEN_BUG_FIXES
                 if (stream == null)
                     sizeInBytesTmp = 0UL;
 
-                result = MyObjectBuilderSerializer.SerializePB(stream, compress, objectBuilder, out sizeInBytesTmp);
+                result = MyObjectBuilderSerializerKeen.SerializePB(stream, compress, objectBuilder, out sizeInBytesTmp);
             }
 
             if (!result)
