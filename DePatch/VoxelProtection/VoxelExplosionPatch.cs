@@ -16,7 +16,9 @@ namespace DePatch.VoxelProtection
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.StopExplosion)
                 return true;
 
-            __result = (!DePatchPlugin.Instance.Config.StopExplosion && (__instance.ExplosionFlags & MyExplosionFlags.AFFECT_VOXELS) == MyExplosionFlags.AFFECT_VOXELS);
+            __result = !DePatchPlugin.Instance.Config.StopExplosion && (__instance.ExplosionFlags == MyExplosionFlags.AFFECT_VOXELS ||
+                                                                        __instance.ExplosionFlags == MyExplosionFlags.APPLY_DEFORMATION ||
+                                                                        __instance.ExplosionFlags == MyExplosionFlags.APPLY_FORCE_AND_DAMAGE);
             return false;
         }
     }
