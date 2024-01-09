@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 using Sandbox.Game;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
@@ -43,8 +42,12 @@ namespace DePatch.GamePatches
                 if (__instance.ControlledEntity is IMyTerminalBlock myTerminalBlock)
                 {
                     myTerminalBlock.CubeGrid.GetBlocks(list, null);
+
                     if (!list.Exists((IMySlimBlock x) => x.FatBlock != null && DePatchPlugin.Instance.Config.BeaconSubTypes.Contains(x.BlockDefinition.Id.SubtypeName)))
-                        text = text + "\n" + DePatchPlugin.Instance.Config.WithOutBeaconText;
+                    {
+                        if (!list.Exists((IMySlimBlock x) => x.FatBlock != null && x.BlockDefinition.Id.TypeId.ToString() == "Beacon"))
+                            text = text + "\n" + DePatchPlugin.Instance.Config.WithOutBeaconText;
+                    }
 
                     if (IsBadName(myTerminalBlock.CubeGrid.DisplayName))
                         text = text + "\n" + DePatchPlugin.Instance.Config.WithDefaultNameText;
