@@ -26,6 +26,7 @@ using System.Threading.Tasks;
 using DePatch.CoolDown;
 using Sandbox.ModAPI;
 using VRage.ObjectBuilders.Private;
+using VRage.Game.News.NewContentNotification;
 
 namespace DePatch.KEEN_BUG_FIXES
 {
@@ -106,11 +107,9 @@ namespace DePatch.KEEN_BUG_FIXES
 
             m_isSaveInProgress.SetValue(__instance, true);
 
+            // use torch user notify system
             if (Sync.IsServer)
-            {
-                // use torch user notify system with try/catch
                 SaveStartEnd(true);
-            }
 
             snapshot = new MySessionSnapshot();
             Log.Warn("Saving World - START");
@@ -173,8 +172,7 @@ namespace DePatch.KEEN_BUG_FIXES
                     if (progress != null)
                         progress(SaveProgress.Components);
 
-                    // use torch user notify system with try/catch
-                    SaveStartEnd(false);
+                    MyNewContentNotificationsBase.SaveViewedContentInfo();
                 }
                 catch (Exception ex)
                 {
@@ -184,15 +182,20 @@ namespace DePatch.KEEN_BUG_FIXES
                     if (onSaved != null)
                         onSaved(false, snapshot.TargetDir);
 
-                    SaveStartEnd(false);
                     __result = false;
                     Log.Error(ex, "Error during Game Save Function! Crash Avoided");
                     return false;
                 }
+                finally
+                {
+                    // use torch user notify system
+                    if (Sync.IsServer)
+                        SaveStartEnd(false);
+                }
+                LogMemoryUsage("Directory cleanup");
             }
-            Log.Warn("Saving World - END");
-            LogMemoryUsage("Directory cleanup");
 
+            Log.Warn("Saving World - END");
             m_isSaveInProgress.SetValue(__instance, false);
 
             Action<bool, string> onSaved2 = MySession.OnSaved;
@@ -544,58 +547,48 @@ namespace DePatch.KEEN_BUG_FIXES
                 return false;
             }
 
-            try
+            string sectorPath = GetSectorPath(sessionPath, sectorPosition);
+            _ = CooldownManager.CheckCooldown(SteamIdCooldownKey.LoopSaveXML_ID, null, out var remainingSecondsToNexXML_Save);
+
+            bool SerializeXMLResult;
+            if (remainingSecondsToNexXML_Save < 5)
             {
-                string sectorPath = GetSectorPath(sessionPath, sectorPosition);
-                bool SerializeXMLResult = false;
+                // arm new timer.
+                int LoopCooldown = 1500 * 1000;
+                CooldownManager.StartCooldown(SteamIdCooldownKey.LoopSaveXML_ID, null, LoopCooldown);
 
-                _ = CooldownManager.CheckCooldown(SteamIdCooldownKey.LoopSaveXML_ID, null, out var remainingSecondsToNexXML_Save);
-
-                if (remainingSecondsToNexXML_Save < 5)
+                if (ServerStart)
                 {
-                    // arm new timer.
-                    int LoopCooldown = 1500 * 1000;
-                    CooldownManager.StartCooldown(SteamIdCooldownKey.LoopSaveXML_ID, null, LoopCooldown);
-
-                    if (ServerStart)
-                    {
-                        ServerStart = false;
-                        goto Skip;
-                    }
-
-                    SerializeXMLResult = SerializeXMLInternal(sectorPath, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, sector, out sizeInBytes, null);
-
-                    // make sure we dont have duplicate in this list!
-                    if (!fileList.Contains(new MyCloudFile(sectorPath, false)))
-                        fileList.Add(new MyCloudFile(sectorPath, false));
-
-                    Log.Warn($"SaveSector: SANDBOX_0_00.sbs Save DONE! result is {SerializeXMLResult}");
-
-                Skip:;
-                }
-                else
-                {
-                    Log.Warn($"SaveSector: SANDBOX_0_00.sbs will be saved in {remainingSecondsToNexXML_Save} seconds");
-                    Log.Warn($"SaveSector: Now saving SANDBOX_0_00.sbsB5 only");
+                    ServerStart = false;
+                    goto Skip;
                 }
 
-                string text = sectorPath + "B5";
-                SerializeXMLResult = SerializePBInternal(text, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, sector, out sizeInBytes);
+                SerializeXMLResult = SerializeXMLInternal(sectorPath, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, sector, out sizeInBytes, null);
 
                 // make sure we dont have duplicate in this list!
-                if (!fileList.Contains(new MyCloudFile(text, false)))
-                    fileList.Add(new MyCloudFile(text, false));
+                if (!fileList.Contains(new MyCloudFile(sectorPath, false)))
+                    fileList.Add(new MyCloudFile(sectorPath, false));
 
-                Log.Warn($"SaveSector: SANDBOX_0_00.sbsB5 Save DONE! result is {SerializeXMLResult}");
+                Log.Warn($"SaveSector: SANDBOX_0_00.sbs Save DONE! result is {SerializeXMLResult}");
 
-                __result = SerializeXMLResult;
+            Skip:;
             }
-            catch (Exception ex)
+            else
             {
-                Log.Error(ex, $"Error during SaveSector Function!, Crash Avoided");
-                sizeInBytes = 0UL;
-                __result = false;
+                Log.Warn($"SaveSector: SANDBOX_0_00.sbs will be saved in {remainingSecondsToNexXML_Save} seconds");
+                Log.Warn($"SaveSector: Now saving SANDBOX_0_00.sbsB5 only");
             }
+
+            string text = sectorPath + "B5";
+            SerializeXMLResult = SerializePBInternal(text, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, sector, out sizeInBytes);
+
+            // make sure we dont have duplicate in this list!
+            if (!fileList.Contains(new MyCloudFile(text, false)))
+                fileList.Add(new MyCloudFile(text, false));
+
+            Log.Warn($"SaveSector: SANDBOX_0_00.sbsB5 Save DONE! result is {SerializeXMLResult}");
+
+            __result = SerializeXMLResult;
 
             return false;
         }
@@ -633,16 +626,23 @@ namespace DePatch.KEEN_BUG_FIXES
 
             try
             {
-                if (path.Contains("Sandbox.sbc"))
-                    Log.Warn($"Now Saving Sandbox.sbc");
-                else if (path.Contains("Sandbox_config.sbc"))
-                    Log.Warn($"Now Saving Sandbox_config.sbc");
-                else if (path.Contains("SANDBOX_0_0_0_.sbs"))
-                    Log.Warn($"Now Saving SANDBOX_0_0_0_.sbs");
-
                 var sizeInBytesTmp = 0UL;
 
-                MyAPIGateway.Parallel.StartBackground(() => GetSerializer(path, compress, objectBuilder, serializeAsType, out sizeInBytesTmp)).WaitOrExecute();
+                if (path.Contains("Sandbox.sbc"))
+                {
+                    Log.Warn($"Now Saving Sandbox.sbc");
+                    GetSerializer(path, compress, objectBuilder, serializeAsType, out sizeInBytesTmp);
+                }
+                else if (path.Contains("Sandbox_config.sbc"))
+                {
+                    Log.Warn($"Now Saving Sandbox_config.sbc");
+                    GetSerializer(path, compress, objectBuilder, serializeAsType, out sizeInBytesTmp);
+                }
+                else if (path.Contains("SANDBOX_0_0_0_.sbs"))
+                {
+                    Log.Warn($"Now Saving SANDBOX_0_0_0_.sbs");
+                    MyAPIGateway.Parallel.StartBackground(() => GetSerializer(path, compress, objectBuilder, serializeAsType, out sizeInBytesTmp)).WaitOrExecute();
+                }
 
                 sizeInBytes = sizeInBytesTmp;
                 return sizeInBytes != 0;
@@ -703,40 +703,22 @@ namespace DePatch.KEEN_BUG_FIXES
         // local function
         private static void SaveStartEnd(bool Start)
         {
-            try
-            {
-                if (Sync.IsServer)
-                {
-                    if (Start)
-                        NetworkManager.RaiseStaticEvent(OnServerSaving, true, target: default, null);
-                    else
-                        NetworkManager.RaiseStaticEvent(OnServerSaving, false, target: default, null);
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, $"Error during SaveStartEnd Function! bool was {Start}, Crash Avoided");
-            }
+            if (Start)
+                NetworkManager.RaiseStaticEvent(OnServerSaving, true, target: default, null);
+            else
+                NetworkManager.RaiseStaticEvent(OnServerSaving, false, target: default, null);
         }
 
         // local function
         private static bool CheckAccessToFiles(MySessionSnapshot __instance)
         {
-            try
+            foreach (string text in Directory.GetFiles(__instance.TargetDir, "*", SearchOption.TopDirectoryOnly))
             {
-                foreach (string text in Directory.GetFiles(__instance.TargetDir, "*", SearchOption.TopDirectoryOnly))
+                if (!(text == MySession.Static.ThumbPath) && !MyFileSystem.CheckFileWriteAccess(text))
                 {
-                    if (!(text == MySession.Static.ThumbPath) && !MyFileSystem.CheckFileWriteAccess(text))
-                    {
-                        Log.Error(string.Format("Couldn't access file '{0}'.", Path.GetFileName(text)));
-                        return false;
-                    }
+                    Log.Error(string.Format("Couldn't access file '{0}'.", Path.GetFileName(text)));
+                    return false;
                 }
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Error during Game Save in CheckAccessToFiles Function! Crash Avoided");
-                return false;
             }
 
             return true;
@@ -748,16 +730,15 @@ namespace DePatch.KEEN_BUG_FIXES
             string path = storageName + ".vx2";
             string text = Path.Combine(__instance.SavingDir, path);
 
+            // make sure we dont have duplicate in this list!
+            if (!fileList.Contains(new MyCloudFile(text, false)))
+                fileList.Add(new MyCloudFile(text, false));
+
             try
             {
-                // make sure we dont have duplicate in this list!
-                if (!fileList.Contains(new MyCloudFile(text, false)))
-                    fileList.Add(new MyCloudFile(text, false));
-
                 if (compress)
                 {
-                    // was 16384 here, boost the buffer for large servers!
-                    using (MemoryStream memoryStream = new MemoryStream(32768))
+                    using (MemoryStream memoryStream = new MemoryStream(16384))
                     {
                         using (GZipStream gzipStream = new GZipStream(memoryStream, CompressionMode.Compress))
                         {
