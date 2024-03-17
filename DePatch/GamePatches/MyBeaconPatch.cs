@@ -16,6 +16,9 @@ namespace DePatch.GamePatches
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.ReduceBeaconRadius)
                 return;
 
+            if (__instance == null || objectBuilder == null)
+                return;
+
             MyObjectBuilder_Beacon myObjectBuilder_Beacon = (MyObjectBuilder_Beacon)objectBuilder;
 
             if (myObjectBuilder_Beacon.BroadcastRadius == 20000f || myObjectBuilder_Beacon.BroadcastRadius == 5000f)
