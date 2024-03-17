@@ -96,11 +96,13 @@ namespace DePatch
         private bool _FixTimerDetachExploits = true;
         private bool _GasTanksOptimization = true;
         private bool _GameSaveFix;
+        private bool _CreateFullSave;
         private bool _BlockShareResearch;
         private bool _ForbiddenBlocks;
         private bool _NoStockPileSpawnFromGrinders;
         private bool _AllowExtraGameSave;
         private bool _ClearPlayerNameEmoji;
+        private bool _ReduceBeaconRadius;
         private ObservableCollection<string> _ForbiddenBlocksList = new ObservableCollection<string>();
 
         public int MaxProtectedLargeGridSize
@@ -605,6 +607,12 @@ namespace DePatch
             set => SetValue(ref _GameSaveFix, value);
         }
 
+        public bool CreateFullSave
+        {
+            get => _CreateFullSave;
+            set => SetValue(ref _CreateFullSave, value);
+        }
+
         public bool BlockShareResearch
         {
             get => _BlockShareResearch;
@@ -633,6 +641,12 @@ namespace DePatch
         {
             get => _ClearPlayerNameEmoji;
             set => SetValue(ref _ClearPlayerNameEmoji, value);
+        }
+
+        public bool ReduceBeaconRadius
+        {
+            get => _ReduceBeaconRadius;
+            set => SetValue(ref _ReduceBeaconRadius, value);
         }
 
         [XmlArray("ForbiddenBlocksList")]

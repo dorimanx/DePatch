@@ -551,18 +551,39 @@ namespace DePatch.KEEN_BUG_FIXES
             _ = CooldownManager.CheckCooldown(SteamIdCooldownKey.LoopSaveXML_ID, null, out var remainingSecondsToNexXML_Save);
 
             bool SerializeXMLResult;
-            if (remainingSecondsToNexXML_Save < 5)
+
+            if (!DePatchPlugin.Instance.Config.CreateFullSave)
             {
-                // arm new timer.
-                int LoopCooldown = 1500 * 1000;
-                CooldownManager.StartCooldown(SteamIdCooldownKey.LoopSaveXML_ID, null, LoopCooldown);
-
-                if (ServerStart)
+                if (remainingSecondsToNexXML_Save < 5)
                 {
-                    ServerStart = false;
-                    goto Skip;
-                }
+                    // arm new timer.
+                    int LoopCooldown = 1500 * 1000;
+                    CooldownManager.StartCooldown(SteamIdCooldownKey.LoopSaveXML_ID, null, LoopCooldown);
 
+                    if (ServerStart)
+                    {
+                        ServerStart = false;
+                        goto Skip;
+                    }
+
+                    SerializeXMLResult = SerializeXMLInternal(sectorPath, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, sector, out sizeInBytes, null);
+
+                    // make sure we dont have duplicate in this list!
+                    if (!fileList.Contains(new MyCloudFile(sectorPath, false)))
+                        fileList.Add(new MyCloudFile(sectorPath, false));
+
+                    Log.Warn($"SaveSector: SANDBOX_0_00.sbs Save DONE! result is {SerializeXMLResult}");
+
+                Skip:;
+                }
+                else
+                {
+                    Log.Warn($"SaveSector: SANDBOX_0_00.sbs will be saved in {remainingSecondsToNexXML_Save} seconds");
+                    Log.Warn($"SaveSector: Now saving SANDBOX_0_00.sbsB5 only");
+                }
+            }
+            else
+            {
                 SerializeXMLResult = SerializeXMLInternal(sectorPath, MyPlatformGameSettings.GAME_SAVES_COMPRESSED_BY_DEFAULT, sector, out sizeInBytes, null);
 
                 // make sure we dont have duplicate in this list!
@@ -570,13 +591,6 @@ namespace DePatch.KEEN_BUG_FIXES
                     fileList.Add(new MyCloudFile(sectorPath, false));
 
                 Log.Warn($"SaveSector: SANDBOX_0_00.sbs Save DONE! result is {SerializeXMLResult}");
-
-            Skip:;
-            }
-            else
-            {
-                Log.Warn($"SaveSector: SANDBOX_0_00.sbs will be saved in {remainingSecondsToNexXML_Save} seconds");
-                Log.Warn($"SaveSector: Now saving SANDBOX_0_00.sbsB5 only");
             }
 
             string text = sectorPath + "B5";
