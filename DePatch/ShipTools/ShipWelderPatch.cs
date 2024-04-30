@@ -37,14 +37,14 @@ namespace DePatch.ShipTools
             if (!DePatchPlugin.Instance.Config.Enabled || __instance == null || __instance.MarkedForClose || __instance.Closed)
                 return true;
 
+            var NanoBotsubtypeLarge = "SELtdLargeNanobotBuildAndRepairSystem";
+            var NanoBotsubtypeSmall = "SELtdSmallNanobotBuildAndRepairSystem";
+            var blockSubType = __instance.BlockDefinition.Id.SubtypeName;
+
             if (!__instance.CubeGrid.IsStatic && DePatchPlugin.Instance.Config.DisableNanoBotsOnShip)
             {
-                var subtypeLarge = "SELtdLargeNanobotBuildAndRepairSystem";
-                var subtypeSmall = "SELtdSmallNanobotBuildAndRepairSystem";
-                var blockSubType = __instance.BlockDefinition.Id.SubtypeName;
-
-                if (string.Compare(subtypeLarge, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0 ||
-                    string.Compare(subtypeSmall, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0)
+                if (string.Compare(NanoBotsubtypeLarge, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0 ||
+                    string.Compare(NanoBotsubtypeSmall, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0)
                 {
                     if (__instance.Enabled)
                         __instance.Enabled = false;
@@ -93,8 +93,9 @@ namespace DePatch.ShipTools
             if (shipTool == null)
                 return true;
 
-            var def = (MyShipWelderDefinition)__instance.BlockDefinition;
-            if (def.SensorRadius < 0.01f) //NanobotOptimiztion
+            // NanobotOptimiztion(buildandrepair default subtypes) it has its own code, keen code can be ignored.
+            if (string.Compare(NanoBotsubtypeLarge, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0 ||
+                    string.Compare(NanoBotsubtypeSmall, blockSubType, StringComparison.InvariantCultureIgnoreCase) == 0)
                 return false;
 
             // prevent self welding
