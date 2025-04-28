@@ -1,5 +1,6 @@
 ﻿using SpaceEngineers.Game.Entities.Blocks;
 using Torch.Managers.PatchManager;
+using SpaceEngineers.Game.ModAPI;
 
 namespace DePatch.GamePatches
 {
@@ -12,7 +13,7 @@ namespace DePatch.GamePatches
             ctx.Prefix(typeof(MyTimerBlock), "Trigger", typeof(MyTimerBlockPatch), nameof(TrigMethod));
         }
 
-        private static void PatchMethod(MyTimerBlock __instance)
+        private static void PatchMethod(IMyTimerBlock __instance)
         {
             if (__instance == null || !DePatchPlugin.Instance.Config.Enabled)
                 return;
@@ -21,7 +22,7 @@ namespace DePatch.GamePatches
                 __instance.TriggerDelay = DePatchPlugin.Instance.Config.TimerMinDelay;
         }
 
-        private static bool TrigMethod(MyTimerBlock __instance)
+        private static bool TrigMethod(IMyTimerBlock __instance)
         {
             if (__instance == null || !DePatchPlugin.Instance.Config.Enabled)
                 return true;
