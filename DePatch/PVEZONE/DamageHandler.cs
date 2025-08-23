@@ -40,7 +40,7 @@ namespace DePatch.PVEZONE
             if (__instance == null || !DePatchPlugin.Instance.Config.PveZoneEnabled)
                 return true;
 
-            // if no damage detected, then just mone on.
+            // if no damage detected, then just move on.
             if (damage <= 0)
                 return true;
 
@@ -233,13 +233,15 @@ namespace DePatch.PVEZONE
                 if (RammingGrid)
                 {
                     if (damage > 0.3f)
-                    {
                         damage = 0.01f;
-                        return true;
-                    }
 
                     if (mySlimBlock.CubeGrid.IsStatic)
+                    {
                         damage = 0f;
+                        return false;
+                    }
+
+                    return true;
                 }
                 else
                 {
@@ -274,16 +276,16 @@ namespace DePatch.PVEZONE
                 // grid to grid ramming on high speed, allow small amount of damage.
                 if (RammingGrid)
                 {
-                    if (damage > 0.3f && mySlimBlock.CubeGrid.IsStatic)
+                    if (damage > 0.3f)
+                        damage = 0.01f;
+
+                    if (mySlimBlock.CubeGrid.IsStatic)
                     {
                         damage = 0f;
                         return false;
                     }
-                    else
-                    {
-                        damage = 0.01f;
-                        return true;
-                    }
+
+                    return true;
                 }
             }
 
@@ -298,7 +300,7 @@ namespace DePatch.PVEZONE
             if (target == null)
                 return;
 
-            // if no damage detected, then just mone on.
+            // if no damage detected, then just move on.
             if (info.Amount == 0)
             {
                 info.IsDeformation = false;
@@ -456,13 +458,12 @@ namespace DePatch.PVEZONE
                         info.IsDeformation = false;
 
                         if (info.Amount > 0.3f)
-                        {
                             info.Amount = 0.01f;
-                            return;
-                        }
 
                         if (mySlimBlock.CubeGrid.IsStatic)
                             info.Amount = 0f;
+
+                        return;
                     }
                     else
                     {
