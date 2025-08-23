@@ -405,6 +405,12 @@
                             HorizontalAlignment="Left"
                             Margin="277,80,0,0"
                             VerticalAlignment="Top" />
+                        <CheckBox
+                            Content="Activate PVP Radar (Prometheus Server)"
+                            ToolTip="Print alert to chat when player is near PVP planet based on coordinates."
+                            HorizontalAlignment="Left" VerticalAlignment="Top" Margin="236,178,0,0"
+                            IsEnabled="{Binding PveZoneEnabled}"
+                            IsChecked="{Binding PVPRadar}" />
                     </Grid>
                 </Grid>
             </TabItem>

@@ -130,6 +130,7 @@ namespace DePatch
 
             ServerAliveLog.UpdateLOG();
             MyPVESafeZoneAction.UpdateBoot();
+            PVE.AlertInPVPZone();
         }
 
         public void LoadConfig()
