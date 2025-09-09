@@ -1,7 +1,5 @@
 ﻿using System.Linq;
 using System.Reflection;
-using Sandbox.Game.Entities;
-using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.Weapons;
 using Torch.Managers.PatchManager;
 using VRage.Game.ModAPI;
@@ -17,7 +15,7 @@ namespace DePatch.ShipTools
         private static FieldInfo m_drillFrameCountdown;
         private static FieldInfo m_drillBase;
         public static FieldInfo m_wantsToCollect;
-        private static MethodInfo InitSubBlocks;
+        public static FieldInfo m_isManuallyActivated;
 
         public static void Patch(PatchContext ctx)
         {
@@ -25,7 +23,7 @@ namespace DePatch.ShipTools
             m_drillFrameCountdown = typeof(MyShipDrill).EasyField("m_drillFrameCountdown");
             m_drillBase = typeof(MyShipDrill).EasyField("m_drillBase");
             m_wantsToCollect = typeof(MyShipDrill).EasyField("m_wantsToCollect");
-            InitSubBlocks = typeof(MyCubeBlock).EasyMethod("InitSubBlocks");
+            m_isManuallyActivated = typeof(MyShipDrill).EasyField("m_isManuallyActivated");
 
             ctx.Prefix(typeof(MyShipDrill), typeof(MyShipDrillPatch), nameof(UpdateBeforeSimulation10));
         }
@@ -42,7 +40,6 @@ namespace DePatch.ShipTools
                 return true;
 
             Receiver_IsPoweredChanged.Invoke(__instance, new object[0]);
-            InitSubBlocks.Invoke(__instance, new object[0]);
 
             if (__instance.Parent?.Physics == null)
                 return false;
@@ -61,6 +58,8 @@ namespace DePatch.ShipTools
             if (__instance.CanShoot(MyShootActionEnum.PrimaryAction, __instance.OwnerId, out MyGunStatusEnum _))
             {
                 var wantsToCollect = (bool)m_wantsToCollect.GetValue(__instance);
+                var myDrillBase = (MyDrillBase)m_drillBase.GetValue(__instance);
+                var isManuallyActivated = (bool)m_isManuallyActivated.GetValue(__instance);
 
                 if (DePatchPlugin.Instance.Config.DrillIgnoreSubtypes)
                     wantsToCollect = (bool)m_wantsToCollect.GetValue(__instance) || DePatchPlugin.Instance.Config.DrillDisableRightClick;
@@ -69,9 +68,7 @@ namespace DePatch.ShipTools
                 else
                     wantsToCollect = (bool)m_wantsToCollect.GetValue(__instance);
 
-                var myDrillBase = (MyDrillBase)m_drillBase.GetValue(__instance);
-
-                if (myDrillBase.Drill(__instance.Enabled || wantsToCollect, speedMultiplier: 0.1f))
+                if (myDrillBase.Drill((__instance.Enabled && !__instance.TerrainClearingMode) || (isManuallyActivated && wantsToCollect), speedMultiplier: 0.1f))
                     ShakeAmount.SetValue(__instance, 1f);
                 else
                     ShakeAmount.SetValue(__instance, 0.5f);

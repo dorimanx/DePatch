@@ -242,7 +242,6 @@ namespace DePatch.VoxelProtection
                 if (grids[i].PositionAndOrientation != null)
                 {
                     grids[i].CreatePhysics = true;
-                    grids[i].EnableSmallToLargeConnections = true;
                     i++;
                 }
             }
