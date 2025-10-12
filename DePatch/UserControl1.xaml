@@ -201,6 +201,10 @@
                         Content="Reduce default Beacon Radius to 200m" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,450,0,0"
                         ToolTip="When new beacon is placed default radius is 20KM, reduce it to 200m,&#xA;if you have changed max radius from 200km or 50km to something else, this will not work"
                         IsChecked="{Binding ReduceBeaconRadius}" />
+                    <CheckBox
+                        Content="Fix Turret Targeting System" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,279,0,0"
+                        ToolTip="This will force turrets to update thier position and shoot when we need them to shoot! and not sleep"
+                        IsChecked="{Binding IsTargetSystemPatchEnabled}" Width="209" Grid.ColumnSpan="3" />
                 </Grid>
             </TabItem>
             <TabItem

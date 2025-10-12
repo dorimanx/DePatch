@@ -104,6 +104,7 @@ namespace DePatch
         private bool _ClearPlayerNameEmoji;
         private bool _ReduceBeaconRadius;
         private bool _PVP_Radar;
+        private bool _IsTargetSystemPatchEnabled = true;
         private ObservableCollection<string> _ForbiddenBlocksList = new ObservableCollection<string>();
 
         public int MaxProtectedLargeGridSize
@@ -654,6 +655,12 @@ namespace DePatch
         {
             get => _PVP_Radar;
             set => SetValue(ref _PVP_Radar, value);
+        }
+
+        public bool IsTargetSystemPatchEnabled
+        {
+            get => _IsTargetSystemPatchEnabled;
+            set => SetValue(ref _IsTargetSystemPatchEnabled, value);
         }
 
         [XmlArray("ForbiddenBlocksList")]

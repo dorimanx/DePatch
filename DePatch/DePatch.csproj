@@ -59,6 +59,9 @@
     <Compile Include="BlocksDisable\GridSpeedPatch.cs" />
     <Compile Include="GamePatches\ChangeOwnerPatch.cs" />
     <Compile Include="GamePatches\CallShareResearchPatch.cs" />
+    <Compile Include="TargettingFix\TurretBaseRotateModelsPatch.cs" />
+    <Compile Include="TargettingFix\TargetSysAimedByOtherPatch.cs" />
+    <Compile Include="TargettingFix\TargetSysCheckNearTargetsPatch.cs" />
     <Compile Include="GamePatches\MyBeaconPatch.cs" />
     <Compile Include="GamePatches\PlayerEmojiCleanup.cs" />
     <Compile Include="GamePatches\MyProductionBlockPatch.cs" />
