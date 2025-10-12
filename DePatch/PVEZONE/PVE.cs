@@ -12,6 +12,10 @@ using DePatch.CoolDown;
 using Sandbox.ModAPI;
 using Sandbox.Game.Entities.Planet;
 using VRage.Game;
+using Sandbox.Engine.Multiplayer;
+using Sandbox.Game.Gui;
+using VRage.GameServices;
+using VRage.Game.ModAPI;
 
 namespace DePatch.PVEZONE
 {
@@ -26,6 +30,7 @@ namespace DePatch.PVEZONE
         public static Dictionary<string, string> PlayerPlanet = new Dictionary<string, string>();
         private static int TickRadar = 1;
         public const float EARTH_GRAVITY = 9.806652f;
+        private static int RandomTimer = 1;
 
         public static BoundingSphereD PVESphere;
         public static BoundingSphereD PVESphere2;
@@ -71,7 +76,7 @@ namespace DePatch.PVEZONE
                 {
                     PVPSaturn = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 60000);
                 }
-                else if(Planet.Name == "PVP_Terra")
+                else if (Planet.Name == "PVP_Terra")
                 {
                     PVPTerra = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
                 }
@@ -159,9 +164,18 @@ namespace DePatch.PVEZONE
 
         public static void SendMessage(string message, ulong targetSteamId = 0, Color color = default)
         {
+            ChatMessageCustomData customData = new ChatMessageCustomData
+            {
+                AuthorName = "PVP Radar",
+                SenderId = targetSteamId,
+                TextColor = new Color?(color == default ? Color.Gold : color)
+            };
+
+            MyMultiplayer.Static.SendChatMessage(message, ChatChannel.Global, 0, new ChatMessageCustomData?(customData));
+
 #pragma warning disable 618
-            TorchBase.Instance.CurrentSession.Managers.GetManager<IChatManagerServer>()
-                ?.SendMessageAsOther("PVP Radar", message, color == default ? Color.Gold : color, targetSteamId);
+            //TorchBase.Instance.CurrentSession.Managers.GetManager<IChatManagerServer>()
+            //    ?.SendMessageAsOther("PVP Radar", message, color == default ? Color.Gold : color, targetSteamId);
 #pragma warning restore 618
         }
 
@@ -180,8 +194,29 @@ namespace DePatch.PVEZONE
 
                 if (remainingSecondsToNextRadarPing < 1)
                 {
-                    // arm new timer.
                     int LoopCooldown = 120 * 1000;
+                    // arm new timer.
+                    if (RandomTimer == 1)
+                    {
+                        LoopCooldown = 120 * 1000;
+                        RandomTimer = 2;
+                    }
+                    else if (RandomTimer == 2)
+                    {
+                        LoopCooldown = 30 * 1000;
+                        RandomTimer = 3;
+                    }
+                    else if (RandomTimer == 3)
+                    {
+                        LoopCooldown = 60 * 1000;
+                        RandomTimer = 4;
+                    }
+                    else if (RandomTimer == 4)
+                    {
+                        LoopCooldown = 90 * 1000;
+                        RandomTimer = 1;
+                    }
+
                     CooldownManager.StartCooldown(SteamIdCooldownKey.LoopRadarRequestID, null, LoopCooldown);
 
                     var OnlinePlayersList = MySession.Static.Players.GetOnlinePlayers().ToList();
@@ -198,7 +233,7 @@ namespace DePatch.PVEZONE
             if (!DePatchPlugin.Instance.Config.PveZoneEnabled)
                 return;
 
-            if (myPlayer == null)
+            if (myPlayer == null || myPlayer.Character == null)
                 return;
 
             if (myPlayer != default)
@@ -206,6 +241,82 @@ namespace DePatch.PVEZONE
                 try
                 {
                     PlanetScanner.Clear();
+                    bool SmallShipPlayer = false;
+
+                    var Entity = myPlayer.Character.Parent.GetTopMostParent();
+
+                    if (Entity is MyCubeGrid PlayerShip)
+                    {
+                        List<IMyCubeGrid> attachedList = new List<IMyCubeGrid>();
+                        List<VRage.ModAPI.IMyEntity> entList = new List<VRage.ModAPI.IMyEntity>();
+                        List<VRage.ModAPI.IMyEntity> GridsEntList = new List<VRage.ModAPI.IMyEntity>();
+                        double radius = 2000;
+
+                        MyAPIGateway.GridGroups.GetGroup(PlayerShip, GridLinkTypeEnum.Physical, attachedList);
+                        BoundingSphereD sphere = new BoundingSphereD(PlayerShip.PositionComp.GetPosition(), radius);
+                        entList = MyAPIGateway.Entities.GetTopMostEntitiesInSphere(ref sphere);
+
+                        foreach (VRage.ModAPI.IMyEntity ent in entList)
+                        {
+                            if (ent is IMyCubeGrid GridInRange)
+                            {
+                                // Check if grid is projected
+                                MyCubeGrid myEnt = GridInRange as MyCubeGrid;
+                                if (myEnt.IsPreview)
+                                    continue;
+
+                                // Skip own MainGrid
+                                if (attachedList.Contains(GridInRange))
+                                    continue;
+
+                                GridsEntList.Add(GridInRange);
+                            }
+                        }
+
+                        if (attachedList.Count == 1)
+                        {
+                            if (GridsEntList.Count == 0)
+                            {
+                                if (!PlayerShip.IsPreview && PlayerShip.GridSizeEnum == MyCubeSize.Small && PlayerShip.BlocksCount <= 1000 ||
+                                    !PlayerShip.IsPreview && PlayerShip.GridSizeEnum == MyCubeSize.Large && PlayerShip.BlocksCount <= 300)
+                                    SmallShipPlayer = true;
+                            }
+                        }
+                        else
+                        {
+                            attachedList.SortNoAlloc((x, y) =>
+                            {
+                                var GridX = (MyCubeGrid)x;
+                                var GridY = (MyCubeGrid)y;
+
+                                return GridX.BlocksCount.CompareTo(GridY.BlocksCount);
+                            });
+                            attachedList.Reverse();
+                            attachedList.SortNoAlloc((x, y) => x.GridSizeEnum.CompareTo(y.GridSizeEnum));
+
+                            foreach (var Grid in attachedList)
+                            {
+                                var PlayerGrid = (MyCubeGrid)Grid;
+
+                                if (!PlayerGrid.IsPreview && PlayerGrid.GridSizeEnum == MyCubeSize.Small && PlayerGrid.BlocksCount > 1000 ||
+                                    !PlayerGrid.IsPreview && PlayerGrid.GridSizeEnum == MyCubeSize.Large && PlayerGrid.BlocksCount > 300)
+                                {
+                                    SmallShipPlayer = false;
+                                    break;
+                                }
+
+                                if (!PlayerGrid.IsPreview && PlayerGrid.GridSizeEnum == MyCubeSize.Small && PlayerGrid.BlocksCount <= 1000 ||
+                                    !PlayerGrid.IsPreview && PlayerGrid.GridSizeEnum == MyCubeSize.Large && PlayerGrid.BlocksCount <= 300)
+                                {
+                                    SmallShipPlayer = true;
+                                    continue;
+                                }
+                            }
+
+                            if (GridsEntList.Count > 0)
+                                SmallShipPlayer = false;
+                        }
+                    }
 
                     if (PVPAlien.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
                     {
@@ -297,7 +408,12 @@ namespace DePatch.PVEZONE
                         if (PlayerPlanet.ContainsKey(myPlayer.DisplayName))
                         {
                             PlayerPlanet.TryGetValue(myPlayer.DisplayName, out string Planet);
-                            SendMessage($"{myPlayer.DisplayName} left planet/покинул планету {Planet}");
+
+                            if (SmallShipPlayer)
+                                SendMessage($"Little ship left PVP planet/Маленький корабль покинул PVP планету {Planet}->");
+                            else
+                                SendMessage($"'{myPlayer.DisplayName}' in big ship left PVP planet {Planet}->\n Игрок на большом корабле покинул PVP планету {Planet}->");
+
                             PlayerPlanet.Remove(myPlayer.DisplayName);
                         }
                         return;
@@ -318,7 +434,11 @@ namespace DePatch.PVEZONE
                         {
                             if (!MySession.Static.IsUserAdmin(Player.Key.Id.SteamId))
                             {
-                                MyPlanet closestPlanet = MyPlanets.Static.GetClosestPlanet(Player.Key.Character.PositionComp.GetPosition());
+                                var PlayerChar = Player.Key.Character;
+                                MyPlanet closestPlanet = null;
+
+                                if (PlayerChar != null) 
+                                    closestPlanet = MyPlanets.Static.GetClosestPlanet(PlayerChar.PositionComp.GetPosition());
 
                                 if (closestPlanet != null)
                                 {
@@ -328,7 +448,11 @@ namespace DePatch.PVEZONE
 
                                     if (PlayerGravityCalc >= PlanetGrav || PlayerGravityCalc >= PlanetGrav - 0.15f)
                                     {
-                                        SendMessage($"{Player.Key.DisplayName} arrived to planet/прибыл на планету {Player.Value}");
+                                        if (!SmallShipPlayer)
+                                            SendMessage($"'{Player.Key.DisplayName}' in big ship arrived to PVP planet ->{Player.Value}\nИгрок на большом корабле прибыл на PVP планету ->{Player.Value}");
+                                        else
+                                            SendMessage($"Little ship arrived to PVP planet/Маленький корабль прибыл на PVP планету");
+
                                         PlayerPlanet.Add(Player.Key.DisplayName, Player.Value);
                                     }
                                 }
@@ -336,7 +460,11 @@ namespace DePatch.PVEZONE
                                 {
                                     if (PlayerGravityCalc >= PlanetGravity)
                                     {
-                                        SendMessage($"{Player.Key.DisplayName} arrived to planet/прибыл на планету {Player.Value}");
+                                        if (!SmallShipPlayer)
+                                            SendMessage($"'{Player.Key.DisplayName}' in big ship arrived to PVP planet ->{Player.Value}\nИгрок на большом корабле прибыл на PVP планету ->{Player.Value}");
+                                        else
+                                            SendMessage($"Little ship arrived to PVP planet/Маленький корабль прибыл на PVP планету");
+
                                         PlayerPlanet.Add(Player.Key.DisplayName, Player.Value);
                                     }
                                 }
@@ -351,9 +479,17 @@ namespace DePatch.PVEZONE
                                 return;
                             else
                             {
-                                SendMessage($"{Player.Key.DisplayName} left planet/покинул планету {PlayerNameOnPlanet}");
+                                if (SmallShipPlayer)
+                                    SendMessage($"Little ship left PVP planet/Маленький корабль покинул PVP планету {PlayerNameOnPlanet}->");
+                                else
+                                    SendMessage($"'{Player.Key.DisplayName}' in big ship left PVP planet {PlayerNameOnPlanet}->\nИгрок на большом корабле покинул PVP планету {PlayerNameOnPlanet}->");
                                 PlayerPlanet.Remove(Player.Key.DisplayName);
-                                SendMessage($"{Player.Key.DisplayName} arrived to planet/прибыл на планету {Player.Value}");
+
+                                if (!SmallShipPlayer)
+                                    SendMessage($"'{Player.Key.DisplayName}' in big ship arrived to PVP planet ->{Player.Value}\nИгрок на большом корабле прибыл на PVP планету ->{Player.Value}");
+                                else
+                                    SendMessage($"Little ship arrived to PVP planet/Маленький корабль прибыл на PVP планету");
+
                                 PlayerPlanet.Add(Player.Key.DisplayName, PlayerNameDetectedPlanet);
                             }
                         }
