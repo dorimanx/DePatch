@@ -27,6 +27,7 @@ namespace DePatch.PVEZONE
         public static List<long> EntitiesInZone2 = new List<long>();
         public static List<MyPlanet> ServerPlanets = new List<MyPlanet>();
         public static Dictionary<MyPlayer, string> PlanetScanner = new Dictionary<MyPlayer, string>();
+        public static Dictionary<MyPlayer, bool> PlayerShipSize = new Dictionary<MyPlayer, bool>();
         public static Dictionary<string, string> PlayerPlanet = new Dictionary<string, string>();
         private static int TickRadar = 1;
         public const float EARTH_GRAVITY = 9.806652f;
@@ -243,7 +244,7 @@ namespace DePatch.PVEZONE
                     PlanetScanner.Clear();
                     bool SmallShipPlayer = false;
 
-                    var Entity = myPlayer.Character.Parent.GetTopMostParent();
+                    var Entity = myPlayer.Character.Parent?.GetTopMostParent();
 
                     if (Entity is MyCubeGrid PlayerShip)
                     {
@@ -409,10 +410,24 @@ namespace DePatch.PVEZONE
                         {
                             PlayerPlanet.TryGetValue(myPlayer.DisplayName, out string Planet);
 
-                            if (SmallShipPlayer)
-                                SendMessage($"Little ship left PVP planet/Маленький корабль покинул PVP планету {Planet}->");
+                            if (PlayerShipSize.ContainsKey(myPlayer))
+                            {
+                                _ = PlayerShipSize.TryGetValue(myPlayer, out var ShipSizePlayer);
+
+                                if (ShipSizePlayer)
+                                    SendMessage($"Little ship left PVP planet/Маленький корабль покинул PVP планету {Planet}->");
+                                else
+                                    SendMessage($"'{myPlayer.DisplayName}' in big ship left PVP planet {Planet}->\n Игрок на большом корабле покинул PVP планету {Planet}->");
+
+                                PlayerShipSize.Remove(myPlayer);
+                            }
                             else
-                                SendMessage($"'{myPlayer.DisplayName}' in big ship left PVP planet {Planet}->\n Игрок на большом корабле покинул PVP планету {Planet}->");
+                            {
+                                if (SmallShipPlayer)
+                                    SendMessage($"Little ship left PVP planet/Маленький корабль покинул PVP планету {Planet}->");
+                                else
+                                    SendMessage($"'{myPlayer.DisplayName}' in big ship left PVP planet {Planet}->\n Игрок на большом корабле покинул PVP планету {Planet}->");
+                            }
 
                             PlayerPlanet.Remove(myPlayer.DisplayName);
                         }
@@ -453,6 +468,11 @@ namespace DePatch.PVEZONE
                                         else
                                             SendMessage($"Little ship arrived to PVP planet/Маленький корабль прибыл на PVP планету");
 
+                                        if (!PlayerShipSize.ContainsKey(Player.Key))
+                                            PlayerShipSize.Add(Player.Key, SmallShipPlayer);
+                                        else
+                                            PlayerShipSize[Player.Key] = SmallShipPlayer;
+
                                         PlayerPlanet.Add(Player.Key.DisplayName, Player.Value);
                                     }
                                 }
@@ -464,6 +484,11 @@ namespace DePatch.PVEZONE
                                             SendMessage($"'{Player.Key.DisplayName}' in big ship arrived to PVP planet ->{Player.Value}\nИгрок на большом корабле прибыл на PVP планету ->{Player.Value}");
                                         else
                                             SendMessage($"Little ship arrived to PVP planet/Маленький корабль прибыл на PVP планету");
+
+                                        if (!PlayerShipSize.ContainsKey(Player.Key))
+                                            PlayerShipSize.Add(Player.Key, SmallShipPlayer);
+                                        else
+                                            PlayerShipSize[Player.Key] = SmallShipPlayer;
 
                                         PlayerPlanet.Add(Player.Key.DisplayName, Player.Value);
                                     }
@@ -479,16 +504,34 @@ namespace DePatch.PVEZONE
                                 return;
                             else
                             {
-                                if (SmallShipPlayer)
-                                    SendMessage($"Little ship left PVP planet/Маленький корабль покинул PVP планету {PlayerNameOnPlanet}->");
+                                if (PlayerShipSize.ContainsKey(Player.Key))
+                                {
+                                    _ = PlayerShipSize.TryGetValue(Player.Key, out var ShipSizePlayer);
+
+                                    if (ShipSizePlayer)
+                                        SendMessage($"Little ship left PVP planet/Маленький корабль покинул PVP планету {PlayerNameOnPlanet}->");
+                                    else
+                                        SendMessage($"'{Player.Key.DisplayName}' in big ship left PVP planet {PlayerNameOnPlanet}->\nИгрок на большом корабле покинул PVP планету {PlayerNameOnPlanet}->");
+                                }
                                 else
-                                    SendMessage($"'{Player.Key.DisplayName}' in big ship left PVP planet {PlayerNameOnPlanet}->\nИгрок на большом корабле покинул PVP планету {PlayerNameOnPlanet}->");
+                                {
+                                    if (SmallShipPlayer)
+                                        SendMessage($"Little ship left PVP planet/Маленький корабль покинул PVP планету {PlayerNameOnPlanet}->");
+                                    else
+                                        SendMessage($"'{Player.Key.DisplayName}' in big ship left PVP planet {PlayerNameOnPlanet}->\nИгрок на большом корабле покинул PVP планету {PlayerNameOnPlanet}->");
+                                }
+
                                 PlayerPlanet.Remove(Player.Key.DisplayName);
 
                                 if (!SmallShipPlayer)
                                     SendMessage($"'{Player.Key.DisplayName}' in big ship arrived to PVP planet ->{Player.Value}\nИгрок на большом корабле прибыл на PVP планету ->{Player.Value}");
                                 else
                                     SendMessage($"Little ship arrived to PVP planet/Маленький корабль прибыл на PVP планету");
+
+                                if (!PlayerShipSize.ContainsKey(Player.Key))
+                                    PlayerShipSize.Add(Player.Key, SmallShipPlayer);
+                                else
+                                    PlayerShipSize[Player.Key] = SmallShipPlayer;
 
                                 PlayerPlanet.Add(Player.Key.DisplayName, PlayerNameDetectedPlanet);
                             }
