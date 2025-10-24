@@ -9,6 +9,7 @@ using DePatch.VoxelProtection;
 using HarmonyLib;
 using NLog;
 using Sandbox;
+using Sandbox.Game.Entities;
 using Sandbox.Game.World;
 using Torch;
 using Torch.API;
@@ -131,6 +132,8 @@ namespace DePatch
             ServerAliveLog.UpdateLOG();
             MyPVESafeZoneAction.UpdateBoot();
             PVE.AlertInPVPZone();
+
+            MyGridDeformationPatch.SetStaticOnGrid();
         }
 
         public void LoadConfig()

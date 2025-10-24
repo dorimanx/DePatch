@@ -4,6 +4,7 @@ using System.Linq;
 using Sandbox.Engine.Multiplayer;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Blocks;
+using Sandbox.Game.Entities.Character;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.GameSystems;
 using Sandbox.Game.Weapons;
@@ -18,6 +19,10 @@ namespace DePatch.VoxelProtection
     public class MyGridDeformationPatch
     {
         private static bool _init;
+
+        private static bool NeedToUpdateStatic;
+        private static int UpdateStaticTick = 0;
+        private static MyCubeGrid NeedToUpdateStaticGrid;
 
         public static void Init()
         {
@@ -46,6 +51,92 @@ namespace DePatch.VoxelProtection
 
             mySlimBlock.CubeGrid.GetBlocks(blocks, (x) => (x.FatBlock is IMyTerminalBlock) && x.FatBlock.BlockDefinition.SubtypeId.Contains("AdminGrid"));
             return blocks.Count > 0;
+        }
+
+        private static MatrixD CalculateTeleportMatrix(Vector3D Position, IMyCubeGrid grid, float radius = 0)
+        {
+            var bbox = grid.WorldAABB;
+            var gridCenter = bbox.Center;
+            var GridPos = Position;
+            var originalMatrix = grid.WorldMatrix;
+            Vector3D? freePos = Vector3D.Zero;
+
+            if (radius > 0)
+                freePos = MyAPIGateway.Entities.FindFreePlace(GridPos, radius, 20, 3, 10f);
+            else
+            {
+                // Search Strategy 1: Quick search
+                freePos = MyAPIGateway.Entities.FindFreePlace(GridPos, 50, 20, 3, 15f);
+
+                // Strategy 2: Medium range
+                if (!freePos.HasValue)
+                    freePos = MyAPIGateway.Entities.FindFreePlace(GridPos, 80, 20, 3, 15f);
+
+                // Strategy 3: Wide range
+                if (!freePos.HasValue)
+                    freePos = MyAPIGateway.Entities.FindFreePlace(GridPos, 120, 20, 3, 15f);
+            }
+
+            if (freePos.HasValue)
+            {
+                var matrix = originalMatrix;
+                matrix.Translation = freePos.Value;
+                matrix.Translation -= originalMatrix.Translation - gridCenter;
+                return matrix;
+            }
+            else
+            {
+                var fail = originalMatrix;
+                fail.Translation = Vector3D.Zero;
+                return fail;
+            }
+        }
+
+        public static void SetStaticOnGrid()
+        {
+            if (NeedToUpdateStatic)
+            {
+                if (NeedToUpdateStaticGrid != null && !NeedToUpdateStaticGrid.Closed &&
+                    !NeedToUpdateStaticGrid.MarkedForClose && UpdateStaticTick > 120)
+                {
+                    /*
+                    foreach (var Cockpit in NeedToUpdateStaticGrid.GetFatBlocks<MyCockpit>())
+                    {
+                        if (Cockpit == null || !Cockpit.IsFunctional)
+                            continue;
+
+                        if (Cockpit.Pilot != null)
+                            Cockpit.RemovePilot();
+                    }
+
+                    foreach (var Cryo in NeedToUpdateStaticGrid.GetFatBlocks<MyCryoChamber>())
+                    {
+                        if (Cryo != null && Cryo.Pilot != null)
+                            Cryo.RemovePilot();
+                    }
+                    */
+
+                    NeedToUpdateStaticGrid.Physics?.Clear();
+                    NeedToUpdateStaticGrid.Physics?.ClearSpeed();
+                    MyMultiplayer.RaiseEvent(NeedToUpdateStaticGrid, (MyCubeGrid x) => new Action(x.ConvertToStatic), default);
+                    NeedToUpdateStaticGrid.ConvertToStatic();
+                    NeedToUpdateStaticGrid.Physics?.Clear();
+                    NeedToUpdateStaticGrid.Physics?.ClearSpeed();
+                    //ReloadShip.FixShip(NeedToUpdateStaticGrid);
+                    NeedToUpdateStaticGrid = null;
+                    NeedToUpdateStatic = false;
+                    UpdateStaticTick = 0;
+                }
+                else
+                {
+                    UpdateStaticTick++;
+                    if (UpdateStaticTick > 180)
+                    {
+                        UpdateStaticTick = 0;
+                        NeedToUpdateStatic = false;
+                    }
+                }
+            }
         }
 
         private static void HandleGridDamage(object target, ref MyDamageInformation damage)
@@ -142,7 +233,7 @@ namespace DePatch.VoxelProtection
 
                     _ = MyGravityProviderSystem.CalculateNaturalGravityInPoint(GridCube.PositionComp.GetPosition(), out var ingravitynow);
 
-                    if (ingravitynow <= 20f && ingravitynow >= 0.2f)
+                    if (ingravitynow <= 20f && ingravitynow >= 0.1f)
                     {
                         if (DePatchPlugin.Instance.Config.ConvertToStatic &&
                              GridCube.BlocksCount > DePatchPlugin.Instance.Config.MaxGridSizeToConvert &&
@@ -168,18 +259,6 @@ namespace DePatch.VoxelProtection
 
                                 GridPhysics?.ClearSpeed();
 
-                                foreach (var Cockpit in GridCube.GetFatBlocks<MyCockpit>())
-                                {
-                                    if (Cockpit != null && Cockpit.Pilot != null)
-                                        Cockpit.RemovePilot();
-                                }
-
-                                foreach (var Cryo in GridCube.GetFatBlocks<MyCryoChamber>())
-                                {
-                                    if (Cryo != null && Cryo.Pilot != null)
-                                        Cryo.RemovePilot();
-                                }
-
                                 foreach (var projector in GridCube.GetFatBlocks<MyProjectorBase>())
                                 {
                                     if (projector != null && projector.ProjectedGrid != null)
@@ -198,9 +277,38 @@ namespace DePatch.VoxelProtection
                                 grids.Reverse();
                                 grids.SortNoAlloc((x, y) => x.GridSizeEnum.CompareTo(y.GridSizeEnum));
 
-                                MyMultiplayer.RaiseEvent(grids.FirstOrDefault(), (MyCubeGrid x) => new Action(x.ConvertToStatic), MyEventContext.Current.Sender);
+                                grids[0].Physics?.Clear();
+                                grids[0].Physics?.ClearSpeed();
 
-                                ReloadShip.FixShip(GridCube);
+                                var Grid = grids[0] as IMyCubeGrid;
+                                MatrixD TeleportMatrix = MatrixD.Zero;
+
+                                TeleportMatrix = CalculateTeleportMatrix(grids[0].PositionComp.GetPosition(), Grid);
+
+                                if (TeleportMatrix.Translation != Vector3D.Zero)
+                                {
+                                    Grid.Teleport(TeleportMatrix, null, false);
+                                    Grid.UpdateGamePruningStructure();
+                                }
+
+                                grids[0].Physics?.ClearSpeed();
+
+                                //Second pass to prevent spawn in voxel
+                                var radius = 10f;
+
+                                TeleportMatrix = CalculateTeleportMatrix(grids[0].PositionComp.GetPosition(), Grid, radius);
+
+                                if (TeleportMatrix.Translation != Vector3D.Zero)
+                                {
+                                    Grid.Teleport(TeleportMatrix, null, false);
+                                    Grid.UpdateGamePruningStructure();
+                                }
+
+                                if (grids[0].GridSizeEnum == MyCubeSize.Large)
+                                {
+                                    NeedToUpdateStatic = true;
+                                    NeedToUpdateStaticGrid = grids[0];
+                                }
 
                                 return;
                             }
