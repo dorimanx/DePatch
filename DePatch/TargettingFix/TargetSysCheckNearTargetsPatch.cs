@@ -1,4 +1,5 @@
-﻿using Sandbox.Game.Weapons;
+﻿using ParallelTasks;
+using Sandbox.Game.Weapons;
 using Torch.Managers.PatchManager;
 using VRage.Game.Entity;
 
@@ -14,7 +15,7 @@ namespace DePatch.TargettingFix
                                                         typeof(TargetSysCheckNearTargetsPatch),
                                                         nameof(CheckNearTargets));
 
-        static void CheckNearTargets(MyLargeTurretTargetingSystem __instance, ref MyEntity suggestedTarget, ref bool suggestedTargetIsOnlyPotential)
+        static void CheckNearTargets(MyLargeTurretTargetingSystem __instance, WorkData workData)
         {
             if (!DePatchPlugin.Instance.Config.Enabled || !DePatchPlugin.Instance.Config.IsTargetSystemPatchEnabled)
                 return;
