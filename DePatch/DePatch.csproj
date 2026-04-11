@@ -59,6 +59,8 @@
     <Compile Include="BlocksDisable\GridSpeedPatch.cs" />
     <Compile Include="GamePatches\ChangeOwnerPatch.cs" />
     <Compile Include="GamePatches\CallShareResearchPatch.cs" />
+    <Compile Include="KEEN_BUG_FIXES\KEEN_AssemblerStateFix.cs" />
+    <Compile Include="KEEN_BUG_FIXES\KEEN_ResourceSinkFix.cs" />
     <Compile Include="TargettingFix\TurretBaseRotateModelsPatch.cs" />
     <Compile Include="TargettingFix\TargetSysAimedByOtherPatch.cs" />
     <Compile Include="TargettingFix\TargetSysCheckNearTargetsPatch.cs" />
