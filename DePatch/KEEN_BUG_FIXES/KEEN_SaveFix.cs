@@ -116,6 +116,7 @@ namespace DePatch.KEEN_BUG_FIXES
 
             using (MySandboxGame.Log.IndentUsing(LoggingOptions.NONE))
             {
+                MyGridStorageHelper.Instance.OnSessionSaveStart();
                 string saveName = customSaveName ?? __instance.Name;
                 if (customSaveName != null)
                 {
@@ -188,7 +189,7 @@ namespace DePatch.KEEN_BUG_FIXES
                 }
                 finally
                 {
-                    // use torch user notify system
+                    // use torch user notify system (there is check for if (Sync.IsServer) for false in org code)
                     if (Sync.IsServer)
                         SaveStartEnd(false);
                 }
@@ -259,7 +260,7 @@ namespace DePatch.KEEN_BUG_FIXES
             }
 
             __instance.VicinityGatherTask.WaitOrExecute(false);
-            bool game_SAVES_TO_CLOUD = MyPlatformGameSettings.GAME_SAVES_TO_CLOUD;
+            bool useCloudToSaveGame = MySandboxGame.Config.UseCloudToSaveGame;
             bool flag = true;
 
             FastResourceLock m_savingLockInternal = (FastResourceLock)m_savingLock.GetValue(__instance);
@@ -367,7 +368,7 @@ namespace DePatch.KEEN_BUG_FIXES
                                     }
                                 }
 
-                                if (game_SAVES_TO_CLOUD)
+                                if (useCloudToSaveGame)
                                 {
                                     string containerName = MyCloudHelper.LocalToCloudWorldPath(__instance.TargetDir);
                                     CloudResultSet.SetValue(__instance, MyGameService.SaveToCloud(containerName, list));
@@ -377,6 +378,8 @@ namespace DePatch.KEEN_BUG_FIXES
 
                             if (progress != null)
                                 progress(SaveProgress.SnapshotScreenshot);
+
+                            MyGridStorageHelper.Instance.CopyGridFilesTo(savingDir);
 
                             if (flag)
                             {
