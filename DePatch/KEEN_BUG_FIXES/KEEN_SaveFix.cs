@@ -356,6 +356,8 @@ namespace DePatch.KEEN_BUG_FIXES
                             if (flag && Sync.IsServer)
                                 flag = MyLocalCache.SaveLastSessionInfo(__instance.TargetDir, false, false, MySession.Static.Name, null, 0);
 
+                            MyGridStorageHelper.Instance.CopyGridFilesTo(savingDir, list);
+
                             if (flag)
                             {
                                 SavedSizeInBytes.SetValue(__instance, num + num2 + num3);
@@ -379,8 +381,6 @@ namespace DePatch.KEEN_BUG_FIXES
                             if (progress != null)
                                 progress(SaveProgress.SnapshotScreenshot);
 
-                            MyGridStorageHelper.Instance.CopyGridFilesTo(savingDir);
-
                             if (flag)
                             {
                                 HashSet<string> hashSet = new HashSet<string>();
@@ -400,7 +400,20 @@ namespace DePatch.KEEN_BUG_FIXES
                                     {
                                         string fileName2 = Path.GetFileName(path);
                                         if (!hashSet.Contains(fileName2) && !(fileName2 == MyTextConstants.SESSION_THUMB_NAME_AND_EXTENSION))
-                                            File.Delete(path);
+                                        {
+                                            if (fileName2.StartsWith("gs-"))
+                                            {
+                                                MySandboxGame.Log.Log(MyLogSeverity.Warning, string.Concat(new string[]
+                                                {
+                                                    "Session save cleanup removing grid storage file '",
+                                                    fileName2,
+                                                    "' not present in staging folder (source: '",
+                                                    __instance.SavingDir,
+                                                    "')"
+                                                }), Array.Empty<object>());
+                                            }
+                                        }
+                                        File.Delete(path);
                                     }
 
                                     // make sure .new is exist before trying to delete it!
