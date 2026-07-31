@@ -412,15 +412,15 @@ namespace DePatch.KEEN_BUG_FIXES
                                                     "')"
                                                 }), Array.Empty<object>());
                                             }
+                                            File.Delete(path);
                                         }
-                                        File.Delete(path);
                                     }
-
                                     // make sure .new is exist before trying to delete it!
                                     if (Directory.Exists(savingDir))
                                         Directory.Delete(savingDir, true);
                                     else
                                         Log.Warn(".new directory was not found! strange, Crash Avoided");
+
                                 }
                                 catch (Exception ex)
                                 {
