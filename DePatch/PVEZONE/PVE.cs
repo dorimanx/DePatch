@@ -3,11 +3,9 @@ using System.Linq;
 using NLog;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
-using Torch;
 using Torch.Managers.PatchManager;
 using VRage.Game.Entity;
 using VRageMath;
-using Torch.API.Managers;
 using DePatch.CoolDown;
 using Sandbox.ModAPI;
 using Sandbox.Game.Entities.Planet;
@@ -68,94 +66,97 @@ namespace DePatch.PVEZONE
 
             ServerPlanets = MyPlanets.GetPlanets();
 
-            foreach (var Planet in ServerPlanets)
+            if (ServerPlanets != null)
             {
-                if (Planet == null)
-                    continue;
+                foreach (var Planet in ServerPlanets)
+                {
+                    if (Planet == null)
+                        continue;
 
-                if (Planet.Name == "Saturn")
-                {
-                    PVPSaturn = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 60000);
-                }
-                else if (Planet.Name == "PVP_Terra")
-                {
-                    PVPTerra = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_Enigma_FreeLancers")
-                {
-                    PVPEnigma = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_Pirates_Home")
-                {
-                    PVPKaelnium = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_Siberia_FreeLancers")
-                {
-                    PVPSiberia = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_Styx")
-                {
-                    PVPStyx = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_Triton_Traders")
-                {
-                    PVPTriton = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_Faradium_Planet")
-                {
-                    PVPFaraday = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_Octave")
-                {
-                    PVPOctave = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_Dune")
-                {
-                    PVPDune = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_Titan_Pirates")
-                {
-                    PVPTitan = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_GalateaMoon")
-                {
-                    PVPGalatea = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_IcePlanet")
-                {
-                    PVICE_Planet = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_Valhalla")
-                {
-                    PVPValhalla = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_Barsoom")
-                {
-                    PVPBarsoom = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_Gea_Desert_Traders")
-                {
-                    PVPGea_Desert = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_Alien_Pirates")
-                {
-                    PVPAlien = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_Europa_Traders")
-                {
-                    PVPEuropa = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_Nadrid")
-                {
-                    PVPNadrit = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_Caldera_Pirates")
-                {
-                    PVPCaldera = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
-                }
-                else if (Planet.Name == "PVP_Pertam_Desert_Empire")
-                {
-                    PVPPertam = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    if (Planet.Name == "Saturn")
+                    {
+                        PVPSaturn = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 60000);
+                    }
+                    else if (Planet.Name == "PVP_Terra")
+                    {
+                        PVPTerra = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_Enigma_FreeLancers")
+                    {
+                        PVPEnigma = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_Pirates_Home")
+                    {
+                        PVPKaelnium = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_Siberia_FreeLancers")
+                    {
+                        PVPSiberia = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_Styx")
+                    {
+                        PVPStyx = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_Triton_Traders")
+                    {
+                        PVPTriton = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_Faradium_Planet")
+                    {
+                        PVPFaraday = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_Octave")
+                    {
+                        PVPOctave = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_Dune")
+                    {
+                        PVPDune = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_Titan_Pirates")
+                    {
+                        PVPTitan = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_GalateaMoon")
+                    {
+                        PVPGalatea = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_IcePlanet")
+                    {
+                        PVICE_Planet = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_Valhalla")
+                    {
+                        PVPValhalla = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_Barsoom")
+                    {
+                        PVPBarsoom = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_Gea_Desert_Traders")
+                    {
+                        PVPGea_Desert = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_Alien_Pirates")
+                    {
+                        PVPAlien = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_Europa_Traders")
+                    {
+                        PVPEuropa = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_Nadrid")
+                    {
+                        PVPNadrit = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_Caldera_Pirates")
+                    {
+                        PVPCaldera = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
+                    else if (Planet.Name == "PVP_Pertam_Desert_Empire")
+                    {
+                        PVPPertam = new BoundingSphereD(new Vector3D(Planet.PositionComp.GetPosition()), Planet.Provider.Radius + 40000);
+                    }
                 }
             }
 
@@ -319,221 +320,224 @@ namespace DePatch.PVEZONE
                         }
                     }
 
-                    if (PVPAlien.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                    if (ServerPlanets != null)
                     {
-                        PlanetScanner.Add(myPlayer, "Alien");
-                    }
-                    if (PVPBarsoom.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Barsoom");
-                    }
-                    if (PVPCaldera.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Caldera");
-                    }
-                    if (PVPDune.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Dune");
-                    }
-                    if (PVPEnigma.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Enigma");
-                    }
-                    if (PVPEuropa.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Europa");
-                    }
-                    if (PVPFaraday.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Faraday");
-                    }
-                    if (PVPGalatea.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Galatea");
-                    }
-                    if (PVPGea_Desert.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Gea Desert");
-                    }
-                    if (PVICE_Planet.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "ICE Planet");
-                    }
-                    if (PVPKaelnium.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Kaelnium");
-                    }
-                    if (PVPNadrit.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Nadrit");
-                    }
-                    if (PVPOctave.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Octave");
-                    }
-                    if (PVPPertam.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Pertam");
-                    }
-                    if (PVPSaturn.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Saturn");
-                    }
-                    if (PVPSiberia.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Siberia");
-                    }
-                    if (PVPStyx.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Styx");
-                    }
-                    if (PVPTerra.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Terra");
-                    }
-                    if (PVPTitan.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Titan");
-                    }
-                    if (PVPTriton.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Triton");
-                    }
-                    if (PVPValhalla.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
-                    {
-                        PlanetScanner.Add(myPlayer, "Valhalla");
-                    }
-
-                    if (PlanetScanner.Count == 0)
-                    {
-                        if (PlayerPlanet.ContainsKey(myPlayer.DisplayName))
+                        if (PVPAlien.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
                         {
-                            PlayerPlanet.TryGetValue(myPlayer.DisplayName, out string Planet);
-
-                            if (PlayerShipSize.ContainsKey(myPlayer))
-                            {
-                                _ = PlayerShipSize.TryGetValue(myPlayer, out var ShipSizePlayer);
-
-                                if (ShipSizePlayer)
-                                    SendMessage($"Little ship left PVP planet/Маленький корабль покинул PVP планету {Planet}->");
-                                else
-                                    SendMessage($"'{myPlayer.DisplayName}' in big ship left PVP planet {Planet}->\n Игрок на большом корабле покинул PVP планету {Planet}->");
-
-                                PlayerShipSize.Remove(myPlayer);
-                            }
-                            else
-                            {
-                                if (SmallShipPlayer)
-                                    SendMessage($"Little ship left PVP planet/Маленький корабль покинул PVP планету {Planet}->");
-                                else
-                                    SendMessage($"'{myPlayer.DisplayName}' in big ship left PVP planet {Planet}->\n Игрок на большом корабле покинул PVP планету {Planet}->");
-                            }
-
-                            PlayerPlanet.Remove(myPlayer.DisplayName);
+                            PlanetScanner.Add(myPlayer, "Alien");
                         }
-                        return;
-                    }
-
-                    foreach (var Player in PlanetScanner)
-                    {
-                        if (Player.Key == null)
-                            continue;
-
-                        var gravityVectorTemp = 0.0f;
-                        Vector3D position = Player.Key.GetPosition();
-                        var gravityVector = MyAPIGateway.Physics.CalculateNaturalGravityAt(position, out gravityVectorTemp);
-                        var PlayerGravityCalc = gravityVector.Length() / EARTH_GRAVITY;
-                        var PlanetGravity = 0.15f;
-
-                        if (!PlayerPlanet.ContainsKey(Player.Key.DisplayName))
+                        if (PVPBarsoom.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
                         {
-                            if (!MySession.Static.IsUserAdmin(Player.Key.Id.SteamId))
-                            {
-                                var PlayerChar = Player.Key.Character;
-                                MyPlanet closestPlanet = null;
-
-                                if (PlayerChar != null) 
-                                    closestPlanet = MyPlanets.Static.GetClosestPlanet(PlayerChar.PositionComp.GetPosition());
-
-                                if (closestPlanet != null)
-                                {
-                                    var PlanetObject = closestPlanet.GetObjectBuilder();
-                                    MyObjectBuilder_Planet ThisPlanetConfig = (MyObjectBuilder_Planet)PlanetObject;
-                                    float PlanetGrav = ThisPlanetConfig.SurfaceGravity;
-
-                                    if (PlayerGravityCalc >= PlanetGrav || PlayerGravityCalc >= PlanetGrav - 0.15f)
-                                    {
-                                        if (!SmallShipPlayer)
-                                            SendMessage($"'{Player.Key.DisplayName}' in big ship arrived to PVP planet ->{Player.Value}\nИгрок на большом корабле прибыл на PVP планету ->{Player.Value}");
-                                        else
-                                            SendMessage($"Little ship arrived to PVP planet/Маленький корабль прибыл на PVP планету");
-
-                                        if (!PlayerShipSize.ContainsKey(Player.Key))
-                                            PlayerShipSize.Add(Player.Key, SmallShipPlayer);
-                                        else
-                                            PlayerShipSize[Player.Key] = SmallShipPlayer;
-
-                                        PlayerPlanet.Add(Player.Key.DisplayName, Player.Value);
-                                    }
-                                }
-                                else
-                                {
-                                    if (PlayerGravityCalc >= PlanetGravity)
-                                    {
-                                        if (!SmallShipPlayer)
-                                            SendMessage($"'{Player.Key.DisplayName}' in big ship arrived to PVP planet ->{Player.Value}\nИгрок на большом корабле прибыл на PVP планету ->{Player.Value}");
-                                        else
-                                            SendMessage($"Little ship arrived to PVP planet/Маленький корабль прибыл на PVP планету");
-
-                                        if (!PlayerShipSize.ContainsKey(Player.Key))
-                                            PlayerShipSize.Add(Player.Key, SmallShipPlayer);
-                                        else
-                                            PlayerShipSize[Player.Key] = SmallShipPlayer;
-
-                                        PlayerPlanet.Add(Player.Key.DisplayName, Player.Value);
-                                    }
-                                }
-                            }
+                            PlanetScanner.Add(myPlayer, "Barsoom");
                         }
-                        else
+                        if (PVPCaldera.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
                         {
-                            PlayerPlanet.TryGetValue(Player.Key.DisplayName, out string PlayerNameOnPlanet);
-                            PlanetScanner.TryGetValue(Player.Key, out string PlayerNameDetectedPlanet);
+                            PlanetScanner.Add(myPlayer, "Caldera");
+                        }
+                        if (PVPDune.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            PlanetScanner.Add(myPlayer, "Dune");
+                        }
+                        if (PVPEnigma.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            PlanetScanner.Add(myPlayer, "Enigma");
+                        }
+                        if (PVPEuropa.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            PlanetScanner.Add(myPlayer, "Europa");
+                        }
+                        if (PVPFaraday.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            PlanetScanner.Add(myPlayer, "Faraday");
+                        }
+                        if (PVPGalatea.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            PlanetScanner.Add(myPlayer, "Galatea");
+                        }
+                        if (PVPGea_Desert.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            PlanetScanner.Add(myPlayer, "Gea Desert");
+                        }
+                        if (PVICE_Planet.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            PlanetScanner.Add(myPlayer, "ICE Planet");
+                        }
+                        if (PVPKaelnium.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            PlanetScanner.Add(myPlayer, "Kaelnium");
+                        }
+                        if (PVPNadrit.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            PlanetScanner.Add(myPlayer, "Nadrit");
+                        }
+                        if (PVPOctave.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            PlanetScanner.Add(myPlayer, "Octave");
+                        }
+                        if (PVPPertam.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            PlanetScanner.Add(myPlayer, "Pertam");
+                        }
+                        if (PVPSaturn.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            PlanetScanner.Add(myPlayer, "Saturn");
+                        }
+                        if (PVPSiberia.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            PlanetScanner.Add(myPlayer, "Siberia");
+                        }
+                        if (PVPStyx.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            PlanetScanner.Add(myPlayer, "Styx");
+                        }
+                        if (PVPTerra.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            PlanetScanner.Add(myPlayer, "Terra");
+                        }
+                        if (PVPTitan.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            PlanetScanner.Add(myPlayer, "Titan");
+                        }
+                        if (PVPTriton.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            PlanetScanner.Add(myPlayer, "Triton");
+                        }
+                        if (PVPValhalla.Contains(myPlayer.Character.PositionComp.GetPosition()) == ContainmentType.Contains)
+                        {
+                            PlanetScanner.Add(myPlayer, "Valhalla");
+                        }
 
-                            if (PlayerNameOnPlanet == PlayerNameDetectedPlanet)
-                                return;
-                            else
+                        if (PlanetScanner.Count == 0)
+                        {
+                            if (PlayerPlanet.ContainsKey(myPlayer.DisplayName))
                             {
-                                if (PlayerShipSize.ContainsKey(Player.Key))
+                                PlayerPlanet.TryGetValue(myPlayer.DisplayName, out string Planet);
+
+                                if (PlayerShipSize.ContainsKey(myPlayer))
                                 {
-                                    _ = PlayerShipSize.TryGetValue(Player.Key, out var ShipSizePlayer);
+                                    _ = PlayerShipSize.TryGetValue(myPlayer, out var ShipSizePlayer);
 
                                     if (ShipSizePlayer)
-                                        SendMessage($"Little ship left PVP planet/Маленький корабль покинул PVP планету {PlayerNameOnPlanet}->");
+                                        SendMessage($"Little ship left PVP planet/Маленький корабль покинул PVP планету {Planet}->");
                                     else
-                                        SendMessage($"'{Player.Key.DisplayName}' in big ship left PVP planet {PlayerNameOnPlanet}->\nИгрок на большом корабле покинул PVP планету {PlayerNameOnPlanet}->");
+                                        SendMessage($"'{myPlayer.DisplayName}' in big ship left PVP planet {Planet}->\n Игрок на большом корабле покинул PVP планету {Planet}->");
+
+                                    PlayerShipSize.Remove(myPlayer);
                                 }
                                 else
                                 {
                                     if (SmallShipPlayer)
-                                        SendMessage($"Little ship left PVP planet/Маленький корабль покинул PVP планету {PlayerNameOnPlanet}->");
+                                        SendMessage($"Little ship left PVP planet/Маленький корабль покинул PVP планету {Planet}->");
                                     else
-                                        SendMessage($"'{Player.Key.DisplayName}' in big ship left PVP planet {PlayerNameOnPlanet}->\nИгрок на большом корабле покинул PVP планету {PlayerNameOnPlanet}->");
+                                        SendMessage($"'{myPlayer.DisplayName}' in big ship left PVP planet {Planet}->\n Игрок на большом корабле покинул PVP планету {Planet}->");
                                 }
 
-                                PlayerPlanet.Remove(Player.Key.DisplayName);
+                                PlayerPlanet.Remove(myPlayer.DisplayName);
+                            }
+                            return;
+                        }
 
-                                if (!SmallShipPlayer)
-                                    SendMessage($"'{Player.Key.DisplayName}' in big ship arrived to PVP planet ->{Player.Value}\nИгрок на большом корабле прибыл на PVP планету ->{Player.Value}");
+                        foreach (var Player in PlanetScanner)
+                        {
+                            if (Player.Key == null)
+                                continue;
+
+                            var gravityVectorTemp = 0.0f;
+                            Vector3D position = Player.Key.GetPosition();
+                            var gravityVector = MyAPIGateway.Physics.CalculateNaturalGravityAt(position, out gravityVectorTemp);
+                            var PlayerGravityCalc = gravityVector.Length() / EARTH_GRAVITY;
+                            var PlanetGravity = 0.15f;
+
+                            if (!PlayerPlanet.ContainsKey(Player.Key.DisplayName))
+                            {
+                                if (!MySession.Static.IsUserAdmin(Player.Key.Id.SteamId))
+                                {
+                                    var PlayerChar = Player.Key.Character;
+                                    MyPlanet closestPlanet = null;
+
+                                    if (PlayerChar != null)
+                                        closestPlanet = MyPlanets.Static.GetClosestPlanet(PlayerChar.PositionComp.GetPosition());
+
+                                    if (closestPlanet != null)
+                                    {
+                                        var PlanetObject = closestPlanet.GetObjectBuilder();
+                                        MyObjectBuilder_Planet ThisPlanetConfig = (MyObjectBuilder_Planet)PlanetObject;
+                                        float PlanetGrav = ThisPlanetConfig.SurfaceGravity;
+
+                                        if (PlayerGravityCalc >= PlanetGrav || PlayerGravityCalc >= PlanetGrav - 0.15f)
+                                        {
+                                            if (!SmallShipPlayer)
+                                                SendMessage($"'{Player.Key.DisplayName}' in big ship arrived to PVP planet ->{Player.Value}\nИгрок на большом корабле прибыл на PVP планету ->{Player.Value}");
+                                            else
+                                                SendMessage($"Little ship arrived to PVP planet/Маленький корабль прибыл на PVP планету");
+
+                                            if (!PlayerShipSize.ContainsKey(Player.Key))
+                                                PlayerShipSize.Add(Player.Key, SmallShipPlayer);
+                                            else
+                                                PlayerShipSize[Player.Key] = SmallShipPlayer;
+
+                                            PlayerPlanet.Add(Player.Key.DisplayName, Player.Value);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (PlayerGravityCalc >= PlanetGravity)
+                                        {
+                                            if (!SmallShipPlayer)
+                                                SendMessage($"'{Player.Key.DisplayName}' in big ship arrived to PVP planet ->{Player.Value}\nИгрок на большом корабле прибыл на PVP планету ->{Player.Value}");
+                                            else
+                                                SendMessage($"Little ship arrived to PVP planet/Маленький корабль прибыл на PVP планету");
+
+                                            if (!PlayerShipSize.ContainsKey(Player.Key))
+                                                PlayerShipSize.Add(Player.Key, SmallShipPlayer);
+                                            else
+                                                PlayerShipSize[Player.Key] = SmallShipPlayer;
+
+                                            PlayerPlanet.Add(Player.Key.DisplayName, Player.Value);
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                PlayerPlanet.TryGetValue(Player.Key.DisplayName, out string PlayerNameOnPlanet);
+                                PlanetScanner.TryGetValue(Player.Key, out string PlayerNameDetectedPlanet);
+
+                                if (PlayerNameOnPlanet == PlayerNameDetectedPlanet)
+                                    return;
                                 else
-                                    SendMessage($"Little ship arrived to PVP planet/Маленький корабль прибыл на PVP планету");
+                                {
+                                    if (PlayerShipSize.ContainsKey(Player.Key))
+                                    {
+                                        _ = PlayerShipSize.TryGetValue(Player.Key, out var ShipSizePlayer);
 
-                                if (!PlayerShipSize.ContainsKey(Player.Key))
-                                    PlayerShipSize.Add(Player.Key, SmallShipPlayer);
-                                else
-                                    PlayerShipSize[Player.Key] = SmallShipPlayer;
+                                        if (ShipSizePlayer)
+                                            SendMessage($"Little ship left PVP planet/Маленький корабль покинул PVP планету {PlayerNameOnPlanet}->");
+                                        else
+                                            SendMessage($"'{Player.Key.DisplayName}' in big ship left PVP planet {PlayerNameOnPlanet}->\nИгрок на большом корабле покинул PVP планету {PlayerNameOnPlanet}->");
+                                    }
+                                    else
+                                    {
+                                        if (SmallShipPlayer)
+                                            SendMessage($"Little ship left PVP planet/Маленький корабль покинул PVP планету {PlayerNameOnPlanet}->");
+                                        else
+                                            SendMessage($"'{Player.Key.DisplayName}' in big ship left PVP planet {PlayerNameOnPlanet}->\nИгрок на большом корабле покинул PVP планету {PlayerNameOnPlanet}->");
+                                    }
 
-                                PlayerPlanet.Add(Player.Key.DisplayName, PlayerNameDetectedPlanet);
+                                    PlayerPlanet.Remove(Player.Key.DisplayName);
+
+                                    if (!SmallShipPlayer)
+                                        SendMessage($"'{Player.Key.DisplayName}' in big ship arrived to PVP planet ->{Player.Value}\nИгрок на большом корабле прибыл на PVP планету ->{Player.Value}");
+                                    else
+                                        SendMessage($"Little ship arrived to PVP planet/Маленький корабль прибыл на PVP планету");
+
+                                    if (!PlayerShipSize.ContainsKey(Player.Key))
+                                        PlayerShipSize.Add(Player.Key, SmallShipPlayer);
+                                    else
+                                        PlayerShipSize[Player.Key] = SmallShipPlayer;
+
+                                    PlayerPlanet.Add(Player.Key.DisplayName, PlayerNameDetectedPlanet);
+                                }
                             }
                         }
                     }
